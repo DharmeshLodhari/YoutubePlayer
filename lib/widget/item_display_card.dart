@@ -756,7 +756,7 @@ class _DisplayProductState extends State<DisplayProduct> {
 
   Widget _getProductReviews() {
     return Text(
-      "(${widget.product.reviewScore} reviews)",
+      "(${widget.product.reviewScore} ${(widget.product.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
       style: TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 12,
@@ -766,7 +766,8 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   Widget _buildProductDiscountAndTag() {
-    if ((widget.product.availableFrom?.isAfter(DateTime.now()) ?? false)) {
+    if ((widget.product.availableFrom?.isAfter(DateTime.now()) ?? false) &&
+        (widget.product.variantModels?.isEmpty ?? false)) {
       return SizedBox(
         width: double.infinity,
         height: 28,
@@ -777,7 +778,8 @@ class _DisplayProductState extends State<DisplayProduct> {
           product: widget.product,
         ),
       );
-    } else if (widget.product.trackInventory == true &&
+    } else if ((widget.product.variantModels?.isEmpty ?? false) &&
+        widget.product.trackInventory == true &&
         (widget.product.variantModels?.isEmpty ?? false) &&
         (widget.product.quantity ?? 0) <= 0) {
       return SizedBox(
@@ -1284,26 +1286,28 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   void shareAsYarn() {
-    NavigationUtil.push(context,
-        screen: ShareAsAyarnScreen(
-            askCategories: yarnDashboardBloc.yarnCategories,
-            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-            callback: (params) async {
-              params.body = widget.service.name ?? "";
-              params.attachment = {
-                "service": widget.service.toJson().cast<String, dynamic>()
-              };
-              final bool data =
-                  await YarnAuth().addYarnAndQuestion(params, '', '');
-              if (data) {
-                showToast(message: "Shared in Yarn successfully");
-              }
-            }));
+    NavigationUtil.push(
+      context,
+      screen: ShareAsAyarnScreen(
+        askCategories: yarnDashboardBloc.yarnCategories,
+        shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+        callback: (params) async {
+          params.body = widget.service.name ?? "";
+          params.attachment = {
+            "service": widget.service.toJson().cast<String, dynamic>()
+          };
+          final bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+          if (data) {
+            showToast(message: "Shared in Yarn successfully");
+          }
+        },
+      ),
+    );
   }
 
   Widget _getServiceReviews() {
     return Text(
-      "(${widget.service.reviewScore} reviews)",
+      "(${widget.service.reviewScore} ${(widget.service.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
       style: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 12,

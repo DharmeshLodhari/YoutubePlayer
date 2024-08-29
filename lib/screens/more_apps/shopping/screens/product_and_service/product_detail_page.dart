@@ -113,6 +113,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Variant? availableVariant;
   int selectedIndex = 0;
+  bool isSelected = true;
   @override
   void initState() {
     product = widget.arguments[
@@ -1262,21 +1263,22 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                             AspectRatio(
                               aspectRatio: 1.5,
                               child: Center(
-                                  child: Stack(
-                                children: [
-                                  CachedNetworkImage(
-                                    placeholder: (context, url) => Center(
-                                        child: CircularLoadingIndicator()),
-                                    imageUrl: displayProductImages?[0] ?? "",
-                                    fit: BoxFit.cover,
-                                    height: double.infinity,
-                                    width: double.infinity,
-                                    errorWidget:
-                                        productAndServiceBigErrorWidget,
-                                  ),
-                                  // productStockAndDetailTag(),
-                                ],
-                              )),
+                                child: Stack(
+                                  children: [
+                                    CachedNetworkImage(
+                                      placeholder: (context, url) => Center(
+                                          child: CircularLoadingIndicator()),
+                                      imageUrl: displayProductImages?[0] ?? "",
+                                      fit: BoxFit.cover,
+                                      height: double.infinity,
+                                      width: double.infinity,
+                                      errorWidget:
+                                          productAndServiceBigErrorWidget,
+                                    ),
+                                    // productStockAndDetailTag(),
+                                  ],
+                                ),
+                              ),
                             ),
                             // getOutOfStockTag(),
                           ],
@@ -1286,8 +1288,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                         children: [
                           Stack(
                             children: [
-                              CarouselSlider(
+                              CarouselSlider.builder(
+                                key: ValueKey<int>(selectedIndex),
                                 options: CarouselOptions(
+                                  initialPage: selectedIndex,
                                   enableInfiniteScroll: false,
                                   viewportFraction: 1.0,
                                   enlargeCenterPage: true,
@@ -1300,73 +1304,33 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                     sliderIndex.sink.add(index);
                                   },
                                 ),
-                                items: displayProductImages!
-                                    .map(
-                                      (item) => GestureDetector(
-                                        onTap: () {
-                                          if (item != null) {
-                                            showSliderGallery(
-                                                displayProductImages);
-                                          }
-                                        },
-                                        child: Stack(
-                                          children: [
-                                            Center(
-                                              child: Stack(
-                                                children: [
-                                                  CachedNetworkImage(
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        Center(
-                                                            child:
-                                                                CircularLoadingIndicator()),
-                                                    imageUrl: item!,
-                                                    fit: BoxFit.cover,
-                                                    height: double.infinity,
-                                                    width: double.infinity,
-                                                    errorWidget:
-                                                        productAndServiceBigErrorWidget,
-                                                  ),
-                                                  // productStockAndDetailTag(),
-                                                ],
-                                              ),
-                                            ),
-                                            // getOutOfStockTag(),
-                                          ],
-                                        ),
+                                itemCount: displayProductImages!.length,
+                                itemBuilder: (context, index, realIndex) {
+                                  final item = displayProductImages![index];
+                                  return GestureDetector(
+                                    onTap: () {
+                                      if (item != null) {
+                                        showSliderGallery(displayProductImages);
+                                      }
+                                    },
+                                    child: CachedNetworkImage(
+                                      placeholder: (context, url) => Center(
+                                        child: CircularLoadingIndicator(),
                                       ),
-                                    )
-                                    .toList(),
+                                      imageUrl: item ?? "",
+                                      fit: BoxFit.cover,
+                                      height: double.infinity,
+                                      width: double.infinity,
+                                      errorWidget:
+                                          productAndServiceBigErrorWidget,
+                                    ),
+                                  );
+                                },
                               ),
-                              // Positioned(
-                              //   bottom: 0,
-                              //   left: MediaQuery.of(context).size.width / 2 -
-                              //       (5 * displayProductImages!.length),
-                              //   child: Row(
-                              //     crossAxisAlignment: CrossAxisAlignment.end,
-                              //     mainAxisAlignment: MainAxisAlignment.center,
-                              //     children: displayProductImages!.map((url) {
-                              //       final int index =
-                              //           displayProductImages!.indexOf(url);
-                              //       return Container(
-                              //         width: 5.0,
-                              //         height: 5.0,
-                              //         margin: const EdgeInsets.symmetric(
-                              //             vertical: 10.0, horizontal: 2.0),
-                              //         decoration: BoxDecoration(
-                              //           shape: BoxShape.circle,
-                              //           color: snapshot.data == index
-                              //               ? navyBlue
-                              //               : navyBlueLight,
-                              //         ),
-                              //       );
-                              //     }).toList(),
-                              //   ),
-                              // )
                             ],
                           ),
                           const SizedBox(height: 12),
-                          _buildHorizontalProductImageList(), // Horizontal list
+                          _buildHorizontalProductImageList(),
                         ],
                       ),
           );
@@ -1382,11 +1346,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         itemCount: displayProductImages?.length ?? 0,
         itemBuilder: (context, index) {
           final String? imageUrl = displayProductImages?[index];
-          final bool isSelected = selectedIndex == index;
+          isSelected = selectedIndex == index;
 
           return GestureDetector(
             onTap: () {
               setState(() {
+                selectedIndex = index;
                 sliderIndex.sink.add(index);
               });
             },

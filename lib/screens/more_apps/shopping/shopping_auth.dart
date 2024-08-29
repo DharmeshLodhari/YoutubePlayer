@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:developer' as developer;
-import 'dart:math';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
@@ -19,18 +17,16 @@ import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
-
 import 'models/store.dart';
 
 class ShoppingAuthService extends AuthService {
   Future<Map<String, dynamic>?> getProductListForSuperStore(
       String? next, String? previous,
       {String userName = "black",
-        String? categoryId,
-        String? industryId,
-        bool todaysDeal = false,
-        bool otherDeals = false}) async {
+      String? categoryId,
+      String? industryId,
+      bool todaysDeal = false,
+      bool otherDeals = false}) async {
     String url = "";
     if (next == null) {
       return null;
@@ -38,10 +34,10 @@ class ShoppingAuthService extends AuthService {
     if (next == "") {
       if (todaysDeal == true) {
         url =
-        "${AppConfig.baseUrl}/api/v1/products/?today_deals=true&industry=$industryId";
+            "${AppConfig.baseUrl}/api/v1/products/?today_deals=true&industry=$industryId";
       } else if (otherDeals == true) {
         url =
-        "${AppConfig.baseUrl}/api/v1/products/?other_deals=true&industry=$industryId";
+            "${AppConfig.baseUrl}/api/v1/products/?other_deals=true&industry=$industryId";
       } else {
         url = "${AppConfig.baseUrl}/api/v1/products/by-seller/$userName/";
       }
@@ -81,8 +77,8 @@ class ShoppingAuthService extends AuthService {
   // List Products
   Future<List<ShoppingProduct>?> getProductList(String next, String previous,
       {String userName = "black",
-        bool todaysDeal = false,
-        bool otherDeals = false}) async {
+      bool todaysDeal = false,
+      bool otherDeals = false}) async {
     String url = "";
     if (next == "") {
       if (todaysDeal == true) {
@@ -140,7 +136,7 @@ class ShoppingAuthService extends AuthService {
     }
     if (next == "") {
       url =
-      "${AppConfig.baseUrl}/api/v1/shopping-cart/items-by-address/$addressId";
+          "${AppConfig.baseUrl}/api/v1/shopping-cart/items-by-address/$addressId";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -271,10 +267,10 @@ class ShoppingAuthService extends AuthService {
 
   // super store items tab
   Future<Map<String, dynamic>?> getProductsStoreTab(
-      String? next,
-      String? previous, {
-        String? url,
-      }) async {
+    String? next,
+    String? previous, {
+    String? url,
+  }) async {
     debugPrint('STORE URL ---> $url');
 
     final headers = await getAuthHeaders();
@@ -400,7 +396,7 @@ class ShoppingAuthService extends AuthService {
     debugPrint('SHOPPING CART MODEL ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final ShoppingCartModelFromQrCode shoppingCartModel =
-      ShoppingCartModelFromQrCode.fromJson(jsonDecode(response.body));
+          ShoppingCartModelFromQrCode.fromJson(jsonDecode(response.body));
       return shoppingCartModel;
     } else {
       return null;
@@ -454,7 +450,6 @@ class ShoppingAuthService extends AuthService {
 
   //Products
   Product createProduct(Map<String, dynamic> item) {
-    final Random random = Random();
     final Product product = Product();
     product.id = item['id'];
     product.type = item['type'];
@@ -477,11 +472,11 @@ class ShoppingAuthService extends AuthService {
     product.subCategory = item['sub_category'].isEmpty
         ? const ProductCategory("")
         : ProductCategory(item['sub_category']["name"],
-        id: item['sub_category']["id"]);
+            id: item['sub_category']["id"]);
     product.customCategory = item['custom_category'].isEmpty
         ? const ProductCategory("")
         : ProductCategory(item['custom_category']["name"],
-        id: item['custom_category']["id"]);
+            id: item['custom_category']["id"]);
     product.tags = item['tags'].isEmpty
         ? []
         : (item['tags'] as List).map((i) => Tags.fromJson(i)).toList();
@@ -525,20 +520,20 @@ class ShoppingAuthService extends AuthService {
     product.isChecked = item["is_checked"] ?? false;
     product.priceRange = item["price_range"] ?? "0";
     product.originalPrice = item["original_price"] ?? 0;
-    product.reviewScore = item["review_score"] ?? random.nextInt(5);
+    product.reviewScore = item["review_score"] ?? 0;
     return product;
   }
 
   // List Products
   Future<Map<String, dynamic>?> listOfProduct(
-      String? next,
-      String? previous,
-      String? category,
-      bool? channel, {
-        String? userName,
-        String selectedFilter = "",
-        bool otherDeals = false,
-      }) async {
+    String? next,
+    String? previous,
+    String? category,
+    bool? channel, {
+    String? userName,
+    String selectedFilter = "",
+    bool otherDeals = false,
+  }) async {
     debugPrint('CALLING PRODUCT');
     debugPrint('CALLING PRODUCT channel::: $channel');
 
@@ -551,7 +546,7 @@ class ShoppingAuthService extends AuthService {
         url = "${AppConfig.baseUrl}/api/v1/products/?other_deals=true";
       } else {
         url =
-        "${AppConfig.baseUrl}/api/v1/products/by-seller/$userName/?sort_by=$selectedFilter";
+            "${AppConfig.baseUrl}/api/v1/products/by-seller/$userName/?sort_by=$selectedFilter";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -703,17 +698,17 @@ class ShoppingAuthService extends AuthService {
 
   // List Discounted Products
   Future<Map<String, dynamic>?> listOfDiscountedProduct(
-      String? next,
-      String? previous,
-      String? discountedId,
-      ) async {
+    String? next,
+    String? previous,
+    String? discountedId,
+  ) async {
     String url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
       url =
-      "${AppConfig.baseUrl}/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/product/";
+          "${AppConfig.baseUrl}/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/product/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -767,7 +762,7 @@ class ShoppingAuthService extends AuthService {
     }
     if (next == "") {
       url =
-      "${AppConfig.baseUrl}/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/product/?";
+          "${AppConfig.baseUrl}/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/product/?";
 
       if (filterOptions!.category != "" &&
           filterOptions.category != "All categories") {
@@ -852,17 +847,17 @@ class ShoppingAuthService extends AuthService {
 
   // List Products
   Future<Map<String, dynamic>?> listOfDiscountedServices(
-      String? next,
-      String? previous,
-      String? discountedId,
-      ) async {
+    String? next,
+    String? previous,
+    String? discountedId,
+  ) async {
     String url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
       url =
-      "${AppConfig.baseUrl}/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/service/";
+          "${AppConfig.baseUrl}/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/service/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -916,7 +911,7 @@ class ShoppingAuthService extends AuthService {
     }
     if (next == "") {
       url =
-      "${AppConfig.baseUrl}/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/service/?";
+          "${AppConfig.baseUrl}/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/service/?";
 
       if (filterOptions!.category != "All categories") {
         url = "$url&category=${filterOptions.category}";
@@ -1097,7 +1092,7 @@ class ShoppingAuthService extends AuthService {
 
     if (channelUsername.isNotEmpty) {
       url =
-      "${AppConfig.baseUrl}/api/v1/channels-merchandise/$channelUsername/";
+          "${AppConfig.baseUrl}/api/v1/channels-merchandise/$channelUsername/";
     }
 
     //create multipart request for POST or PATCH method
@@ -1436,7 +1431,7 @@ class ShoppingAuthService extends AuthService {
     final response = await httpGet(url, headers: headers);
 
     final jsonData = json.decode(response.body);
-    developer.log("jsonData :- $jsonData");
+    log("jsonData :- $jsonData");
     if (response.statusCode == 200 || response.statusCode == 201) {
       final Product product = createProduct(jsonData);
       return product;
@@ -1480,7 +1475,6 @@ class ShoppingAuthService extends AuthService {
 
   //Service
   Service createService(Map<String, dynamic> item) {
-    final Random random = Random();
     debugPrint("==> $item");
     final Service service = Service();
     service.id = item['id'];
@@ -1505,7 +1499,7 @@ class ShoppingAuthService extends AuthService {
     service.rating = formatRating(item['rating'] ?? 0.0);
     service.canRate = item["can_rate"] ?? false;
     service.isChecked = item["is_checked"] ?? false;
-    service.reviewScore = item["review_score"] ?? random.nextInt(5);
+    service.reviewScore = item["review_score"] ?? 0;
     return service;
   }
 
@@ -1887,8 +1881,8 @@ class ShoppingAuthService extends AuthService {
   Future<dynamic> listOrders(String? next, String? previous,
       String selectedStatus, DateTimeRange? dateTimeRange,
       {required bool isMerchant,
-        String? searchValue,
-        String? filterValue}) async {
+      String? searchValue,
+      String? filterValue}) async {
     final List<String> shippedStatus = [
       "Shipped",
       "Out For Delivery",
@@ -2006,7 +2000,7 @@ class ShoppingAuthService extends AuthService {
     final jsonData = json.decode(response.body);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      developer.log("DATA=> $jsonData");
+      log("DATA=> $jsonData");
       // final List items = [];
       final data = jsonData["results"];
       for (int i = 0; i < data.length; i++) {
@@ -2168,7 +2162,7 @@ class ShoppingAuthService extends AuthService {
     }
     if (next == "") {
       url =
-      "${AppConfig.baseUrl}/api/v1/services/by-provider/${filterOptions!.searchedUser!.userName!}/?";
+          "${AppConfig.baseUrl}/api/v1/services/by-provider/${filterOptions!.searchedUser!.userName!}/?";
       if (filterOptions.category != "All categories") {
         url = "$url&category=${filterOptions.category}";
       }
@@ -2310,7 +2304,7 @@ class ShoppingAuthService extends AuthService {
   Future<Map<String, dynamic>?> searchUsersProductsInSuperStore(
       String? next, String? previous,
       {required SearchItemWithFilterModelForSuperStore filterOptions,
-        String? query}) async {
+      String? query}) async {
     String url = "";
     if (next == null) {
       return null;
@@ -2319,7 +2313,7 @@ class ShoppingAuthService extends AuthService {
 
     if (next == "") {
       url =
-      "${AppConfig.baseUrl}/api/v1/products/?search=${filterOptions.searchedText}";
+          "${AppConfig.baseUrl}/api/v1/products/?search=${filterOptions.searchedText}";
 
       if (query != null && query.isNotEmpty) {
         url = url + query;
@@ -2397,7 +2391,7 @@ class ShoppingAuthService extends AuthService {
 
     if (next == "") {
       url =
-      "${AppConfig.baseUrl}/api/v1/services/?search=${filterOptions.searchedText}";
+          "${AppConfig.baseUrl}/api/v1/services/?search=${filterOptions.searchedText}";
 
       if (filterOptions.minPrice != null) {
         url = "$url&min_price=${filterOptions.minPrice}";
@@ -2843,7 +2837,7 @@ class ShoppingAuthService extends AuthService {
         url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/?nearby=true";
       } else if (nearBy == false) {
         url =
-        "${AppConfig.baseUrl}/api/v1/user/merchant-list/?suggestions=true";
+            "${AppConfig.baseUrl}/api/v1/user/merchant-list/?suggestions=true";
       }
       if (category == '' || category == 'All') {
         // url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/";
@@ -2972,7 +2966,7 @@ class ShoppingAuthService extends AuthService {
     }
     if (next == "") {
       url =
-      "${AppConfig.baseUrl}/api/v1/notification/alerts/user-alerts/$userName/";
+          "${AppConfig.baseUrl}/api/v1/notification/alerts/user-alerts/$userName/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -3028,7 +3022,7 @@ class ShoppingAuthService extends AuthService {
       url = "${AppConfig.baseUrl}/api/v1/notification/alerts/";
     } else {
       url =
-      "${AppConfig.baseUrl}/api/v1/notification/alerts/${flashTagAlertModelForAdd.id}/";
+          "${AppConfig.baseUrl}/api/v1/notification/alerts/${flashTagAlertModelForAdd.id}/";
     }
 
     final data = jsonEncode(flashTagAlertModelForAdd.toAddUpdate());
@@ -3042,7 +3036,7 @@ class ShoppingAuthService extends AuthService {
       response = await httpPatch(url, headers: headers, body: data);
     }
     final FlashTagAlertModel flashTagAlertModel =
-    FlashTagAlertModel.fromJson(jsonDecode(response.body));
+        FlashTagAlertModel.fromJson(jsonDecode(response.body));
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return flashTagAlertModel;
@@ -3295,7 +3289,7 @@ class ShoppingAuthService extends AuthService {
     }
     if (next == "") {
       url =
-      "${AppConfig.baseUrl}/api/v1/business/discounts/merchant-discounts/${user?.userName}/";
+          "${AppConfig.baseUrl}/api/v1/business/discounts/merchant-discounts/${user?.userName}/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -3386,7 +3380,7 @@ class ShoppingAuthService extends AuthService {
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       final ShippingAddress item =
-      ShippingAddress.fromJson(jsonDecode(response.body));
+          ShippingAddress.fromJson(jsonDecode(response.body));
       return item;
     }
     return null;
@@ -3424,7 +3418,7 @@ class ShoppingAuthService extends AuthService {
     if (itemModel.poster != null && !itemModel.poster!.contains("http")) {
       // Create multipart using filepath, string or bytes
       final multipartFile =
-      await http.MultipartFile.fromPath("poster", itemModel.poster!);
+          await http.MultipartFile.fromPath("poster", itemModel.poster!);
 
       // Add multipart to request
       request.files.add(multipartFile);
@@ -3442,7 +3436,7 @@ class ShoppingAuthService extends AuthService {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final DiscountModel item =
-      DiscountModel.fromJson(json.decode(responseBody));
+          DiscountModel.fromJson(json.decode(responseBody));
       return item;
     }
 
@@ -3554,7 +3548,7 @@ class ShoppingAuthService extends AuthService {
     if (addOnOption.picture != null) {
       // Create multipart using filepath, string or bytes
       final multipartFile =
-      await http.MultipartFile.fromPath("picture", addOnOption.picture!);
+          await http.MultipartFile.fromPath("picture", addOnOption.picture!);
 
       // Add multipart to request
       request.files.add(multipartFile);
@@ -3582,7 +3576,7 @@ class ShoppingAuthService extends AuthService {
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
       final AddOnOption addOnOption =
-      AddOnOption.fromJson(jsonDecode(responseBody));
+          AddOnOption.fromJson(jsonDecode(responseBody));
 
       return addOnOption;
     } else {
@@ -3602,7 +3596,7 @@ class ShoppingAuthService extends AuthService {
     final request = http.Request("POST", Uri.parse(url));
 
     final List<int?> idList =
-    addOns.options!.map((option) => option.id).toList();
+        addOns.options!.map((option) => option.id).toList();
     request.body = json.encode({
       "name": addOns.name!,
       "description": addOns.description!,
@@ -3786,8 +3780,8 @@ class ShoppingAuthService extends AuthService {
     if (addOnOption.picture != null && !addOnOption.picture!.contains("http")) {
       // Create multipart using filepath, string or bytes
       final http.MultipartFile multipartFile =
-      await http.MultipartFile.fromPath(
-          "picture", addOnOption.picture ?? "");
+          await http.MultipartFile.fromPath(
+              "picture", addOnOption.picture ?? "");
 
       // Add multipart to request
       request.files.add(multipartFile);
@@ -3815,7 +3809,7 @@ class ShoppingAuthService extends AuthService {
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
       final AddOnOption addOnOption =
-      AddOnOption.fromJson(jsonDecode(responseBody));
+          AddOnOption.fromJson(jsonDecode(responseBody));
 
       return addOnOption;
     } else {
