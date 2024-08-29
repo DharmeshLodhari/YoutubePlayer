@@ -61,6 +61,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   late UserBloc userBloc;
   late BasketBloc basketBloc;
   List<String?>? imgList = [];
+  int selectedIndex = 0;
+  bool isSelected = true;
 
   final _auth = ShoppingAuthService();
 
@@ -145,7 +147,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       canRate = value;
       if (mounted) setState(() {});
     }).catchError(
-          (error) {},
+      (error) {},
     );
     return true;
   }
@@ -156,7 +158,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
     await ReviewAuth().fetchServiceReviews(serviceId: serviceId).then((value) {
       final List tempList =
-      value.containsKey('results') ? value['results'] as List : [];
+          value.containsKey('results') ? value['results'] as List : [];
       value.containsKey('count') ? reviewCount = value["count"] : 0;
       canRate = value['can_rate'];
 
@@ -177,7 +179,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   void getOtherItems() {
     _auth
         .ownersOrderProductsAndServices(
-        type: "services", userId: service?.provider, exclude: service?.id)
+            type: "services", userId: service?.provider, exclude: service?.id)
         .then((value) {
       if (value.isNotEmpty) {
         if (mounted) {
@@ -268,7 +270,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               margin: EdgeInsets.zero,
               child: Container(
                 padding:
-                const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -309,7 +311,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               margin: EdgeInsets.zero,
               child: Container(
                 padding:
-                const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -322,7 +324,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     final List<Widget> list = [];
 
     final PermissionType? hasPermission =
-    userBloc.user.hasWritePermission(ProtectionPermission.product);
+        userBloc.user.hasWritePermission(ProtectionPermission.product);
 
     list.add(
       bottomSheetItem(
@@ -418,7 +420,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               };
               logger.d(params.toAddMap());
               final bool data =
-              await YarnAuth().addYarnAndQuestion(params, '', '');
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }
@@ -427,14 +429,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   void sendItemToUsersInChat() async {
     final List<ChatConversation?> listOfRecipient =
-    await ShareInChat().selectShareCustomer(context);
+        await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     final String url =
         "${AppConfig.baseUrl}/api/v1/${service is Product ? "products" : "services"}/${service?.id ?? ""}/";
 
     final Map<String, dynamic>? itemData =
-    await ShoppingAuthService().getProductOrService(url);
+        await ShoppingAuthService().getProductOrService(url);
 
     for (var recipient in listOfRecipient) {
       addProductOrServiceToChat(
@@ -447,9 +449,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   void addProductOrServiceToChat(
       {Map<String, dynamic>? itemData,
-        required ChatConversation recipientUser,
-        String? url,
-        dynamic item}) async {
+      required ChatConversation recipientUser,
+      String? url,
+      dynamic item}) async {
     final Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),
       "check_id": const Uuid().v4(),
@@ -688,62 +690,62 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   Widget _buildReviewList() {
     return reviewList.isEmpty
         ? Center(
-      child: Column(
-        children: [
-          Image.asset(
-            "assets/images/reviews.png",
-            height: 100,
-            width: 100,
-          ),
-          Text(
-            "No review to show",
-            style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-            ),
-          ),
-        ],
-      ),
-    )
-        : Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            buildReviewTitle(),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed(Routes.REVIEW_LIST_SCREEN,
-                    arguments: {"reviewedService": service});
-              },
-              child: Text(
-                "See all",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: navyBlue,
+            child: Column(
+              children: [
+                Image.asset(
+                  "assets/images/reviews.png",
+                  height: 100,
+                  width: 100,
                 ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Column(
-          children: reviewList
-              .map(
-                (review) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: ReviewTile(
-                review: review,
-                service: service,
-              ),
+                Text(
+                  "No review to show",
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontFamily: "Inter",
+                  ),
+                ),
+              ],
             ),
           )
-              .toList(),
-        ),
-      ],
-    );
+        : Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  buildReviewTitle(),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(Routes.REVIEW_LIST_SCREEN,
+                          arguments: {"reviewedService": service});
+                    },
+                    child: Text(
+                      "See all",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: navyBlue,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Column(
+                children: reviewList
+                    .map(
+                      (review) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: ReviewTile(
+                          review: review,
+                          service: service,
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
+          );
   }
 
   Widget _buildDescriptionWidget() {
@@ -816,62 +818,62 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     return service?.providerAvatar == null
         ? Container()
         : Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Provider",
-          style: TextStyle(
-              color: blackFont,
-              fontSize: 12,
-              fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(
-          height: 8,
-        ),
-        ListTile(
-          contentPadding:
-          const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-          leading: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                  arguments: service?.providerAvatar);
-            },
-            child: SizedBox(
-              height: 48,
-              width: 48,
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: service!.providerAvatar!,
-                  fit: BoxFit.fitHeight,
-                  errorWidget: imageErrorWidget,
-                  filterQuality: FilterQuality.high,
-                ),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Provider",
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
               ),
-            ),
-          ),
-          title: userNameWithVerifiedIcon(
-            name: service?.providerFullName ?? '',
-            isVerified: false,
-            textStyle: TextStyle(
-                fontSize: 14,
-                color: blackFont,
-                fontWeight: FontWeight.w600),
-          ),
-          subtitle: Text(
-            service?.provider ?? "",
-            style: TextStyle(
-              fontSize: 12,
-              color: darkGrey,
-            ),
-            textAlign: TextAlign.justify,
-          ),
-          onTap: () {
-            Navigator.pushNamed(context, Routes.USER_PROFILE,
-                arguments: {"searchedUserName": service?.provider});
-          },
-        ),
-      ],
-    );
+              const SizedBox(
+                height: 8,
+              ),
+              ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                leading: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                        arguments: service?.providerAvatar);
+                  },
+                  child: SizedBox(
+                    height: 48,
+                    width: 48,
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: service!.providerAvatar!,
+                        fit: BoxFit.fitHeight,
+                        errorWidget: imageErrorWidget,
+                        filterQuality: FilterQuality.high,
+                      ),
+                    ),
+                  ),
+                ),
+                title: userNameWithVerifiedIcon(
+                  name: service?.providerFullName ?? '',
+                  isVerified: false,
+                  textStyle: TextStyle(
+                      fontSize: 14,
+                      color: blackFont,
+                      fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text(
+                  service?.provider ?? "",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: darkGrey,
+                  ),
+                  textAlign: TextAlign.justify,
+                ),
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.USER_PROFILE,
+                      arguments: {"searchedUserName": service?.provider});
+                },
+              ),
+            ],
+          );
   }
 
   Widget _buildServiceImagesWidgets() {
@@ -879,99 +881,139 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: imgList?.length == 0
           ? AspectRatio(
-        aspectRatio: 1.5,
-        child: Center(
-          child: CircularLoadingIndicator(),
-        ),
-      )
-          : imgList?.length == 1
-          ? Stack(
-        children: [
-          AspectRatio(
-            aspectRatio: 1.5,
-            child: Center(
-              child: CachedNetworkImage(
-                placeholder: (context, url) =>
-                    Center(child: CircularLoadingIndicator()),
-                imageUrl: imgList![0]!,
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: double.infinity,
-                errorWidget: productAndServiceBigErrorWidget,
+              aspectRatio: 1.5,
+              child: Center(
+                child: CircularLoadingIndicator(),
               ),
-            ),
-          ),
-          // serviceStockAndDetailTag(),
-          // getOutOfStockTag(),
-        ],
-      )
-          : Column(
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              CarouselSlider(
-                options: CarouselOptions(
-                    enableInfiniteScroll: false,
-                    viewportFraction: 1.0,
-                    enlargeCenterPage: true,
-                    autoPlay: false,
-                    aspectRatio: 1.5,
-                    onPageChanged: (index, _) {
-                      if (mounted) {
-                        setState(() {
-                          _current = index;
-                        });
-                      }
-                    }),
-                items: imgList!
-                    .map((item) => Stack(
+            )
+          : imgList?.length == 1
+              ? Stack(
                   children: [
-                    Center(
-                      child: CachedNetworkImage(
-                        placeholder: (context, url) => Center(
-                            child:
-                            CircularLoadingIndicator()),
-                        imageUrl: item!,
-                        errorWidget:
-                        productAndServiceBigErrorWidget,
-                        fit: BoxFit.cover,
-                        height: double.infinity,
-                        width: double.infinity,
+                    AspectRatio(
+                      aspectRatio: 1.5,
+                      child: Center(
+                        child: CachedNetworkImage(
+                          placeholder: (context, url) =>
+                              Center(child: CircularLoadingIndicator()),
+                          imageUrl: imgList![0]!,
+                          fit: BoxFit.cover,
+                          height: double.infinity,
+                          width: double.infinity,
+                          errorWidget: productAndServiceBigErrorWidget,
+                        ),
                       ),
                     ),
                     // serviceStockAndDetailTag(),
                     // getOutOfStockTag(),
                   ],
-                ))
-                    .toList(),
-              ),
-              Positioned(
-                bottom: 0,
-                left: MediaQuery.of(context).size.width / 2 -
-                    (5 * imgList!.length),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: imgList!.map((url) {
-                    final int index = imgList!.indexOf(url);
-                    return Container(
-                      width: 5.0,
-                      height: 5.0,
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 2.0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _current == index
-                            ? navyBlue
-                            : navyBlueLight,
-                      ),
-                    );
-                  }).toList(),
+                )
+              : Column(
+                  children: [
+                    Stack(
+                      children: [
+                        CarouselSlider.builder(
+                          key: ValueKey<int>(selectedIndex),
+                          options: CarouselOptions(
+                            initialPage: selectedIndex,
+                            enableInfiniteScroll: false,
+                            viewportFraction: 1.0,
+                            enlargeCenterPage: true,
+                            autoPlay: false,
+                            aspectRatio: 1.5,
+                            onPageChanged: (index, _) {
+                              setState(() {
+                                selectedIndex = index;
+                              });
+                              _current = index;
+                            },
+                          ),
+                          itemCount: imgList?.length,
+                          itemBuilder: (context, index, realIndex) {
+                            final item = imgList?[index];
+                            return Center(
+                              child: CachedNetworkImage(
+                                placeholder: (context, url) => Center(
+                                  child: CircularLoadingIndicator(),
+                                ),
+                                imageUrl: item ?? "",
+                                fit: BoxFit.cover,
+                                height: double.infinity,
+                                width: double.infinity,
+                                errorWidget: productAndServiceBigErrorWidget,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    // Positioned(
+                    //   bottom: 0,
+                    //   left: MediaQuery.of(context).size.width / 2 -
+                    //       (5 * imgList!.length),
+                    //   child: Row(
+                    //     crossAxisAlignment: CrossAxisAlignment.end,
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: imgList!.map((url) {
+                    //       final int index = imgList!.indexOf(url);
+                    //       return Container(
+                    //         width: 5.0,
+                    //         height: 5.0,
+                    //         margin: const EdgeInsets.symmetric(
+                    //             vertical: 10.0, horizontal: 2.0),
+                    //         decoration: BoxDecoration(
+                    //           shape: BoxShape.circle,
+                    //           color: _current == index
+                    //               ? navyBlue
+                    //               : navyBlueLight,
+                    //         ),
+                    //       );
+                    //     }).toList(),
+                    //   ),
+
+                    const SizedBox(height: 12),
+                    _buildHorizontalProductImageList(),
+                  ],
                 ),
-              )
-            ],
-          ),
-        ],
+    );
+  }
+
+  Widget _buildHorizontalProductImageList() {
+    return SizedBox(
+      height: 60,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: imgList?.length ?? 0,
+        itemBuilder: (context, index) {
+          final String? imageUrl = imgList?[index];
+          isSelected = selectedIndex == index;
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedIndex = index;
+                _current = index;
+              });
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+              foregroundDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border:
+                    isSelected ? Border.all(color: black, width: 1.2) : null,
+              ),
+              child: CachedNetworkImage(
+                placeholder: (context, url) =>
+                    Center(child: CircularLoadingIndicator()),
+                imageUrl: imageUrl ?? "",
+                height: 60,
+                width: 60,
+                fit: BoxFit.cover,
+                errorWidget: productAndServiceBigErrorWidget,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -1085,21 +1127,21 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           child: service?.qrCode == ""
               ? Center(child: CircularLoadingIndicator())
               : GestureDetector(
-            onTap: () {
-              Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                  arguments: service?.qrCode);
-            },
-            child: CachedNetworkImage(
-              imageUrl: service?.qrCode ?? "",
-              height: 40,
-              width: 40,
-              errorWidget: imageErrorWidget,
-              filterQuality: FilterQuality.high,
-              fit: BoxFit.fill,
-              placeholder: (context, url) =>
-                  Center(child: CircularLoadingIndicator()),
-            ),
-          ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                        arguments: service?.qrCode);
+                  },
+                  child: CachedNetworkImage(
+                    imageUrl: service?.qrCode ?? "",
+                    height: 40,
+                    width: 40,
+                    errorWidget: imageErrorWidget,
+                    filterQuality: FilterQuality.high,
+                    fit: BoxFit.fill,
+                    placeholder: (context, url) =>
+                        Center(child: CircularLoadingIndicator()),
+                  ),
+                ),
           onTap: () {
             Clipboard.setData(ClipboardData(text: service?.qrCode ?? ""));
             showToast(message: AppLocalization.of(context)!.copied);
@@ -1270,7 +1312,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   // Pull the user from the server
   void getRecipient() async {
     customerProfileBloc.customer =
-    await UserAuth().fetchCustomerProfile(service!.provider);
+        await UserAuth().fetchCustomerProfile(service!.provider);
   }
 
   void navigateToSendPayment() {
