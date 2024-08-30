@@ -46,7 +46,7 @@ Color yarnBlack = HexColor("#151515");
 Color lightRed = HexColor("#FBEAE9");
 Color lightYellow = HexColor("#FEF6E7");
 Color lightGreenBg = HexColor("#E7F6EC");
-Color lightGray = HexColor("#475367");
+Color fontLightGrey = HexColor("#475367");
 Color transparent = Colors.transparent;
 
 Color greyDarkBackground = HexColor("#F0F2F5");
@@ -82,4 +82,4 @@ const Map<int, Color> navyBlueColorShades = {
 
 // Create a custom MaterialColor
 const MaterialColor navyBluePrimary =
-MaterialColor(0xFF3F61DB, navyBlueColorShades);
+    MaterialColor(0xFF3F61DB, navyBlueColorShades);

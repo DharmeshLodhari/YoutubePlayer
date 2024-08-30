@@ -165,7 +165,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w400,
                           fontSize: 12,
-                          color: lightGray,
+                          color: fontLightGrey,
                         ),
                       ),
                       const SizedBox(
@@ -761,7 +761,7 @@ class _DisplayProductState extends State<DisplayProduct> {
           fontWeight: FontWeight.w400,
           fontSize: 12,
           fontFamily: 'Inter',
-          color: lightGray),
+          color: fontLightGrey),
     );
   }
 
@@ -948,7 +948,7 @@ class _DisplayServiceState extends State<DisplayService> {
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w300,
                           fontSize: 12,
-                          color: lightGray,
+                          color: fontLightGrey,
                         ),
                       ),
                       Row(
@@ -1312,7 +1312,7 @@ class _DisplayServiceState extends State<DisplayService> {
         fontWeight: FontWeight.w400,
         fontSize: 12,
         fontFamily: 'Inter',
-        color: lightGray,
+        color: fontLightGrey,
       ),
     );
   }

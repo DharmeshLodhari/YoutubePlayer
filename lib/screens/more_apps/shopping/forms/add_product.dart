@@ -125,10 +125,11 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
   String discountName = "";
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNodeDescription = FocusNode();
   final QuillController _quillController = QuillController.basic();
   final ScrollController _textEditorScrollController = ScrollController();
   bool _isKeyboardVisible = false;
+  bool _isDescriptionVisible = false;
 
   dynamic blogBodyTextJson;
 
@@ -151,11 +152,14 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
     });
     inventoryController.text = "1";
     WidgetsBinding.instance.addObserver(this);
-    _focusNode.addListener(() {
-      // Update keyboard visibility based on focus changes
-      if (_focusNode.hasFocus) {
+    _focusNodeDescription.addListener(() {
+      if (_focusNodeDescription.hasFocus) {
         setState(() {
-          _isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+          _isDescriptionVisible = true;
+        });
+      } else {
+        setState(() {
+          _isDescriptionVisible = false;
         });
       }
     });
@@ -167,15 +171,21 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
     super.didChangeMetrics();
     if (!mounted) return;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    if (bottomInset == 0) {
-      setState(() {
-        _isKeyboardVisible = false;
-      });
-    } else {
-      setState(() {
-        _isKeyboardVisible = true;
-      });
-    }
+    setState(() {
+      _isKeyboardVisible = bottomInset > 0;
+      if (!_isKeyboardVisible && !_focusNodeDescription.hasFocus) {
+        _isDescriptionVisible = false;
+      }
+    });
+    // setState(() {
+    //   _isKeyboardVisible = bottomInset > 0;
+    //   if (!_isKeyboardVisible) {
+    //     // Hide editor if keyboard is closed and focus is lost
+    //     if (!_focusNodeDescription.hasFocus) {
+    //       _isDescriptionVisible = false;
+    //     }
+    //   }
+    // });
     super.didChangeMetrics();
   }
 
@@ -315,6 +325,19 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
+        floatingActionButtonLocation:
+            _isKeyboardVisible && _isDescriptionVisible
+                ? FloatingActionButtonLocation.endContained
+                : null,
+        floatingActionButton: Container(
+          margin: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              right: 0,
+              left: 0),
+          child: _isKeyboardVisible && _isDescriptionVisible
+              ? _getEditor()
+              : const SizedBox.shrink(),
+        ),
       ),
     );
   }
@@ -744,7 +767,6 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
         //     productDescription = val;
         //   },
         // ),
-        if (_isKeyboardVisible) _getEditor(),
       ],
     );
   }
@@ -754,11 +776,14 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildDescriptionText(),
+        const SizedBox(height: 5),
         Container(
           height: 120,
           decoration: BoxDecoration(
             border: Border.all(
-                color: _isKeyboardVisible ? navyBlue : greyBorderColor),
+                color: _focusNodeDescription.hasFocus
+                    ? navyBlue
+                    : greyBorderColor),
             borderRadius: BorderRadius.circular(10),
           ),
           child: ConstrainedBox(
@@ -768,11 +793,11 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
             child: Theme(
               data: Theme.of(context).copyWith(
                 textSelectionTheme: TextSelectionThemeData(
-                  cursorColor: _isKeyboardVisible ? null : navyBlue,
+                  cursorColor: _focusNodeDescription.hasFocus ? null : navyBlue,
                 ),
               ),
               child: QuillEditor(
-                focusNode: _focusNode,
+                focusNode: _focusNodeDescription,
                 scrollController: _textEditorScrollController,
                 configurations: QuillEditorConfigurations(
                   autoFocus: false,
@@ -782,7 +807,7 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
                   padding: const EdgeInsets.only(top: 10, left: 15),
                   placeholder: "",
                   scrollBottomInset: 20,
-                  showCursor: _isKeyboardVisible,
+                  showCursor: _isKeyboardVisible || _isDescriptionVisible,
                   embedBuilders: FlutterQuillEmbeds.editorBuilders(),
                 ),
               ),
@@ -807,7 +832,15 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
 
   Widget _getEditor() {
     final Widget editorWidget = Container(
-      color: Colors.white,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 0.5,
+          ),
+        ],
+      ),
       child: QuillToolbar.simple(
         configurations: QuillSimpleToolbarConfigurations(
           showDirection: false,
@@ -822,9 +855,22 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
           showIndent: false,
           showListCheck: false,
           showRedo: false,
-          showListBullets: false,
+          showListBullets: true,
           showListNumbers: false,
           showAlignmentButtons: true,
+          showItalicButton: true,
+          showQuote: true,
+          showLink: true,
+          showCenterAlignment: false,
+          showLeftAlignment: false,
+          showRightAlignment: false,
+          showColorButton: false,
+          showSearchButton: false,
+          showClipboardCut: false,
+          showClipboardCopy: false,
+          showSubscript: false,
+          showSuperscript: false,
+          showClipboardPaste: false,
           controller: _quillController,
         ),
       ),
@@ -3194,7 +3240,7 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
     textfieldTagsController.dispose();
     inventoryController.dispose();
     userTags = [];
-    _focusNode.dispose();
+    _focusNodeDescription.dispose();
     _quillController.dispose();
     super.dispose();
   }
