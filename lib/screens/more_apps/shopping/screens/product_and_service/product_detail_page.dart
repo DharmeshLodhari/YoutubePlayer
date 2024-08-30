@@ -32,6 +32,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill_extensions/flutter_quill_embeds.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
@@ -51,6 +52,7 @@ import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_auth.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
 class ProductDetailPage extends StatefulWidget {
   final dynamic arguments;
@@ -114,6 +116,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Variant? availableVariant;
   int selectedIndex = 0;
   bool isSelected = true;
+  late flutterQuill.QuillController _quillController;
+  dynamic blogBodyTextJson;
+
   @override
   void initState() {
     product = widget.arguments[
@@ -2403,16 +2408,52 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         const SizedBox(
           height: 8,
         ),
-        Text(
-          messageDecoderWithEmoji(product?.description ?? "")!,
-          style: TextStyle(
-            fontSize: 14,
-            color: darkGrey,
-          ),
-          textAlign: TextAlign.justify,
-        ),
+        _buildProductDescription(),
+        // Text(
+        //   messageDecoderWithEmoji(product?.description ?? "")!,
+        //   style: TextStyle(
+        //     fontSize: 14,
+        //     color: darkGrey,
+        //   ),
+        //   textAlign: TextAlign.justify,
+        // ),
       ],
     );
+  }
+
+  Widget _buildProductDescription() {
+    try {
+      blogBodyTextJson =
+          jsonDecode(messageDecoderWithEmoji(product?.description) ?? "");
+
+      _quillController = flutterQuill.QuillController(
+        document: flutterQuill.Document.fromJson(blogBodyTextJson),
+        selection: const TextSelection.collapsed(offset: -1),
+      );
+    } catch (e) {
+      debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
+    }
+    if (blogBodyTextJson != null) {
+      return flutterQuill.QuillEditor.basic(
+        configurations: flutterQuill.QuillEditorConfigurations(
+          controller: _quillController,
+          readOnlyMouseCursor: SystemMouseCursors.basic,
+          showCursor: false,
+          enableInteractiveSelection: false,
+          embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+        ),
+      );
+    } else {
+      return Text(
+        messageDecoderWithEmoji(product?.description) ?? "",
+        style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 14,
+          color: blackFont,
+        ),
+        textAlign: TextAlign.justify,
+      );
+    }
   }
 
   Widget _buildAddonWidget() {
