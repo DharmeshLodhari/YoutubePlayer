@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifiers/basket_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/financial_institution.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
@@ -302,7 +303,6 @@ class Product extends PurchasableItem {
   bool isChecked = false;
   String? priceRange;
   int? originalPrice;
-
   // DateTime? createdAt;
   // bool? enableInSuperstore;
   // String? createdBy;
@@ -876,6 +876,30 @@ class Product extends PurchasableItem {
     }
 
     return groupedVariants;
+  }
+
+  String getUrl() {
+    return "https://slydo.co/store/$seller/products/$id";
+  }
+
+  Map<String, dynamic> getQRCodeInfo() {
+    final Map<String, dynamic> accountData = {
+      "accountName": shortDescription,
+      "accountNumber": name,
+      "financialInstitution": FinancialInstitution.fromJson({}),
+      "customerUsername": seller,
+      "note": "",
+    };
+    return accountData;
+  }
+
+  Map<String, dynamic> getNavigationData() {
+    final Map<String, dynamic> navigationData = {
+      'isProfile': 'false',
+      'product': seller,
+      'productUrl': getUrl(),
+    };
+    return navigationData;
   }
 
   // Define a function to group variants by size for the selected color/image

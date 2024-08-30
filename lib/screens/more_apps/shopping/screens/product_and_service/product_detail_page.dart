@@ -42,9 +42,6 @@ import 'package:uuid/uuid.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../../widget/item_display_card.dart';
-import '../../../../home_tab/qr_code_page.dart';
-import '../../../payment_and_banking/models/financial_institution.dart';
-import '../../../payment_and_banking/models/virtual_account.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../../yarn/models/share_as_yarn_model.dart';
 import '../../../yarn/share_as_a_yarn_screen.dart';
@@ -979,6 +976,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: productStockAndDetailTag(),
             ),
+            const SizedBox(height: 20),
+            _buildHorizontalProductImageList(),
             Container(
               padding: const EdgeInsets.only(top: 24),
               child: Column(
@@ -1329,8 +1328,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          _buildHorizontalProductImageList(),
                         ],
                       ),
           );
@@ -1338,8 +1335,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildHorizontalProductImageList() {
-    return SizedBox(
+    return Container(
       height: 60,
+      alignment: Alignment.center,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -1368,7 +1366,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 imageUrl: imageUrl ?? "",
                 height: 60,
                 width: 60,
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
                 errorWidget: productAndServiceBigErrorWidget,
               ),
             ),
@@ -1680,7 +1678,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ],
               ),
             ),
-            qrCodeIcon(),
+            qrCodeIcon(context, product!.getNavigationData(),
+                product!.getQRCodeInfo()),
           ],
         ),
         if (!allKeysAreNullOrEmptyColor) _buildVariantColor(),
@@ -1875,41 +1874,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
         showVariantSizes(),
       ],
-    );
-  }
-
-  Widget qrCodeIcon() {
-    return RoundedBackgroundIcon(
-      height: 54,
-      width: 54,
-      icon: Icon(
-        SlydoAppIcon.qr_code,
-        size: 36,
-        color: black,
-      ),
-      onTap: () async {
-        //get the account detail of clicked user
-        final Map<String, dynamic> financial = {};
-
-        final VirtualAccount virtualAccount = VirtualAccount(
-          accountName: product!.shortDescription,
-          accountNumber: product!.name,
-          financialInstitution: FinancialInstitution.fromJson(financial),
-          customerUsername: product!.seller,
-          note: "",
-        );
-
-        NavigationUtil.push(context,
-            screen: QrCodePage(arguments: {
-              'isProfile': 'false',
-              'virtualAccount': virtualAccount,
-              'product': product!.seller,
-              'productUrl':
-                  "https://slydo.co/store/${product!.seller}/products/${product!.id}"
-            }));
-      },
-      backgroundColor: lightGrey.withOpacity(0.1),
-      enableMargin: false,
     );
   }
 
@@ -2338,7 +2302,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               child: Text(
                 messageDecoderWithEmoji(product!.shortDescription)!,
                 style: TextStyle(
-                  color: darkGrey,
+                  color: lightGray,
                   fontSize: 14,
                 ),
                 textAlign: TextAlign.justify,
@@ -2407,7 +2371,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           messageDecoderWithEmoji(product?.description ?? "")!,
           style: TextStyle(
             fontSize: 14,
-            color: darkGrey,
+            color: lightGray,
           ),
           textAlign: TextAlign.justify,
         ),

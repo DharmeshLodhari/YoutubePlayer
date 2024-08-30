@@ -180,6 +180,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                         ],
                       ),
                       const SizedBox(height: 5),
+                      getPreparationTime(),
+                      const SizedBox(height: 5),
                       Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -219,7 +221,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                                 fontFamily: "Inter",
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 12,
-                                                color: navyBlue,
+                                                color: blackFont,
                                                 decoration:
                                                     TextDecoration.lineThrough,
                                               ),
@@ -230,7 +232,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 12,
-                                                color: navyBlue,
+                                                color: blackFont,
                                                 decoration:
                                                     TextDecoration.lineThrough,
                                               ),
@@ -763,6 +765,22 @@ class _DisplayProductState extends State<DisplayProduct> {
           fontFamily: 'Inter',
           color: lightGray),
     );
+  }
+
+  Widget getPreparationTime() {
+    if (widget.product.preparationTime != null &&
+        widget.product.preparationTime != 0) {
+      return Text(
+        "${widget.product.preparationTime}",
+        style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+          fontFamily: 'Inter',
+          color: lightGray,
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 
   Widget _buildProductDiscountAndTag() {
