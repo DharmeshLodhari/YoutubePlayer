@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
@@ -62,7 +63,7 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
   TextEditingController inventoryController = TextEditingController();
   List<PickedFile> productImages = [];
   String productName = "";
-  String productDescription = "";
+  // String productDescription = "";
   String productShortDescription = "";
   String searchKeyword = "";
   String productCategory = "";
@@ -877,15 +878,15 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
       ),
     );
 
-    if (productDescription.isNotEmpty) {
-      if (blogBodyTextJson != null) {
-        return editorWidget;
-      } else {
-        return const SizedBox.shrink();
-      }
-    } else {
-      return editorWidget;
-    }
+    // if (productDescription.isNotEmpty) {
+    //   if (blogBodyTextJson != null) {
+    //     return editorWidget;
+    //   } else {
+    //     return const SizedBox.shrink();
+    //   }
+    // } else {
+    return editorWidget;
+    // }
   }
 
   Widget getCategoryField() {
@@ -2276,7 +2277,9 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
           product.localImages =
               productImages.map((file) => File(file.path)).toList();
           product.name = productName;
-          product.description = messageDecoderWithEmoji(productDescription);
+          // product.description = messageDecoderWithEmoji(productDescription);
+          product.description =
+              jsonEncode(_quillController.document.toDelta().toJson());
           product.shortDescription =
               messageDecoderWithEmoji(productShortDescription);
           product.category = selectedProductCategory;

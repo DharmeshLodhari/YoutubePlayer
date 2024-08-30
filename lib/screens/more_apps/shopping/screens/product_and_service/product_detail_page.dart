@@ -32,6 +32,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill_extensions/flutter_quill_embeds.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
@@ -48,6 +49,7 @@ import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_auth.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
 class ProductDetailPage extends StatefulWidget {
   final dynamic arguments;
@@ -111,6 +113,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Variant? availableVariant;
   int selectedIndex = 0;
   bool isSelected = true;
+  late flutterQuill.QuillController _quillController;
+  dynamic blogBodyTextJson;
+
   @override
   void initState() {
     product = widget.arguments[
@@ -976,8 +981,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: productStockAndDetailTag(),
             ),
-            const SizedBox(height: 20),
-            _buildHorizontalProductImageList(),
             Container(
               padding: const EdgeInsets.only(top: 24),
               child: Column(
@@ -1328,6 +1331,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               ),
                             ],
                           ),
+                          const SizedBox(height: 12),
+                          _buildHorizontalProductImageList(),
                         ],
                       ),
           );
@@ -1335,9 +1340,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildHorizontalProductImageList() {
-    return Container(
+    return SizedBox(
       height: 60,
-      alignment: Alignment.center,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -1366,7 +1370,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 imageUrl: imageUrl ?? "",
                 height: 60,
                 width: 60,
-                fit: BoxFit.fill,
+                fit: BoxFit.cover,
                 errorWidget: productAndServiceBigErrorWidget,
               ),
             ),
@@ -1678,8 +1682,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ],
               ),
             ),
-            qrCodeIcon(context, product!.getNavigationData(),
-                product!.getQRCodeInfo()),
+            qrCodeIcon(),
           ],
         ),
         if (!allKeysAreNullOrEmptyColor) _buildVariantColor(),
@@ -1874,6 +1877,41 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
         showVariantSizes(),
       ],
+    );
+  }
+
+  Widget qrCodeIcon() {
+    return RoundedBackgroundIcon(
+      height: 54,
+      width: 54,
+      icon: Icon(
+        SlydoAppIcon.qr_code,
+        size: 36,
+        color: black,
+      ),
+      onTap: () async {
+        //get the account detail of clicked user
+        final Map<String, dynamic> financial = {};
+
+        final VirtualAccount virtualAccount = VirtualAccount(
+          accountName: product!.shortDescription,
+          accountNumber: product!.name,
+          financialInstitution: FinancialInstitution.fromJson(financial),
+          customerUsername: product!.seller,
+          note: "",
+        );
+
+        NavigationUtil.push(context,
+            screen: QrCodePage(arguments: {
+              'isProfile': 'false',
+              'virtualAccount': virtualAccount,
+              'product': product!.seller,
+              'productUrl':
+                  "https://slydo.co/store/${product!.seller}/products/${product!.id}"
+            }));
+      },
+      backgroundColor: lightGrey.withOpacity(0.1),
+      enableMargin: false,
     );
   }
 
@@ -2302,7 +2340,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               child: Text(
                 messageDecoderWithEmoji(product!.shortDescription)!,
                 style: TextStyle(
-                  color: fontLightGrey,
+                  color: darkGrey,
                   fontSize: 14,
                 ),
                 textAlign: TextAlign.justify,
@@ -2367,16 +2405,52 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         const SizedBox(
           height: 8,
         ),
-        Text(
-          messageDecoderWithEmoji(product?.description ?? "")!,
-          style: TextStyle(
-            fontSize: 14,
-            color: fontLightGrey,
-          ),
-          textAlign: TextAlign.justify,
-        ),
+        _buildProductDescription(),
+        // Text(
+        //   messageDecoderWithEmoji(product?.description ?? "")!,
+        //   style: TextStyle(
+        //     fontSize: 14,
+        //     color: darkGrey,
+        //   ),
+        //   textAlign: TextAlign.justify,
+        // ),
       ],
     );
+  }
+
+  Widget _buildProductDescription() {
+    try {
+      blogBodyTextJson =
+          jsonDecode(messageDecoderWithEmoji(product?.description) ?? "");
+
+      _quillController = flutterQuill.QuillController(
+        document: flutterQuill.Document.fromJson(blogBodyTextJson),
+        selection: const TextSelection.collapsed(offset: -1),
+      );
+    } catch (e) {
+      debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
+    }
+    if (blogBodyTextJson != null) {
+      return flutterQuill.QuillEditor.basic(
+        configurations: flutterQuill.QuillEditorConfigurations(
+          controller: _quillController,
+          readOnlyMouseCursor: SystemMouseCursors.basic,
+          showCursor: false,
+          enableInteractiveSelection: false,
+          embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+        ),
+      );
+    } else {
+      return Text(
+        messageDecoderWithEmoji(product?.description) ?? "",
+        style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 14,
+          color: blackFont,
+        ),
+        textAlign: TextAlign.justify,
+      );
+    }
   }
 
   Widget _buildAddonWidget() {
