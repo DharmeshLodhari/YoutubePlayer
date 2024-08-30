@@ -23,10 +23,11 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill_extensions/flutter_quill_embeds.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
-
+import 'package:flutter_quill/flutter_quill.dart';
 import '../../../../routes/route_constants.dart';
 import '../shopping_auth.dart';
 
@@ -39,7 +40,7 @@ class AddProduct extends StatefulWidget {
   State<AddProduct> createState() => _AddProductState();
 }
 
-class _AddProductState extends State<AddProduct> {
+class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
   final _auth = ShoppingAuthService();
   final _formKey = GlobalKey<FormState>();
 
@@ -124,6 +125,12 @@ class _AddProductState extends State<AddProduct> {
   String discountName = "";
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
+  final FocusNode _focusNode = FocusNode();
+  final QuillController _quillController = QuillController.basic();
+  final ScrollController _textEditorScrollController = ScrollController();
+  bool _isKeyboardVisible = false;
+
+  dynamic blogBodyTextJson;
 
   @override
   void deactivate() {
@@ -143,7 +150,33 @@ class _AddProductState extends State<AddProduct> {
       getAddressList();
     });
     inventoryController.text = "1";
+    WidgetsBinding.instance.addObserver(this);
+    _focusNode.addListener(() {
+      // Update keyboard visibility based on focus changes
+      if (_focusNode.hasFocus) {
+        setState(() {
+          _isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+        });
+      }
+    });
     super.initState();
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    if (!mounted) return;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    if (bottomInset == 0) {
+      setState(() {
+        _isKeyboardVisible = false;
+      });
+    } else {
+      setState(() {
+        _isKeyboardVisible = true;
+      });
+    }
+    super.didChangeMetrics();
   }
 
   void getDiscountList() async {
@@ -693,20 +726,119 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getProductDescription() {
-    return CustomizedTextFormField(
-      maxLines: 5,
-      textCapitalization: TextCapitalization.sentences,
-      labelText: AppLocalization.of(context)!.description,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.description;
-      },
-      onChanged: (val) {
-        productDescription = val;
-      },
+    return Column(
+      children: [
+        getTextEditorWidget(),
+        // CustomizedTextFormField(
+        //   maxLines: 5,
+        //   focusNode: _focusNode,
+        //   textCapitalization: TextCapitalization.sentences,
+        //   labelText: AppLocalization.of(context)!.description,
+        //   validator: (val) {
+        //     if (val.isNotEmpty) {
+        //       return null;
+        //     }
+        //     return AppLocalization.of(context)!.description;
+        //   },
+        //   onChanged: (val) {
+        //     productDescription = val;
+        //   },
+        // ),
+        if (_isKeyboardVisible) _getEditor(),
+      ],
     );
+  }
+
+  Widget getTextEditorWidget() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDescriptionText(),
+        Container(
+          height: 120,
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: _isKeyboardVisible ? navyBlue : greyBorderColor),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 150,
+            ),
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                textSelectionTheme: TextSelectionThemeData(
+                  cursorColor: _isKeyboardVisible ? null : navyBlue,
+                ),
+              ),
+              child: QuillEditor(
+                focusNode: _focusNode,
+                scrollController: _textEditorScrollController,
+                configurations: QuillEditorConfigurations(
+                  autoFocus: false,
+                  controller: _quillController,
+                  scrollable: true,
+                  expands: false,
+                  padding: const EdgeInsets.only(top: 10, left: 15),
+                  placeholder: "",
+                  scrollBottomInset: 20,
+                  showCursor: _isKeyboardVisible,
+                  embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDescriptionText() {
+    return Text(
+      AppLocalization.of(context)!.description,
+      style: TextStyle(
+        color: darkGrey,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _getEditor() {
+    final Widget editorWidget = Container(
+      color: Colors.white,
+      child: QuillToolbar.simple(
+        configurations: QuillSimpleToolbarConfigurations(
+          showDirection: false,
+          showHeaderStyle: false,
+          showInlineCode: false,
+          showCodeBlock: false,
+          showStrikeThrough: false,
+          showJustifyAlignment: false,
+          showBackgroundColorButton: false,
+          showClearFormat: false,
+          showDividers: false,
+          showIndent: false,
+          showListCheck: false,
+          showRedo: false,
+          showListBullets: false,
+          showListNumbers: false,
+          showAlignmentButtons: true,
+          controller: _quillController,
+        ),
+      ),
+    );
+
+    if (productDescription.isNotEmpty) {
+      if (blogBodyTextJson != null) {
+        return editorWidget;
+      } else {
+        return const SizedBox.shrink();
+      }
+    } else {
+      return editorWidget;
+    }
   }
 
   Widget getCategoryField() {
@@ -3062,6 +3194,8 @@ class _AddProductState extends State<AddProduct> {
     textfieldTagsController.dispose();
     inventoryController.dispose();
     userTags = [];
+    _focusNode.dispose();
+    _quillController.dispose();
     super.dispose();
   }
 

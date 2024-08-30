@@ -28,6 +28,7 @@
         android:label="Slydo"
         android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
+        android:windowSoftInputMode="adjustResize"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
