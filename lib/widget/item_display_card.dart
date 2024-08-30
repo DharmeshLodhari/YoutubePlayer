@@ -776,7 +776,7 @@ class _DisplayProductState extends State<DisplayProduct> {
           fontWeight: FontWeight.w400,
           fontSize: 12,
           fontFamily: 'Inter',
-          color: lightGray,
+          color: fontLightGrey,
         ),
       );
     }

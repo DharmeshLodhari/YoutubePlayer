@@ -2302,7 +2302,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               child: Text(
                 messageDecoderWithEmoji(product!.shortDescription)!,
                 style: TextStyle(
-                  color: lightGray,
+                  color: fontLightGrey,
                   fontSize: 14,
                 ),
                 textAlign: TextAlign.justify,
@@ -2371,7 +2371,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           messageDecoderWithEmoji(product?.description ?? "")!,
           style: TextStyle(
             fontSize: 14,
-            color: lightGray,
+            color: fontLightGrey,
           ),
           textAlign: TextAlign.justify,
         ),
