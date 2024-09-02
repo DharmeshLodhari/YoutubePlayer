@@ -33,6 +33,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
+import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
@@ -841,23 +843,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _buildProductImagesWidgets(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: productStockAndDetailTag(),
-            ),
+            productStockAndDetailTag(),
+            const SizedBox(height: 16),
+            _buildHorizontalProductImageList(),
             Container(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildProductTitleAndPriceWidget(),
-                  const SizedBox(height: 24),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   _buildShortInfoWidget(),
                   const SizedBox(height: 16),
                   Divider(
@@ -887,6 +882,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ],
                   const SizedBox(height: 10),
                   _buildSellerInfoWidget(),
+                  const SizedBox(height: 10),
+                  Divider(
+                    height: 0,
+                    color: dividerColor,
+                    thickness: 1,
+                  ),
                   const SizedBox(height: 10),
                   _buildReviewList(),
                   const SizedBox(height: 16),
@@ -1181,8 +1182,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          _buildHorizontalProductImageList(),
                         ],
                       ),
           );
@@ -1190,8 +1189,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildHorizontalProductImageList() {
-    return SizedBox(
+    return Container(
       height: 60,
+      alignment: Alignment.center,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -1526,7 +1526,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   _buildProductName(),
                   _buildDiscountedPrice(),
                   _buildOriginalPrice(),
-                  const SizedBox(height: 5),
+                  stockStatus(),
                   Row(
                     children: [
                       getRating(numberOfRating: product?.rating?.toInt()),
@@ -1534,20 +1534,19 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       _getProductReviews(),
                     ],
                   ),
-                  const SizedBox(height: 15),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildWeight(),
-                          _buildHeight(),
-                          _buildWidth(),
-                        ],
-                      );
-                    },
-                  ),
-                  stockStatus(),
+                  // const SizedBox(height: 16),
+                  // LayoutBuilder(
+                  //   builder: (context, constraints) {
+                  //     return Row(
+                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //       children: [
+                  //         _buildWeight(),
+                  //         _buildHeight(),
+                  //         _buildWidth(),
+                  //       ],
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
             ),
@@ -1557,8 +1556,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
         if (!allKeysAreNullOrEmptyColor) _buildVariantColor(),
         if (!allKeysAreNullOrEmpty) _buildVariantSize(),
-        const SizedBox(height: 8),
-        _buildShortInfoWidget(),
       ],
     );
   }
@@ -1709,15 +1706,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildWeight() {
-    final String selectedWeight = product?.weightSiUnit == 'g'
-        ? 'Gm'
-        : product?.weightSiUnit == ''
-            ? ''
-            : 'kg';
-    final String? weightText =
-        product?.weight != 0.0 ? product?.weight.toString() : '';
-    return customRichText(
-        text: "Weight", subText: "$weightText$selectedWeight");
+    if (product?.weight != null && product?.weight != 0.0) {
+      final String selectedWeight = product?.weightSiUnit == 'g'
+          ? 'gm'
+          : product?.weightSiUnit == ''
+              ? ''
+              : 'kg';
+      final String? weightText =
+          product?.weight != 0.0 ? product?.weight.toString() : '';
+
+      return customRichText(
+          text: "Weight", subText: "$weightText$selectedWeight");
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
   Widget _buildHeight() {
@@ -2377,7 +2379,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-         Padding(
+        Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
             "Available Add-ons",

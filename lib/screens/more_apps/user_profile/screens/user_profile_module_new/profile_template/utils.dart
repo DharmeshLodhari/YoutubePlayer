@@ -19,7 +19,6 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/tiles/moment_tab_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:flutter/material.dart';
 
@@ -302,7 +301,7 @@ String getGroupUsername(String channelUsername) {
 Widget showDiscountValue(
     String discountType, num discountValue, String? currency) {
   return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
     color: lightGreenBg,
     child: RichText(
       text: TextSpan(

@@ -180,9 +180,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                           _getProductReviews(),
                         ],
                       ),
-                      const SizedBox(height: 5),
                       getPreparationTime(),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 2),
                       Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -772,14 +771,19 @@ class _DisplayProductState extends State<DisplayProduct> {
   Widget getPreparationTime() {
     if (widget.product.preparationTime != null &&
         widget.product.preparationTime != 0) {
-      return Text(
-        "${widget.product.preparationTime}",
-        style: TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-          fontFamily: 'Inter',
-          color: fontLightGrey,
-        ),
+      return Column(
+        children: [
+          const SizedBox(height: 2),
+          Text(
+            "${widget.product.preparationTime}",
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              fontFamily: 'Inter',
+              color: fontLightGrey,
+            ),
+          ),
+        ],
       );
     }
     return const SizedBox.shrink();
@@ -790,7 +794,7 @@ class _DisplayProductState extends State<DisplayProduct> {
         (widget.product.variantModels?.isEmpty ?? false)) {
       return SizedBox(
         width: double.infinity,
-        height: 28,
+        height: 25,
         child: showColoredLabeledWidgetProductStock(
           text: AppLocalization.of(context)!.comingSoon,
           color: lightYellow,
@@ -804,7 +808,7 @@ class _DisplayProductState extends State<DisplayProduct> {
         (widget.product.quantity ?? 0) <= 0) {
       return SizedBox(
         width: double.infinity,
-        height: 28,
+        height: 25,
         child: showColoredLabeledWidgetProductStock(
           text: AppLocalization.of(context)!.outOfStock,
           color: lightRed,
@@ -817,7 +821,7 @@ class _DisplayProductState extends State<DisplayProduct> {
             widget.product.pricePercentageChange != 0.0)) {
       return SizedBox(
         width: double.infinity,
-        height: 28,
+        height: 25,
         child: buildDiscountPrice(),
       );
     } else {
