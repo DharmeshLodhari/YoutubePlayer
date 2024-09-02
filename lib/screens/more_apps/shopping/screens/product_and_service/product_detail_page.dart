@@ -115,7 +115,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   bool isSelected = true;
   late flutterQuill.QuillController _quillController;
   dynamic descriptionBodyTextJson;
-
+  bool _isSeeAll = false;
+  late AnimationController _controller;
   @override
   void initState() {
     product = widget.arguments[
@@ -1613,9 +1614,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildWeight(),
-                          _buildHeight(),
-                          _buildWidth(),
+                          if (product?.weight != 0.0 && product?.weight != null)
+                            _buildWeight(),
+                          if (product?.height != 0.0 && product?.height != null)
+                            _buildHeight(),
+                          if (product?.width != 0.0 && product?.width != null)
+                            _buildWidth(),
                         ],
                       );
                     },
@@ -1805,7 +1809,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget _buildWeight() {
     final String selectedWeight = product?.weightSiUnit == 'g'
-        ? 'Gm'
+        ? 'gm'
         : product?.weightSiUnit == ''
             ? ''
             : 'kg';
