@@ -369,10 +369,15 @@ class _TransactionDetailState extends State<TransactionDetail> {
     final pdf = pw.Document();
     final customFont = await loadCustomFont();
 
+    // Load the logo image
     final ByteData logoBytes =
         await rootBundle.load('assets/images/app_logo_navyBlue.png');
-
     final Uint8List logo = logoBytes.buffer.asUint8List();
+
+    // Load the background image
+    final ByteData backgroundBytes =
+        await rootBundle.load('assets/images/receipt_bg_image.png');
+    final Uint8List backgroundImage = backgroundBytes.buffer.asUint8List();
 
     final String currency = worldCurrencies[transaction?.currency] ?? "";
     final String? status = transaction?.status;
@@ -390,42 +395,64 @@ class _TransactionDetailState extends State<TransactionDetail> {
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.end,
+          return pw.Stack(
             children: [
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              pw.Center(
+                child: pw.Image(
+                  pw.MemoryImage(backgroundImage),
+                  fit: pw.BoxFit.contain,
+                ),
+              ),
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
-                  _buildAppTitle(logo),
-                  _buildTransactionReceiptText(),
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildAppTitle(logo),
+                      _buildTransactionReceiptText(),
+                    ],
+                  ),
+                  pw.SizedBox(height: 5),
+                  _buildDate(),
+                  pw.SizedBox(height: 30),
+                  _buildPDFAmountIconText("Amount", customFont, currency),
+                  pw.SizedBox(height: 10),
+                  // _buildAmountWord(),
+                  buildPdfReceiptDetail("Status", status ?? "", true),
+                  pw.SizedBox(height: 10),
+                  buildPdfReceiptDetail(
+                      "Transaction Type", transactionType, false),
+                  pw.SizedBox(height: 10),
+                  buildPdfReceiptDetail(
+                      "Receiver Details", receiverUserName, false),
+                  pw.SizedBox(height: 10),
+                  buildPdfReceiptDetail(
+                      "Sender Details", senderUsername, false),
+                  pw.SizedBox(height: 10),
+                  buildPdfReceiptDetail("Reference", reference, false),
+                  pw.SizedBox(height: 10),
+                  buildPdfReceiptDetail("Category", category, false),
+                  pw.SizedBox(height: 10),
+                  buildPdfReceiptDetail("Description", description, false),
+                  pw.SizedBox(height: 10),
+                  pw.Spacer(),
+                  pw.Align(
+                    alignment: pw.Alignment.center,
+                    child: buildPdfHorizontalDotBorder(),
+                  ),
+                  pw.SizedBox(height: 5),
+                  pw.Align(
+                    alignment: pw.Alignment.center,
+                    child: _buildPdfQrScan(qrCodeImage),
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.Align(
+                    alignment: pw.Alignment.center,
+                    child: _buildDescription(),
+                  ),
                 ],
               ),
-              pw.SizedBox(height: 5),
-              _buildDate(),
-              pw.SizedBox(height: 30),
-              _buildPDFAmountIconText("Amount", customFont, currency),
-              pw.SizedBox(height: 10),
-              // _buildAmountWord(),
-              buildPdfReceiptDetail("Status", status ?? "", true),
-              pw.SizedBox(height: 10),
-              buildPdfReceiptDetail("Transaction Type", transactionType, false),
-              pw.SizedBox(height: 10),
-              buildPdfReceiptDetail(
-                  "Receiver Details", receiverUserName, false),
-              pw.SizedBox(height: 10),
-              buildPdfReceiptDetail("Sender Details", senderUsername, false),
-              pw.SizedBox(height: 10),
-              buildPdfReceiptDetail("Reference", reference, false),
-              pw.SizedBox(height: 10),
-              buildPdfReceiptDetail("Category", category, false),
-              pw.SizedBox(height: 10),
-              buildPdfReceiptDetail("Description", description, false),
-              pw.SizedBox(height: 10),
-              buildPdfHorizontalDotBorder(),
-              pw.SizedBox(height: 10),
-              _buildPdfQrScan(qrCodeImage),
-              pw.SizedBox(height: 15),
-              _buildDescription(),
             ],
           );
         },

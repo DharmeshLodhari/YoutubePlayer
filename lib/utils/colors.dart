@@ -47,6 +47,7 @@ Color lightRed = HexColor("#FBEAE9");
 Color lightYellow = HexColor("#FEF6E7");
 Color lightGreenBg = HexColor("#E7F6EC");
 Color fontLightGrey = HexColor("#475367");
+Color pinkFont = HexColor("#D86588");
 Color transparent = Colors.transparent;
 
 Color greyDarkBackground = HexColor("#F0F2F5");
@@ -61,6 +62,8 @@ Color lightBlue = HexColor("#ECEFFB");
 Color deepBlue = HexColor("#4060DB");
 Color orange = HexColor("#F08770");
 Color darkRed = HexColor("#33FF0000");
+Color bgLightGrey = HexColor("#E4E7EC");
+Color bgLightPink = HexColor("#FEF1F5");
 
 Color boxShadow = const Color.fromARGB(51, 50, 55, 140);
 Color boxShadowTwo = HexColor("#32378C").withOpacity(0.07);

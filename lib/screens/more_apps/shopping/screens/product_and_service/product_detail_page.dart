@@ -39,6 +39,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:swipe_image_gallery/swipe_image_gallery.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
@@ -842,24 +843,24 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           children: <Widget>[
             _buildProductImagesWidgets(),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0),
               child: productStockAndDetailTag(),
             ),
             Container(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildProductTitleAndPriceWidget(),
-                  const SizedBox(height: 24),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildShortInfoWidget(),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
+                  // Divider(
+                  //   height: 0,
+                  //   color: dividerColor,
+                  //   thickness: 1,
+                  // ),
+                  // const SizedBox(height: 12),
+                  // _buildShortInfoWidget(),
+                  // const SizedBox(height: 16),
                   Divider(
                     height: 0,
                     color: dividerColor,
@@ -1179,6 +1180,44 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                   );
                                 },
                               ),
+                              Positioned(
+                                bottom: 10,
+                                left: 0,
+                                right: 0,
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: bgLightGrey,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    padding: const EdgeInsets.all(2),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        _buildCustomTabPhotoAndVideo(
+                                          onTap: () {
+                                            _onTabSelected(0);
+                                          },
+                                          text:
+                                              "Photo ${selectedIndex + 1}/${displayProductImages?.length}",
+                                          backgroundColor: selectedIndex == 0
+                                              ? transparent
+                                              : white,
+                                        ),
+                                        _buildCustomTabPhotoAndVideo(
+                                            onTap: () {
+                                              _onTabSelected(1);
+                                            },
+                                            text: "Video",
+                                            backgroundColor: selectedIndex == 1
+                                                ? transparent
+                                                : white),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 12),
@@ -1187,6 +1226,38 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       ),
           );
         });
+  }
+
+  Widget _buildCustomTabPhotoAndVideo(
+      {void Function()? onTap, Color? backgroundColor, String? text}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+          child: Text(
+            text ?? "",
+            style: TextStyle(
+              fontSize: 12,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Inter',
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _onTabSelected(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
   }
 
   Widget _buildHorizontalProductImageList() {
@@ -1527,6 +1598,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   _buildDiscountedPrice(),
                   _buildOriginalPrice(),
                   const SizedBox(height: 5),
+                  _buildDisplayProduct(),
+                  const SizedBox(height: 5),
                   Row(
                     children: [
                       getRating(numberOfRating: product?.rating?.toInt()),
@@ -1662,6 +1735,28 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     } else {
       return const SizedBox.shrink();
     }
+  }
+
+  Widget _buildDisplayProduct() {
+    return Container(
+      constraints: const BoxConstraints(
+        maxHeight: 30.0,
+        maxWidth: 60.0,
+      ),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: bgLightPink,
+      ),
+      child: Text(
+        "${product?.condition}",
+        style: TextStyle(
+          fontFamily: "Inter",
+          color: pinkFont,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
   }
 
   Widget _getProductReviews() {
@@ -2338,46 +2433,46 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  Widget _buildProductDescription() {
-    try {
-      descriptionBodyTextJson =
-          jsonDecode(messageDecoderWithEmoji(product?.description) ?? "");
-
-      _quillController = flutterQuill.QuillController(
-        document: flutterQuill.Document.fromJson(descriptionBodyTextJson),
-        selection: const TextSelection.collapsed(offset: -1),
-      );
-    } catch (e) {
-      debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
-    }
-    if (descriptionBodyTextJson != null) {
-      return flutterQuill.QuillEditor.basic(
-        configurations: flutterQuill.QuillEditorConfigurations(
-          controller: _quillController,
-          readOnlyMouseCursor: SystemMouseCursors.basic,
-          showCursor: false,
-          enableInteractiveSelection: false,
-          embedBuilders: FlutterQuillEmbeds.editorBuilders(),
-        ),
-      );
-    } else {
-      return Text(
-        messageDecoderWithEmoji(product?.description) ?? "",
-        style: TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-          color: blackFont,
-        ),
-        textAlign: TextAlign.justify,
-      );
-    }
-  }
+  // Widget _buildProductDescription() {
+  //   try {
+  //     descriptionBodyTextJson =
+  //         jsonDecode(messageDecoderWithEmoji(product?.description) ?? "");
+  //
+  //     _quillController = flutterQuill.QuillController(
+  //       document: flutterQuill.Document.fromJson(descriptionBodyTextJson),
+  //       selection: const TextSelection.collapsed(offset: -1),
+  //     );
+  //   } catch (e) {
+  //     debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
+  //   }
+  //   if (descriptionBodyTextJson != null) {
+  //     return flutterQuill.QuillEditor.basic(
+  //       configurations: flutterQuill.QuillEditorConfigurations(
+  //         controller: _quillController,
+  //         readOnlyMouseCursor: SystemMouseCursors.basic,
+  //         showCursor: false,
+  //         enableInteractiveSelection: false,
+  //         embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+  //       ),
+  //     );
+  //   } else {
+  //     return Text(
+  //       messageDecoderWithEmoji(product?.description) ?? "",
+  //       style: TextStyle(
+  //         fontWeight: FontWeight.w400,
+  //         fontSize: 12,
+  //         color: blackFont,
+  //       ),
+  //       textAlign: TextAlign.justify,
+  //     );
+  //   }
+  // }
 
   Widget _buildAddonWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-         Padding(
+        Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
             "Available Add-ons",
