@@ -502,7 +502,7 @@ Widget showColoredLabeledWidgetProductStock(
         text: text,
         style: TextStyle(
           color: getProductStockTextColors(product),
-          fontSize: 10,
+          fontSize: 12,
           fontFamily: 'Inter',
           fontWeight: FontWeight.w700,
         ),

@@ -117,7 +117,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   int selectedIndex = 0;
   bool isSelected = true;
   late flutterQuill.QuillController _quillController;
-  dynamic blogBodyTextJson;
+  dynamic descriptionBodyTextJson;
 
   @override
   void initState() {
@@ -994,23 +994,23 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     child: _buildProductTitleAndPriceWidget(),
                   ),
                   const SizedBox(
-                    height: 24,
+                    height: 20,
                   ),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: _buildShortInfoWidget(),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
+                  // Divider(
+                  //   height: 0,
+                  //   color: dividerColor,
+                  //   thickness: 1,
+                  // ),
+                  // const SizedBox(
+                  //   height: 12,
+                  // ),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  //   child: _buildShortInfoWidget(),
+                  // ),
+                  // const SizedBox(
+                  //   height: 16,
+                  // ),
                   Divider(
                     height: 0,
                     color: dividerColor,
@@ -1019,7 +1019,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   if (product?.availableFrom?.isAfter(DateTime.now()) ?? false)
                     _showAvailableDate(),
                   const SizedBox(
-                    height: 12,
+                    height: 10,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -1137,8 +1137,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildReviewList() {
-    return reviewList.isEmpty
-        ? Center(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Reviews",
+          style: TextStyle(
+            color: blackFont,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+        ),
+        if (reviewList.isEmpty)
+          Center(
             child: Column(
               children: [
                 Image.asset(
@@ -1157,7 +1169,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ],
             ),
           )
-        : Column(
+        else
+          Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1194,7 +1207,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     .toList(),
               ),
             ],
-          );
+          ),
+      ],
+    );
   }
 
   Widget _buildWriteReview() {
@@ -1680,7 +1695,26 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   _buildDiscountedPrice(),
                   _buildOriginalPrice(),
                   const SizedBox(height: 5),
-                  getRating(numberOfRating: product?.rating?.toInt()),
+                  Row(
+                    children: [
+                      getRating(numberOfRating: product?.rating?.toInt()),
+                      const SizedBox(width: 5),
+                      _getProductReviews(),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildWeight(),
+                          _buildHeight(),
+                          _buildWidth(),
+                        ],
+                      );
+                    },
+                  ),
                   stockStatus(),
                 ],
               ),
@@ -1690,6 +1724,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
         if (!allKeysAreNullOrEmptyColor) _buildVariantColor(),
         if (!allKeysAreNullOrEmpty) _buildVariantSize(),
+        const SizedBox(height: 8),
+        _buildShortInfoWidget(),
       ],
     );
   }
@@ -1699,7 +1735,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       //name,
       messageDecoderWithEmoji(product?.name) ?? "",
       style: TextStyle(
-          fontSize: 16, color: blackFont, fontWeight: FontWeight.bold),
+        fontSize: 18,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+        fontFamily: 'Inter',
+      ),
     );
   }
 
@@ -1713,7 +1753,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             worldCurrencies[product?.currency] ?? "NGN",
             style: TextStyle(
                 fontFamily: "Inter",
-                fontSize: 18.0,
+                fontSize: 16.0,
                 color: navyBlue,
                 fontWeight: FontWeight.bold),
           ),
@@ -1721,7 +1761,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             moneyDisplayNormalizer(
                 product?.getDiscountedPrice(selectedVariant)),
             style: TextStyle(
-                fontSize: 18.0, color: navyBlue, fontWeight: FontWeight.bold),
+              fontSize: 16.0,
+              color: navyBlue,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Inter',
+            ),
           ),
         ],
       ),
@@ -1747,8 +1791,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               moneyDisplayNormalizer(int.parse(selectedVariant?.price ?? "0")),
               style: TextStyle(
                 fontWeight: FontWeight.w400,
-                fontSize: 12,
+                fontSize: 12.8,
                 color: navyBlue,
+                fontFamily: "Inter",
                 decoration: TextDecoration.lineThrough,
               ),
             ),
@@ -1784,6 +1829,85 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     } else {
       return const SizedBox.shrink();
     }
+  }
+
+  Widget _getProductReviews() {
+    return Text(
+      "(${product?.reviewScore} ${(product?.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
+      style: TextStyle(
+        fontWeight: FontWeight.w400,
+        fontSize: 12,
+        fontFamily: 'Inter',
+        color: fontLightGrey,
+      ),
+    );
+  }
+
+  Widget customRichText({String? text, String? subText}) {
+    return RichText(
+      text: TextSpan(
+        text: "$text :",
+        style: TextStyle(
+          color: fontLightGrey,
+          fontSize: 13,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w400,
+        ),
+        children: [
+          const WidgetSpan(
+            child: SizedBox(width: 5),
+          ),
+          TextSpan(
+            text: subText ?? "",
+            style: TextStyle(
+              fontSize: 15,
+              fontFamily: 'Open Sans',
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+      textAlign: TextAlign.center,
+      softWrap: true,
+      overflow: TextOverflow.visible,
+    );
+  }
+
+  Widget _buildWeight() {
+    final String selectedWeight = product?.weightSiUnit == 'g'
+        ? 'Gm'
+        : product?.weightSiUnit == ''
+            ? ''
+            : 'kg';
+    final String? weightText =
+        product?.weight != 0.0 ? product?.weight.toString() : '';
+    return customRichText(
+        text: "Weight", subText: "$weightText$selectedWeight");
+  }
+
+  Widget _buildHeight() {
+    final String selectedHeight = product?.heightSiUnit == 'cm'
+        ? 'cm'
+        : product?.heightSiUnit == ""
+            ? ''
+            : 'm';
+    final String? heightText =
+        product?.weight != 0.0 ? product?.height.toString() : '';
+    return customRichText(
+        text: "Height", subText: "$heightText$selectedHeight");
+  }
+
+  Widget _buildWidth() {
+    final String selectedWidth = product?.widthSiUnit == 'cm'
+        ? 'cm'
+        : product?.widthSiUnit == ""
+            ? ''
+            : 'm';
+    final String? widthText =
+        product?.weight != 0.0 ? product?.width.toString() : '';
+    return customRichText(text: "Width", subText: "$widthText$selectedWidth");
   }
 
   Widget stockStatus() {
@@ -2326,32 +2450,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildShortInfoWidget() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Description",
-          style: TextStyle(
-              color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(
-          height: 8,
-        ),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                messageDecoderWithEmoji(product!.shortDescription)!,
-                style: TextStyle(
-                  color: darkGrey,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-            ),
-          ],
-        ),
-      ],
+    return Text(
+      messageDecoderWithEmoji(product?.shortDescription) ?? "",
+      style: TextStyle(
+        color: fontLightGrey,
+        fontSize: 14,
+        fontFamily: "Inter",
+        fontWeight: FontWeight.w400,
+      ),
+      softWrap: true,
+      textAlign: TextAlign.justify,
     );
   }
 
@@ -2400,10 +2508,28 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "More Information",
-          style: TextStyle(
-              color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Description",
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Inter",
+              ),
+            ),
+            Text(
+              "See all",
+              style: TextStyle(
+                fontFamily: "Inter",
+                fontSize: 12.0,
+                color: navyBlue,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
         ),
         const SizedBox(
           height: 8,
@@ -2423,17 +2549,17 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget _buildProductDescription() {
     try {
-      blogBodyTextJson =
+      descriptionBodyTextJson =
           jsonDecode(messageDecoderWithEmoji(product?.description) ?? "");
 
       _quillController = flutterQuill.QuillController(
-        document: flutterQuill.Document.fromJson(blogBodyTextJson),
+        document: flutterQuill.Document.fromJson(descriptionBodyTextJson),
         selection: const TextSelection.collapsed(offset: -1),
       );
     } catch (e) {
       debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
     }
-    if (blogBodyTextJson != null) {
+    if (descriptionBodyTextJson != null) {
       return flutterQuill.QuillEditor.basic(
         configurations: flutterQuill.QuillEditorConfigurations(
           controller: _quillController,
@@ -2448,7 +2574,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         messageDecoderWithEmoji(product?.description) ?? "",
         style: TextStyle(
           fontWeight: FontWeight.w400,
-          fontSize: 14,
+          fontSize: 12,
           color: blackFont,
         ),
         textAlign: TextAlign.justify,
@@ -2465,7 +2591,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           child: Text(
             "Available Add-ons",
             style: TextStyle(
-                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+              color: blackFont,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              fontFamily: "Inter",
+            ),
           ),
         ),
         const SizedBox(
@@ -2478,6 +2608,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             style: TextStyle(
               fontSize: 14,
               color: darkGrey,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w400,
             ),
             textAlign: TextAlign.justify,
           ),
@@ -2507,18 +2639,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Seller",
+                "Merchant",
                 style: TextStyle(
                     color: blackFont,
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold),
               ),
-              const SizedBox(
-                height: 8,
-              ),
               ListTile(
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
                 leading: GestureDetector(
                   onTap: () {
                     String? image = '';
@@ -2576,9 +2705,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 Text(
                   AppLocalization.of(context)!.sellersOtherProduct,
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
                     color: blackFont,
+                    fontFamily: "Inter",
                   ),
                 ),
                 GestureDetector(
@@ -2587,6 +2717,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
+                        fontFamily: "Inter",
                         color: navyBlue),
                   ),
                   onTap: () {
@@ -2603,7 +2734,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           const SizedBox(height: 12),
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => Padding(

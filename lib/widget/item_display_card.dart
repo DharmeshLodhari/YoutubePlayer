@@ -149,6 +149,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                         style: TextStyle(
                           color: blackFont,
                           fontSize: 14,
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -758,10 +759,11 @@ class _DisplayProductState extends State<DisplayProduct> {
     return Text(
       "(${widget.product.reviewScore} ${(widget.product.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
       style: TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-          fontFamily: 'Inter',
-          color: fontLightGrey),
+        fontWeight: FontWeight.w400,
+        fontSize: 12,
+        fontFamily: 'Inter',
+        color: fontLightGrey,
+      ),
     );
   }
 

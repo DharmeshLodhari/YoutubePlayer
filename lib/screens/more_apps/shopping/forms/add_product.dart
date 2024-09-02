@@ -130,10 +130,9 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
   final QuillController _quillController = QuillController.basic();
   final ScrollController _textEditorScrollController = ScrollController();
   bool _isKeyboardVisible = false;
-  bool _isDescriptionVisible = false;
+  bool _isProductDescriptionVisible = false;
 
   dynamic blogBodyTextJson;
-
   @override
   void deactivate() {
     CacheManager().deleteCache();
@@ -153,40 +152,35 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
     });
     inventoryController.text = "1";
     WidgetsBinding.instance.addObserver(this);
-    _focusNodeDescription.addListener(() {
-      if (_focusNodeDescription.hasFocus) {
-        setState(() {
-          _isDescriptionVisible = true;
-        });
-      } else {
-        setState(() {
-          _isDescriptionVisible = false;
-        });
-      }
-    });
+    _focusNodeDescription.addListener(_handleFocusChange);
     super.initState();
   }
 
+  void _handleFocusChange() {
+    if (_focusNodeDescription.hasFocus) {
+      setState(() {
+        _isProductDescriptionVisible = true;
+      });
+    } else {
+      setState(() {
+        _isProductDescriptionVisible = false;
+      });
+    }
+  }
+
+// final bottomInset = MediaQuery.maybeOf(context)?.viewInsets.bottom ?? 0;
+  // final mediaQuery = MediaQuery.maybeOf(context);
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
     if (!mounted) return;
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
     setState(() {
-      _isKeyboardVisible = bottomInset > 0;
+      _isKeyboardVisible = (bottomInset) > 0;
       if (!_isKeyboardVisible && !_focusNodeDescription.hasFocus) {
-        _isDescriptionVisible = false;
+        _isProductDescriptionVisible = false;
       }
     });
-    // setState(() {
-    //   _isKeyboardVisible = bottomInset > 0;
-    //   if (!_isKeyboardVisible) {
-    //     // Hide editor if keyboard is closed and focus is lost
-    //     if (!_focusNodeDescription.hasFocus) {
-    //       _isDescriptionVisible = false;
-    //     }
-    //   }
-    // });
     super.didChangeMetrics();
   }
 
@@ -327,7 +321,7 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
         floatingActionButtonLocation:
-            _isKeyboardVisible && _isDescriptionVisible
+            _isKeyboardVisible && _isProductDescriptionVisible
                 ? FloatingActionButtonLocation.endContained
                 : null,
         floatingActionButton: Container(
@@ -335,7 +329,7 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
               bottom: MediaQuery.of(context).viewInsets.bottom,
               right: 0,
               left: 0),
-          child: _isKeyboardVisible && _isDescriptionVisible
+          child: _isKeyboardVisible && _isProductDescriptionVisible
               ? _getEditor()
               : const SizedBox.shrink(),
         ),
@@ -751,32 +745,9 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
 
   Widget getProductDescription() {
     return Column(
-      children: [
-        getTextEditorWidget(),
-        // CustomizedTextFormField(
-        //   maxLines: 5,
-        //   focusNode: _focusNode,
-        //   textCapitalization: TextCapitalization.sentences,
-        //   labelText: AppLocalization.of(context)!.description,
-        //   validator: (val) {
-        //     if (val.isNotEmpty) {
-        //       return null;
-        //     }
-        //     return AppLocalization.of(context)!.description;
-        //   },
-        //   onChanged: (val) {
-        //     productDescription = val;
-        //   },
-        // ),
-      ],
-    );
-  }
-
-  Widget getTextEditorWidget() {
-    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildDescriptionText(),
+        _buildProductDescriptionText(),
         const SizedBox(height: 5),
         Container(
           height: 120,
@@ -808,7 +779,8 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
                   padding: const EdgeInsets.only(top: 10, left: 15),
                   placeholder: "",
                   scrollBottomInset: 20,
-                  showCursor: _isKeyboardVisible || _isDescriptionVisible,
+                  showCursor:
+                      _isKeyboardVisible || _isProductDescriptionVisible,
                   embedBuilders: FlutterQuillEmbeds.editorBuilders(),
                 ),
               ),
@@ -819,7 +791,7 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildDescriptionText() {
+  Widget _buildProductDescriptionText() {
     return Text(
       AppLocalization.of(context)!.description,
       style: TextStyle(
@@ -3245,6 +3217,8 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
     userTags = [];
     _focusNodeDescription.dispose();
     _quillController.dispose();
+    // WidgetsBinding.instance.removeObserver(this);
+    // _focusNodeDescription.removeListener(_handleFocusChange);
     super.dispose();
   }
 
