@@ -4,12 +4,15 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/home_tab/qr_code_page.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/product_detail_shimmer.dart';
 import 'package:Slydo/screens/more_apps/user_profile/widgets/user_profile_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/enums.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -18,6 +21,8 @@ import 'package:crypto/crypto.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
+import 'package:flutter_quill_extensions/flutter_quill_embeds.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -2828,5 +2833,96 @@ String formatPickupDateTime(String? pickupDateTimeString) {
   } catch (e) {
     print("Error parsing date: $e");
     return "";
+  }
+}
+
+Widget qrCodeIcon(BuildContext context, Map<String, dynamic> navigationData,
+    Map<String, dynamic> accountData) {
+  return GestureDetector(
+    onTap: () async {
+      //get the account detail of clicked user
+      final VirtualAccount virtualAccount = VirtualAccount(
+        accountName: accountData["accountName"],
+        accountNumber: accountData["accountNumber"],
+        financialInstitution: accountData["financialInstitution"],
+        customerUsername: accountData["customerUsername"],
+        note: accountData["note"],
+      );
+
+      navigationData["virtualAccount"] = virtualAccount;
+      NavigationUtil.push(context,
+          screen: QrCodePage(arguments: navigationData));
+    },
+    child: Container(
+      padding: const EdgeInsets.all(5.0),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+        color: lightGrey.withOpacity(0.1),
+        border: Border.all(
+          color: blackFont,
+          width: 1.0,
+        ),
+      ), //
+      child: Row(
+        children: [
+          Icon(
+            SlydoAppIcon.qr_code,
+            size: 15,
+            color: blackFont,
+          ),
+          const SizedBox(width: 7),
+          Text(
+            'QR',
+            style: TextStyle(
+              fontSize: 15,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w700,
+              color: blackFont,
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget displayQuillFormattedText(String formattedText, Color? fontColor,
+    double? fontSize, FontWeight? fontWeight) {
+  late flutterQuill.QuillController quillController;
+  dynamic jsonDecodedText;
+
+  try {
+    jsonDecodedText = jsonDecode(messageDecoderWithEmoji(formattedText) ?? "");
+
+    quillController = flutterQuill.QuillController(
+      document: flutterQuill.Document.fromJson(jsonDecodedText),
+      selection: const TextSelection.collapsed(offset: -1),
+    );
+  } catch (e) {
+    debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
+  }
+
+  if (jsonDecodedText != null) {
+    return flutterQuill.QuillEditor.basic(
+      configurations: flutterQuill.QuillEditorConfigurations(
+        controller: quillController,
+        readOnlyMouseCursor: SystemMouseCursors.basic,
+        showCursor: false,
+        enableInteractiveSelection: false,
+        embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+        // customStyles: flutterQuill.DefaultStyles(color: fontColor, sizeLarge: fontSize, sizeSmall: )
+      ),
+    );
+  } else {
+    return Text(
+      messageDecoderWithEmoji(formattedText) ?? "",
+      style: TextStyle(
+        fontWeight: fontWeight ?? FontWeight.w400,
+        fontSize: fontSize ?? 14,
+        color: fontColor ?? darkGrey,
+      ),
+      textAlign: TextAlign.justify,
+    );
   }
 }

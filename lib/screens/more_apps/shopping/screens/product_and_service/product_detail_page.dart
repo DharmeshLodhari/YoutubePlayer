@@ -16,6 +16,7 @@ import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -32,7 +33,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_quill_extensions/flutter_quill_embeds.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
@@ -43,16 +43,12 @@ import 'package:uuid/uuid.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../../widget/item_display_card.dart';
-import '../../../../home_tab/qr_code_page.dart';
-import '../../../payment_and_banking/models/financial_institution.dart';
-import '../../../payment_and_banking/models/virtual_account.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../../yarn/models/share_as_yarn_model.dart';
 import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_auth.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
-import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
 class ProductDetailPage extends StatefulWidget {
   final dynamic arguments;
@@ -716,141 +712,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  // Future<void> addToCartOld() async {
-  //   // Todo check this call
-  //   String type = product is Product ? "product" : "service";
-  //   Map<String, dynamic> addOnPayLoad = {};
-  //   List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
-  //   List<AddOns> selectedAddOnsList = [];
-  //
-  //   Product productSend = product!;
-  //   productSend = productSend.copyWith(quantity: 1);
-  //
-  //   /// TODO:BRIJESH CHECK ADDON
-  //   // product?.addOnsModels?.forEach((addOn) {
-  //   //   final options = addOn.options;
-  //   //   if (options != null) {
-  //   //     // Filter the options to include only those with option.isChecked == true
-  //   //     // List<AddOnOption> selectedOptions =
-  //   //     //     addOn.options!.where((option) => option.isChecked == true).toList();
-  //   //     //
-  //   //     // if (selectedOptions.isNotEmpty) {
-  //   //     //   Map<String, dynamic> selectedAddOn = {
-  //   //     //     "id": addOn.id,
-  //   //     //     "options": selectedOptions
-  //   //     //         .map((option) => {
-  //   //     //               "id": option.id,
-  //   //     //               "quantity": 1,
-  //   //     //               "name": option.name,
-  //   //     //               "price": option.price,
-  //   //     //               "currency": option.currency,
-  //   //     //             })
-  //   //     //         .toList(),
-  //   //     //   }; // Todo check this call
-  //   //
-  //   //     Map<String, dynamic> selectedAddOnServer = {
-  //   //       "id": addOn.id,
-  //   //       "options": options
-  //   //           .map((option) => {
-  //   //                 "id": option.id,
-  //   //                 "quantity": 1,
-  //   //               })
-  //   //           .toList(),
-  //   //     }; // Todo check this call
-  //   //
-  //   //     selectedAddOnsList.add(addOn);
-  //   //     selectedAddOnsCartServerList.add(selectedAddOnServer);
-  //   //     // }
-  //   //   }
-  //   // });
-  //   selectedVariant?.quantity = 1;
-  //
-  //   if (selectedAddOnsList.isNotEmpty &&
-  //       product?.addOnsModels?.isNotEmpty == true) {
-  //     addOnPayLoad = {
-  //       "id": productId,
-  //       "qty": 1,
-  //       "type": type,
-  //       "add_ons": selectedAddOnsList,
-  //     };
-  //
-  //     // basketBloc.addItemInBasketWithAddOns(product, type, selectedAddOnsCartServerList);
-  //     basketBloc.addItemToCart(
-  //       item: productSend,
-  //       type: type,
-  //       variant: null,
-  //       addOns: selectedAddOnsList,
-  //     );
-  //
-  //     // await _auth.addItemToShoppingCart(addOnPayLoad);
-  //     return;
-  //   }
-  //   if (basketBloc.items.isEmpty) {
-  //     basketBloc.addItemToCart(
-  //       item: productSend,
-  //       type: type,
-  //       variant: selectedVariant,
-  //       addOns: null,
-  //     );
-  //   } else {
-  //     for (var item in basketBloc.items) {
-  //       Product productInCart = item['item'];
-  //
-  //       if (productInCart.id.toString() == productId) {
-  //         List<Variant>? variantList = productInCart.variantModels;
-  //
-  //         for (var variant in variantList!) {
-  //           if (variant.id.toString() == selectedVariant?.id) {
-  //             int currentQuantity = int.parse(variant.quantity.toString());
-  //             variant.quantity = currentQuantity + 1;
-  //
-  //             Map<String, dynamic> dataInfo =
-  //                 getUpdatedCartItem(productId!, type);
-  //             // await _auth.addItemToShoppingCart(addOnPayLoad);
-  //             return;
-  //           }
-  //         }
-  //
-  //         basketBloc.addItemToCart(
-  //           item: productSend,
-  //           type: type,
-  //           variant: selectedVariant,
-  //           addOns: null,
-  //         );
-  //
-  //         // debugPrint("Data From Product Page v-id 2 : $variantPayLoad");
-  //         // debugPrint("Data From Product Page v-id 3 : $variantList");
-  //
-  //         Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
-  //         debugPrint("Data From Product Page exist : $dataInfo");
-  //
-  //         // await _auth.addItemToShoppingCart(addOnPayLoad);
-  //
-  //         // for(var item in basketBloc.items){
-  //         //   // Product productInCart = item['item'];
-  //         //   List variantList = item['item'].variant;
-  //         //   debugPrint('fola chat one twoo::: ${variantList.length}');
-  //         //   debugPrint('fola chat one twoo::: ${item['item'].variant}');
-  //         // }
-  //         return;
-  //       }
-  //     }
-  //
-  //     // Product ID doesn't exist in the cart, add it with the variant
-  //     basketBloc.addItemToCart(
-  //       item: productSend,
-  //       type: type,
-  //       variant: selectedVariant,
-  //       addOns: null,
-  //     );
-  //   }
-  //
-  //   Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
-  //   debugPrint("Data From Product Page : $dataInfo");
-  //
-  //   // await _auth.addItemToShoppingCart(dataInfo);
-  // }
-
   Map<String, dynamic> getUpdatedCartItem(String productId, String type) {
     Map<String, dynamic> dataInfo = {};
 
@@ -985,32 +846,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               child: productStockAndDetailTag(),
             ),
             Container(
-              padding: const EdgeInsets.only(top: 24),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: _buildProductTitleAndPriceWidget(),
+                  _buildProductTitleAndPriceWidget(),
+                  const SizedBox(height: 24),
+                  Divider(
+                    height: 0,
+                    color: dividerColor,
+                    thickness: 1,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  // Divider(
-                  //   height: 0,
-                  //   color: dividerColor,
-                  //   thickness: 1,
-                  // ),
-                  // const SizedBox(
-                  //   height: 12,
-                  // ),
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  //   child: _buildShortInfoWidget(),
-                  // ),
-                  // const SizedBox(
-                  //   height: 16,
-                  // ),
+                  const SizedBox(height: 12),
+                  _buildShortInfoWidget(),
+                  const SizedBox(height: 16),
                   Divider(
                     height: 0,
                     color: dividerColor,
@@ -1018,44 +867,30 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                   if (product?.availableFrom?.isAfter(DateTime.now()) ?? false)
                     _showAvailableDate(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: _buildDescriptionWidget(),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
+                  const SizedBox(height: 12),
+                  _buildDescriptionWidget(),
+                  const SizedBox(height: 16),
+                  getProductOrServiceSocialMedia(
+                      context, "Product", product?.id ?? ""),
+                  const SizedBox(height: 16),
                   Divider(
                     height: 0,
                     color: dividerColor,
                     thickness: 1,
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   if (product?.addOnsModels?.isNotEmpty == true) ...[
                     _buildAddonWidget(),
                     const SizedBox(
                       height: 16,
                     ),
                   ],
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: _buildSellerInfoWidget(),
-                  ),
                   const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: _buildReviewList(),
-                  ),
+                  _buildSellerInfoWidget(),
+                  const SizedBox(height: 10),
+                  _buildReviewList(),
                   const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: _buildWriteReview(),
-                  ),
+                  _buildWriteReview(),
                 ],
               ),
             ),
@@ -1109,10 +944,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         const SizedBox(
           height: 12,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: _buildAvailableFromAndShareWidgets(),
-        ),
+        _buildAvailableFromAndShareWidgets(),
         const SizedBox(
           height: 16,
         ),
@@ -1719,7 +1551,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ],
               ),
             ),
-            qrCodeIcon(),
+            qrCodeIcon(context, product!.getNavigationData(),
+                product!.getQRCodeInfo()),
           ],
         ),
         if (!allKeysAreNullOrEmptyColor) _buildVariantColor(),
@@ -2004,41 +1837,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
         showVariantSizes(),
       ],
-    );
-  }
-
-  Widget qrCodeIcon() {
-    return RoundedBackgroundIcon(
-      height: 54,
-      width: 54,
-      icon: Icon(
-        SlydoAppIcon.qr_code,
-        size: 36,
-        color: black,
-      ),
-      onTap: () async {
-        //get the account detail of clicked user
-        final Map<String, dynamic> financial = {};
-
-        final VirtualAccount virtualAccount = VirtualAccount(
-          accountName: product!.shortDescription,
-          accountNumber: product!.name,
-          financialInstitution: FinancialInstitution.fromJson(financial),
-          customerUsername: product!.seller,
-          note: "",
-        );
-
-        NavigationUtil.push(context,
-            screen: QrCodePage(arguments: {
-              'isProfile': 'false',
-              'virtualAccount': virtualAccount,
-              'product': product!.seller,
-              'productUrl':
-                  "https://slydo.co/store/${product!.seller}/products/${product!.id}"
-            }));
-      },
-      backgroundColor: lightGrey.withOpacity(0.1),
-      enableMargin: false,
     );
   }
 
@@ -2534,15 +2332,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         const SizedBox(
           height: 8,
         ),
-        _buildProductDescription(),
-        // Text(
-        //   messageDecoderWithEmoji(product?.description ?? "")!,
-        //   style: TextStyle(
-        //     fontSize: 14,
-        //     color: darkGrey,
-        //   ),
-        //   textAlign: TextAlign.justify,
-        // ),
+        displayQuillFormattedText(
+            product?.description ?? "", darkGrey, 14, FontWeight.w400),
       ],
     );
   }
@@ -2586,7 +2377,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
+         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
             "Available Add-ons",
@@ -2641,9 +2432,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               Text(
                 "Merchant",
                 style: TextStyle(
-                    color: blackFont,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
+                  color: blackFont,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               ListTile(
                 dense: true,
@@ -2698,7 +2490,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -2734,10 +2526,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           const SizedBox(height: 12),
           Expanded(
             child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
                 child: DisplayProduct(
                   product: sellersOtherItems[index],
                 ),

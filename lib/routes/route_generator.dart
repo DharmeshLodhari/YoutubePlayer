@@ -130,6 +130,7 @@ import 'package:Slydo/screens/more_apps/shopping/screens/order/write_review_page
 import 'package:Slydo/screens/more_apps/shopping/screens/print_qrcode.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/product_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/service_detail_page.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/social_media.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/search_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/specific_category_product_list.dart';
 import 'package:Slydo/screens/more_apps/super_blog/super_blog.dart';
@@ -2194,6 +2195,15 @@ class RouteGenerator {
       case Routes.ORDER_PREVIEW:
         return PageTransition(
           child: OrderPreview(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.PRODUCT_AND_SERVICE_SOCIAL_MEDIA:
+        return PageTransition(
+          child: SocialMedia(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

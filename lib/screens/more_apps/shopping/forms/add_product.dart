@@ -24,11 +24,12 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill_extensions/flutter_quill_embeds.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
-import 'package:flutter_quill/flutter_quill.dart';
+
 import '../../../../routes/route_constants.dart';
 import '../shopping_auth.dart';
 
@@ -3217,8 +3218,6 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
     userTags = [];
     _focusNodeDescription.dispose();
     _quillController.dispose();
-    // WidgetsBinding.instance.removeObserver(this);
-    // _focusNodeDescription.removeListener(_handleFocusChange);
     super.dispose();
   }
 

@@ -592,6 +592,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: serviceStockAndDetailTag(),
             ),
+            const SizedBox(height: 20),
+            _buildHorizontalServiceImageList(),
             Container(
               padding: const EdgeInsets.only(right: 16, left: 16, top: 24),
               child: Column(
@@ -969,17 +971,15 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     //       );
                     //     }).toList(),
                     //   ),
-
-                    const SizedBox(height: 12),
-                    _buildHorizontalProductImageList(),
                   ],
                 ),
     );
   }
 
-  Widget _buildHorizontalProductImageList() {
-    return SizedBox(
+  Widget _buildHorizontalServiceImageList() {
+    return Container(
       height: 60,
+      alignment: Alignment.center,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -1008,7 +1008,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 imageUrl: imageUrl ?? "",
                 height: 60,
                 width: 60,
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
                 errorWidget: productAndServiceBigErrorWidget,
               ),
             ),
