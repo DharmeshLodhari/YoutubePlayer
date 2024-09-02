@@ -260,11 +260,17 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
     final pdf = pw.Document();
     final customFont = await loadCustomFont();
 
+    // Load the logo image
     final ByteData logoBytes =
         await rootBundle.load('assets/images/app_logo_navyBlue.png');
-
     final Uint8List logo = logoBytes.buffer.asUint8List();
 
+    // Load the background image
+    final ByteData backgroundBytes =
+        await rootBundle.load('assets/images/receipt_bg_image.png');
+    final Uint8List backgroundImage = backgroundBytes.buffer.asUint8List();
+
+    // Other variables
     final String currency = worldCurrencies[payout?.currency] ?? "";
     final String? status = payout?.status;
     const String transactionType = "Bank Transfer";
@@ -278,70 +284,88 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
     final String category = "${payout?.category}";
     final String description = "${payout?.description}";
 
-    // Generate QR code image
     final Uint8List qrCodeImage =
         await _generateQRCodeImage(getTransactionUrl());
 
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.end,
+          return pw.Stack(
             children: [
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              pw.Center(
+                child: pw.Image(
+                  pw.MemoryImage(backgroundImage),
+                  fit: pw.BoxFit.contain,
+                ),
+              ),
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
-                  _buildAppTitle(logo),
-                  _buildTransactionReceiptText(),
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildAppTitle(logo),
+                      _buildTransactionReceiptText(),
+                    ],
+                  ),
+                  pw.SizedBox(height: 3),
+                  _buildDate(),
+                  pw.SizedBox(height: 20),
+                  _buildPDFAmountIconText("Amount", customFont, currency),
+                  pw.SizedBox(height: 8),
+                  buildPdfReceiptDetail(
+                      title: "Status", value: status ?? "", isColor: true),
+                  pw.SizedBox(height: 8),
+                  buildPdfReceiptDetail(
+                      title: "Transaction Type",
+                      value: transactionType,
+                      isColor: false),
+                  pw.SizedBox(height: 8),
+                  buildPdfReceiptDetail(
+                      title: "Receiver Details",
+                      value: receiverUsername,
+                      subTitle: receiverAccountNumber,
+                      isColor: false),
+                  pw.SizedBox(height: 8),
+                  buildPdfReceiptDetail(
+                      title: "Sender Details",
+                      value: senderUsername,
+                      subTitle: senderAccountNumber,
+                      isColor: false),
+                  pw.SizedBox(height: 8),
+                  buildPdfReceiptDetail(
+                      title: "Receiving Bank",
+                      value: receivingBank,
+                      isColor: false),
+                  pw.SizedBox(height: 8),
+                  buildPdfReceiptDetail(
+                      title: "Reference Number",
+                      value: referenceNumber,
+                      isColor: false),
+                  pw.SizedBox(height: 8),
+                  buildPdfReceiptDetail(
+                      title: "Category", value: category, isColor: false),
+                  pw.SizedBox(height: 8),
+                  buildPdfReceiptDetail(
+                      title: "Description", value: description, isColor: false),
+                  pw.SizedBox(height: 5),
+                  pw.Spacer(),
+                  pw.Align(
+                    alignment: pw.Alignment.center,
+                    child: buildPdfHorizontalDotBorder(),
+                  ),
+                  pw.SizedBox(height: 5),
+                  pw.Align(
+                    alignment: pw.Alignment.center,
+                    child: _buildPdfQrScan(qrCodeImage),
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.Align(
+                    alignment: pw.Alignment.center,
+                    child: _buildDescription(),
+                  ),
                 ],
               ),
-              pw.SizedBox(height: 3),
-              _buildDate(),
-              pw.SizedBox(height: 20),
-              _buildPDFAmountIconText("Amount", customFont, currency),
-              pw.SizedBox(height: 8),
-              // _buildAmountWord(),
-              buildPdfReceiptDetail(
-                  title: "Status", value: status ?? "", isColor: true),
-              pw.SizedBox(height: 8),
-              buildPdfReceiptDetail(
-                  title: "Transaction Type",
-                  value: transactionType,
-                  isColor: false),
-              pw.SizedBox(height: 8),
-              buildPdfReceiptDetail(
-                  title: "Receiver Details",
-                  value: receiverUsername,
-                  subTitle: receiverAccountNumber,
-                  isColor: false),
-              pw.SizedBox(height: 8),
-              buildPdfReceiptDetail(
-                  title: "Sender Details",
-                  value: senderUsername,
-                  subTitle: senderAccountNumber,
-                  isColor: false),
-              pw.SizedBox(height: 8),
-              buildPdfReceiptDetail(
-                  title: "Receiving Bank",
-                  value: receivingBank,
-                  isColor: false),
-              pw.SizedBox(height: 8),
-              buildPdfReceiptDetail(
-                  title: "Reference Number",
-                  value: referenceNumber,
-                  isColor: false),
-              pw.SizedBox(height: 8),
-              buildPdfReceiptDetail(
-                  title: "Category", value: category, isColor: false),
-              pw.SizedBox(height: 8),
-              buildPdfReceiptDetail(
-                  title: "Description", value: description, isColor: false),
-              pw.SizedBox(height: 5),
-              buildPdfHorizontalDotBorder(),
-              pw.SizedBox(height: 5),
-              _buildPdfQrScan(qrCodeImage),
-              pw.SizedBox(height: 10),
-              _buildDescription(),
             ],
           );
         },
