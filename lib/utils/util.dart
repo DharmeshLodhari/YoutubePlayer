@@ -21,6 +21,8 @@ import 'package:crypto/crypto.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
+import 'package:flutter_quill_extensions/flutter_quill_embeds.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -2883,4 +2885,44 @@ Widget qrCodeIcon(BuildContext context, Map<String, dynamic> navigationData,
       ),
     ),
   );
+}
+
+Widget displayQuillFormattedText(String formattedText, Color? fontColor,
+    double? fontSize, FontWeight? fontWeight) {
+  late flutterQuill.QuillController quillController;
+  dynamic jsonDecodedText;
+
+  try {
+    jsonDecodedText = jsonDecode(messageDecoderWithEmoji(formattedText) ?? "");
+
+    quillController = flutterQuill.QuillController(
+      document: flutterQuill.Document.fromJson(jsonDecodedText),
+      selection: const TextSelection.collapsed(offset: -1),
+    );
+  } catch (e) {
+    debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
+  }
+
+  if (jsonDecodedText != null) {
+    return flutterQuill.QuillEditor.basic(
+      configurations: flutterQuill.QuillEditorConfigurations(
+        controller: quillController,
+        readOnlyMouseCursor: SystemMouseCursors.basic,
+        showCursor: false,
+        enableInteractiveSelection: false,
+        embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+        // customStyles: flutterQuill.DefaultStyles(color: fontColor, sizeLarge: fontSize, sizeSmall: )
+      ),
+    );
+  } else {
+    return Text(
+      messageDecoderWithEmoji(formattedText) ?? "",
+      style: TextStyle(
+        fontWeight: fontWeight ?? FontWeight.w400,
+        fontSize: fontSize ?? 14,
+        color: fontColor ?? darkGrey,
+      ),
+      textAlign: TextAlign.justify,
+    );
+  }
 }

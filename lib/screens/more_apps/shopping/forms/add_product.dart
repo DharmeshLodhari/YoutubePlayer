@@ -331,14 +331,19 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
             _isKeyboardVisible && _isDescriptionVisible
                 ? FloatingActionButtonLocation.endContained
                 : null,
-        floatingActionButton: Container(
-          margin: EdgeInsets.only(
+        floatingActionButton: Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            width: MediaQuery.of(context)
+                .size
+                .width, // Set width to full screen width
+            margin: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
-              right: 0,
-              left: 0),
-          child: _isKeyboardVisible && _isDescriptionVisible
-              ? _getEditor()
-              : const SizedBox.shrink(),
+            ),
+            child: _isKeyboardVisible && _isDescriptionVisible
+                ? _getEditor()
+                : const SizedBox.shrink(),
+          ),
         ),
       ),
     );

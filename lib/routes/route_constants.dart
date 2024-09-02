@@ -243,4 +243,6 @@ class Routes {
   static const String ORDER_PREVIEW = "/order-preview";
   static const String DISCOUNT_PRODUCT_AND_SERVICE_SEARCH =
       "/discount-product-and-service-search";
+  static const String PRODUCT_AND_SERVICE_SOCIAL_MEDIA =
+      "/product-and-service-social-media";
 }

@@ -8,7 +8,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
-import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -307,28 +306,30 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
   Widget getPostFullText() {
     if (widget.postType == PostType.blog) {
-      if (blogBodyTextJson != null) {
-        return flutterQuill.QuillEditor.basic(
-          configurations: flutterQuill.QuillEditorConfigurations(
-            controller: _quillController,
-            readOnlyMouseCursor: SystemMouseCursors.basic,
-            showCursor: false,
-            enableInteractiveSelection: false,
-            embedBuilders:
-                FlutterQuillEmbeds.editorBuilders(), // readOnly: true,
-          ),
-        );
-      } else {
-        return Text(
-          messageDecoderWithEmoji(userPost?.text) ?? "",
-          style: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: 14,
-            color: blackFont,
-          ),
-          textAlign: TextAlign.justify,
-        );
-      }
+      // if (blogBodyTextJson != null) {
+      //   return flutterQuill.QuillEditor.basic(
+      //     configurations: flutterQuill.QuillEditorConfigurations(
+      //       controller: _quillController,
+      //       readOnlyMouseCursor: SystemMouseCursors.basic,
+      //       showCursor: false,
+      //       enableInteractiveSelection: false,
+      //       embedBuilders:
+      //           FlutterQuillEmbeds.editorBuilders(), // readOnly: true,
+      //     ),
+      //   );
+      // } else {
+      //   return Text(
+      //     messageDecoderWithEmoji(userPost?.text) ?? "",
+      //     style: TextStyle(
+      //       fontWeight: FontWeight.w400,
+      //       fontSize: 14,
+      //       color: blackFont,
+      //     ),
+      //     textAlign: TextAlign.justify,
+      //   );
+      // }
+      return displayQuillFormattedText(
+          userPost?.text ?? "", darkGrey, 14, FontWeight.w400);
     } else {
       return Text(
         messageDecoderWithEmoji(newsDetailItem.description!) ?? "",
