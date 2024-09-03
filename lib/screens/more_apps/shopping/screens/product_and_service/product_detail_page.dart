@@ -850,6 +850,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildProductTitleAndPriceWidget(),
+                  _buildProductWidthHightWeight(),
                   const SizedBox(height: 10),
                   _buildShortInfoWidget(),
                   const SizedBox(height: 16),
@@ -1595,7 +1596,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       _getProductReviews(),
                     ],
                   ),
-                  _buildProductWidthHightWeight(),
                   stockStatus(),
                 ],
               ),

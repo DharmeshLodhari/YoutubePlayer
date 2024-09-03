@@ -1,9 +1,9 @@
-import 'package:Slydo/screens/moments/screens/moment_detail/moment_comment.screen.dart';
-import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_delegate.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/user_profile/tiles/moment_tab_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/tab_selection.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SocialMedia extends StatefulWidget {
   const SocialMedia({super.key, this.arguments});
@@ -101,16 +101,11 @@ class _SocialMediaState extends State<SocialMedia>
   }
 
   Widget _buildBody() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          _buildTabProduct(),
-        ],
-      ),
-    );
+    return _buildTabProduct();
   }
 
   Widget _buildTabProduct() {
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -119,11 +114,10 @@ class _SocialMediaState extends State<SocialMedia>
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Column(
-          mainAxisSize: MainAxisSize.max,
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             _menuBar(context),
             Expanded(
-              flex: 1,
               child: PageView(
                 controller: _pageController,
                 physics: const ClampingScrollPhysics(),
@@ -134,18 +128,12 @@ class _SocialMediaState extends State<SocialMedia>
                   });
                 },
                 children: <Widget>[
-                  ConstrainedBox(
-                    constraints: const BoxConstraints.expand(),
-                    child: const Center(
-                      child: Text("Moment"),
-                    ),
+                  MomentsTab(
+                    userName: userBloc.user.userName,
+                    channelUsername: '',
+                    searchedUser: null,
                   ),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints.expand(),
-                    child: const Center(
-                      child: Text("Yarn"),
-                    ),
-                  ),
+                  MyFeedView(userName: userBloc.user.userName, isChannel: ''),
                 ],
               ),
             ),
@@ -157,7 +145,7 @@ class _SocialMediaState extends State<SocialMedia>
 
   Widget _menuBar(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Row(
         children: <Widget>[
           getTabUI(
