@@ -326,6 +326,7 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
                 ? FloatingActionButtonLocation.endContained
                 : null,
         floatingActionButton: Container(
+          width: MediaQuery.of(context).size.width,
           margin: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
               right: 0,
@@ -3216,8 +3217,9 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
     textfieldTagsController.dispose();
     inventoryController.dispose();
     userTags = [];
-    _focusNodeDescription.dispose();
     _quillController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _focusNodeDescription.dispose();
     super.dispose();
   }
 

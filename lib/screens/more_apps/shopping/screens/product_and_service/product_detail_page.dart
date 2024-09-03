@@ -1103,30 +1103,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                             showSliderGallery(displayProductImages);
                           }
                         },
-                        child: Stack(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1.5,
-                              child: Center(
-                                child: Stack(
-                                  children: [
-                                    CachedNetworkImage(
-                                      placeholder: (context, url) => Center(
-                                          child: CircularLoadingIndicator()),
-                                      imageUrl: displayProductImages?[0] ?? "",
-                                      fit: BoxFit.cover,
-                                      height: double.infinity,
-                                      width: double.infinity,
-                                      errorWidget:
-                                          productAndServiceBigErrorWidget,
-                                    ),
-                                    // productStockAndDetailTag(),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            // getOutOfStockTag(),
-                          ],
+                        child: AspectRatio(
+                          aspectRatio: 1.5,
+                          child: CachedNetworkImage(
+                            placeholder: (context, url) =>
+                                Center(child: CircularLoadingIndicator()),
+                            imageUrl: displayProductImages?[0] ?? "",
+                            fit: BoxFit.cover,
+                            errorWidget: productAndServiceBigErrorWidget,
+                          ),
                         ),
                       )
                     : Column(
@@ -1320,10 +1305,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         width: double.infinity,
         height: 25,
         child: showColoredLabeledWidgetProductDetails(
-            product: product,
-            selectedVariant: selectedVariant,
-            text: AppLocalization.of(context)!.comingSoon,
-            color: lightYellow),
+          product: product,
+          selectedVariant: selectedVariant,
+          text: AppLocalization.of(context)!.comingSoon,
+          color: lightYellow,
+        ),
       );
     } else if ((product?.variantModels?.isEmpty ?? false) &&
         product?.trackInventory == true &&
@@ -1332,10 +1318,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         width: double.infinity,
         height: 25,
         child: showColoredLabeledWidgetProductDetails(
-            product: product,
-            selectedVariant: selectedVariant,
-            text: AppLocalization.of(context)!.outOfStock,
-            color: lightRed),
+          product: product,
+          selectedVariant: selectedVariant,
+          text: AppLocalization.of(context)!.outOfStock,
+          color: lightRed,
+        ),
       );
     } else if ((product?.discountedPrice != null &&
             product?.discountedPrice != 0) ||
@@ -1343,7 +1330,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 product?.pricePercentageChange != 0.0 ||
             selectedVariant != null)) {
       return SizedBox(
-          width: double.infinity, height: 25, child: buildDiscountPrice());
+        width: double.infinity,
+        height: 25,
+        child: buildDiscountPrice(),
+      );
     } else {
       return const SizedBox();
     }
@@ -2430,41 +2420,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ],
     );
   }
-
-  // Widget _buildProductDescription() {
-  //   try {
-  //     descriptionBodyTextJson =
-  //         jsonDecode(messageDecoderWithEmoji(product?.description) ?? "");
-  //
-  //     _quillController = flutterQuill.QuillController(
-  //       document: flutterQuill.Document.fromJson(descriptionBodyTextJson),
-  //       selection: const TextSelection.collapsed(offset: -1),
-  //     );
-  //   } catch (e) {
-  //     debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
-  //   }
-  //   if (descriptionBodyTextJson != null) {
-  //     return flutterQuill.QuillEditor.basic(
-  //       configurations: flutterQuill.QuillEditorConfigurations(
-  //         controller: _quillController,
-  //         readOnlyMouseCursor: SystemMouseCursors.basic,
-  //         showCursor: false,
-  //         enableInteractiveSelection: false,
-  //         embedBuilders: FlutterQuillEmbeds.editorBuilders(),
-  //       ),
-  //     );
-  //   } else {
-  //     return Text(
-  //       messageDecoderWithEmoji(product?.description) ?? "",
-  //       style: TextStyle(
-  //         fontWeight: FontWeight.w400,
-  //         fontSize: 12,
-  //         color: blackFont,
-  //       ),
-  //       textAlign: TextAlign.justify,
-  //     );
-  //   }
-  // }
 
   Widget _buildAddonWidget() {
     return Column(
