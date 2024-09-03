@@ -115,8 +115,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   bool isSelected = true;
   late flutterQuill.QuillController _quillController;
   dynamic descriptionBodyTextJson;
-  bool _isSeeAll = false;
-  late AnimationController _controller;
   @override
   void initState() {
     product = widget.arguments[
@@ -1616,15 +1614,22 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Column(
       children: [
         const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            if (product?.weight != 0.0 && product?.weight != null)
-              _buildWeight(),
-            if (product?.height != 0.0 && product?.height != null)
-              _buildHeight(),
-            if (product?.width != 0.0 && product?.width != null) _buildWidth(),
-          ],
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (product?.weight != 0.0 && product?.weight != null)
+                _buildWeight(),
+              const SizedBox(width: 15),
+              if (product?.height != 0.0 && product?.height != null)
+                _buildHeight(),
+              const SizedBox(width: 15),
+              if (product?.width != 0.0 && product?.width != null)
+                _buildWidth(),
+            ],
+          ),
         ),
       ],
     );
@@ -1769,35 +1774,34 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget customRichText({String? text, String? subText}) {
-    return Expanded(
-      child: RichText(
-        text: TextSpan(
-          text: "$text :",
-          style: TextStyle(
-            color: fontLightGrey,
-            fontSize: 13,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w400,
-          ),
-          children: [
-            const WidgetSpan(
-              child: SizedBox(width: 5),
-            ),
-            TextSpan(
-              text: subText ?? "",
-              style: TextStyle(
-                fontSize: 15,
-                fontFamily: 'Open Sans',
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+    return RichText(
+      text: TextSpan(
+        text: "$text :",
+        style: TextStyle(
+          color: fontLightGrey,
+          fontSize: 13,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w400,
         ),
-        softWrap: true,
-        overflow: TextOverflow.visible,
+        children: [
+          const WidgetSpan(
+            child: SizedBox(width: 5),
+          ),
+          TextSpan(
+            text: subText ?? "",
+            style: TextStyle(
+              fontSize: 15,
+              fontFamily: 'Open Sans',
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
+      textAlign: TextAlign.center,
+      softWrap: true,
+      overflow: TextOverflow.visible,
     );
   }
 
@@ -2411,15 +2415,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 fontFamily: "Inter",
               ),
             ),
-            Text(
-              "See all",
-              style: TextStyle(
-                fontFamily: "Inter",
-                fontSize: 12.0,
-                color: navyBlue,
-                fontWeight: FontWeight.w600,
-              ),
-            )
+            // Text(
+            //   "See all",
+            //   style: TextStyle(
+            //     fontFamily: "Inter",
+            //     fontSize: 12.0,
+            //     color: navyBlue,
+            //     fontWeight: FontWeight.w600,
+            //   ),
+            // )
           ],
         ),
         const SizedBox(

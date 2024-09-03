@@ -90,7 +90,7 @@ class _DisplayProductState extends State<DisplayProduct> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Flexible(
+                Expanded(
                   child: Stack(
                     children: [
                       SizedBox(
