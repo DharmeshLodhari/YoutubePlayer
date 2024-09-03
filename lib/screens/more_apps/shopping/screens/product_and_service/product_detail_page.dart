@@ -34,7 +34,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
-import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
@@ -853,7 +852,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildProductTitleAndPriceWidget(),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   _buildShortInfoWidget(),
                   const SizedBox(height: 16),
                   Divider(
@@ -861,8 +860,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     color: dividerColor,
                     thickness: 1,
                   ),
-                  if (product?.availableFrom?.isAfter(DateTime.now()) ?? false)
-                    _showAvailableDate(),
                   const SizedBox(height: 12),
                   _buildDescriptionWidget(),
                   const SizedBox(height: 16),
@@ -943,18 +940,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(
-          height: 12,
-        ),
+        const SizedBox(height: 2),
         _buildAvailableFromAndShareWidgets(),
-        const SizedBox(
-          height: 16,
-        ),
-        Divider(
-          height: 0,
-          color: dividerColor,
-          thickness: 1,
-        ),
+        const SizedBox(height: 2),
       ],
     );
   }
@@ -1597,10 +1585,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   _buildProductName(),
                   _buildDiscountedPrice(),
                   _buildOriginalPrice(),
-                  stockStatus(),
-                  const SizedBox(height: 5),
-                  _buildDisplayProduct(),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
+                  _buildProductCondition(),
+                  const SizedBox(height: 2),
+                  // if (product?.availableFrom?.isAfter(DateTime.now()) ?? false)
+                  //   _showAvailableDate(),
                   Row(
                     children: [
                       getRating(numberOfRating: product?.rating?.toInt()),
@@ -1608,22 +1597,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       _getProductReviews(),
                     ],
                   ),
-                  const SizedBox(height: 15),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          if (product?.weight != 0.0 && product?.weight != null)
-                            _buildWeight(),
-                          if (product?.height != 0.0 && product?.height != null)
-                            _buildHeight(),
-                          if (product?.width != 0.0 && product?.width != null)
-                            _buildWidth(),
-                        ],
-                      );
-                    },
-                  ),
+                  _buildProductWidthHightWeight(),
                   stockStatus(),
                 ],
               ),
@@ -1634,6 +1608,24 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
         if (!allKeysAreNullOrEmptyColor) _buildVariantColor(),
         if (!allKeysAreNullOrEmpty) _buildVariantSize(),
+      ],
+    );
+  }
+
+  Widget _buildProductWidthHightWeight() {
+    return Column(
+      children: [
+        const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (product?.weight != 0.0 && product?.weight != null)
+              _buildWeight(),
+            if (product?.height != 0.0 && product?.height != null)
+              _buildHeight(),
+            if (product?.width != 0.0 && product?.width != null) _buildWidth(),
+          ],
+        ),
       ],
     );
   }
@@ -1739,25 +1731,28 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     }
   }
 
-  Widget _buildDisplayProduct() {
-    return Container(
-      constraints: const BoxConstraints(
-        maxHeight: 30.0,
-        maxWidth: 60.0,
-      ),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: bgLightPink,
-      ),
-      child: Text(
-        "${product?.condition}",
-        style: TextStyle(
-          fontFamily: "Inter",
-          color: pinkFont,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+  Widget _buildProductCondition() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: bgLightPink,
+          ),
+          child: Text(
+            product?.condition ?? '',
+            style: TextStyle(
+              fontFamily: "Inter",
+              color: pinkFont,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -1774,34 +1769,35 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget customRichText({String? text, String? subText}) {
-    return RichText(
-      text: TextSpan(
-        text: "$text :",
-        style: TextStyle(
-          color: fontLightGrey,
-          fontSize: 13,
-          fontFamily: 'Inter',
-          fontWeight: FontWeight.w400,
-        ),
-        children: [
-          const WidgetSpan(
-            child: SizedBox(width: 5),
+    return Expanded(
+      child: RichText(
+        text: TextSpan(
+          text: "$text :",
+          style: TextStyle(
+            color: fontLightGrey,
+            fontSize: 13,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w400,
           ),
-          TextSpan(
-            text: subText ?? "",
-            style: TextStyle(
-              fontSize: 15,
-              fontFamily: 'Open Sans',
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-              overflow: TextOverflow.ellipsis,
+          children: [
+            const WidgetSpan(
+              child: SizedBox(width: 5),
             ),
-          ),
-        ],
+            TextSpan(
+              text: subText ?? "",
+              style: TextStyle(
+                fontSize: 15,
+                fontFamily: 'Open Sans',
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        softWrap: true,
+        overflow: TextOverflow.visible,
       ),
-      textAlign: TextAlign.center,
-      softWrap: true,
-      overflow: TextOverflow.visible,
     );
   }
 
