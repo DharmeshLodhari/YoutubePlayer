@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
@@ -27,9 +28,16 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill_extensions/flutter_quill_embeds.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
+import 'package:flutter_quill/src/widgets/editor/editor.dart';
+import 'package:flutter_quill/src/models/config/editor/editor_configurations.dart';
+import 'package:flutter_quill/src/widgets/quill/quill_controller.dart';
+import 'package:flutter_quill/src/widgets/toolbar/base_toolbar.dart';
+import 'package:flutter_quill/src/models/config/toolbar/simple_toolbar_configurations.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
 // ignore: must_be_immutable
 class EditProduct extends StatefulWidget {
@@ -41,7 +49,7 @@ class EditProduct extends StatefulWidget {
   State<EditProduct> createState() => _EditProductState();
 }
 
-class _EditProductState extends State<EditProduct> {
+class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   final _auth = ShoppingAuthService();
   UserBloc? userBloc;
   final _formKey = GlobalKey<FormState>();
@@ -143,6 +151,14 @@ class _EditProductState extends State<EditProduct> {
   String? discountId;
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
+  final FocusNode _focusNodeDescription = FocusNode();
+  late flutterQuill.QuillController _quillController;
+  final ScrollController _textEditorScrollController = ScrollController();
+  bool _isKeyboardVisible = false;
+  bool _isProductDescriptionVisible = false;
+  final MediaQueryData _mediaQueryData = const MediaQueryData();
+
+  dynamic descriptionBodyTextJson;
 
   @override
   void deactivate() {
@@ -159,7 +175,40 @@ class _EditProductState extends State<EditProduct> {
       obtainCustomCategory();
       getAddressList();
     });
+    WidgetsBinding.instance.addObserver(this);
+    _focusNodeDescription.addListener(_handleFocusChange);
     super.initState();
+  }
+
+  void _handleFocusChange() {
+    if (_focusNodeDescription.hasFocus) {
+      setState(() {
+        _isProductDescriptionVisible = true;
+      });
+    } else {
+      setState(() {
+        _isProductDescriptionVisible = false;
+      });
+    }
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    if (!mounted) return;
+    // final bottomInset = MediaQuery.maybeOf(context)?.viewInsets.bottom ?? 0;
+    // final mediaQuery = MediaQuery.maybeOf(context);
+    final bottomInset = _mediaQueryData.viewInsets.bottom;
+    if (mounted) {
+      setState(() {
+        _isKeyboardVisible = (bottomInset) > 0;
+        if (!_isKeyboardVisible && !_focusNodeDescription.hasFocus) {
+          _isProductDescriptionVisible = false;
+        }
+      });
+    }
+
+    super.didChangeMetrics();
   }
 
   @override
@@ -195,6 +244,8 @@ class _EditProductState extends State<EditProduct> {
               messageDecoderWithEmoji(currentProduct.name) ?? "";
           productDescriptionController.text =
               messageDecoderWithEmoji(currentProduct.description) ?? "";
+          // descriptionBodyTextJson = jsonDecode(
+          //     messageDecoderWithEmoji(currentProduct.description) ?? "");
 
           productPriceController.text = moneyNormalizer(currentProduct.price!);
 
@@ -453,6 +504,19 @@ class _EditProductState extends State<EditProduct> {
         resizeToAvoidBottomInset: true,
         appBar: appBar(context) as PreferredSizeWidget?,
         body: scaffoldBody(),
+        floatingActionButtonLocation:
+            _isKeyboardVisible && _isProductDescriptionVisible
+                ? FloatingActionButtonLocation.endContained
+                : null,
+        floatingActionButton: Container(
+          margin: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              right: 0,
+              left: 0),
+          child: _isKeyboardVisible && _isProductDescriptionVisible
+              ? _getEditor()
+              : const SizedBox.shrink(),
+        ),
       ),
     );
     //
@@ -481,6 +545,63 @@ class _EditProductState extends State<EditProduct> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
+  }
+
+  Widget _getEditor() {
+    final Widget editorWidget = Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 0.5,
+          ),
+        ],
+      ),
+      child: QuillToolbar.simple(
+        configurations: QuillSimpleToolbarConfigurations(
+          showDirection: false,
+          showHeaderStyle: false,
+          showInlineCode: false,
+          showCodeBlock: false,
+          showStrikeThrough: false,
+          showJustifyAlignment: false,
+          showBackgroundColorButton: false,
+          showClearFormat: false,
+          showDividers: false,
+          showIndent: false,
+          showListCheck: false,
+          showRedo: false,
+          showListBullets: true,
+          showListNumbers: false,
+          showAlignmentButtons: true,
+          showItalicButton: true,
+          showQuote: true,
+          showLink: true,
+          showCenterAlignment: false,
+          showLeftAlignment: false,
+          showRightAlignment: false,
+          showColorButton: false,
+          showSearchButton: false,
+          showClipboardCut: false,
+          showClipboardCopy: false,
+          showSubscript: false,
+          showSuperscript: false,
+          showClipboardPaste: false,
+          controller: _quillController,
+        ),
+      ),
+    );
+
+    // if (productDescription.isNotEmpty) {
+    //   if (blogBodyTextJson != null) {
+    //     return editorWidget;
+    //   } else {
+    //     return const SizedBox.shrink();
+    //   }
+    // } else {
+    return editorWidget;
+    // }
   }
 
   Widget scaffoldBody() {
@@ -1446,6 +1567,142 @@ class _EditProductState extends State<EditProduct> {
       },
     );
   }
+  // Widget getProductDescription() {
+  //   try {
+  //     descriptionBodyTextJson =
+  //         jsonDecode(messageDecoderWithEmoji(currentProduct.description) ?? "");
+  //
+  //     _quillController = flutterQuill.QuillController(
+  //       document: flutterQuill.Document.fromJson(descriptionBodyTextJson),
+  //       selection: const TextSelection.collapsed(offset: -1),
+  //     );
+  //   } catch (e) {
+  //     debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
+  //   }
+  //   if (descriptionBodyTextJson != null) {
+  //     return Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         _buildProductDescriptionText(),
+  //         const SizedBox(height: 5),
+  //         Container(
+  //           height: 120,
+  //           decoration: BoxDecoration(
+  //             border: Border.all(
+  //                 color: _focusNodeDescription.hasFocus
+  //                     ? navyBlue
+  //                     : greyBorderColor),
+  //             borderRadius: BorderRadius.circular(10),
+  //           ),
+  //           child: ConstrainedBox(
+  //             constraints: const BoxConstraints(
+  //               maxHeight: 150,
+  //             ),
+  //             child: Theme(
+  //               data: Theme.of(context).copyWith(
+  //                 textSelectionTheme: TextSelectionThemeData(
+  //                   cursorColor:
+  //                       _focusNodeDescription.hasFocus ? null : navyBlue,
+  //                 ),
+  //               ),
+  //               child: flutterQuill.QuillEditor.basic(
+  //                 focusNode: _focusNodeDescription,
+  //                 configurations: flutterQuill.QuillEditorConfigurations(
+  //                   controller: _quillController,
+  //                   readOnlyMouseCursor: SystemMouseCursors.basic,
+  //                   showCursor:
+  //                       _isKeyboardVisible || _isProductDescriptionVisible,
+  //                   enableInteractiveSelection: false,
+  //                   embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     );
+  //   } else {
+  //     return Text(
+  //       messageDecoderWithEmoji(currentProduct.description) ?? "",
+  //       style: TextStyle(
+  //         fontWeight: FontWeight.w400,
+  //         fontSize: 13,
+  //         color: blackFont,
+  //       ),
+  //       textAlign: TextAlign.justify,
+  //     );
+  //   }
+  // }
+
+  // Widget getProductDescription() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       _buildProductDescriptionText(),
+  //       const SizedBox(height: 5),
+  //       Container(
+  //         height: 120,
+  //         decoration: BoxDecoration(
+  //           border: Border.all(
+  //               color: _focusNodeDescription.hasFocus
+  //                   ? navyBlue
+  //                   : greyBorderColor),
+  //           borderRadius: BorderRadius.circular(10),
+  //         ),
+  //         child: ConstrainedBox(
+  //           constraints: const BoxConstraints(
+  //             maxHeight: 150,
+  //           ),
+  //           child: Theme(
+  //             data: Theme.of(context).copyWith(
+  //               textSelectionTheme: TextSelectionThemeData(
+  //                 cursorColor: _focusNodeDescription.hasFocus ? null : navyBlue,
+  //               ),
+  //             ),
+  //             child: (descriptionBodyTextJson != null)
+  //                 ? flutterQuill.QuillEditor(
+  //                     focusNode: _focusNodeDescription,
+  //                     scrollController: _textEditorScrollController,
+  //                     configurations: flutterQuill.QuillEditorConfigurations(
+  //                       autoFocus: false,
+  //                       controller: _quillController,
+  //                       scrollable: true,
+  //                       expands: false,
+  //                       padding: const EdgeInsets.only(top: 10, left: 15),
+  //                       placeholder: "",
+  //                       scrollBottomInset: 20,
+  //                       showCursor:
+  //                           _isKeyboardVisible || _isProductDescriptionVisible,
+  //                       embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+  //                     ),
+  //                   )
+  //                 : Text(
+  //                     messageDecoderWithEmoji(currentProduct.description) ?? "",
+  //                     style: TextStyle(
+  //                       fontWeight: FontWeight.w400,
+  //                       fontSize: 13,
+  //                       color: blackFont,
+  //                     ),
+  //                     textAlign: TextAlign.justify,
+  //                   ),
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  Widget _buildProductDescriptionText() {
+    return Text(
+      AppLocalization.of(context)!.description,
+      style: TextStyle(
+        color: darkGrey,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        fontFamily: "Inter",
+      ),
+    );
+  }
 
   Widget getProductShortDescription() {
     return CustomizedTextFormField(
@@ -2374,8 +2631,10 @@ class _EditProductState extends State<EditProduct> {
         if (validateDropdown()) {
           // setting updated value
           currentProduct.name = productName;
+          // currentProduct.description =
+          //     messageDecoderWithEmoji(productDescription);
           currentProduct.description =
-              messageDecoderWithEmoji(productDescription);
+              jsonEncode(_quillController.document.toDelta().toJson());
           currentProduct.category = selectedProductCategory;
           currentProduct.subCategory = selectedSubCategory;
           currentProduct.customCategory = selectedCustomCategory;
@@ -3329,7 +3588,8 @@ class _EditProductState extends State<EditProduct> {
     searchKeywordController.dispose();
     _myController.dispose();
     inventoryController.dispose();
-
+    _focusNodeDescription.dispose();
+    _quillController.dispose();
     super.dispose();
   }
 }

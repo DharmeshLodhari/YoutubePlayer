@@ -115,8 +115,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   bool isSelected = true;
   late flutterQuill.QuillController _quillController;
   dynamic descriptionBodyTextJson;
-  bool _isSeeAll = false;
-  late AnimationController _controller;
   @override
   void initState() {
     product = widget.arguments[
@@ -1609,21 +1607,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     ],
                   ),
                   const SizedBox(height: 15),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          if (product?.weight != 0.0 && product?.weight != null)
-                            _buildWeight(),
-                          if (product?.height != 0.0 && product?.height != null)
-                            _buildHeight(),
-                          if (product?.width != 0.0 && product?.width != null)
-                            _buildWidth(),
-                        ],
-                      );
-                    },
-                  ),
                   stockStatus(),
                 ],
               ),
@@ -1631,6 +1614,23 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             qrCodeIcon(context, product!.getNavigationData(),
                 product!.getQRCodeInfo()),
           ],
+        ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (product?.weight != 0.0 && product?.weight != null)
+                _buildWeight(),
+              const SizedBox(width: 15),
+              if (product?.height != 0.0 && product?.height != null)
+                _buildHeight(),
+              const SizedBox(width: 15),
+              if (product?.width != 0.0 && product?.width != null)
+                _buildWidth(),
+            ],
+          ),
         ),
         if (!allKeysAreNullOrEmptyColor) _buildVariantColor(),
         if (!allKeysAreNullOrEmpty) _buildVariantSize(),
@@ -1744,7 +1744,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget _buildDisplayProduct() {
     return Container(
       constraints: const BoxConstraints(
-        maxHeight: 30.0,
+        maxHeight: 25.0,
         maxWidth: 60.0,
       ),
       alignment: Alignment.center,
@@ -2417,15 +2417,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 fontFamily: "Inter",
               ),
             ),
-            Text(
-              "See all",
-              style: TextStyle(
-                fontFamily: "Inter",
-                fontSize: 12.0,
-                color: navyBlue,
-                fontWeight: FontWeight.w600,
-              ),
-            )
+            // Text(
+            //   "See all",
+            //   style: TextStyle(
+            //     fontFamily: "Inter",
+            //     fontSize: 12.0,
+            //     color: navyBlue,
+            //     fontWeight: FontWeight.w600,
+            //   ),
+            // )
           ],
         ),
         const SizedBox(
