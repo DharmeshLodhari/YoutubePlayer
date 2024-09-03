@@ -79,7 +79,7 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": widget.product});
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         child: SizedBox(
           width: 230,
           child: Card(
@@ -90,163 +90,41 @@ class _DisplayProductState extends State<DisplayProduct> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                _buildProductImage(),
                 Expanded(
-                  child: Stack(
-                    children: [
-                      SizedBox(
-                        height: 189,
-                        child: CachedNetworkImage(
-                          imageUrl: widget.product.cover!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          errorWidget: productAndServiceBigErrorWidget,
-                        ),
-                      ),
-                      if (widget.isProductShowIcon == true)
-                        Positioned(
-                          top: 10,
-                          left: 10,
-                          child: Image.asset(
-                            "assets/images/appIcon/heart.png",
-                            height: 17,
-                            width: 17,
-                          ),
-                        )
-                      else
-                        Container(),
-                      // Positioned(
-                      //   left: 10,
-                      //   bottom: 10,
-                      //   child: getRating(
-                      //       numberOfRating: widget.product.rating?.toInt()),
-                      // ),
-
-                      // if (widget.product.variantModels?.isEmpty ?? false)
-                      //   productStockAndDetailTag(),
-
-                      displayShoppingCartControls(),
-                      // TODO: to be added in future
-                      // Positioned(right: 10, top: 10, child: favouriteIcon())
-                    ],
-                  ),
-                ),
-                _buildProductDiscountAndTag(),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        truncateString(
-                          str: messageDecoderWithEmoji(widget.product.name) ??
-                              "",
-                          lengthToTruncateAt: 16,
-                          showEllipsis: false,
-                        ),
-                        maxLines: 1,
-                        style: TextStyle(
-                          color: blackFont,
-                          fontSize: 14,
-                          fontFamily: "Inter",
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        truncateString(
-                          str: messageDecoderWithEmoji(
-                                  widget.product.shortDescription) ??
-                              "",
-                          lengthToTruncateAt: 45,
-                          showEllipsis: true,
-                        ),
-                        maxLines: 2,
-                        style: TextStyle(
-                          fontFamily: "Inter",
-                          fontWeight: FontWeight.w400,
-                          fontSize: 12,
-                          color: fontLightGrey,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 2,
-                      ),
-                      Row(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 2, left: 2, top: 4),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          getRating(
-                              numberOfRating: widget.product.rating?.toInt()),
-                          const SizedBox(width: 5),
-                          _getProductReviews(),
-                        ],
-                      ),
-                      getPreparationTime(),
-                      const SizedBox(height: 2),
-                      Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          _buildProductName(),
+                          _buildProductShortDescription(),
+                          const SizedBox(
+                            height: 2,
+                          ),
+                          _buildProductRating(),
+                          Flexible(child: getPreparationTime()),
+                          const SizedBox(height: 2),
+                          Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      worldCurrencies[
-                                              widget.product.currency] ??
-                                          "NGN",
-                                      style: TextStyle(
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                        color: navyBlue,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    priceText(),
+                                    _buildProductCurrency(),
+                                    _buildProductPrice(),
                                   ],
                                 ),
-                                if ((widget.product.variantModels?.isEmpty ??
-                                        false) &&
-                                    widget.product.discountedPrice != null)
-                                  widget.product.checkProductDiscount()
-                                      ? Row(
-                                          children: [
-                                            Text(
-                                              worldCurrencies[widget
-                                                      .product.currency] ??
-                                                  "NGN",
-                                              style: TextStyle(
-                                                fontFamily: "Inter",
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 12,
-                                                color: blackFont,
-                                                decoration:
-                                                    TextDecoration.lineThrough,
-                                              ),
-                                            ),
-                                            Text(
-                                              moneyDisplayNormalizer(
-                                                  widget.product.price!),
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 12,
-                                                color: blackFont,
-                                                decoration:
-                                                    TextDecoration.lineThrough,
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      : const SizedBox()
-                                else
-                                  const SizedBox(),
-                              ],
-                            ),
-                            displayShoppingAddingToCartControl()
-                          ]),
-                    ],
+                                Flexible(
+                                    child: displayShoppingAddingToCartControl())
+                              ]),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -827,6 +705,146 @@ class _DisplayProductState extends State<DisplayProduct> {
     } else {
       return const SizedBox();
     }
+  }
+
+  Widget _buildProductImage() {
+    return Stack(
+      children: [
+        SizedBox(
+          height: 130,
+          child: CachedNetworkImage(
+            imageUrl: widget.product.cover!,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            errorWidget: productAndServiceBigErrorWidget,
+          ),
+        ),
+        if (widget.isProductShowIcon == true)
+          Positioned(
+            top: 10,
+            left: 10,
+            child: Image.asset(
+              "assets/images/appIcon/heart.png",
+              height: 17,
+              width: 17,
+            ),
+          ),
+        if (widget.product.variantModels?.isEmpty ?? false)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: _buildProductDiscountAndTag(),
+          ),
+        displayShoppingCartControls(),
+      ],
+    );
+  }
+
+  Widget _buildProductName() {
+    return Text(
+      truncateString(
+        str: messageDecoderWithEmoji(widget.product.name) ?? "",
+        lengthToTruncateAt: 16,
+        showEllipsis: false,
+      ),
+      maxLines: 1,
+      style: TextStyle(
+        color: blackFont,
+        fontSize: 14,
+        fontFamily: "Inter",
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildProductShortDescription() {
+    return Flexible(
+      child: Text(
+        truncateString(
+          str: messageDecoderWithEmoji(widget.product.shortDescription) ?? "",
+          lengthToTruncateAt: 45,
+          showEllipsis: true,
+        ),
+        maxLines: 2,
+        style: TextStyle(
+          fontFamily: "Inter",
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+          color: fontLightGrey,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductRating() {
+    return Flexible(
+      child: Row(
+        children: [
+          getRating(numberOfRating: widget.product.rating?.toInt()),
+          const SizedBox(width: 5),
+          _getProductReviews(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductCurrency() {
+    return Flexible(
+      child: Row(
+        children: [
+          Text(
+            worldCurrencies[widget.product.currency] ?? "NGN",
+            style: TextStyle(
+              fontFamily: "Inter",
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: navyBlue,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          priceText(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductPrice() {
+    if ((widget.product.variantModels?.isEmpty ?? false) &&
+        widget.product.discountedPrice != null) {
+      if (widget.product.checkProductDiscount()) {
+        return Flexible(
+          child: Row(
+            children: [
+              Text(
+                worldCurrencies[widget.product.currency] ?? "NGN",
+                style: TextStyle(
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  color: blackFont,
+                  decoration: TextDecoration.lineThrough,
+                ),
+              ),
+              Text(
+                moneyDisplayNormalizer(widget.product.price!),
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  color: blackFont,
+                  decoration: TextDecoration.lineThrough,
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        const SizedBox();
+      }
+    } else {
+      const SizedBox();
+    }
+    return const SizedBox.shrink();
   }
 }
 
