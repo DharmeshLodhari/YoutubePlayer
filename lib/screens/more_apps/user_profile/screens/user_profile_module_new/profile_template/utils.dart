@@ -302,7 +302,7 @@ String getGroupUsername(String channelUsername) {
 Widget showDiscountValue(
     String discountType, num discountValue, String? currency) {
   return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
     color: lightGreenBg,
     child: RichText(
       text: TextSpan(

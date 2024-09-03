@@ -845,6 +845,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0),
               child: productStockAndDetailTag(),
             ),
+            const SizedBox(height: 12),
+            _buildHorizontalProductImageList(),
+            const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
@@ -1219,8 +1222,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          _buildHorizontalProductImageList(),
                         ],
                       ),
           );
@@ -1260,7 +1261,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildHorizontalProductImageList() {
-    return SizedBox(
+    return Container(
+      alignment: Alignment.center,
       height: 60,
       child: ListView.builder(
         shrinkWrap: true,
@@ -1326,7 +1328,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         (product?.availableFrom?.isAfter(DateTime.now()) ?? false)) {
       return SizedBox(
         width: double.infinity,
-        height: 30,
+        height: 25,
         child: showColoredLabeledWidgetProductDetails(
             product: product,
             selectedVariant: selectedVariant,
@@ -1338,7 +1340,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ((product?.quantity ?? 0) <= 0)) {
       return SizedBox(
         width: double.infinity,
-        height: 30,
+        height: 25,
         child: showColoredLabeledWidgetProductDetails(
             product: product,
             selectedVariant: selectedVariant,
@@ -1351,7 +1353,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 product?.pricePercentageChange != 0.0 ||
             selectedVariant != null)) {
       return SizedBox(
-          width: double.infinity, height: 30, child: buildDiscountPrice());
+          width: double.infinity, height: 25, child: buildDiscountPrice());
     } else {
       return const SizedBox();
     }
@@ -1360,14 +1362,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget buildDiscountPrice() {
     if (selectedVariant != null) {
       if (product?.checkVariantDiscount(selectedVariant) ?? false) {
-        return Positioned(
-          top: 20,
-          right: 10,
-          child: showDiscountValue(
-            selectedVariant?.discountType ?? "",
-            selectedVariant?.discountValue ?? 0,
-            selectedVariant?.currency,
-          ),
+        return showDiscountValue(
+          selectedVariant?.discountType ?? "",
+          selectedVariant?.discountValue ?? 0,
+          selectedVariant?.currency,
         );
       } else {
         return const SizedBox();
@@ -1375,14 +1373,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     } else if (product?.discountedPrice != null &&
         product?.discountedPrice != 0) {
       if (product?.checkProductDiscount() ?? false) {
-        return Positioned(
-          top: 20,
-          right: 10,
-          child: showDiscountValue(
-            product?.discountType ?? "",
-            product?.discountValue ?? 0,
-            product?.currency,
-          ),
+        return showDiscountValue(
+          product?.discountType ?? "",
+          product?.discountValue ?? 0,
+          product?.currency,
         );
       } else {
         return const SizedBox();
