@@ -33,13 +33,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:swipe_image_gallery/swipe_image_gallery.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
@@ -849,27 +849,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             _buildHorizontalProductImageList(),
             const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildProductTitleAndPriceWidget(),
-                  const SizedBox(height: 20),
-                  // Divider(
-                  //   height: 0,
-                  //   color: dividerColor,
-                  //   thickness: 1,
-                  // ),
-                  // const SizedBox(height: 12),
-                  // _buildShortInfoWidget(),
-                  // const SizedBox(height: 16),
+                  _buildProductWidthHightWeight(),
+                  const SizedBox(height: 10),
+                  _buildShortInfoWidget(),
+                  const SizedBox(height: 16),
                   Divider(
                     height: 0,
                     color: dividerColor,
                     thickness: 1,
                   ),
-                  if (product?.availableFrom?.isAfter(DateTime.now()) ?? false)
-                    _showAvailableDate(),
                   const SizedBox(height: 12),
                   _buildDescriptionWidget(),
                   const SizedBox(height: 16),
@@ -890,6 +883,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ],
                   const SizedBox(height: 10),
                   _buildSellerInfoWidget(),
+                  const SizedBox(height: 10),
+                  Divider(
+                    height: 0,
+                    color: dividerColor,
+                    thickness: 1,
+                  ),
                   const SizedBox(height: 10),
                   _buildReviewList(),
                   const SizedBox(height: 16),
@@ -944,18 +943,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(
-          height: 12,
-        ),
+        const SizedBox(height: 2),
         _buildAvailableFromAndShareWidgets(),
-        const SizedBox(
-          height: 16,
-        ),
-        Divider(
-          height: 0,
-          color: dividerColor,
-          thickness: 1,
-        ),
+        const SizedBox(height: 2),
       ],
     );
   }
@@ -1113,30 +1103,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                             showSliderGallery(displayProductImages);
                           }
                         },
-                        child: Stack(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1.5,
-                              child: Center(
-                                child: Stack(
-                                  children: [
-                                    CachedNetworkImage(
-                                      placeholder: (context, url) => Center(
-                                          child: CircularLoadingIndicator()),
-                                      imageUrl: displayProductImages?[0] ?? "",
-                                      fit: BoxFit.cover,
-                                      height: double.infinity,
-                                      width: double.infinity,
-                                      errorWidget:
-                                          productAndServiceBigErrorWidget,
-                                    ),
-                                    // productStockAndDetailTag(),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            // getOutOfStockTag(),
-                          ],
+                        child: AspectRatio(
+                          aspectRatio: 1.5,
+                          child: CachedNetworkImage(
+                            placeholder: (context, url) =>
+                                Center(child: CircularLoadingIndicator()),
+                            imageUrl: displayProductImages?[0] ?? "",
+                            fit: BoxFit.cover,
+                            errorWidget: productAndServiceBigErrorWidget,
+                          ),
                         ),
                       )
                     : Column(
@@ -1262,8 +1237,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget _buildHorizontalProductImageList() {
     return Container(
-      alignment: Alignment.center,
       height: 60,
+      alignment: Alignment.center,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -1330,10 +1305,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         width: double.infinity,
         height: 25,
         child: showColoredLabeledWidgetProductDetails(
-            product: product,
-            selectedVariant: selectedVariant,
-            text: AppLocalization.of(context)!.comingSoon,
-            color: lightYellow),
+          product: product,
+          selectedVariant: selectedVariant,
+          text: AppLocalization.of(context)!.comingSoon,
+          color: lightYellow,
+        ),
       );
     } else if ((product?.variantModels?.isEmpty ?? false) &&
         product?.trackInventory == true &&
@@ -1342,10 +1318,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         width: double.infinity,
         height: 25,
         child: showColoredLabeledWidgetProductDetails(
-            product: product,
-            selectedVariant: selectedVariant,
-            text: AppLocalization.of(context)!.outOfStock,
-            color: lightRed),
+          product: product,
+          selectedVariant: selectedVariant,
+          text: AppLocalization.of(context)!.outOfStock,
+          color: lightRed,
+        ),
       );
     } else if ((product?.discountedPrice != null &&
             product?.discountedPrice != 0) ||
@@ -1353,7 +1330,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 product?.pricePercentageChange != 0.0 ||
             selectedVariant != null)) {
       return SizedBox(
-          width: double.infinity, height: 25, child: buildDiscountPrice());
+        width: double.infinity,
+        height: 25,
+        child: buildDiscountPrice(),
+      );
     } else {
       return const SizedBox();
     }
@@ -1590,9 +1570,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   _buildProductName(),
                   _buildDiscountedPrice(),
                   _buildOriginalPrice(),
-                  const SizedBox(height: 5),
-                  _buildDisplayProduct(),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
+                  _buildProductCondition(),
+                  const SizedBox(height: 2),
+                  // if (product?.availableFrom?.isAfter(DateTime.now()) ?? false)
+                  //   _showAvailableDate(),
                   Row(
                     children: [
                       getRating(numberOfRating: product?.rating?.toInt()),
@@ -1600,7 +1582,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       _getProductReviews(),
                     ],
                   ),
-                  const SizedBox(height: 15),
                   stockStatus(),
                 ],
               ),
@@ -1609,6 +1590,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 product!.getQRCodeInfo()),
           ],
         ),
+        if (!allKeysAreNullOrEmptyColor) _buildVariantColor(),
+        if (!allKeysAreNullOrEmpty) _buildVariantSize(),
+      ],
+    );
+  }
+
+  Widget _buildProductWidthHightWeight() {
+    return Column(
+      children: [
+        const SizedBox(height: 10),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -1626,10 +1617,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             ],
           ),
         ),
-        if (!allKeysAreNullOrEmptyColor) _buildVariantColor(),
-        if (!allKeysAreNullOrEmpty) _buildVariantSize(),
-        const SizedBox(height: 8),
-        _buildShortInfoWidget(),
       ],
     );
   }
@@ -1735,25 +1722,28 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     }
   }
 
-  Widget _buildDisplayProduct() {
-    return Container(
-      constraints: const BoxConstraints(
-        maxHeight: 25.0,
-        maxWidth: 60.0,
-      ),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: bgLightPink,
-      ),
-      child: Text(
-        "${product?.condition}",
-        style: TextStyle(
-          fontFamily: "Inter",
-          color: pinkFont,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+  Widget _buildProductCondition() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: bgLightPink,
+          ),
+          child: Text(
+            product?.condition ?? '',
+            style: TextStyle(
+              fontFamily: "Inter",
+              color: pinkFont,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -2430,41 +2420,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ],
     );
   }
-
-  // Widget _buildProductDescription() {
-  //   try {
-  //     descriptionBodyTextJson =
-  //         jsonDecode(messageDecoderWithEmoji(product?.description) ?? "");
-  //
-  //     _quillController = flutterQuill.QuillController(
-  //       document: flutterQuill.Document.fromJson(descriptionBodyTextJson),
-  //       selection: const TextSelection.collapsed(offset: -1),
-  //     );
-  //   } catch (e) {
-  //     debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
-  //   }
-  //   if (descriptionBodyTextJson != null) {
-  //     return flutterQuill.QuillEditor.basic(
-  //       configurations: flutterQuill.QuillEditorConfigurations(
-  //         controller: _quillController,
-  //         readOnlyMouseCursor: SystemMouseCursors.basic,
-  //         showCursor: false,
-  //         enableInteractiveSelection: false,
-  //         embedBuilders: FlutterQuillEmbeds.editorBuilders(),
-  //       ),
-  //     );
-  //   } else {
-  //     return Text(
-  //       messageDecoderWithEmoji(product?.description) ?? "",
-  //       style: TextStyle(
-  //         fontWeight: FontWeight.w400,
-  //         fontSize: 12,
-  //         color: blackFont,
-  //       ),
-  //       textAlign: TextAlign.justify,
-  //     );
-  //   }
-  // }
 
   Widget _buildAddonWidget() {
     return Column(

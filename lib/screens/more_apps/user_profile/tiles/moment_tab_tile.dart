@@ -14,7 +14,12 @@ import 'package:shimmer/shimmer.dart';
 class MomentsTab extends StatefulWidget {
   CustomerProfile? searchedUser;
   String? channelUsername;
-  MomentsTab({super.key, required this.searchedUser, this.channelUsername});
+  String? userName;
+  MomentsTab(
+      {super.key,
+      required this.searchedUser,
+      this.userName,
+      this.channelUsername});
 
   @override
   State<MomentsTab> createState() => _MomentsTabState();
@@ -73,6 +78,33 @@ class _MomentsTabState extends State<MomentsTab> {
             },
           );
         }
+
+        if (widget.userName != null) {
+          await MomentsService()
+              .getMomentsWithOwnerName(
+                  ownerName: widget.userName!,
+                  channelUsername: widget.channelUsername ?? '')
+              .then(
+            (myMomentsModelList) {
+              isMyMomentsLoading = false;
+              myMomentsList.addAll(myMomentsModelList);
+
+              if (mounted) setState(() {});
+
+              if (isFirstTime && myMomentsNext != null && myMomentsNext != "") {
+                isFirstTime = false;
+                getSearchedUserMoments();
+              }
+            },
+          ).catchError(
+            (error) {
+              isMyMomentsLoading = false;
+
+              if (mounted) setState(() {});
+              debugPrint('ERROR GETTING MY MOMENTS -> $error');
+            },
+          );
+        }
       }
     }
   }
@@ -108,42 +140,39 @@ class _MomentsTabState extends State<MomentsTab> {
         ),
         controller: _refreshController,
         onRefresh: _onRefresh,
-        child: myMomentsList.isEmpty
-            ? NoItemInList(
-                msg: AppLocalization.of(context)!.noMoments,
-              )
-            : ListView(
-                controller: _myMomentsScrollController,
-                children: [
-                  const SizedBox(height: 16),
-                  if (isMyMomentsLoading)
-                    Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: greyBorderColor,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 200,
-                          mainAxisExtent: 300,
-                        ),
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          );
-                        },
+        child: isMyMomentsLoading && myMomentsList.isEmpty
+            ? Shimmer.fromColors(
+                baseColor: Colors.white,
+                highlightColor: greyBorderColor,
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 200,
+                    mainAxisExtent: 300,
+                  ),
+                  itemCount: 2,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                    )
-                  else
-                    const SizedBox.shrink(),
-                  myMomentsListWidget(),
-                ],
-              ),
+                    );
+                  },
+                ),
+              )
+            : myMomentsList.isEmpty
+                ? NoItemInList(
+                    msg: AppLocalization.of(context)!.noMoments,
+                  )
+                : ListView(
+                    controller: _myMomentsScrollController,
+                    children: [
+                      const SizedBox(height: 16),
+                      myMomentsListWidget(),
+                    ],
+                  ),
       ),
     );
   }
@@ -162,7 +191,7 @@ class _MomentsTabState extends State<MomentsTab> {
             padding: EdgeInsets.zero,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisExtent: 300,
+              mainAxisExtent: 270,
               maxCrossAxisExtent: 200,
             ),
             itemCount: myMomentsList.length,
