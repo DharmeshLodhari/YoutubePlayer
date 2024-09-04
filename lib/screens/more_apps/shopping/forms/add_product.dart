@@ -7,6 +7,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
+import 'package:Slydo/screens/more_apps/shopping/widget/custom_floatingaction_buttonlocation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -42,7 +43,7 @@ class AddProduct extends StatefulWidget {
   State<AddProduct> createState() => _AddProductState();
 }
 
-class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
+class _AddProductState extends State<AddProduct> {
   final _auth = ShoppingAuthService();
   final _formKey = GlobalKey<FormState>();
 
@@ -132,7 +133,11 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
   final ScrollController _textEditorScrollController = ScrollController();
   bool _isKeyboardVisible = false;
   bool _isProductDescriptionVisible = false;
-
+  double? bottomInset;
+  double fabIconHeight = 50.0;
+  final viewInsets = EdgeInsets.fromWindowPadding(
+      WidgetsBinding.instance.window.viewInsets,
+      WidgetsBinding.instance.window.devicePixelRatio);
   dynamic blogBodyTextJson;
   @override
   void deactivate() {
@@ -152,38 +157,54 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
       getAddressList();
     });
     inventoryController.text = "1";
-    WidgetsBinding.instance.addObserver(this);
+    // WidgetsBinding.instance.addObserver(this);
     _focusNodeDescription.addListener(_handleFocusChange);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateKeyboardVisibility();
+    });
     super.initState();
   }
 
+  // void _handleFocusChange() {
+  //   if (_focusNodeDescription.hasFocus) {
+  //     setState(() {
+  //       _isProductDescriptionVisible = true;
+  //     });
+  //   } else {
+  //     setState(() {
+  //       _isProductDescriptionVisible = false;
+  //     });
+  //   }
+  // }
   void _handleFocusChange() {
-    if (_focusNodeDescription.hasFocus) {
-      setState(() {
-        _isProductDescriptionVisible = true;
-      });
-    } else {
-      setState(() {
-        _isProductDescriptionVisible = false;
-      });
-    }
+    setState(() {
+      _isProductDescriptionVisible = _focusNodeDescription.hasFocus;
+    });
+    _updateKeyboardVisibility();
   }
 
-// final bottomInset = MediaQuery.maybeOf(context)?.viewInsets.bottom ?? 0;
-  // final mediaQuery = MediaQuery.maybeOf(context);
-  @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-    if (!mounted) return;
-    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+  void _updateKeyboardVisibility() {
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
     setState(() {
-      _isKeyboardVisible = (bottomInset) > 0;
-      if (!_isKeyboardVisible && !_focusNodeDescription.hasFocus) {
-        _isProductDescriptionVisible = false;
-      }
+      _isKeyboardVisible = (bottomInset ?? 0) > 0;
     });
-    super.didChangeMetrics();
   }
+
+  // final bottomInset = MediaQuery.maybeOf(context)?.viewInsets.bottom ?? 0;
+  // final mediaQuery = MediaQuery.maybeOf(context);
+  // @override
+  // void didChangeMetrics() {
+  //   super.didChangeMetrics();
+  //   if (!mounted) return;
+  //   final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+  //   setState(() {
+  //     _isKeyboardVisible = (bottomInset) > 0;
+  //     if (!_isKeyboardVisible && !_focusNodeDescription.hasFocus) {
+  //       _isProductDescriptionVisible = false;
+  //     }
+  //   });
+  //   super.didChangeMetrics();
+  // }
 
   void getDiscountList() async {
     if (!isDiscountLoading) {
@@ -312,30 +333,47 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    _isKeyboardVisible = (bottomInset ?? 0) > 0;
     return WillPopScope(
       onWillPop: () async {
         return true;
       },
-      child: Scaffold(
-        backgroundColor: lightGrey,
-        resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
-        floatingActionButtonLocation:
-            _isKeyboardVisible && _isProductDescriptionVisible
-                ? FloatingActionButtonLocation.endContained
-                : null,
-        floatingActionButton: Container(
-          width: MediaQuery.of(context).size.width,
-          margin: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-              right: 0,
-              left: 0),
-          child: _isKeyboardVisible && _isProductDescriptionVisible
-              ? _getEditor()
-              : const SizedBox.shrink(),
-        ),
-      ),
+      child: LayoutBuilder(builder: (context, constraint) {
+        return Scaffold(
+          backgroundColor: lightGrey,
+          // resizeToAvoidBottomInset: false,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: scaffoldBody(),
+
+          floatingActionButtonLocation:
+              const CustomFloatingActionButtonLocation(0, 0),
+          floatingActionButton: LayoutBuilder(
+            builder: (context, constraint) {
+              final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+              final screenHeight = MediaQuery.of(context).size.height;
+              // final editorHeight = constraint.maxHeight * 0.1;
+              final editorHeight = screenHeight < 700 ? 120.0 : 100.0;
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.only(
+                  bottom: keyboardHeight,
+                  top: constraint.maxHeight -
+                      keyboardHeight -
+                      MediaQuery.of(context).padding.bottom -
+                      MediaQuery.of(context).padding.top -
+                      editorHeight,
+                  right: 0,
+                  left: 0,
+                ),
+                child: _isKeyboardVisible && _isProductDescriptionVisible
+                    ? _getEditor()
+                    : const SizedBox.shrink(),
+              );
+            },
+          ),
+        );
+      }),
     );
   }
 
@@ -3218,7 +3256,7 @@ class _AddProductState extends State<AddProduct> with WidgetsBindingObserver {
     inventoryController.dispose();
     userTags = [];
     _quillController.dispose();
-    WidgetsBinding.instance.removeObserver(this);
+    // WidgetsBinding.instance.removeObserver(this);
     _focusNodeDescription.dispose();
     super.dispose();
   }
