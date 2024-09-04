@@ -348,15 +348,16 @@ class DiscountDetailsPageState extends State<DiscountDetailsPage> {
   }
 
   Widget superStoreProducts() {
-    if (isProductLoading) {
-      return Container();
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (noProductInList)
-          const SizedBox.shrink()
+          SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.noResultFound,
+            ),
+          )
         else ...[
           const SizedBox(height: 2),
           Container(
@@ -375,16 +376,8 @@ class DiscountDetailsPageState extends State<DiscountDetailsPage> {
             ),
           ),
         ],
-        if (productList.isEmpty && !isProductLoading)
-          SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!.noResultFound,
-            ),
-          )
-        else if (isProductLoading && productList.isEmpty)
-          const SizedBox
-              .shrink() // Shimmer effect is already handled above in the ListView
+        if (isProductLoading && productList.isEmpty)
+          buildLoadingIndicator(isLoading: isProductLoading)
         else
           CustomScrollView(
             physics: const ScrollPhysics(),
@@ -400,9 +393,9 @@ class DiscountDetailsPageState extends State<DiscountDetailsPage> {
                   childCount: productList.length,
                 ),
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 22,
-                  mainAxisExtent: 260,
-                  crossAxisSpacing: 15,
+                  // mainAxisSpacing: 5,
+                  mainAxisExtent: 250,
+                  // crossAxisSpacing: 5,
                   maxCrossAxisExtent: 200,
                 ),
               ),

@@ -114,7 +114,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
     // Try if blog text is decodable, if it isn't the try blog won't run.
 
     try {
-      blogBodyTextJson = jsonDecode(messageDecoderWithEmoji(userPost.text!)!);
+      blogBodyTextJson =
+          jsonDecode(messageDecoderWithEmoji(userPost.text) ?? "");
 
       // debugPrint('USER POST :: ${userPost.text}');
       // debugPrint('USER POST 0000 :: ${blogBodyTextJson}');
