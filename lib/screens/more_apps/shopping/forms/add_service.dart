@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -15,8 +17,12 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_quill/src/widgets/quill/quill_controller.dart';
+import 'package:flutter_quill/src/models/config/editor/editor_configurations.dart';
+import 'package:flutter_quill/src/widgets/editor/editor.dart';
 
 import '../shopping_auth.dart';
 
@@ -66,6 +72,12 @@ class _AddServiceState extends State<AddService> {
   DiscountModel? pressedDiscount;
   DiscountModel? selectedDiscount;
   String discountName = "";
+  bool _isKeyboardVisible = false;
+  bool _isServiceDescriptionVisible = false;
+  double? bottomInset;
+  final FocusNode _focusNodeDescription = FocusNode();
+  final QuillController _quillController = QuillController.basic();
+  final ScrollController _textEditorScrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
 
@@ -79,7 +91,25 @@ class _AddServiceState extends State<AddService> {
   void initState() {
     getCategories();
     getDiscountList();
+    _focusNodeDescription.addListener(_handleFocusChange);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateKeyboardVisibility();
+    });
     super.initState();
+  }
+
+  void _handleFocusChange() {
+    setState(() {
+      _isServiceDescriptionVisible = _focusNodeDescription.hasFocus;
+    });
+    _updateKeyboardVisibility();
+  }
+
+  void _updateKeyboardVisibility() {
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    setState(() {
+      _isKeyboardVisible = (bottomInset ?? 0) > 0;
+    });
   }
 
   void getCategories() async {
@@ -149,6 +179,8 @@ class _AddServiceState extends State<AddService> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    _isKeyboardVisible = (bottomInset ?? 0) > 0;
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -196,53 +228,65 @@ class _AddServiceState extends State<AddService> {
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(height: 10),
-                      addImages(),
-                      const SizedBox(
-                        height: 10,
+        : Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Center(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const SizedBox(height: 10),
+                            addImages(),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            addTitleField(),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            getAmountField(),
+                            const SizedBox(height: 10),
+                            getCategoryField(),
+                            const SizedBox(height: 16),
+                            getIsAvailableField(),
+                            const SizedBox(height: 16),
+                            if (serviceIsAvailable == true) ...[
+                              getAvailableFromField(),
+                              const SizedBox(height: 16),
+                            ],
+                            getDiscountField(),
+                            const SizedBox(height: 16),
+                            if (isDiscountAvailable == true) ...[
+                              getDiscountListField(),
+                              const SizedBox(height: 16),
+                            ],
+                            getServiceShortDescription(),
+                            const SizedBox(height: 10),
+                            getServiceDescription(),
+                            const SizedBox(height: 10),
+                            getSearchEngineKeyword(),
+                            const SizedBox(height: 40),
+                            getSubmitButton(),
+                            const SizedBox(height: 40),
+                          ],
+                        ),
                       ),
-                      addTitleField(),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      getAmountField(),
-                      const SizedBox(height: 10),
-                      getCategoryField(),
-                      const SizedBox(height: 16),
-                      getIsAvailableField(),
-                      const SizedBox(height: 16),
-                      if (serviceIsAvailable == true) ...[
-                        getAvailableFromField(),
-                        const SizedBox(height: 16),
-                      ],
-                      getDiscountField(),
-                      const SizedBox(height: 16),
-                      if (isDiscountAvailable == true) ...[
-                        getDiscountListField(),
-                        const SizedBox(height: 16),
-                      ],
-                      getServiceShortDescription(),
-                      const SizedBox(height: 10),
-                      getServiceDescription(),
-                      const SizedBox(height: 10),
-                      getSearchEngineKeyword(),
-                      const SizedBox(height: 40),
-                      getSubmitButton(),
-                      const SizedBox(height: 40),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
+              if (_isKeyboardVisible &&
+                  _isServiceDescriptionVisible &&
+                  _focusNodeDescription.hasFocus)
+                getEditor(_quillController)
+              else
+                const SizedBox.shrink()
+            ],
           );
   }
 
@@ -455,20 +499,80 @@ class _AddServiceState extends State<AddService> {
     );
   }
 
+  // Widget getServiceDescription() {
+  //   return CustomizedTextFormField(
+  //     maxLines: 5,
+  //     textCapitalization: TextCapitalization.sentences,
+  //     labelText: AppLocalization.of(context)!.description,
+  //     onChanged: (val) {
+  //       serviceDescription = val;
+  //     },
+  //     validator: (val) {
+  //       if (val.isNotEmpty) {
+  //         return null;
+  //       }
+  //       return AppLocalization.of(context)!.descriptionMustNotEmpty;
+  //     },
+  //   );
+  // }
+
   Widget getServiceDescription() {
-    return CustomizedTextFormField(
-      maxLines: 5,
-      textCapitalization: TextCapitalization.sentences,
-      labelText: AppLocalization.of(context)!.description,
-      onChanged: (val) {
-        serviceDescription = val;
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.descriptionMustNotEmpty;
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildProductDescriptionText(),
+        const SizedBox(height: 5),
+        Container(
+          height: 120,
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: _focusNodeDescription.hasFocus
+                    ? navyBlue
+                    : greyBorderColor),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 150,
+            ),
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                textSelectionTheme: TextSelectionThemeData(
+                  cursorColor: _focusNodeDescription.hasFocus ? null : navyBlue,
+                ),
+              ),
+              child: QuillEditor(
+                focusNode: _focusNodeDescription,
+                scrollController: _textEditorScrollController,
+                configurations: QuillEditorConfigurations(
+                  autoFocus: false,
+                  controller: _quillController,
+                  scrollable: true,
+                  expands: false,
+                  padding: const EdgeInsets.only(top: 10, left: 15),
+                  placeholder: "",
+                  scrollBottomInset: 20,
+                  showCursor:
+                      _isKeyboardVisible || _isServiceDescriptionVisible,
+                  embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProductDescriptionText() {
+    return Text(
+      AppLocalization.of(context)!.description,
+      style: TextStyle(
+        color: darkGrey,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        fontFamily: "Inter",
+      ),
     );
   }
 
@@ -739,7 +843,9 @@ class _AddServiceState extends State<AddService> {
               serviceImages.map((file) => File(file.path)).toList();
           service.name = serviceName;
           service.shortDescription = serviceShortDescription;
-          service.description = serviceDescription;
+          service.description =
+              jsonEncode(_quillController.document.toDelta().toJson());
+          // service.description = serviceDescription;
           service.category = serviceCategory;
           service.price = moneyInputNormalizer(servicePrice).toString();
           service.availableFrom = serviceAvailableFrom;
@@ -778,11 +884,16 @@ class _AddServiceState extends State<AddService> {
     return CustomizedCheckBoxField(
       onTap: () {
         serviceIsAvailable = !serviceIsAvailable;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: serviceIsAvailable,
       title: "Available",
     );
+  }
+
+  void removeQuillFocus() {
+    _focusNodeDescription.unfocus();
   }
 
   Widget getDiscountField() {
@@ -868,6 +979,7 @@ class _AddServiceState extends State<AddService> {
         ),
         onTap: () {
           discountAndroidSheet();
+          removeQuillFocus();
         },
       ),
     );
