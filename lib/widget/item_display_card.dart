@@ -923,111 +923,39 @@ class _DisplayServiceState extends State<DisplayService> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Flexible(
-                  child: Stack(
-                    children: [
-                      SizedBox(
-                        height: 189,
-                        child: CachedNetworkImage(
-                          imageUrl: widget.service.cover!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          errorWidget: productAndServiceBigErrorWidget,
-                        ),
-                      ),
-                      // Positioned(
-                      //   right: 10,
-                      //   bottom: 10,
-                      //   child: getRating(
-                      //     numberOfRating: widget.service.rating?.toInt(),
-                      //   ),
-                      // ),
-                      // serviceStockAndDetailTag(),
-                      displayShoppingCartControls(),
-                      //TODO: to be implemented later in future
-                      // Positioned(right: 10, top: 10, child: favouriteIcon())
-                    ],
-                  ),
-                ),
-                serviceStockAndDetailTag(),
-                const SizedBox(
-                  height: 7,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 5.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        messageDecoderWithEmoji(
-                              truncateString(
-                                str: widget.service.name!,
-                                lengthToTruncateAt: 16,
-                                showEllipsis: false,
-                              ),
-                            ) ??
-                            "",
-                        maxLines: 1,
-                        style: TextStyle(
-                          color: blackFont,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      Text(
-                        truncateString(
-                          str: messageDecoderWithEmoji(
-                                  widget.service.shortDescription) ??
-                              "",
-                          lengthToTruncateAt: 45,
-                          showEllipsis: true,
-                        ),
-                        style: TextStyle(
-                          fontFamily: "Inter",
-                          fontWeight: FontWeight.w300,
-                          fontSize: 12,
-                          color: fontLightGrey,
-                        ),
-                      ),
-                      Row(
+                _buildAServiceImage(),
+                // const SizedBox(
+                //   height: 7,
+                // ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 5.0),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          getRating(
-                            numberOfRating: widget.service.rating?.toInt(),
+                          _buildServiceName(),
+                          const SizedBox(
+                            height: 4,
                           ),
-                          const SizedBox(width: 5),
-                          _getServiceReviews(),
+                          _buildServiceShortDescription(),
+                          _buildServiceRating(),
+                          const SizedBox(height: 6),
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _buildServiceCurrency(),
+                              _buildServicePrice(),
+                              const Expanded(child: SizedBox(width: 50)),
+                              Flexible(
+                                  child: displayShoppingAddingToCartControl())
+                            ],
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Text(
-                            worldCurrencies[widget.service.currency!]!,
-                            style: TextStyle(
-                              fontFamily: "Inter",
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: navyBlue,
-                            ),
-                          ),
-                          Text(
-                            moneyDisplayNormalizer(
-                                int.parse(widget.service.price!)),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: navyBlue,
-                            ),
-                          ),
-                          const Expanded(child: SizedBox(width: 50)),
-                          displayShoppingAddingToCartControl()
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ],
@@ -1355,6 +1283,111 @@ class _DisplayServiceState extends State<DisplayService> {
         fontSize: 12,
         fontFamily: 'Inter',
         color: fontLightGrey,
+      ),
+    );
+  }
+
+  Widget _buildAServiceImage() {
+    return Stack(
+      children: [
+        SizedBox(
+          height: 130,
+          child: CachedNetworkImage(
+            imageUrl: widget.service.cover!,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            errorWidget: productAndServiceBigErrorWidget,
+          ),
+        ),
+        // Positioned(
+        //   right: 10,
+        //   bottom: 10,
+        //   child: getRating(
+        //     numberOfRating: widget.service.rating?.toInt(),
+        //   ),
+        // ),
+        // serviceStockAndDetailTag(),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: serviceStockAndDetailTag(),
+        ),
+        displayShoppingCartControls(),
+        //TODO: to be implemented later in future
+        // Positioned(right: 10, top: 10, child: favouriteIcon())
+      ],
+    );
+  }
+
+  Widget _buildServiceName() {
+    return Text(
+      messageDecoderWithEmoji(
+            truncateString(
+              str: widget.service.name!,
+              lengthToTruncateAt: 16,
+              showEllipsis: false,
+            ),
+          ) ??
+          "",
+      maxLines: 1,
+      style: TextStyle(
+        color: blackFont,
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildServiceShortDescription() {
+    return Flexible(
+      child: Text(
+        truncateString(
+          str: messageDecoderWithEmoji(widget.service.shortDescription) ?? "",
+          lengthToTruncateAt: 45,
+          showEllipsis: true,
+        ),
+        style: TextStyle(
+          fontFamily: "Inter",
+          fontWeight: FontWeight.w300,
+          fontSize: 12,
+          color: fontLightGrey,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildServiceRating() {
+    return Row(
+      children: [
+        getRating(
+          numberOfRating: widget.service.rating?.toInt(),
+        ),
+        const SizedBox(width: 5),
+        _getServiceReviews(),
+      ],
+    );
+  }
+
+  Widget _buildServiceCurrency() {
+    return Text(
+      worldCurrencies[widget.service.currency!]!,
+      style: TextStyle(
+        fontFamily: "Inter",
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: navyBlue,
+      ),
+    );
+  }
+
+  Widget _buildServicePrice() {
+    return Text(
+      moneyDisplayNormalizer(int.parse(widget.service.price!)),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: navyBlue,
       ),
     );
   }
