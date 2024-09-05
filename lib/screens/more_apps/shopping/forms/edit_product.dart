@@ -146,7 +146,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   String? discountId;
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
-  dynamic blogBodyTextJson;
+  dynamic productBodyTextJson;
   final FocusNode _focusNodeDescription = FocusNode();
   QuillController _quillController = QuillController.basic();
   final ScrollController _textEditorScrollController = ScrollController();
@@ -225,19 +225,19 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
           //     messageDecoderWithEmoji(currentProduct.description) ?? "";
 
           try {
-            blogBodyTextJson = jsonDecode(
+            productBodyTextJson = jsonDecode(
                 messageDecoderWithEmoji(currentProduct.description) ?? "");
 
             _quillController = QuillController(
-                document: Document.fromJson(blogBodyTextJson),
+                document: Document.fromJson(productBodyTextJson),
                 selection: const TextSelection.collapsed(offset: 0));
           } catch (e) {
             e.toString();
           }
 
-          if (blogBodyTextJson != null) {
+          if (productBodyTextJson != null) {
             _quillController = QuillController(
-                document: Document.fromJson(blogBodyTextJson),
+                document: Document.fromJson(productBodyTextJson),
                 selection: const TextSelection.collapsed(offset: 0));
           } else {
             final String plainTextDescription =
@@ -734,7 +734,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
               ),
               if (_isKeyboardVisible &&
                   _isProductDescriptionVisible &&
-                  (_focusNodeDescription.hasFocus ?? false))
+                  (_focusNodeDescription.hasFocus))
                 getEditor(_quillController)
               else
                 const SizedBox.shrink()
