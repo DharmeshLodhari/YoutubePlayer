@@ -7,6 +7,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
+import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -57,9 +58,7 @@ class _AddProductState extends State<AddProduct> {
   int imageCount = 5;
   final ScrollController _scrollController = ScrollController();
 
-  // TextEditingController _myController = TextEditingController();
   final TextfieldTagsController _myController = TextfieldTagsController();
-  TextfieldTagsController textfieldTagsController = TextfieldTagsController();
   TextEditingController inventoryController = TextEditingController();
   List<PickedFile> productImages = [];
   String productName = "";
@@ -133,11 +132,7 @@ class _AddProductState extends State<AddProduct> {
   bool _isKeyboardVisible = false;
   bool _isProductDescriptionVisible = false;
   double? bottomInset;
-  double fabIconHeight = 50.0;
-  final viewInsets = EdgeInsets.fromWindowPadding(
-      WidgetsBinding.instance.window.viewInsets,
-      WidgetsBinding.instance.window.devicePixelRatio);
-  dynamic blogBodyTextJson;
+
   @override
   void deactivate() {
     CacheManager().deleteCache();
@@ -156,7 +151,6 @@ class _AddProductState extends State<AddProduct> {
       getAddressList();
     });
     inventoryController.text = "1";
-    // WidgetsBinding.instance.addObserver(this);
     _focusNodeDescription.addListener(_handleFocusChange);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateKeyboardVisibility();
@@ -507,8 +501,10 @@ class _AddProductState extends State<AddProduct> {
                   ),
                 ),
               ),
-              if (_focusNodeDescription.hasFocus)
-                _getEditor()
+              if (_isKeyboardVisible &&
+                  _isProductDescriptionVisible &&
+                  _focusNodeDescription.hasFocus)
+                getEditor(_quillController)
               else
                 const SizedBox.shrink()
             ],
@@ -798,55 +794,6 @@ class _AddProductState extends State<AddProduct> {
         fontFamily: "Inter",
       ),
     );
-  }
-
-  Widget _getEditor() {
-    final Widget editorWidget = Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 0.5,
-          ),
-        ],
-      ),
-      child: QuillToolbar.simple(
-        configurations: QuillSimpleToolbarConfigurations(
-          showDirection: false,
-          showHeaderStyle: false,
-          showInlineCode: false,
-          showCodeBlock: false,
-          showStrikeThrough: false,
-          showJustifyAlignment: false,
-          showBackgroundColorButton: false,
-          showClearFormat: false,
-          showDividers: false,
-          showIndent: false,
-          showListCheck: false,
-          showRedo: false,
-          showListBullets: true,
-          showListNumbers: false,
-          showAlignmentButtons: true,
-          showItalicButton: true,
-          showQuote: true,
-          showLink: true,
-          showCenterAlignment: false,
-          showLeftAlignment: false,
-          showRightAlignment: false,
-          showColorButton: false,
-          showSearchButton: false,
-          showClipboardCut: false,
-          showClipboardCopy: false,
-          showSubscript: false,
-          showSuperscript: false,
-          showClipboardPaste: false,
-          controller: _quillController,
-        ),
-      ),
-    );
-    return editorWidget;
   }
 
   Widget getCategoryField() {
@@ -2388,6 +2335,7 @@ class _AddProductState extends State<AddProduct> {
     return CustomizedCheckBoxField(
       onTap: () {
         trackInventory = !trackInventory;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: trackInventory,
@@ -2402,6 +2350,7 @@ class _AddProductState extends State<AddProduct> {
     return CustomizedCheckBoxField(
       onTap: () {
         productEnableInSuperStore = !productEnableInSuperStore;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: productEnableInSuperStore,
@@ -2413,6 +2362,7 @@ class _AddProductState extends State<AddProduct> {
     return CustomizedCheckBoxField(
       onTap: () {
         measurementView = !measurementView;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: measurementView,
@@ -2424,6 +2374,7 @@ class _AddProductState extends State<AddProduct> {
     return CustomizedCheckBoxField(
       onTap: () {
         isDiscountAvailable = !isDiscountAvailable;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: isDiscountAvailable,
@@ -2435,6 +2386,7 @@ class _AddProductState extends State<AddProduct> {
     return CustomizedCheckBoxField(
       onTap: () {
         trackInventory = !trackInventory;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: trackInventory,
@@ -3206,11 +3158,9 @@ class _AddProductState extends State<AddProduct> {
   void dispose() {
     _scrollController.dispose();
     _myController.dispose();
-    textfieldTagsController.dispose();
     inventoryController.dispose();
     userTags = [];
     _quillController.dispose();
-    // WidgetsBinding.instance.removeObserver(this);
     _focusNodeDescription.dispose();
     super.dispose();
   }

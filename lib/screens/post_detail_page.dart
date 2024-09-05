@@ -330,7 +330,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       //   );
       // }
       return displayQuillFormattedText(
-          userPost?.text ?? "", darkGrey, 14, FontWeight.w400);
+          context, userPost?.text ?? "", darkGrey, 14, FontWeight.w400);
     } else {
       return Text(
         messageDecoderWithEmoji(newsDetailItem.description!) ?? "",

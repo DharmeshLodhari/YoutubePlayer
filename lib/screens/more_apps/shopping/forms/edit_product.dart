@@ -9,6 +9,7 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
+import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -28,16 +29,11 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_quill_extensions/flutter_quill_embeds.dart';
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
-import 'package:flutter_quill/src/widgets/editor/editor.dart';
-import 'package:flutter_quill/src/models/config/editor/editor_configurations.dart';
-import 'package:flutter_quill/src/widgets/quill/quill_controller.dart';
-import 'package:flutter_quill/src/widgets/toolbar/base_toolbar.dart';
-import 'package:flutter_quill/src/models/config/toolbar/simple_toolbar_configurations.dart';
-import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
 // ignore: must_be_immutable
 class EditProduct extends StatefulWidget {
@@ -63,7 +59,6 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   List<PickedFile> productLocalImages = [];
   List<String?> productImagesFromServer = [];
   String? productName = "";
-  String? productDescription = "";
   String? productShortDescription = "";
   String? searchKeyword = "";
   String? productCategory = "";
@@ -101,7 +96,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
 
   //text editing controllers for the edit fields
   TextEditingController productTitleController = TextEditingController();
-  TextEditingController productDescriptionController = TextEditingController();
+  // TextEditingController productDescriptionController = TextEditingController();
   TextEditingController productShortDescriptionController =
       TextEditingController();
   TextEditingController productManufacturerController = TextEditingController();
@@ -151,14 +146,13 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   String? discountId;
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
+  dynamic blogBodyTextJson;
   final FocusNode _focusNodeDescription = FocusNode();
-  late flutterQuill.QuillController _quillController;
+  QuillController _quillController = QuillController.basic();
   final ScrollController _textEditorScrollController = ScrollController();
   bool _isKeyboardVisible = false;
   bool _isProductDescriptionVisible = false;
-  final MediaQueryData _mediaQueryData = const MediaQueryData();
-
-  dynamic descriptionBodyTextJson;
+  double? bottomInset;
 
   @override
   void deactivate() {
@@ -175,40 +169,25 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
       obtainCustomCategory();
       getAddressList();
     });
-    WidgetsBinding.instance.addObserver(this);
     _focusNodeDescription.addListener(_handleFocusChange);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateKeyboardVisibility();
+    });
     super.initState();
   }
 
   void _handleFocusChange() {
-    if (_focusNodeDescription.hasFocus) {
-      setState(() {
-        _isProductDescriptionVisible = true;
-      });
-    } else {
-      setState(() {
-        _isProductDescriptionVisible = false;
-      });
-    }
+    setState(() {
+      _isProductDescriptionVisible = _focusNodeDescription.hasFocus;
+    });
+    _updateKeyboardVisibility();
   }
 
-  @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-    if (!mounted) return;
-    // final bottomInset = MediaQuery.maybeOf(context)?.viewInsets.bottom ?? 0;
-    // final mediaQuery = MediaQuery.maybeOf(context);
-    final bottomInset = _mediaQueryData.viewInsets.bottom;
-    if (mounted) {
-      setState(() {
-        _isKeyboardVisible = (bottomInset) > 0;
-        if (!_isKeyboardVisible && !_focusNodeDescription.hasFocus) {
-          _isProductDescriptionVisible = false;
-        }
-      });
-    }
-
-    super.didChangeMetrics();
+  void _updateKeyboardVisibility() {
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    setState(() {
+      _isKeyboardVisible = (bottomInset ?? 0) > 0;
+    });
   }
 
   @override
@@ -242,10 +221,41 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
           // assigning to our edit controllers
           productTitleController.text =
               messageDecoderWithEmoji(currentProduct.name) ?? "";
-          productDescriptionController.text =
-              messageDecoderWithEmoji(currentProduct.description) ?? "";
-          // descriptionBodyTextJson = jsonDecode(
-          //     messageDecoderWithEmoji(currentProduct.description) ?? "");
+          // productDescriptionController.text =
+          //     messageDecoderWithEmoji(currentProduct.description) ?? "";
+
+          try {
+            blogBodyTextJson = jsonDecode(
+                messageDecoderWithEmoji(currentProduct.description) ?? "");
+
+            _quillController = QuillController(
+                document: Document.fromJson(blogBodyTextJson),
+                selection: const TextSelection.collapsed(offset: 0));
+          } catch (e) {
+            e.toString();
+          }
+
+          if (blogBodyTextJson != null) {
+            _quillController = QuillController(
+                document: Document.fromJson(blogBodyTextJson),
+                selection: const TextSelection.collapsed(offset: 0));
+          } else {
+            final String plainTextDescription =
+                currentProduct.description ?? "";
+
+            if (plainTextDescription != null &&
+                plainTextDescription.isNotEmpty) {
+              // Convert plain text into a Quill Document
+              final doc = Document()..insert(0, plainTextDescription);
+
+              _quillController = QuillController(
+                  document: doc,
+                  selection: const TextSelection.collapsed(offset: 0));
+            } else {
+              // Handle the case where the description is empty or null
+              _quillController = QuillController.basic();
+            }
+          }
 
           productPriceController.text = moneyNormalizer(currentProduct.price!);
 
@@ -263,8 +273,8 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
           productCategory = currentProduct.category!.name;
           productCondition = currentProduct.condition;
           productPrice = moneyNormalizer(currentProduct.price!);
-          productDescription =
-              messageDecoderWithEmoji(currentProduct.description);
+          // productDescription =
+          //     messageDecoderWithEmoji(currentProduct.description);
           productManufacturer = currentProduct.manufacturer;
           productShortDescription =
               messageDecoderWithEmoji(currentProduct.shortDescription);
@@ -494,6 +504,8 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    _isKeyboardVisible = (bottomInset ?? 0) > 0;
     return WillPopScope(
       onWillPop: () async {
         return await getExitDialog(context);
@@ -504,19 +516,6 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
         resizeToAvoidBottomInset: true,
         appBar: appBar(context) as PreferredSizeWidget?,
         body: scaffoldBody(),
-        floatingActionButtonLocation:
-            _isKeyboardVisible && _isProductDescriptionVisible
-                ? FloatingActionButtonLocation.endContained
-                : null,
-        floatingActionButton: Container(
-          margin: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-              right: 0,
-              left: 0),
-          child: _isKeyboardVisible && _isProductDescriptionVisible
-              ? _getEditor()
-              : const SizedBox.shrink(),
-        ),
       ),
     );
     //
@@ -547,241 +546,199 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     );
   }
 
-  Widget _getEditor() {
-    final Widget editorWidget = Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 0.5,
-          ),
-        ],
-      ),
-      child: QuillToolbar.simple(
-        configurations: QuillSimpleToolbarConfigurations(
-          showDirection: false,
-          showHeaderStyle: false,
-          showInlineCode: false,
-          showCodeBlock: false,
-          showStrikeThrough: false,
-          showJustifyAlignment: false,
-          showBackgroundColorButton: false,
-          showClearFormat: false,
-          showDividers: false,
-          showIndent: false,
-          showListCheck: false,
-          showRedo: false,
-          showListBullets: true,
-          showListNumbers: false,
-          showAlignmentButtons: true,
-          showItalicButton: true,
-          showQuote: true,
-          showLink: true,
-          showCenterAlignment: false,
-          showLeftAlignment: false,
-          showRightAlignment: false,
-          showColorButton: false,
-          showSearchButton: false,
-          showClipboardCut: false,
-          showClipboardCopy: false,
-          showSubscript: false,
-          showSuperscript: false,
-          showClipboardPaste: false,
-          controller: _quillController,
-        ),
-      ),
-    );
-
-    // if (productDescription.isNotEmpty) {
-    //   if (blogBodyTextJson != null) {
-    //     return editorWidget;
-    //   } else {
-    //     return const SizedBox.shrink();
-    //   }
-    // } else {
-    return editorWidget;
-    // }
-  }
-
   Widget scaffoldBody() {
     return isLoading
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(height: 10),
-                      if (productImagesFromServer.isNotEmpty)
-                        if (checkImageLimitForServerImage())
-                          viewServerImages()
-                        else
-                          Container(),
-                      // checkImageLimitForServerImage()
-                      //     ? SizedBox(
-                      //         height: 8,
-                      //       )
-                      //     : Container(),
-                      if (checkImageLimitForLocalImage())
-                        addLocalImages()
-                      else
-                        Container(),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      addTitleField(),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      getManufacturerField(),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      getAmountField(),
-                      const SizedBox(height: 10),
-                      getCategoryField(),
-                      const SizedBox(height: 10),
-                      getSubCategoryField(),
-                      const SizedBox(height: 10),
-                      getCustomCategoryField(),
-                      const SizedBox(height: 10),
-                      getAddTagsField(),
-                      getProductConditionField(),
-                      const SizedBox(height: 10),
-                      if (userBloc!.userAbout!.industry!.name! ==
-                              "Restaurant/Cafe" ||
-                          userBloc!.userAbout!.industry!.name! ==
-                              "Pharmaceutical") ...[
-                        getProductDeliveryTimeField(),
-                        const SizedBox(height: 10),
-                      ],
-                      getProductShortDescription(),
-                      const SizedBox(height: 10),
-                      getProductDescription(),
-                      const SizedBox(height: 10),
-                      getSearchEngineKeyword(),
-                      const SizedBox(height: 20),
-                      getIsAvailableField(),
-                      const SizedBox(height: 16),
-                      if (productIsAvailable == true) ...[
-                        getAvailableFromField(),
-                        const SizedBox(height: 16),
-                      ],
-
-                      getMeasurementField(),
-                      const SizedBox(height: 16),
-                      if (measurementView == true) ...[
-                        getCategoryMeasurementField(),
-                        const SizedBox(height: 16),
-                      ],
-
-                      if (pickedMeasurementList.isNotEmpty &&
-                          measurementView == true) ...[
-                        if (containsWeight()) ...[
-                          //weight section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: getWeightField(),
-                              ),
-                              const SizedBox(width: 5.0),
-                              Flexible(
-                                flex: 1,
-                                child: getWeightSiUnitField(),
-                              ),
+        : Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Center(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const SizedBox(height: 10),
+                            if (productImagesFromServer.isNotEmpty)
+                              if (checkImageLimitForServerImage())
+                                viewServerImages()
+                              else
+                                Container(),
+                            // checkImageLimitForServerImage()
+                            //     ? SizedBox(
+                            //         height: 8,
+                            //       )
+                            //     : Container(),
+                            if (checkImageLimitForLocalImage())
+                              addLocalImages()
+                            else
+                              Container(),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            addTitleField(),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            getManufacturerField(),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            getAmountField(),
+                            const SizedBox(height: 10),
+                            getCategoryField(),
+                            const SizedBox(height: 10),
+                            getSubCategoryField(),
+                            const SizedBox(height: 10),
+                            getCustomCategoryField(),
+                            const SizedBox(height: 10),
+                            getAddTagsField(),
+                            getProductConditionField(),
+                            const SizedBox(height: 10),
+                            if (userBloc!.userAbout!.industry!.name! ==
+                                    "Restaurant/Cafe" ||
+                                userBloc!.userAbout!.industry!.name! ==
+                                    "Pharmaceutical") ...[
+                              getProductDeliveryTimeField(),
+                              const SizedBox(height: 10),
                             ],
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                        if (containsHeight()) ...[
-                          //height section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: getHeightField(),
-                              ),
-                              const SizedBox(width: 5.0),
-                              Flexible(
-                                flex: 1,
-                                child: getHeightSiUnitField(),
-                              ),
+                            getProductShortDescription(),
+                            const SizedBox(height: 10),
+                            getProductDescription(),
+                            const SizedBox(height: 10),
+                            getSearchEngineKeyword(),
+                            const SizedBox(height: 20),
+                            getIsAvailableField(),
+                            const SizedBox(height: 16),
+                            if (productIsAvailable == true) ...[
+                              getAvailableFromField(),
+                              const SizedBox(height: 16),
                             ],
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                        if (containsWidth()) ...[
-                          //width section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: getWidthField(),
-                              ),
-                              const SizedBox(width: 5.0),
-                              Flexible(
-                                flex: 1,
-                                child: getWidthSiUnitField(),
-                              ),
+
+                            getMeasurementField(),
+                            const SizedBox(height: 16),
+                            if (measurementView == true) ...[
+                              getCategoryMeasurementField(),
+                              const SizedBox(height: 16),
                             ],
-                          ),
-                          const SizedBox(height: 40),
-                        ]
-                      ],
 
-                      getDiscountField(),
-                      const SizedBox(height: 16),
-                      if (isDiscountAvailable == true) ...[
-                        getDiscountListField(),
-                        const SizedBox(height: 16),
-                      ],
-                      getTrackInventoryViewField(),
-                      if (trackInventoryView == true) ...[
-                        const SizedBox(height: 16),
-                        getInventoryFormField(),
-                        const SizedBox(height: 16),
-                        getTrackInventoryField(),
-                        const SizedBox(height: 16),
-                      ],
-                      const SizedBox(height: 16),
+                            if (pickedMeasurementList.isNotEmpty &&
+                                measurementView == true) ...[
+                              if (containsWeight()) ...[
+                                //weight section
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWeightField(),
+                                    ),
+                                    const SizedBox(width: 5.0),
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWeightSiUnitField(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                              ],
+                              if (containsHeight()) ...[
+                                //height section
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
+                                      child: getHeightField(),
+                                    ),
+                                    const SizedBox(width: 5.0),
+                                    Flexible(
+                                      flex: 1,
+                                      child: getHeightSiUnitField(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                              ],
+                              if (containsWidth()) ...[
+                                //width section
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWidthField(),
+                                    ),
+                                    const SizedBox(width: 5.0),
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWidthSiUnitField(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 40),
+                              ]
+                            ],
 
-                      getEnableInSuperStoreField(),
-                      const SizedBox(height: 16),
+                            getDiscountField(),
+                            const SizedBox(height: 16),
+                            if (isDiscountAvailable == true) ...[
+                              getDiscountListField(),
+                              const SizedBox(height: 16),
+                            ],
+                            getTrackInventoryViewField(),
+                            if (trackInventoryView == true) ...[
+                              const SizedBox(height: 16),
+                              getInventoryFormField(),
+                              const SizedBox(height: 16),
+                              getTrackInventoryField(),
+                              const SizedBox(height: 16),
+                            ],
+                            const SizedBox(height: 16),
 
-                      if (productVariantList.isEmpty) ...[
-                        // getAddVariationFormField(),
-                        productVariation(),
-                      ] else ...[
-                        displaySelectedVariant(),
-                      ],
-                      const SizedBox(height: 16),
+                            getEnableInSuperStoreField(),
+                            const SizedBox(height: 16),
 
-                      if (productAddOnsList.isEmpty) ...[
-                        productAddOns(),
-                      ] else ...[
-                        displaySelectedAddOn(),
-                      ],
-                      const SizedBox(height: 16),
-                      address(),
-                      const SizedBox(height: 30),
-                      getSubmitButton(),
-                      const SizedBox(height: 20),
-                    ],
+                            if (productVariantList.isEmpty) ...[
+                              // getAddVariationFormField(),
+                              productVariation(),
+                            ] else ...[
+                              displaySelectedVariant(),
+                            ],
+                            const SizedBox(height: 16),
+
+                            if (productAddOnsList.isEmpty) ...[
+                              productAddOns(),
+                            ] else ...[
+                              displaySelectedAddOn(),
+                            ],
+                            const SizedBox(height: 16),
+                            address(),
+                            const SizedBox(height: 30),
+                            getSubmitButton(),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              if (_isKeyboardVisible &&
+                  _isProductDescriptionVisible &&
+                  (_focusNodeDescription.hasFocus ?? false))
+                getEditor(_quillController)
+              else
+                const SizedBox.shrink()
+            ],
           );
   }
 
@@ -1525,10 +1482,15 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     );
   }
 
+  void removeQuillFocus() {
+    _focusNodeDescription.unfocus();
+  }
+
   Widget getTrackInventoryField() {
     return CustomizedCheckBoxField(
       onTap: () {
         trackInventory = !trackInventory;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: trackInventory,
@@ -1557,140 +1519,52 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   }
 
   Widget getProductDescription() {
-    return CustomizedTextFormField(
-      controller: productDescriptionController,
-      maxLines: 5,
-      textCapitalization: TextCapitalization.sentences,
-      labelText: AppLocalization.of(context)!.description,
-      onChanged: (val) {
-        productDescription = val;
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildProductDescriptionText(),
+        const SizedBox(height: 5),
+        Container(
+          height: 120,
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: _focusNodeDescription.hasFocus
+                    ? navyBlue
+                    : greyBorderColor),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 150,
+            ),
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                textSelectionTheme: TextSelectionThemeData(
+                  cursorColor: _focusNodeDescription.hasFocus ? null : navyBlue,
+                ),
+              ),
+              child: QuillEditor(
+                focusNode: _focusNodeDescription,
+                scrollController: _textEditorScrollController,
+                configurations: QuillEditorConfigurations(
+                  autoFocus: false,
+                  controller: _quillController,
+                  scrollable: true,
+                  expands: false,
+                  padding: const EdgeInsets.only(top: 10, left: 15),
+                  placeholder: "",
+                  scrollBottomInset: 20,
+                  showCursor:
+                      _isKeyboardVisible || _isProductDescriptionVisible,
+                  embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
-  // Widget getProductDescription() {
-  //   try {
-  //     descriptionBodyTextJson =
-  //         jsonDecode(messageDecoderWithEmoji(currentProduct.description) ?? "");
-  //
-  //     _quillController = flutterQuill.QuillController(
-  //       document: flutterQuill.Document.fromJson(descriptionBodyTextJson),
-  //       selection: const TextSelection.collapsed(offset: -1),
-  //     );
-  //   } catch (e) {
-  //     debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
-  //   }
-  //   if (descriptionBodyTextJson != null) {
-  //     return Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         _buildProductDescriptionText(),
-  //         const SizedBox(height: 5),
-  //         Container(
-  //           height: 120,
-  //           decoration: BoxDecoration(
-  //             border: Border.all(
-  //                 color: _focusNodeDescription.hasFocus
-  //                     ? navyBlue
-  //                     : greyBorderColor),
-  //             borderRadius: BorderRadius.circular(10),
-  //           ),
-  //           child: ConstrainedBox(
-  //             constraints: const BoxConstraints(
-  //               maxHeight: 150,
-  //             ),
-  //             child: Theme(
-  //               data: Theme.of(context).copyWith(
-  //                 textSelectionTheme: TextSelectionThemeData(
-  //                   cursorColor:
-  //                       _focusNodeDescription.hasFocus ? null : navyBlue,
-  //                 ),
-  //               ),
-  //               child: flutterQuill.QuillEditor.basic(
-  //                 focusNode: _focusNodeDescription,
-  //                 configurations: flutterQuill.QuillEditorConfigurations(
-  //                   controller: _quillController,
-  //                   readOnlyMouseCursor: SystemMouseCursors.basic,
-  //                   showCursor:
-  //                       _isKeyboardVisible || _isProductDescriptionVisible,
-  //                   enableInteractiveSelection: false,
-  //                   embedBuilders: FlutterQuillEmbeds.editorBuilders(),
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     );
-  //   } else {
-  //     return Text(
-  //       messageDecoderWithEmoji(currentProduct.description) ?? "",
-  //       style: TextStyle(
-  //         fontWeight: FontWeight.w400,
-  //         fontSize: 13,
-  //         color: blackFont,
-  //       ),
-  //       textAlign: TextAlign.justify,
-  //     );
-  //   }
-  // }
-
-  // Widget getProductDescription() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       _buildProductDescriptionText(),
-  //       const SizedBox(height: 5),
-  //       Container(
-  //         height: 120,
-  //         decoration: BoxDecoration(
-  //           border: Border.all(
-  //               color: _focusNodeDescription.hasFocus
-  //                   ? navyBlue
-  //                   : greyBorderColor),
-  //           borderRadius: BorderRadius.circular(10),
-  //         ),
-  //         child: ConstrainedBox(
-  //           constraints: const BoxConstraints(
-  //             maxHeight: 150,
-  //           ),
-  //           child: Theme(
-  //             data: Theme.of(context).copyWith(
-  //               textSelectionTheme: TextSelectionThemeData(
-  //                 cursorColor: _focusNodeDescription.hasFocus ? null : navyBlue,
-  //               ),
-  //             ),
-  //             child: (descriptionBodyTextJson != null)
-  //                 ? flutterQuill.QuillEditor(
-  //                     focusNode: _focusNodeDescription,
-  //                     scrollController: _textEditorScrollController,
-  //                     configurations: flutterQuill.QuillEditorConfigurations(
-  //                       autoFocus: false,
-  //                       controller: _quillController,
-  //                       scrollable: true,
-  //                       expands: false,
-  //                       padding: const EdgeInsets.only(top: 10, left: 15),
-  //                       placeholder: "",
-  //                       scrollBottomInset: 20,
-  //                       showCursor:
-  //                           _isKeyboardVisible || _isProductDescriptionVisible,
-  //                       embedBuilders: FlutterQuillEmbeds.editorBuilders(),
-  //                     ),
-  //                   )
-  //                 : Text(
-  //                     messageDecoderWithEmoji(currentProduct.description) ?? "",
-  //                     style: TextStyle(
-  //                       fontWeight: FontWeight.w400,
-  //                       fontSize: 13,
-  //                       color: blackFont,
-  //                     ),
-  //                     textAlign: TextAlign.justify,
-  //                   ),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 
   Widget _buildProductDescriptionText() {
     return Text(
@@ -2714,6 +2588,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     return CustomizedCheckBoxField(
       onTap: () {
         productIsAvailable = !productIsAvailable!;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: productIsAvailable,
@@ -2725,6 +2600,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     return CustomizedCheckBoxField(
       onTap: () {
         productEnableInSuperStore = !productEnableInSuperStore;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: productEnableInSuperStore,
@@ -2901,6 +2777,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     return CustomizedCheckBoxField(
       onTap: () {
         measurementView = !measurementView;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: measurementView,
@@ -2912,6 +2789,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     return CustomizedCheckBoxField(
       onTap: () {
         isDiscountAvailable = !isDiscountAvailable;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: isDiscountAvailable,
@@ -2923,6 +2801,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     return CustomizedCheckBoxField(
       onTap: () {
         trackInventoryView = !trackInventoryView;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: trackInventoryView,
@@ -3029,6 +2908,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     return CustomizedCheckBoxField(
       onTap: () {
         inventoryIsAvailable = !inventoryIsAvailable;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: inventoryIsAvailable,
@@ -3579,7 +3459,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   @override
   void dispose() {
     productTitleController.dispose();
-    productDescriptionController.dispose();
+    // productDescriptionController.dispose();
     productShortDescriptionController.dispose();
     productManufacturerController.dispose();
     productPriceController.dispose();
