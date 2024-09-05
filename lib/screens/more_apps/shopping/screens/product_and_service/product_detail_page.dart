@@ -115,6 +115,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   bool isSelected = true;
   late flutterQuill.QuillController _quillController;
   dynamic descriptionBodyTextJson;
+
   @override
   void initState() {
     product = widget.arguments[
@@ -2405,7 +2406,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           height: 8,
         ),
         displayQuillFormattedText(
-            product?.description ?? "", darkGrey, 14, FontWeight.w400),
+            context, product?.description ?? "", darkGrey, 14, FontWeight.w400),
       ],
     );
   }
