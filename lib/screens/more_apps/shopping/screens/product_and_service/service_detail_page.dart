@@ -720,7 +720,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           height: 8,
         ),
         displayQuillFormattedText(
-            service?.description ?? "", darkGrey, 14, FontWeight.w400),
+            context, service?.description ?? "", darkGrey, 14, FontWeight.w400),
       ],
     );
   }

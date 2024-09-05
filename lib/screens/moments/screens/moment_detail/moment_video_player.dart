@@ -132,7 +132,7 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
                         icon: Icon(
                           !_controller.value.isPlaying
                               ? Icons.pause
-                              : Icons.play_arrow_rounded,
+                              : Icons.play_arrow,
                           color: Colors.white,
                           size: 30,
                         ),

@@ -506,9 +506,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                 text: commentingEnabled() ? getCommentCount(widget.index) : '',
                 onPressed: commentingEnabled()
                     ? () async {
-                        await widget.videoPlayerControllers[widget.index]
-                            .pause();
-                        _renderMomentStateKey.currentState?.controller?.stop();
+                        pauseVideo();
                         commentSheet(
                           context,
                           widget.currentMoment.id!,
@@ -555,14 +553,14 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                           image = widget.currentMoment.avatar;
                         }
 
-                        await widget.videoPlayerControllers[widget.index]
-                            .pause();
-                        _renderMomentStateKey.currentState?.controller?.stop();
+                        pauseVideo();
                         Navigator.of(context)
                             .pushNamed(Routes.PHOTO_VIEWER, arguments: image)
                             .whenComplete(() async {
-                          await widget.videoPlayerControllers[widget.index]
-                              .play();
+                          if (widget.videoPlayerControllers.isNotEmpty) {
+                            await widget.videoPlayerControllers[widget.index]
+                                .play();
+                          }
                           _renderMomentStateKey.currentState?.controller
                               ?.forward();
                         });
@@ -581,25 +579,9 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           InkWell(
-                            onTap: () async {
-                              await widget.videoPlayerControllers[widget.index]
-                                  .pause();
-                              _renderMomentStateKey.currentState?.controller
-                                  ?.stop();
-                              Navigator.pushNamed(
-                                context,
-                                Routes.USER_PROFILE,
-                                arguments: {
-                                  "searchedUserName":
-                                      widget.currentMoment.owner,
-                                },
-                              ).whenComplete(() async {
-                                await widget
-                                    .videoPlayerControllers[widget.index]
-                                    .play();
-                                _renderMomentStateKey.currentState?.controller
-                                    ?.forward();
-                              });
+                            onTap: () {
+                              pauseVideo();
+                              goToProfilePage();
                             },
                             child: Text(
                               messageDecoderWithEmoji(
@@ -1409,5 +1391,29 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     } else {
       return HexColor('#3F61DB');
     }
+  }
+
+  void goToProfilePage() {
+    Navigator.pushNamed(
+      context,
+      Routes.USER_PROFILE,
+      arguments: {
+        "searchedUserName": widget.currentMoment.owner,
+      },
+    ).whenComplete(() async {
+      if (widget.videoPlayerControllers.isNotEmpty) {
+        await widget.videoPlayerControllers[widget.index].play();
+      }
+      _renderMomentStateKey.currentState?.controller?.forward();
+    });
+  }
+
+  Future<void> pauseVideo() async {
+    if (widget.videoPlayerControllers.isNotEmpty) {
+      await widget.videoPlayerControllers[widget.index].pause();
+      setState(() {}); // Force a rebuild after pausing the video
+    }
+    _renderMomentStateKey.currentState?.controller?.stop();
+    await Future.delayed(Duration(milliseconds: 200));
   }
 }
