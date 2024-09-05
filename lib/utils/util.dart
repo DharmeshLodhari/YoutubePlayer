@@ -2854,7 +2854,7 @@ Widget qrCodeIcon(BuildContext context, Map<String, dynamic> navigationData,
           screen: QrCodePage(arguments: navigationData));
     },
     child: Container(
-      padding: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(3.0),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(5.0)),
         color: lightGrey.withOpacity(0.1),
@@ -2870,7 +2870,7 @@ Widget qrCodeIcon(BuildContext context, Map<String, dynamic> navigationData,
             size: 15,
             color: blackFont,
           ),
-          const SizedBox(width: 7),
+          const SizedBox(width: 5),
           Text(
             'QR',
             style: TextStyle(
@@ -2906,6 +2906,8 @@ Widget displayQuillFormattedText(String formattedText, Color? fontColor,
   if (jsonDecodedText != null) {
     return flutterQuill.QuillEditor.basic(
       configurations: flutterQuill.QuillEditorConfigurations(
+        customStyles:
+            const flutterQuill.DefaultStyles(sizeHuge: TextStyle(fontSize: 14)),
         controller: quillController,
         readOnlyMouseCursor: SystemMouseCursors.basic,
         showCursor: false,

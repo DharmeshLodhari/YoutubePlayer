@@ -16,7 +16,7 @@ Widget getProductOrServiceSocialMedia(
     child: Container(
       decoration: BoxDecoration(
         color: lightGrey,
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(7.0),
         border: Border.all(
           color: greySecondaryYarn,
         ),
@@ -26,7 +26,7 @@ Widget getProductOrServiceSocialMedia(
           // Blue line on the left
           Container(
             width: 5.0,
-            height: 80.0,
+            height: 78.0,
             decoration: BoxDecoration(
               color: navyBlue, // Your custom navy blue color
               borderRadius: const BorderRadius.only(
@@ -36,23 +36,21 @@ Widget getProductOrServiceSocialMedia(
             ),
           ),
           const SizedBox(width: 8.0),
-          // Icon on the left
           Container(
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(8.0),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(8.0),
               child: Icon(
                 Icons.check_circle,
                 color: navyBlue,
-                size: 15.0,
+                size: 12.0,
               ),
             ),
           ),
           const SizedBox(width: 10.0),
-          // Text Column
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,19 +77,13 @@ Widget getProductOrServiceSocialMedia(
               ],
             ),
           ),
-
           const SizedBox(width: 8.0),
-          const Divider(
-            height: 50,
-            color: Colors.black,
-          ),
-          const SizedBox(width: 8.0),
-          // Arrow Icon on the right
           Icon(
             Icons.arrow_forward_ios,
             color: blackFont,
             size: 18.0,
           ),
+          const SizedBox(width: 8.0),
         ],
       ),
     ),

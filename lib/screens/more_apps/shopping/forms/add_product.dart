@@ -7,7 +7,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
-import 'package:Slydo/screens/more_apps/shopping/widget/custom_floatingaction_buttonlocation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -165,17 +164,6 @@ class _AddProductState extends State<AddProduct> {
     super.initState();
   }
 
-  // void _handleFocusChange() {
-  //   if (_focusNodeDescription.hasFocus) {
-  //     setState(() {
-  //       _isProductDescriptionVisible = true;
-  //     });
-  //   } else {
-  //     setState(() {
-  //       _isProductDescriptionVisible = false;
-  //     });
-  //   }
-  // }
   void _handleFocusChange() {
     setState(() {
       _isProductDescriptionVisible = _focusNodeDescription.hasFocus;
@@ -189,22 +177,6 @@ class _AddProductState extends State<AddProduct> {
       _isKeyboardVisible = (bottomInset ?? 0) > 0;
     });
   }
-
-  // final bottomInset = MediaQuery.maybeOf(context)?.viewInsets.bottom ?? 0;
-  // final mediaQuery = MediaQuery.maybeOf(context);
-  // @override
-  // void didChangeMetrics() {
-  //   super.didChangeMetrics();
-  //   if (!mounted) return;
-  //   final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
-  //   setState(() {
-  //     _isKeyboardVisible = (bottomInset) > 0;
-  //     if (!_isKeyboardVisible && !_focusNodeDescription.hasFocus) {
-  //       _isProductDescriptionVisible = false;
-  //     }
-  //   });
-  //   super.didChangeMetrics();
-  // }
 
   void getDiscountList() async {
     if (!isDiscountLoading) {
@@ -342,36 +314,8 @@ class _AddProductState extends State<AddProduct> {
       child: LayoutBuilder(builder: (context, constraint) {
         return Scaffold(
           backgroundColor: lightGrey,
-          // resizeToAvoidBottomInset: false,
           appBar: appBar() as PreferredSizeWidget?,
           body: scaffoldBody(),
-
-          floatingActionButtonLocation:
-              const CustomFloatingActionButtonLocation(0, 0),
-          floatingActionButton: LayoutBuilder(
-            builder: (context, constraint) {
-              final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-              final screenHeight = MediaQuery.of(context).size.height;
-              // final editorHeight = constraint.maxHeight * 0.1;
-              final editorHeight = screenHeight < 700 ? 120.0 : 100.0;
-              return Container(
-                width: MediaQuery.of(context).size.width,
-                margin: EdgeInsets.only(
-                  bottom: keyboardHeight,
-                  top: constraint.maxHeight -
-                      keyboardHeight -
-                      MediaQuery.of(context).padding.bottom -
-                      MediaQuery.of(context).padding.top -
-                      editorHeight,
-                  right: 0,
-                  left: 0,
-                ),
-                child: _isKeyboardVisible && _isProductDescriptionVisible
-                    ? _getEditor()
-                    : const SizedBox.shrink(),
-              );
-            },
-          ),
         );
       }),
     );
@@ -407,154 +351,167 @@ class _AddProductState extends State<AddProduct> {
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(height: 10),
-                      addImages(),
-                      const SizedBox(height: 10),
-                      addTitleField(),
-                      const SizedBox(height: 10),
-                      getManufacturerField(),
-                      const SizedBox(height: 10),
-                      getAmountField(),
-                      const SizedBox(height: 10),
-                      getCategoryField(),
-                      const SizedBox(height: 10),
-                      getSubCategoryField(),
-                      const SizedBox(height: 10),
-                      getCustomCategoryField(),
-                      const SizedBox(height: 10),
-                      getAddTagsField(),
-                      getProductConditionField(),
-                      const SizedBox(height: 10),
-                      if (userBloc!.userAbout!.industry!.name! ==
-                              "Restaurant/Cafe" ||
-                          userBloc!.userAbout!.industry!.name! ==
-                              "Pharmaceutical") ...[
-                        getProductDeliveryTimeField(),
-                        const SizedBox(height: 10),
-                      ],
-                      getProductShortDescription(),
-                      const SizedBox(height: 10),
-                      getProductDescription(),
-                      const SizedBox(height: 10),
-                      getSearchEngineKeyword(),
-                      const SizedBox(height: 20),
-                      getIsAvailableField(),
-                      const SizedBox(height: 16),
-                      if (productIsAvailable == true) ...[
-                        getAvailableFromField(),
-                        const SizedBox(height: 16),
-                      ],
-                      getMeasurementField(),
-                      const SizedBox(height: 16),
-                      if (measurementView == true) ...[
-                        getCategoryMeasurementField(),
-                        const SizedBox(height: 16),
-                      ],
-                      if (pickedMeasurementList.isNotEmpty &&
-                          measurementView == true) ...[
-                        if (containsWeight()) ...[
-                          //weight section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: getWeightField(),
-                              ),
-                              const SizedBox(width: 5.0),
-                              Flexible(
-                                flex: 1,
-                                child: getWeightSiUnitField(),
-                              ),
+        : Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Center(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const SizedBox(height: 10),
+                            addImages(),
+                            const SizedBox(height: 10),
+                            addTitleField(),
+                            const SizedBox(height: 10),
+                            getManufacturerField(),
+                            const SizedBox(height: 10),
+                            getAmountField(),
+                            const SizedBox(height: 10),
+                            getCategoryField(),
+                            const SizedBox(height: 10),
+                            getSubCategoryField(),
+                            const SizedBox(height: 10),
+                            getCustomCategoryField(),
+                            const SizedBox(height: 10),
+                            getAddTagsField(),
+                            getProductConditionField(),
+                            const SizedBox(height: 10),
+                            if (userBloc!.userAbout!.industry!.name! ==
+                                    "Restaurant/Cafe" ||
+                                userBloc!.userAbout!.industry!.name! ==
+                                    "Pharmaceutical") ...[
+                              getProductDeliveryTimeField(),
+                              const SizedBox(height: 10),
                             ],
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                        if (containsHeight()) ...[
-                          //height section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: getHeightField(),
-                              ),
-                              const SizedBox(width: 5.0),
-                              Flexible(
-                                flex: 1,
-                                child: getHeightSiUnitField(),
-                              ),
+                            getProductShortDescription(),
+                            const SizedBox(height: 10),
+                            getProductDescription(),
+                            const SizedBox(height: 10),
+                            getSearchEngineKeyword(),
+                            const SizedBox(height: 20),
+                            getIsAvailableField(),
+                            const SizedBox(height: 16),
+                            if (productIsAvailable == true) ...[
+                              getAvailableFromField(),
+                              const SizedBox(height: 16),
                             ],
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                        if (containsWidth()) ...[
-                          //width section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: getWidthField(),
-                              ),
-                              const SizedBox(width: 5.0),
-                              Flexible(
-                                flex: 1,
-                                child: getWidthSiUnitField(),
-                              ),
+                            getMeasurementField(),
+                            const SizedBox(height: 16),
+                            if (measurementView == true) ...[
+                              getCategoryMeasurementField(),
+                              const SizedBox(height: 16),
                             ],
-                          ),
-                          const SizedBox(height: 40),
-                        ]
-                      ],
-                      getDiscountField(),
-                      const SizedBox(height: 16),
-                      if (isDiscountAvailable == true) ...[
-                        getDiscountListField(),
-                        const SizedBox(height: 16),
-                      ],
-                      getTrackInventoryViewField(),
-                      if (trackInventory == true) ...[
-                        const SizedBox(height: 16),
-                        getInventoryFormField(),
-                        const SizedBox(height: 16),
-                        getTrackInventoryField(),
-                        const SizedBox(height: 16),
-                      ],
-                      const SizedBox(height: 16),
-                      getEnableInSuperStoreField(),
-                      const SizedBox(height: 16),
-                      if (productVariantList.isEmpty) ...[
-                        // getAddVariationFormField(),
-                        productVariation(),
-                      ] else ...[
-                        displaySelectedVariant(),
-                      ],
-                      const SizedBox(height: 16),
-                      if (productAddOnsList.isEmpty) ...[
-                        productAddOns(),
-                      ] else ...[
-                        displaySelectedAddOn(),
-                      ],
-                      const SizedBox(height: 16),
-                      address(),
-                      const SizedBox(height: 30),
-                      getSubmitButton(),
-                      const SizedBox(height: 20),
-                    ],
+                            if (pickedMeasurementList.isNotEmpty &&
+                                measurementView == true) ...[
+                              if (containsWeight()) ...[
+                                //weight section
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWeightField(),
+                                    ),
+                                    const SizedBox(width: 5.0),
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWeightSiUnitField(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                              ],
+                              if (containsHeight()) ...[
+                                //height section
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
+                                      child: getHeightField(),
+                                    ),
+                                    const SizedBox(width: 5.0),
+                                    Flexible(
+                                      flex: 1,
+                                      child: getHeightSiUnitField(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                              ],
+                              if (containsWidth()) ...[
+                                //width section
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWidthField(),
+                                    ),
+                                    const SizedBox(width: 5.0),
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWidthSiUnitField(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 40),
+                              ]
+                            ],
+                            getDiscountField(),
+                            const SizedBox(height: 16),
+                            if (isDiscountAvailable == true) ...[
+                              getDiscountListField(),
+                              const SizedBox(height: 16),
+                            ],
+                            getTrackInventoryViewField(),
+                            if (trackInventory == true) ...[
+                              const SizedBox(height: 16),
+                              getInventoryFormField(),
+                              const SizedBox(height: 16),
+                              getTrackInventoryField(),
+                              const SizedBox(height: 16),
+                            ],
+                            const SizedBox(height: 16),
+                            getEnableInSuperStoreField(),
+                            const SizedBox(height: 16),
+                            if (productVariantList.isEmpty) ...[
+                              // getAddVariationFormField(),
+                              productVariation(),
+                            ] else ...[
+                              displaySelectedVariant(),
+                            ],
+                            const SizedBox(height: 16),
+                            if (productAddOnsList.isEmpty) ...[
+                              productAddOns(),
+                            ] else ...[
+                              displaySelectedAddOn(),
+                            ],
+                            const SizedBox(height: 16),
+                            address(),
+                            const SizedBox(height: 30),
+                            getSubmitButton(),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              if (_focusNodeDescription.hasFocus)
+                _getEditor()
+              else
+                const SizedBox.shrink()
+            ],
           );
   }
 
@@ -845,6 +802,7 @@ class _AddProductState extends State<AddProduct> {
 
   Widget _getEditor() {
     final Widget editorWidget = Container(
+      width: double.infinity,
       decoration: const BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -888,16 +846,7 @@ class _AddProductState extends State<AddProduct> {
         ),
       ),
     );
-
-    // if (productDescription.isNotEmpty) {
-    //   if (blogBodyTextJson != null) {
-    //     return editorWidget;
-    //   } else {
-    //     return const SizedBox.shrink();
-    //   }
-    // } else {
     return editorWidget;
-    // }
   }
 
   Widget getCategoryField() {
@@ -2419,10 +2368,15 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
+  void removeQuillFocus() {
+    _focusNodeDescription.unfocus();
+  }
+
   Widget getIsAvailableField() {
     return CustomizedCheckBoxField(
       onTap: () {
         productIsAvailable = !productIsAvailable;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: productIsAvailable,
@@ -2542,7 +2496,7 @@ class _AddProductState extends State<AddProduct> {
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 isDense: true,
-                contentPadding: EdgeInsets.all(5),
+                contentPadding: const EdgeInsets.all(5),
                 border: const OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(

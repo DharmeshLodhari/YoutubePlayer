@@ -837,105 +837,64 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return ListView(
       controller: _scrollController,
       children: <Widget>[
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildProductImagesWidgets(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0),
-              child: productStockAndDetailTag(),
-            ),
-            const SizedBox(height: 12),
-            _buildHorizontalProductImageList(),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildProductTitleAndPriceWidget(),
-                  _buildProductWidthHightWeight(),
-                  const SizedBox(height: 10),
-                  _buildShortInfoWidget(),
-                  const SizedBox(height: 16),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildDescriptionWidget(),
-                  const SizedBox(height: 16),
-                  getProductOrServiceSocialMedia(
-                      context, "Product", product?.id ?? ""),
-                  const SizedBox(height: 16),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  const SizedBox(height: 10),
-                  if (product?.addOnsModels?.isNotEmpty == true) ...[
-                    _buildAddonWidget(),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                  ],
-                  const SizedBox(height: 10),
-                  _buildSellerInfoWidget(),
-                  const SizedBox(height: 10),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildReviewList(),
-                  const SizedBox(height: 16),
-                  _buildWriteReview(),
-                ],
-              ),
-            ),
-            Divider(
-              height: 0,
-              color: dividerColor,
-              thickness: 1,
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            if (isOtherItemIsEmpty)
-              Shimmer.fromColors(
-                baseColor: Colors.white,
-                highlightColor: greyBorderColor,
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    mainAxisExtent: 180,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 15,
-                    maxCrossAxisExtent: 200,
-                  ),
-                  itemCount: 2,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      color: Colors.grey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    );
-                  },
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _buildProductImagesWidgets(),
+              productStockAndDetailTag(),
+              const SizedBox(height: 5),
+              if (displayProductImages!.length > 1)
+                _buildHorizontalProductImageList()
+              else
+                const SizedBox(),
+              const SizedBox(height: 10),
+              _buildProductTitleAndPriceWidget(),
+              _buildProductWidthHeightWeight(),
+              const SizedBox(height: 10),
+              _buildShortInfoWidget(),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              _buildDescriptionWidget(),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              getProductOrServiceSocialMedia(
+                  context, "Product", product?.id ?? ""),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              if (product?.addOnsModels?.isNotEmpty == true) ...[
+                _buildAddonWidget(),
+                const SizedBox(
+                  height: 12,
                 ),
-              )
-            else
-              sellersOtherItems.isEmpty
-                  ? Container()
-                  : _buildSellersOtherProducts(),
-            SizedBox(height: isValidCustomer ? 60.0 : 20),
-          ],
+              ],
+              _buildSellerInfoWidget(),
+              const SizedBox(height: 10),
+              getHorizontalDivider(),
+              const SizedBox(height: 10),
+              _buildReviewList(),
+              const SizedBox(height: 12),
+              _buildWriteReview(),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              sellersOtherProducts(),
+              SizedBox(height: isValidCustomer ? 60.0 : 20),
+            ],
+          ),
         ),
       ],
+    );
+  }
+
+  Widget getHorizontalDivider() {
+    return Divider(
+      height: 0,
+      color: dividerColor,
+      thickness: 1,
     );
   }
 
@@ -1085,121 +1044,117 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         initialData: 0,
         stream: sliderIndex.stream,
         builder: (context, snapshot) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: displayProductImages?.length == 0
-                ? AspectRatio(
-                    aspectRatio: 1.5,
-                    child: Center(
-                      child: CircularLoadingIndicator(),
-                    ),
-                  )
-                : displayProductImages?.length == 1
-                    ? GestureDetector(
-                        onTap: () {
-                          if (displayProductImages?[0] != null) {
-                            // Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                            //     arguments: displayProductImages?[0]);
-                            showSliderGallery(displayProductImages);
-                          }
-                        },
-                        child: AspectRatio(
-                          aspectRatio: 1.5,
-                          child: CachedNetworkImage(
-                            placeholder: (context, url) =>
-                                Center(child: CircularLoadingIndicator()),
-                            imageUrl: displayProductImages?[0] ?? "",
-                            fit: BoxFit.cover,
-                            errorWidget: productAndServiceBigErrorWidget,
-                          ),
-                        ),
-                      )
-                    : Column(
-                        children: [
-                          Stack(
-                            children: [
-                              CarouselSlider.builder(
-                                key: ValueKey<int>(selectedIndex),
-                                options: CarouselOptions(
-                                  initialPage: selectedIndex,
-                                  enableInfiniteScroll: false,
-                                  viewportFraction: 1.0,
-                                  enlargeCenterPage: true,
-                                  autoPlay: false,
-                                  aspectRatio: 1.5,
-                                  onPageChanged: (index, _) {
-                                    setState(() {
-                                      selectedIndex = index;
-                                    });
-                                    sliderIndex.sink.add(index);
-                                  },
-                                ),
-                                itemCount: displayProductImages!.length,
-                                itemBuilder: (context, index, realIndex) {
-                                  final item = displayProductImages![index];
-                                  return GestureDetector(
-                                    onTap: () {
-                                      if (item != null) {
-                                        showSliderGallery(displayProductImages);
-                                      }
-                                    },
-                                    child: CachedNetworkImage(
-                                      placeholder: (context, url) => Center(
-                                        child: CircularLoadingIndicator(),
-                                      ),
-                                      imageUrl: item ?? "",
-                                      fit: BoxFit.cover,
-                                      height: double.infinity,
-                                      width: double.infinity,
-                                      errorWidget:
-                                          productAndServiceBigErrorWidget,
-                                    ),
-                                  );
+          return displayProductImages?.length == 0
+              ? AspectRatio(
+                  aspectRatio: 1.5,
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : displayProductImages?.length == 1
+                  ? GestureDetector(
+                      onTap: () {
+                        if (displayProductImages?[0] != null) {
+                          // Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                          //     arguments: displayProductImages?[0]);
+                          showSliderGallery(displayProductImages);
+                        }
+                      },
+                      child: CachedNetworkImage(
+                        height: 250,
+                        width: double.infinity,
+                        placeholder: (context, url) =>
+                            Center(child: CircularLoadingIndicator()),
+                        imageUrl: displayProductImages?[0] ?? "",
+                        fit: BoxFit.cover,
+                        errorWidget: productAndServiceBigErrorWidget,
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        Stack(
+                          children: [
+                            CarouselSlider.builder(
+                              key: ValueKey<int>(selectedIndex),
+                              options: CarouselOptions(
+                                initialPage: selectedIndex,
+                                enableInfiniteScroll: false,
+                                viewportFraction: 1.0,
+                                enlargeCenterPage: true,
+                                autoPlay: false,
+                                height: 250,
+                                onPageChanged: (index, _) {
+                                  setState(() {
+                                    selectedIndex = index;
+                                  });
+                                  sliderIndex.sink.add(index);
                                 },
                               ),
-                              Positioned(
-                                bottom: 10,
-                                left: 0,
-                                right: 0,
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: bgLightGrey,
-                                      borderRadius: BorderRadius.circular(20),
+                              itemCount: displayProductImages!.length,
+                              itemBuilder: (context, index, realIndex) {
+                                final item = displayProductImages![index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    if (item != null) {
+                                      showSliderGallery(displayProductImages);
+                                    }
+                                  },
+                                  child: CachedNetworkImage(
+                                    placeholder: (context, url) => Center(
+                                      child: CircularLoadingIndicator(),
                                     ),
-                                    padding: const EdgeInsets.all(2),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        _buildCustomTabPhotoAndVideo(
-                                          onTap: () {
-                                            _onTabSelected(0);
-                                          },
-                                          text:
-                                              "Photo ${selectedIndex + 1}/${displayProductImages?.length}",
-                                          backgroundColor: selectedIndex == 0
-                                              ? transparent
-                                              : white,
-                                        ),
-                                        _buildCustomTabPhotoAndVideo(
-                                            onTap: () {
-                                              _onTabSelected(1);
-                                            },
-                                            text: "Video",
-                                            backgroundColor: selectedIndex == 1
-                                                ? transparent
-                                                : white),
-                                      ],
-                                    ),
+                                    imageUrl: item ?? "",
+                                    fit: BoxFit.cover,
+                                    height: 250,
+                                    width: double.infinity,
+                                    errorWidget:
+                                        productAndServiceBigErrorWidget,
+                                  ),
+                                );
+                              },
+                            ),
+                            Positioned(
+                              bottom: 10,
+                              left: 0,
+                              right: 0,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: bgLightGrey,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  padding: const EdgeInsets.all(2),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      _buildCustomTabPhotoAndVideo(
+                                        onTap: () {
+                                          _onTabSelected(0);
+                                        },
+                                        text:
+                                            "Photo ${selectedIndex + 1}/${displayProductImages?.length}",
+                                        backgroundColor: selectedIndex == 0
+                                            ? transparent
+                                            : white,
+                                      ),
+                                      // _buildCustomTabPhotoAndVideo(
+                                      //     onTap: () {
+                                      //       _onTabSelected(1);
+                                      //     },
+                                      //     text: "Video",
+                                      //     backgroundColor: selectedIndex == 1
+                                      //         ? transparent
+                                      //         : white),
+                                    ],
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
-          );
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
         });
   }
 
@@ -1237,7 +1192,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget _buildHorizontalProductImageList() {
     return Container(
-      height: 60,
+      height: 50,
       alignment: Alignment.center,
       child: ListView.builder(
         shrinkWrap: true,
@@ -1257,18 +1212,22 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 5.0),
               foregroundDecoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                border:
-                    isSelected ? Border.all(color: black, width: 1.2) : null,
+                borderRadius: BorderRadius.circular(3),
+                border: isSelected
+                    ? Border.all(color: fontLightGrey, width: 1.2)
+                    : null,
               ),
-              child: CachedNetworkImage(
-                placeholder: (context, url) =>
-                    Center(child: CircularLoadingIndicator()),
-                imageUrl: imageUrl ?? "",
-                height: 60,
-                width: 60,
-                fit: BoxFit.cover,
-                errorWidget: productAndServiceBigErrorWidget,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: CachedNetworkImage(
+                  placeholder: (context, url) =>
+                      Center(child: CircularLoadingIndicator()),
+                  imageUrl: imageUrl ?? "",
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                  errorWidget: productAndServiceBigErrorWidget,
+                ),
               ),
             ),
           );
@@ -1329,11 +1288,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         (product?.pricePercentageChange != null &&
                 product?.pricePercentageChange != 0.0 ||
             selectedVariant != null)) {
-      return SizedBox(
-        width: double.infinity,
-        height: 25,
-        child: buildDiscountPrice(),
-      );
+      return buildDiscountPrice();
     } else {
       return const SizedBox();
     }
@@ -1342,10 +1297,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget buildDiscountPrice() {
     if (selectedVariant != null) {
       if (product?.checkVariantDiscount(selectedVariant) ?? false) {
-        return showDiscountValue(
-          selectedVariant?.discountType ?? "",
-          selectedVariant?.discountValue ?? 0,
-          selectedVariant?.currency,
+        return SizedBox(
+          width: double.infinity,
+          height: 25,
+          child: showDiscountValue(
+            selectedVariant?.discountType ?? "",
+            selectedVariant?.discountValue ?? 0,
+            selectedVariant?.currency,
+          ),
         );
       } else {
         return const SizedBox();
@@ -1353,10 +1312,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     } else if (product?.discountedPrice != null &&
         product?.discountedPrice != 0) {
       if (product?.checkProductDiscount() ?? false) {
-        return showDiscountValue(
-          product?.discountType ?? "",
-          product?.discountValue ?? 0,
-          product?.currency,
+        return SizedBox(
+          width: double.infinity,
+          height: 25,
+          child: showDiscountValue(
+            product?.discountType ?? "",
+            product?.discountValue ?? 0,
+            product?.currency,
+          ),
         );
       } else {
         return const SizedBox();
@@ -1387,21 +1350,37 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       // ),
       // ]
     } else if (product!.pricePercentageChange != 0.0) {
-      return Positioned(
-        top: 8,
-        right: 100,
+      return SizedBox(
+        width: double.infinity,
+        height: 25,
         child: Container(
-          padding: const EdgeInsets.only(
-              left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
-          decoration: BoxDecoration(
-            color: naturalGreen,
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
-          ),
-          child: Text(
-            "${product!.pricePercentageChange!.toInt()}% off",
-            style: const TextStyle(
-              color: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          color: lightGreenBg,
+          child: RichText(
+            text: TextSpan(
+              text: "${product!.pricePercentageChange!.toInt()}% off",
+              style: TextStyle(
+                color: naturalGreen,
+                fontSize: 12,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w700,
+              ),
+              children: [
+                const WidgetSpan(child: SizedBox(width: 3)),
+                TextSpan(
+                  text: 'Discount Sales',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontFamily: 'Inter',
+                    color: blackFont,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
+            textAlign: TextAlign.center,
+            softWrap: true,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       );
@@ -1577,7 +1556,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   //   _showAvailableDate(),
                   Row(
                     children: [
-                      getRating(numberOfRating: product?.rating?.toInt()),
+                      getRating(
+                        numberOfRating: product?.rating?.toInt(),
+                        starSize: 14,
+                      ),
                       const SizedBox(width: 5),
                       _getProductReviews(),
                     ],
@@ -1596,7 +1578,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  Widget _buildProductWidthHightWeight() {
+  Widget _buildProductWidthHeightWeight() {
     return Column(
       children: [
         const SizedBox(height: 10),
@@ -1730,6 +1712,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
           alignment: Alignment.center,
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(2),
             color: bgLightPink,
           ),
           child: Text(
@@ -1866,10 +1849,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             Text(
               'Color : ',
               style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: "Inter",
-                  color: darkGrey,
-                  fontWeight: FontWeight.bold),
+                fontSize: 14,
+                fontFamily: "Inter",
+                color: darkGrey,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(
               width: 5.0,
@@ -1877,7 +1861,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             Text(
               selectedVariant?.getColor() ?? "",
               style: TextStyle(
-                  fontSize: 14, color: blackFont, fontWeight: FontWeight.bold),
+                fontSize: 14,
+                color: blackFont,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
@@ -1900,10 +1887,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             Text(
               'Size : ',
               style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'Inter',
-                  color: darkGrey,
-                  fontWeight: FontWeight.bold),
+                fontSize: 14,
+                fontFamily: 'Inter',
+                color: darkGrey,
+                fontWeight: FontWeight.w400,
+              ),
             ),
             const SizedBox(
               width: 5.0,
@@ -1911,7 +1899,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             Text(
               selectedVariant?.getSize() ?? "",
               style: TextStyle(
-                  fontSize: 14, color: blackFont, fontWeight: FontWeight.bold),
+                fontSize: 14,
+                color: blackFont,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
@@ -1945,79 +1936,76 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     final int totalColumns =
         calculateColumnCount(allVariants?.length ?? 0, maxItemsPerRow);
 
-    return SizedBox(
-      height: 82.0 * totalColumns,
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 5,
-          crossAxisSpacing: 5.0,
-          mainAxisSpacing: 5.0,
-          childAspectRatio: 1.1,
-        ),
-        // scrollDirection: Axis.horizontal,
-        itemCount: allVariants?.length,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          final Variant? variant = allVariants?[index];
-          final String? imageUrl = variant?.serverImages?.isNotEmpty == true
-              ? variant?.serverImages!.first
-              : null;
+    return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 5,
+        crossAxisSpacing: 5.0,
+        mainAxisSpacing: 5.0,
+        childAspectRatio: 1.1,
+      ),
+      // scrollDirection: Axis.horizontal,
+      itemCount: allVariants?.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        final Variant? variant = allVariants?[index];
+        final String? imageUrl = variant?.serverImages?.isNotEmpty == true
+            ? variant?.serverImages!.first
+            : null;
 
-          // final String color = colorGroups.keys.elementAt(index);
-          // final List<Variant> variantsWithSize = colorGroups[color]!;
+        // final String color = colorGroups.keys.elementAt(index);
+        // final List<Variant> variantsWithSize = colorGroups[color]!;
 
-          // Get the first variant with this size (assuming at least one variant exists)
+        // Get the first variant with this size (assuming at least one variant exists)
 
-          // final Variant availableVariant = getVariantImage(variantsWithSize);
+        // final Variant availableVariant = getVariantImage(variantsWithSize);
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 2.0),
-            child: GestureDetector(
-              onTap: () {
-                // _getSelectedVariantColor(availableVariant, variantsWithSize);
-                _getSelectedVariantColor(variant, [variant ?? Variant()]);
-              },
-              child: Container(
-                height: 80.0,
-                width: 80.0,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                  border: Border.all(
-                    color: selectedVariant?.colour == variant?.colour
-                        ? black
-                        : transparent,
-                    // color: selectedVariant?.colour == availableVariant?.colour
-                    //     ? black
-                    //     : transparent,
-                    width: 1.0,
-                  ),
+        return Padding(
+          padding: const EdgeInsets.only(right: 2.0),
+          child: GestureDetector(
+            onTap: () {
+              // _getSelectedVariantColor(availableVariant, variantsWithSize);
+              _getSelectedVariantColor(variant, [variant ?? Variant()]);
+            },
+            child: Container(
+              height: 80.0,
+              width: 80.0,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(5)),
+                border: Border.all(
+                  color: selectedVariant?.colour == variant?.colour
+                      ? black
+                      : transparent,
+                  // color: selectedVariant?.colour == availableVariant?.colour
+                  //     ? black
+                  //     : transparent,
+                  width: 1.0,
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: CachedNetworkImage(
-                      // imageUrl: availableVariant.serverImages?.first ?? "",
-                      imageUrl: imageUrl ?? "",
-                      placeholder: (context, url) => Center(
-                          child: Transform.scale(
-                        scale: 0.5,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
-                          strokeWidth: 2.0,
-                        ),
-                      )),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                    ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  child: CachedNetworkImage(
+                    // imageUrl: availableVariant.serverImages?.first ?? "",
+                    imageUrl: imageUrl ?? "",
+                    placeholder: (context, url) => Center(
+                        child: Transform.scale(
+                      scale: 0.5,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
+                        strokeWidth: 2.0,
+                      ),
+                    )),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                   ),
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -2421,6 +2409,38 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
+  Widget sellersOtherProducts() {
+    if (isOtherItemIsEmpty) {
+      return Shimmer.fromColors(
+        baseColor: Colors.white,
+        highlightColor: greyBorderColor,
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            mainAxisExtent: 180,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 15,
+            maxCrossAxisExtent: 200,
+          ),
+          itemCount: 2,
+          itemBuilder: (context, index) {
+            return Card(
+              color: Colors.grey,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            );
+          },
+        ),
+      );
+    } else {
+      return sellersOtherItems.isEmpty
+          ? Container()
+          : _buildSellersOtherProducts();
+    }
+  }
+
   Widget _buildAddonWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -2537,48 +2557,43 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context)!.sellersOtherProduct,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                AppLocalization.of(context)!.sellersOtherProduct,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: blackFont,
+                  fontFamily: "Inter",
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  AppLocalization.of(context)!.seeAll,
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: blackFont,
-                    fontFamily: "Inter",
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      fontFamily: "Inter",
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    AppLocalization.of(context)!.seeAll,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        fontFamily: "Inter",
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.pushNamed(context, Routes.USER_PROFILE,
-                        arguments: {
-                          "searchedUserName": product!.seller,
-                          "index": 2
-                        });
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                    "searchedUserName": product!.seller,
+                    "index": 2
+                  });
+                },
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                padding: const EdgeInsets.symmetric(horizontal: 3.0),
                 child: DisplayProduct(
                   product: sellersOtherItems[index],
                 ),
