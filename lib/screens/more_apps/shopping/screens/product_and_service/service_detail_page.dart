@@ -60,7 +60,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc userBloc;
   late BasketBloc basketBloc;
-  List<String?>? imgList = [];
+  List<String?>? displayServiceImage = [];
   int selectedIndex = 0;
   bool isSelected = true;
 
@@ -119,7 +119,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     _auth.getService(serviceId).then((value) {
       if (mounted) {
         service = value;
-        imgList = service?.serverImages;
+        displayServiceImage = service?.serverImages;
         serviceIsLoading = false;
         if (mounted) setState(() {});
       }
@@ -585,94 +585,47 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     return ListView(
       controller: _scrollController,
       children: <Widget>[
-        Column(
-          children: [
-            _buildServiceImagesWidgets(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: serviceStockAndDetailTag(),
-            ),
-            const SizedBox(height: 20),
-            _buildHorizontalServiceImageList(),
-            Container(
-              padding: const EdgeInsets.only(right: 16, left: 16, top: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _buildServiceTitleAndPriceWidget(),
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  _buildShortInfoWidget(),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  _buildAvailableFromAndShareWidgets(),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  _buildDescriptionWidget(),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  _buildSellerInfoWidget(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  _buildReviewList(),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  _buildWriteReview(),
-                ],
-              ),
-            ),
-            Divider(
-              height: 0,
-              color: dividerColor,
-              thickness: 1,
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            if (isOtherItemIsEmpty)
-              Container()
-            else
-              _buildProviderOtherServices(),
-            SizedBox(height: isValidCustomer ? 60.0 : 20),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildServiceImagesWidgets(),
+              serviceStockAndDetailTag(),
+              const SizedBox(height: 5),
+              if (displayServiceImage!.length > 1)
+                _buildHorizontalServiceImageList()
+              else
+                const SizedBox(),
+              const SizedBox(height: 10),
+              _buildServiceTitleAndPriceWidget(),
+              const SizedBox(height: 10),
+              _buildShortInfoWidget(),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              _buildAvailableFromAndShareWidgets(),
+              const SizedBox(height: 16),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              _buildDescriptionWidget(),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              _buildSellerInfoWidget(),
+              const SizedBox(height: 12),
+              _buildReviewList(),
+              const SizedBox(height: 12),
+              _buildWriteReview(),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              if (isOtherItemIsEmpty)
+                Container()
+              else
+                _buildProviderOtherServices(),
+              SizedBox(height: isValidCustomer ? 60.0 : 20),
+            ],
+          ),
         ),
       ],
     );
@@ -755,21 +708,19 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "More Information",
+          "Description",
           style: TextStyle(
-              color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            fontFamily: "Inter",
+          ),
         ),
         const SizedBox(
           height: 8,
         ),
-        Text(
-          messageDecoderWithEmoji(service?.description)!,
-          style: TextStyle(
-            fontSize: 14,
-            color: darkGrey,
-          ),
-          textAlign: TextAlign.justify,
-        ),
+        displayQuillFormattedText(
+            service?.description ?? "", darkGrey, 14, FontWeight.w400),
       ],
     );
   }
@@ -881,14 +832,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   Widget _buildServiceImagesWidgets() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: imgList?.length == 0
+      child: displayServiceImage?.length == 0
           ? AspectRatio(
               aspectRatio: 1.5,
               child: Center(
                 child: CircularLoadingIndicator(),
               ),
             )
-          : imgList?.length == 1
+          : displayServiceImage?.length == 1
               ? Stack(
                   children: [
                     AspectRatio(
@@ -897,7 +848,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                         child: CachedNetworkImage(
                           placeholder: (context, url) =>
                               Center(child: CircularLoadingIndicator()),
-                          imageUrl: imgList![0]!,
+                          imageUrl: displayServiceImage![0]!,
                           fit: BoxFit.cover,
                           height: double.infinity,
                           width: double.infinity,
@@ -929,9 +880,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                               _current = index;
                             },
                           ),
-                          itemCount: imgList?.length,
+                          itemCount: displayServiceImage?.length,
                           itemBuilder: (context, index, realIndex) {
-                            final item = imgList?[index];
+                            final item = displayServiceImage?[index];
                             return Center(
                               child: CachedNetworkImage(
                                 placeholder: (context, url) => Center(
@@ -946,46 +897,94 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                             );
                           },
                         ),
+                        Positioned(
+                          bottom: 10,
+                          left: 0,
+                          right: 0,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: bgLightGrey,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              padding: const EdgeInsets.all(2),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildServiceCustomTabPhotoAndVideo(
+                                    onTap: () {
+                                      _onServiceTabSelected(0);
+                                    },
+                                    text:
+                                        "Photo ${selectedIndex + 1}/${displayServiceImage?.length}",
+                                    backgroundColor: selectedIndex == 0
+                                        ? transparent
+                                        : white,
+                                  ),
+                                  // video
+                                  // _buildCustomTabPhotoAndVideo(
+                                  //     onTap: () {
+                                  //       _onTabSelected(1);
+                                  //     },
+                                  //     text: "Video",
+                                  //     backgroundColor: selectedIndex == 1
+                                  //         ? transparent
+                                  //         : white),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                    // Positioned(
-                    //   bottom: 0,
-                    //   left: MediaQuery.of(context).size.width / 2 -
-                    //       (5 * imgList!.length),
-                    //   child: Row(
-                    //     crossAxisAlignment: CrossAxisAlignment.end,
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: imgList!.map((url) {
-                    //       final int index = imgList!.indexOf(url);
-                    //       return Container(
-                    //         width: 5.0,
-                    //         height: 5.0,
-                    //         margin: const EdgeInsets.symmetric(
-                    //             vertical: 10.0, horizontal: 2.0),
-                    //         decoration: BoxDecoration(
-                    //           shape: BoxShape.circle,
-                    //           color: _current == index
-                    //               ? navyBlue
-                    //               : navyBlueLight,
-                    //         ),
-                    //       );
-                    //     }).toList(),
-                    //   ),
                   ],
                 ),
     );
   }
 
+  Widget _buildServiceCustomTabPhotoAndVideo(
+      {void Function()? onTap, Color? backgroundColor, String? text}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+          child: Text(
+            text ?? "",
+            style: TextStyle(
+              fontSize: 12,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Inter',
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _onServiceTabSelected(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
   Widget _buildHorizontalServiceImageList() {
     return Container(
-      height: 60,
+      height: 50,
       alignment: Alignment.center,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
-        itemCount: imgList?.length ?? 0,
+        itemCount: displayServiceImage?.length ?? 0,
         itemBuilder: (context, index) {
-          final String? imageUrl = imgList?[index];
+          final String? imageUrl = displayServiceImage?[index];
           isSelected = selectedIndex == index;
 
           return GestureDetector(
@@ -1002,14 +1001,17 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 border:
                     isSelected ? Border.all(color: black, width: 1.2) : null,
               ),
-              child: CachedNetworkImage(
-                placeholder: (context, url) =>
-                    Center(child: CircularLoadingIndicator()),
-                imageUrl: imageUrl ?? "",
-                height: 60,
-                width: 60,
-                fit: BoxFit.fill,
-                errorWidget: productAndServiceBigErrorWidget,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: CachedNetworkImage(
+                  placeholder: (context, url) =>
+                      Center(child: CircularLoadingIndicator()),
+                  imageUrl: imageUrl ?? "",
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                  errorWidget: productAndServiceBigErrorWidget,
+                ),
               ),
             ),
           );
@@ -1152,32 +1154,24 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildShortInfoWidget() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Description",
-          style: TextStyle(
-              color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(
-          height: 8,
-        ),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                messageDecoderWithEmoji(service!.shortDescription)!,
-                style: TextStyle(
-                  color: darkGrey,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-            ),
-          ],
-        ),
-      ],
+    return Text(
+      messageDecoderWithEmoji(service!.shortDescription)!,
+      style: TextStyle(
+        color: fontLightGrey,
+        fontSize: 14,
+        fontFamily: "Inter",
+        fontWeight: FontWeight.w400,
+      ),
+      softWrap: true,
+      textAlign: TextAlign.justify,
+    );
+  }
+
+  Widget getHorizontalDivider() {
+    return Divider(
+      height: 0,
+      color: dividerColor,
+      thickness: 1,
     );
   }
 
@@ -1228,48 +1222,41 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context)!.providersOtherService,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                AppLocalization.of(context)!.providersOtherService,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: blackFont,
+                  fontFamily: "Inter",
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  AppLocalization.of(context)!.seeAll,
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: navyBlue,
                   ),
                 ),
-                GestureDetector(
-                  child: Text(
-                    AppLocalization.of(context)!.seeAll,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue,
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.pushNamed(context, Routes.USER_PROFILE,
-                        arguments: {
-                          "searchedUserName": service!.provider,
-                          "index": 3
-                        });
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                    "searchedUserName": service!.provider,
+                    "index": 3
+                  });
+                },
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: ListView.builder(
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
-              separatorBuilder: (context, index) {
-                return const SizedBox(width: 15);
-              },
               itemBuilder: (context, index) => DisplayService(
                 service: sellersOtherItems[index],
               ),
@@ -1328,7 +1315,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   @override
   void dispose() {
-    imgList!.clear();
+    displayServiceImage!.clear();
     _scrollController.dispose();
     super.dispose();
   }

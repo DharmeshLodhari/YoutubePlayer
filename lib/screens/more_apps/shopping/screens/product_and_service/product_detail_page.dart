@@ -1128,9 +1128,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      _buildCustomTabPhotoAndVideo(
+                                      _buildProductCustomTabPhotoAndVideo(
                                         onTap: () {
-                                          _onTabSelected(0);
+                                          _onProductTabSelected(0);
                                         },
                                         text:
                                             "Photo ${selectedIndex + 1}/${displayProductImages?.length}",
@@ -1138,6 +1138,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                             ? transparent
                                             : white,
                                       ),
+                                      // video
                                       // _buildCustomTabPhotoAndVideo(
                                       //     onTap: () {
                                       //       _onTabSelected(1);
@@ -1158,7 +1159,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         });
   }
 
-  Widget _buildCustomTabPhotoAndVideo(
+  Widget _buildProductCustomTabPhotoAndVideo(
       {void Function()? onTap, Color? backgroundColor, String? text}) {
     return GestureDetector(
       onTap: onTap,
@@ -1184,7 +1185,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  void _onTabSelected(int index) {
+  void _onProductTabSelected(int index) {
     setState(() {
       selectedIndex = index;
     });
@@ -2592,11 +2593,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             child: ListView.builder(
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                child: DisplayProduct(
-                  product: sellersOtherItems[index],
-                ),
+              itemBuilder: (context, index) => DisplayProduct(
+                product: sellersOtherItems[index],
               ),
             ),
           )
