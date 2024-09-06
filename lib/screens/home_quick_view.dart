@@ -1,5 +1,6 @@
 import 'package:Slydo/constant.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/permission_protection_widget.dart';
@@ -59,7 +60,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   late YarnDashboardBloc yarnDashboardBloc;
 
   late UserBloc userBloc;
-  CustomerProfile? searchedUser;
+  CustomerProfile? user;
 
   @override
   void initState() {
@@ -67,11 +68,25 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
     appBarTitle = widget.arguments['view'];
 
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      fetchCustomerProfile();
+    });
+
     checkForListToDisplay();
 
     searchItemTextController.addListener(() {
       filterList(searchItemTextController.text);
     });
+  }
+
+  void fetchCustomerProfile() async {
+    try {
+      user =
+          await UserAuth().fetchCustomerProfileWithAuth(userBloc.user.userName);
+    } catch (e) {
+      Navigator.pop(context);
+      showToast(message: 'User not found');
+    }
   }
 
   void checkForListToDisplay() {
@@ -650,8 +665,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         });
         break;
       case ProtectionPermission.flashTag:
-        Navigator.of(context).pushNamed(Routes.FLASH_TAG_LIST,
-            arguments: {"user": userBloc.user.userName});
+        Navigator.of(context)
+            .pushNamed(Routes.FLASH_TAG_LIST, arguments: {"user": user});
         break;
       case ProtectionPermission.customizeProfile:
         break;
@@ -660,7 +675,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
 
         break;
       case ProtectionPermission.customCategory:
-        Navigator.of(context).pushNamed(Routes.CUSTOM_CATEGORY);
+        Navigator.of(context)
+            .pushNamed(Routes.CUSTOM_CATEGORY, arguments: {"isHome": true});
 
         break;
       case ProtectionPermission.dispatchAddress:

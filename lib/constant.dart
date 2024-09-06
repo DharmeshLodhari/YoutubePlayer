@@ -3,7 +3,7 @@ const String appFeaturesStorage = 'appFeaturesStorage';
 
 class ProtectionPermission {
   static const String yarn = "Yarn";
-  static const String moment = "Moment";
+  static const String moment = "Moments";
   static const String product = "Product";
   static const String services = "Services";
   static const String inbox = "Inbox";

@@ -11,7 +11,6 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_quill_extensions/utils/dart_ui/dart_ui_real.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -19,7 +18,9 @@ import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class CustomCategoryList extends StatefulWidget {
-  const CustomCategoryList({super.key});
+  CustomCategoryList({super.key, this.arguments});
+
+  dynamic arguments;
 
   @override
   State<CustomCategoryList> createState() => _CustomCategoryListState();
@@ -293,6 +294,13 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       key: _messengerScaffoldKey,
       child: WillPopScope(
         onWillPop: () async {
+          if (widget.arguments["isHome"] == true) {
+            Navigator.pop(context);
+          } else {
+            Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+            Navigator.pushNamed(context, Routes.USER_PROFILE,
+                arguments: {"searchedUserName": userBloc?.user.userName});
+          }
           return true;
         },
         child: Scaffold(
@@ -407,9 +415,13 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           size: 24,
         ),
         onPressed: () async {
-          Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
-          Navigator.pushNamed(context, Routes.USER_PROFILE,
-              arguments: {"searchedUserName": userBloc?.user.userName});
+          if (widget.arguments["isHome"] == true) {
+            Navigator.pop(context);
+          } else {
+            Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+            Navigator.pushNamed(context, Routes.USER_PROFILE,
+                arguments: {"searchedUserName": userBloc?.user.userName});
+          }
         },
       ),
       shadowColor: greySecondaryYarn,

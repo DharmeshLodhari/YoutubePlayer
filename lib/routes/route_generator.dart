@@ -1936,7 +1936,7 @@ class RouteGenerator {
       /// Custom Category
       case Routes.CUSTOM_CATEGORY:
         return PageTransition(
-          child: const CustomCategoryList(),
+          child: CustomCategoryList(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

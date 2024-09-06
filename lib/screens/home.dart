@@ -441,8 +441,8 @@ class _HomeState extends State<Home> {
                     onTap: () => NavigationUtil.push(context,
                         screen: const MomentsScreen()),
                     child: sectionHeader(
-                      "Share your moment",
-                      "View Moment",
+                      "Share your moments",
+                      "View Moments",
                     ),
                   ),
                   const SizedBox(height: 15),
