@@ -1,4 +1,5 @@
 import 'package:Slydo/constant.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/permission_protection_widget.dart';
@@ -58,6 +59,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   late YarnDashboardBloc yarnDashboardBloc;
 
   late UserBloc userBloc;
+  CustomerProfile? searchedUser;
 
   @override
   void initState() {
@@ -119,6 +121,46 @@ class _HomeQuickViewState extends State<HomeQuickView> {
       {
         'imagePath': 'home/service',
         'title': ProtectionPermission.services,
+        'ForReadPermission': '2',
+      },
+      {
+        'imagePath': 'home/currency',
+        'title': ProtectionPermission.currency,
+        'ForReadPermission': '2',
+      },
+      {
+        'imagePath': 'home/discount',
+        'title': ProtectionPermission.discount,
+        'ForReadPermission': '2',
+      },
+      {
+        'imagePath': 'home/add_ons',
+        'title': ProtectionPermission.addOns,
+        'ForReadPermission': '2',
+      },
+      {
+        'imagePath': 'home/flash_tag',
+        'title': ProtectionPermission.flashTag,
+        'ForReadPermission': '2',
+      },
+      {
+        'imagePath': 'home/customize_profile',
+        'title': ProtectionPermission.customizeProfile,
+        'ForReadPermission': '2',
+      },
+      {
+        'imagePath': 'home/shipping_options',
+        'title': ProtectionPermission.shippingOptions,
+        'ForReadPermission': '2',
+      },
+      {
+        'imagePath': 'home/custom_category',
+        'title': ProtectionPermission.customCategory,
+        'ForReadPermission': '2',
+      },
+      {
+        'imagePath': 'home/dispatch_address',
+        'title': ProtectionPermission.dispatchAddress,
         'ForReadPermission': '2',
       },
       {
@@ -596,6 +638,34 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         //   showToast(message: 'Feature not available at the moment');
         // }
         break;
+      case ProtectionPermission.currency:
+        break;
+      case ProtectionPermission.discount:
+        Navigator.of(context).pushNamed(Routes.DISCOUNT_LIST);
+        break;
+      case ProtectionPermission.addOns:
+        Navigator.of(context).pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
+          'productId': '',
+          'isForCheckboxSelection': false,
+        });
+        break;
+      case ProtectionPermission.flashTag:
+        Navigator.of(context).pushNamed(Routes.FLASH_TAG_LIST,
+            arguments: {"user": userBloc.user.userName});
+        break;
+      case ProtectionPermission.customizeProfile:
+        break;
+      case ProtectionPermission.shippingOptions:
+        Navigator.of(context).pushNamed(Routes.SHIPPING_OPTIONS);
+
+        break;
+      case ProtectionPermission.customCategory:
+        Navigator.of(context).pushNamed(Routes.CUSTOM_CATEGORY);
+
+        break;
+      case ProtectionPermission.dispatchAddress:
+        Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);
+        break;
       case ProtectionPermission.channel:
         NavigationUtil.push(
           context,
@@ -646,6 +716,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
           Navigator.pushNamed(context, Routes.ADD_SERVICE);
         }
         break;
+
       case ProtectionPermission.inbox:
         Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
 
