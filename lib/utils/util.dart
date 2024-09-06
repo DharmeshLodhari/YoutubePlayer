@@ -2888,8 +2888,7 @@ Widget qrCodeIcon(BuildContext context, Map<String, dynamic> navigationData,
 }
 
 Widget displayQuillFormattedText(BuildContext context, String formattedText,
-    Color? fontColor, double? fontSize, FontWeight? fontWeight,
-    {Map<String, dynamic>? customStyles}) {
+    Color? fontColor, double? fontSize, FontWeight? fontWeight) {
   late flutterQuill.QuillController quillController;
   dynamic jsonDecodedText;
 
@@ -2900,27 +2899,25 @@ Widget displayQuillFormattedText(BuildContext context, String formattedText,
       document: flutterQuill.Document.fromJson(jsonDecodedText),
       selection: const TextSelection.collapsed(offset: -1),
     );
+
+    if (quillController.document.length > 0) {
+      quillController.formatTextStyle(
+        0,
+        quillController.document.length,
+        flutterQuill.Style.fromJson({
+          'color':
+              '#${fontColor?.value.toRadixString(16).padLeft(6, '0').toUpperCase()}',
+          'size': fontSize ?? 14.0,
+        }),
+      );
+    }
   } catch (e) {
     debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
   }
 
-  final flutterQuill.DefaultStyles style =
-      getCustomStyle(context, customStyles);
-  // flutterQuill.Style style = flutterQuill.Style.fromJson(customStyles);
-
-  // flutterQuill.QuillStyles();
-  // if (customStyles != null) {
-  //   // customStyle = {"h1": 1,"h2": 3}
-  //   customStyles.keys.forEach((key) => {
-  //         defaultStyle[key] = customStyles[key];
-  //         // defaultStyle.key = customStyles[key]
-  //         setAttribute(defaultStyle, key, customStyles[key])
-  //       });
-  // }
   if (jsonDecodedText != null) {
     return flutterQuill.QuillEditor.basic(
       configurations: flutterQuill.QuillEditorConfigurations(
-        // customStyles: style,
         controller: quillController,
         readOnlyMouseCursor: SystemMouseCursors.basic,
         showCursor: false,
@@ -2934,266 +2931,9 @@ Widget displayQuillFormattedText(BuildContext context, String formattedText,
       style: TextStyle(
         fontWeight: fontWeight ?? FontWeight.w400,
         fontSize: fontSize ?? 14,
-        color: fontColor ?? darkGrey,
+        color: fontColor ?? lightBlackFont,
       ),
       textAlign: TextAlign.justify,
     );
   }
-}
-
-flutterQuill.DefaultStyles getCustomStyle(
-    BuildContext context, Map<String, dynamic>? customStyles) {
-  final themeData = Theme.of(context);
-  final defaultTextStyle = DefaultTextStyle.of(context);
-  final baseStyle = defaultTextStyle.style.copyWith(
-    color: fontLightGrey,
-    fontSize: 16,
-    height: 1.15,
-    decoration: TextDecoration.none,
-  );
-  const baseSpacing = flutterQuill.VerticalSpacing(6, 0);
-  String fontFamily;
-  if (Platform.isIOS) {
-    fontFamily = 'Menlo';
-  } else {
-    fontFamily = 'Roboto Mono';
-  }
-
-  final inlineCodeStyle = TextStyle(
-    fontSize: 14,
-    color: themeData.colorScheme.primary.withOpacity(0.8),
-    fontFamily: fontFamily,
-  );
-
-  return flutterQuill.DefaultStyles(
-    h1: customStyles?["h1"] ??
-        flutterQuill.DefaultTextBlockStyle(
-            defaultTextStyle.style.copyWith(
-              fontSize: 34,
-              color: defaultTextStyle.style.color,
-              letterSpacing: -0.5,
-              height: 1.083,
-              // fontWeight: FontWeight.w400,
-              decoration: TextDecoration.none,
-            ),
-            const flutterQuill.VerticalSpacing(16, 0),
-            const flutterQuill.VerticalSpacing(0, 0),
-            null),
-    h2: customStyles?["h2"] ??
-        flutterQuill.DefaultTextBlockStyle(
-            defaultTextStyle.style.copyWith(
-              fontSize: 30,
-              color: defaultTextStyle.style.color,
-              letterSpacing: -0.8,
-              height: 1.067,
-              // fontWeight: FontWeight.w400,
-              decoration: TextDecoration.none,
-            ),
-            const flutterQuill.VerticalSpacing(8, 0),
-            const flutterQuill.VerticalSpacing(0, 0),
-            null),
-    h3: customStyles?["h3"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          defaultTextStyle.style.copyWith(
-            fontSize: 24,
-            color: defaultTextStyle.style.color,
-            letterSpacing: -0.5,
-            height: 1.083,
-            // fontWeight: FontWeight.w400,
-            decoration: TextDecoration.none,
-          ),
-          const flutterQuill.VerticalSpacing(8, 0),
-          const flutterQuill.VerticalSpacing(0, 0),
-          null,
-        ),
-    h4: customStyles?["h4"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          defaultTextStyle.style.copyWith(
-            fontSize: 20,
-            color: defaultTextStyle.style.color,
-            letterSpacing: -0.4,
-            height: 1.1,
-            // fontWeight: FontWeight.w400,
-            decoration: TextDecoration.none,
-          ),
-          const flutterQuill.VerticalSpacing(6, 0),
-          const flutterQuill.VerticalSpacing(0, 0),
-          null,
-        ),
-    h5: customStyles?["h5"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          defaultTextStyle.style.copyWith(
-            fontSize: 18,
-            color: defaultTextStyle.style.color,
-            letterSpacing: -0.2,
-            height: 1.11,
-            // fontWeight: FontWeight.w400,
-            decoration: TextDecoration.none,
-          ),
-          const flutterQuill.VerticalSpacing(6, 0),
-          const flutterQuill.VerticalSpacing(0, 0),
-          null,
-        ),
-    h6: customStyles?["h6"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          defaultTextStyle.style.copyWith(
-            fontSize: 16,
-            color: defaultTextStyle.style.color,
-            letterSpacing: -0.1,
-            height: 1.125,
-            // fontWeight: FontWeight.w400,
-            decoration: TextDecoration.none,
-          ),
-          const flutterQuill.VerticalSpacing(4, 0),
-          const flutterQuill.VerticalSpacing(0, 0),
-          null,
-        ),
-    lineHeightNormal: customStyles?["lineHeightNormal"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          baseStyle.copyWith(height: 1.15),
-          const flutterQuill.VerticalSpacing(0, 0),
-          const flutterQuill.VerticalSpacing(0, 0),
-          null,
-        ),
-    lineHeightTight: customStyles?["lineHeightTight"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          baseStyle.copyWith(height: 1.30),
-          const flutterQuill.VerticalSpacing(0, 0),
-          const flutterQuill.VerticalSpacing(0, 0),
-          null,
-        ),
-    lineHeightOneAndHalf: customStyles?["lineHeightOneAndHalf"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          baseStyle.copyWith(height: 1.55),
-          const flutterQuill.VerticalSpacing(0, 0),
-          const flutterQuill.VerticalSpacing(0, 0),
-          null,
-        ),
-    lineHeightDouble: customStyles?["lineHeightDouble"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          baseStyle.copyWith(height: 2),
-          const flutterQuill.VerticalSpacing(0, 0),
-          const flutterQuill.VerticalSpacing(0, 0),
-          null,
-        ),
-    paragraph: customStyles?["paragraph"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          baseStyle,
-          const flutterQuill.VerticalSpacing(0, 0),
-          const flutterQuill.VerticalSpacing(0, 0),
-          null,
-        ),
-    bold: customStyles?["bold"] ?? const TextStyle(fontWeight: FontWeight.bold),
-    subscript: customStyles?["subscript"] ??
-        const TextStyle(
-          fontFeatures: [
-            FontFeature.liningFigures(),
-            FontFeature.subscripts(),
-          ],
-        ),
-    superscript: customStyles?["superscript"] ??
-        const TextStyle(
-          fontFeatures: [
-            FontFeature.liningFigures(),
-            FontFeature.superscripts(),
-          ],
-        ),
-    italic:
-        customStyles?["italic"] ?? const TextStyle(fontStyle: FontStyle.italic),
-    small: customStyles?["small"] ?? const TextStyle(fontSize: 12),
-    underline: customStyles?["underline"] ??
-        const TextStyle(decoration: TextDecoration.underline),
-    strikeThrough: customStyles?["strikeThrough"] ??
-        const TextStyle(decoration: TextDecoration.lineThrough),
-    inlineCode: customStyles?["inlineCode"] ??
-        flutterQuill.InlineCodeStyle(
-          backgroundColor: Colors.grey.shade100,
-          radius: const Radius.circular(3),
-          style: inlineCodeStyle,
-          header1: inlineCodeStyle.copyWith(
-            fontSize: 32,
-            // fontWeight: FontWeight.w500,
-          ),
-          header2: inlineCodeStyle.copyWith(
-            fontSize: 22,
-            // fontWeight: FontWeight.w500,
-          ),
-          header3: inlineCodeStyle.copyWith(
-            fontSize: 18,
-            // fontWeight: FontWeight.w500,
-          ),
-        ),
-    link: customStyles?["link"] ??
-        TextStyle(
-          color: themeData.colorScheme.secondary,
-          decoration: TextDecoration.underline,
-        ),
-    placeHolder: customStyles?["placeHolder"] ??
-        flutterQuill.DefaultTextBlockStyle(
-            defaultTextStyle.style.copyWith(
-              fontSize: 20,
-              height: 1.5,
-              color: Colors.grey.withOpacity(0.6),
-            ),
-            const flutterQuill.VerticalSpacing(0, 0),
-            const flutterQuill.VerticalSpacing(0, 0),
-            null),
-    lists: customStyles?["lists"] ??
-        flutterQuill.DefaultListBlockStyle(
-          baseStyle,
-          baseSpacing,
-          const flutterQuill.VerticalSpacing(0, 6),
-          null,
-          null,
-        ),
-    quote: customStyles?["quote"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          TextStyle(color: baseStyle.color!.withOpacity(0.6)),
-          baseSpacing,
-          const flutterQuill.VerticalSpacing(6, 2),
-          BoxDecoration(
-            border: Border(
-              left: BorderSide(width: 4, color: Colors.grey.shade300),
-            ),
-          ),
-        ),
-    code: customStyles?["code"] ??
-        flutterQuill.DefaultTextBlockStyle(
-            TextStyle(
-              color: Colors.blue.shade900.withOpacity(0.9),
-              fontFamily: fontFamily,
-              fontSize: 13,
-              height: 1.15,
-            ),
-            baseSpacing,
-            const flutterQuill.VerticalSpacing(0, 0),
-            BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(2),
-            )),
-    indent: customStyles?["indent"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          baseStyle,
-          baseSpacing,
-          const flutterQuill.VerticalSpacing(0, 6),
-          null,
-        ),
-    align: customStyles?["align"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          baseStyle,
-          const flutterQuill.VerticalSpacing(0, 0),
-          const flutterQuill.VerticalSpacing(0, 0),
-          null,
-        ),
-    leading: customStyles?["leading"] ??
-        flutterQuill.DefaultTextBlockStyle(
-          baseStyle,
-          const flutterQuill.VerticalSpacing(0, 0),
-          const flutterQuill.VerticalSpacing(0, 0),
-          null,
-        ),
-    sizeSmall: customStyles?["sizeSmall"] ?? const TextStyle(fontSize: 10),
-    sizeLarge: customStyles?["sizeLarge"] ?? const TextStyle(fontSize: 18),
-    sizeHuge: customStyles?["sizeHuge"] ?? const TextStyle(fontSize: 22),
-  );
 }

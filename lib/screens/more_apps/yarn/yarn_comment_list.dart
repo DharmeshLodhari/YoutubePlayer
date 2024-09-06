@@ -145,7 +145,6 @@ class _YarnCommentListState extends State<YarnCommentList> {
   Widget _buildTopActionButton() {
     return SizedBox(
       key: _key,
-      width: 108,
       child: Card(
         elevation: 0,
         margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
@@ -158,6 +157,7 @@ class _YarnCommentListState extends State<YarnCommentList> {
             }
           },
           child: const Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
                 "Top Comments",

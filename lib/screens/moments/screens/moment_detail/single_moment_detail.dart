@@ -506,14 +506,16 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                 text: commentingEnabled() ? getCommentCount(widget.index) : '',
                 onPressed: commentingEnabled()
                     ? () async {
-                        pauseVideo();
-                        commentSheet(
-                          context,
-                          widget.currentMoment.id!,
-                          widget.currentMoment.ownerName!,
-                          index: widget.index,
-                          currentMoment: widget.currentMoment,
-                        );
+                        await pauseVideo();
+                        if (mounted) {
+                          commentSheet(
+                            context,
+                            widget.currentMoment.id!,
+                            widget.currentMoment.ownerName!,
+                            index: widget.index,
+                            currentMoment: widget.currentMoment,
+                          );
+                        }
                       }
                     : null,
               ),
@@ -553,17 +555,19 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                           image = widget.currentMoment.avatar;
                         }
 
-                        pauseVideo();
-                        Navigator.of(context)
-                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image)
-                            .whenComplete(() async {
-                          if (widget.videoPlayerControllers.isNotEmpty) {
-                            await widget.videoPlayerControllers[widget.index]
-                                .play();
-                          }
-                          _renderMomentStateKey.currentState?.controller
-                              ?.forward();
-                        });
+                        await pauseVideo();
+                        if (mounted) {
+                          Navigator.of(context)
+                              .pushNamed(Routes.PHOTO_VIEWER, arguments: image)
+                              .whenComplete(() async {
+                            if (widget.videoPlayerControllers.isNotEmpty) {
+                              await widget.videoPlayerControllers[widget.index]
+                                  .play();
+                            }
+                            _renderMomentStateKey.currentState?.controller
+                                ?.forward();
+                          });
+                        }
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6.0),
@@ -579,9 +583,11 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           InkWell(
-                            onTap: () {
-                              pauseVideo();
-                              goToProfilePage();
+                            onTap: () async {
+                              await pauseVideo();
+                              if (mounted) {
+                                goToProfilePage();
+                              }
                             },
                             child: Text(
                               messageDecoderWithEmoji(
@@ -1414,6 +1420,6 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
       setState(() {}); // Force a rebuild after pausing the video
     }
     _renderMomentStateKey.currentState?.controller?.stop();
-    await Future.delayed(Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 200));
   }
 }

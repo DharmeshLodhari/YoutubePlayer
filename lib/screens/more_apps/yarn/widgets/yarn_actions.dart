@@ -58,17 +58,6 @@ class _YarnActionsState extends State<YarnActions> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(child: _buildActionableList()),
-        const SizedBox(
-          width: 22,
-        ),
-        _buildShareButton(),
-        const SizedBox(
-          width: 45,
-        ),
-        _buildPayButton(),
-        const SizedBox(
-          width: 10,
-        )
       ],
     );
   }
@@ -81,6 +70,8 @@ class _YarnActionsState extends State<YarnActions> {
       Expanded(child: _buildLikeButton()),
       Expanded(child: _buildDisLikeButton()),
       Expanded(child: _buildReYarnButton()),
+      Expanded(child: _buildShareButton()),
+      Expanded(child: _buildPayButton()),
     ]);
 
     return Row(
@@ -98,6 +89,9 @@ class _YarnActionsState extends State<YarnActions> {
       },
       child: Row(
         children: [
+          const SizedBox(
+            width: 10,
+          ),
           SvgPicture.asset(
             "yarn/yarn_comment".toSVG(),
             color: darkGreyYarn,
@@ -105,12 +99,15 @@ class _YarnActionsState extends State<YarnActions> {
             width: 15,
           ),
           const SizedBox(
-            width: 6,
+            width: 5,
           ),
           Text(
             getCommentCount(),
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: darkGreyYarn,
+            ),
           ),
         ],
       ),
@@ -120,7 +117,7 @@ class _YarnActionsState extends State<YarnActions> {
   Widget _buildLikeButton() {
     return LikeButton(
       mainAxisAlignment: MainAxisAlignment.start,
-      padding: const EdgeInsets.only(left: 5),
+      padding: const EdgeInsets.only(left: 10),
       size: 15,
       circleColor: CircleColor(start: red, end: red),
       bubblesColor: BubblesColor(
@@ -156,7 +153,7 @@ class _YarnActionsState extends State<YarnActions> {
 
   Widget _buildDisLikeButton() {
     return LikeButton(
-      padding: const EdgeInsets.only(left: 10),
+      padding: const EdgeInsets.only(left: 15),
       // crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       size: 15,
@@ -238,7 +235,7 @@ class _YarnActionsState extends State<YarnActions> {
       child: Row(
         children: [
           const SizedBox(
-            width: 20,
+            width: 25,
           ),
           SvgPicture.asset(
             "yarn/re_share".toSVG(),
@@ -252,9 +249,10 @@ class _YarnActionsState extends State<YarnActions> {
           Text(
             getReYarnCount(),
             style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                color: widget.yarn.userReyarned ? naturalGreen : darkGreyYarn),
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: widget.yarn.userReyarned ? naturalGreen : darkGreyYarn,
+            ),
           ),
         ],
       ),
@@ -281,17 +279,17 @@ class _YarnActionsState extends State<YarnActions> {
         );
       },
       // child: SvgPicture.asset("ask/share".toSVG()),
-      child: Column(
+      child: Row(
         children: [
+          const SizedBox(
+            width: 30,
+          ),
           SvgPicture.asset(
             "yarn/share".toSVG(),
             color: darkGreyYarn,
             height: 17,
             width: 17,
           ),
-          const SizedBox(
-            height: 2,
-          )
         ],
       ),
     );
@@ -339,11 +337,9 @@ class _YarnActionsState extends State<YarnActions> {
               if (!isPayMeEnable) return;
               showToast(message: 'You cannot pay yourself');
             },
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          const SizedBox(
-            height: 2,
-          ),
           SvgPicture.asset(
             "yarn/send_money".toSVG(),
             color: !isPayMeEnable
@@ -351,8 +347,11 @@ class _YarnActionsState extends State<YarnActions> {
                 : widget.yarn.userSupported
                     ? deepBlue
                     : null,
-            height: 15,
-            width: 15,
+            height: 16,
+            width: 16,
+          ),
+          const SizedBox(
+            width: 10,
           ),
         ],
       ),

@@ -835,59 +835,56 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       return buildProductShimmerLoadingIndicator(isLoading: productIsLoading);
     }
 
-    return ListView(
-      controller: _scrollController,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _buildProductImagesWidgets(),
-              productStockAndDetailTag(),
-              const SizedBox(height: 5),
-              if (displayProductImages!.length > 1)
-                _buildHorizontalProductImageList()
-              else
-                const SizedBox(),
-              const SizedBox(height: 10),
-              _buildProductTitleAndPriceWidget(),
-              _buildProductWidthHeightWeight(),
-              const SizedBox(height: 10),
-              _buildShortInfoWidget(),
-              const SizedBox(height: 12),
-              getHorizontalDivider(),
-              const SizedBox(height: 12),
-              _buildDescriptionWidget(),
-              const SizedBox(height: 12),
-              getHorizontalDivider(),
-              const SizedBox(height: 12),
-              getProductOrServiceSocialMedia(
-                  context, "Product", product?.id ?? ""),
-              const SizedBox(height: 12),
-              getHorizontalDivider(),
-              const SizedBox(height: 12),
-              if (product?.addOnsModels?.isNotEmpty == true) ...[
-                _buildAddonWidget(),
-                const SizedBox(
-                  height: 12,
-                ),
-              ],
-              _buildSellerInfoWidget(),
-              const SizedBox(height: 10),
-              getHorizontalDivider(),
-              const SizedBox(height: 10),
-              _buildReviewList(),
-              const SizedBox(height: 12),
-              _buildWriteReview(),
-              getHorizontalDivider(),
-              const SizedBox(height: 12),
-              sellersOtherProducts(),
-              SizedBox(height: isValidCustomer ? 60.0 : 20),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _buildProductImagesWidgets(),
+            productStockAndDetailTag(),
+            const SizedBox(height: 5),
+            if (displayProductImages!.length > 1)
+              _buildHorizontalProductImageList()
+            else
+              const SizedBox(),
+            const SizedBox(height: 10),
+            _buildProductTitleAndPriceWidget(),
+            _buildProductWidthHeightWeight(),
+            const SizedBox(height: 10),
+            _buildShortInfoWidget(),
+            const SizedBox(height: 12),
+            getHorizontalDivider(),
+            const SizedBox(height: 12),
+            _buildDescriptionWidget(),
+            const SizedBox(height: 12),
+            getHorizontalDivider(),
+            const SizedBox(height: 12),
+            getProductOrServiceSocialMedia(
+                context, "Product", product?.id ?? ""),
+            const SizedBox(height: 12),
+            getHorizontalDivider(),
+            const SizedBox(height: 12),
+            if (product?.addOnsModels?.isNotEmpty == true) ...[
+              _buildAddonWidget(),
+              const SizedBox(
+                height: 12,
+              ),
             ],
-          ),
+            _buildSellerInfoWidget(),
+            const SizedBox(height: 10),
+            getHorizontalDivider(),
+            const SizedBox(height: 10),
+            _buildReviewList(),
+            const SizedBox(height: 12),
+            _buildWriteReview(),
+            getHorizontalDivider(),
+            const SizedBox(height: 12),
+            sellersOtherProducts(),
+            SizedBox(height: isValidCustomer ? 60.0 : 20),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -1030,7 +1027,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               child: Text(
                 "Write a review",
                 style: TextStyle(
-                    color: navyBlue, fontWeight: FontWeight.w700, fontSize: 16),
+                  color: navyBlue,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                ),
               ),
             ),
           ),
@@ -1822,7 +1822,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           Text(
             'In Stock',
             style: TextStyle(
-                fontSize: 16, color: naturalGreen, fontWeight: FontWeight.bold),
+              fontSize: 14,
+              color: naturalGreen,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Inter",
+            ),
           ),
         ] else if (stockLeft == 0) ...[
           const SizedBox.shrink()
@@ -1833,7 +1837,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           Text(
             'Only ${stockLeft.toString()} left in stock',
             style: TextStyle(
-                fontSize: 16, color: mateRed, fontWeight: FontWeight.bold),
+              fontSize: 14,
+              color: mateRed,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Inter",
+            ),
           ),
         ]
       ],
@@ -1866,6 +1874,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 fontSize: 14,
                 color: blackFont,
                 fontWeight: FontWeight.bold,
+                fontFamily: "Inter",
               ),
             ),
           ],
@@ -1904,6 +1913,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 fontSize: 14,
                 color: blackFont,
                 fontWeight: FontWeight.bold,
+                fontFamily: "Inter",
               ),
             ),
           ],
@@ -2324,7 +2334,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Text(
       messageDecoderWithEmoji(product?.shortDescription) ?? "",
       style: TextStyle(
-        color: fontLightGrey,
+        color: lightBlackFont,
         fontSize: 14,
         fontFamily: "Inter",
         fontWeight: FontWeight.w400,
@@ -2405,8 +2415,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         const SizedBox(
           height: 8,
         ),
-        displayQuillFormattedText(
-            context, product?.description ?? "", darkGrey, 14, FontWeight.w400),
+        displayQuillFormattedText(context, product?.description ?? "",
+            lightBlackFont, 14, FontWeight.w400),
       ],
     );
   }
