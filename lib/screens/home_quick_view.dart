@@ -639,6 +639,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         // }
         break;
       case ProtectionPermission.currency:
+        showToast(message: 'Coming soon');
         break;
       case ProtectionPermission.discount:
         Navigator.of(context).pushNamed(Routes.DISCOUNT_LIST);
@@ -654,6 +655,18 @@ class _HomeQuickViewState extends State<HomeQuickView> {
             arguments: {"user": userBloc.user.userName});
         break;
       case ProtectionPermission.customizeProfile:
+        var business = '';
+        if (searchedUser?.type!.toLowerCase() == "user") {
+          business = 'no';
+        } else {
+          business = 'yes';
+        }
+        Navigator.of(context).pushNamed(
+          Routes.CUSTOMIZE_PROFILE,
+          arguments: {
+            "business": business,
+          },
+        );
         break;
       case ProtectionPermission.shippingOptions:
         Navigator.of(context).pushNamed(Routes.SHIPPING_OPTIONS);
