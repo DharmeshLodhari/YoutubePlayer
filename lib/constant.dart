@@ -27,6 +27,14 @@ class ProtectionPermission {
   static const String send = "Send";
   static const String request = "Request";
   static const String profile = "Profile";
+  static const String currency = "Currency";
+  static const String discount = "Discount";
+  static const String addOns = "Add-ons";
+  static const String flashTag = "Flash Tag";
+  static const String customizeProfile = "Customize Profile";
+  static const String shippingOptions = "Shipping Options";
+  static const String customCategory = "Custom Category";
+  static const String dispatchAddress = "Dispatch Address";
 }
 
 class ProtectionPermissionType {
