@@ -179,18 +179,24 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
 
   Widget pinFillUpField() {
     final defaultPinTheme = PinTheme(
-      width: 45,
-      height: 45,
-      margin: const EdgeInsets.symmetric(horizontal: 3),
+      height: 44,
+      width: 44,
+      margin: const EdgeInsets.only(right: 5),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(5),
+        ),
+        shape: BoxShape.rectangle,
+        border: Border.all(
+          color: darkGrey.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
       textStyle: TextStyle(
-        fontSize: 32,
+        fontSize: 35,
         color: blackFont,
         fontWeight: FontWeight.w600,
         fontFamily: "Inter",
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8),
       ),
     );
     final BoxDecoration navyBlueBorder = BoxDecoration(

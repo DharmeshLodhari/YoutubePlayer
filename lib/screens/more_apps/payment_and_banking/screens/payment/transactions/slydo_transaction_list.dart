@@ -106,15 +106,18 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
           key: _scaffoldKey,
           backgroundColor: lightGrey,
           body: SafeArea(
-            child: SmartRefresher(
-                enablePullDown: true,
-                header: WaterDropHeader(
-                  complete: Container(),
-                  waterDropColor: navyBlue,
-                ),
-                controller: _refreshController,
-                onRefresh: _onRefresh,
-                child: _buildTransactionList()),
+            child: SlidableAutoCloseBehavior(
+              closeWhenOpened: true,
+              child: SmartRefresher(
+                  enablePullDown: true,
+                  header: WaterDropHeader(
+                    complete: Container(),
+                    waterDropColor: navyBlue,
+                  ),
+                  controller: _refreshController,
+                  onRefresh: _onRefresh,
+                  child: _buildTransactionList()),
+            ),
           ),
         ),
       ),
@@ -145,21 +148,18 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
           )
         : isLoading && transactionList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SlidableAutoCloseBehavior(
-                closeWhenOpened: true,
-                child: ListView.builder(
-                  //+1 for progressbar
-                  itemCount: transactionList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == transactionList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context, transactionList[index], index);
-                    }
-                  },
-                  controller: _scrollController,
-                ),
+            : ListView.builder(
+                //+1 for progressbar
+                itemCount: transactionList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == transactionList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context, transactionList[index], index);
+                  }
+                },
+                controller: _scrollController,
               );
   }
 

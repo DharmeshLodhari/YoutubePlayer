@@ -200,7 +200,21 @@ class _PaymentRequestListState extends State<PaymentRequestList>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             getDateRangeText(),
-            Expanded(child: _buildRequestPaymentList()),
+            Expanded(
+              child: SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: SmartRefresher(
+                  enablePullDown: true,
+                  header: WaterDropHeader(
+                    complete: Container(),
+                    waterDropColor: navyBlue,
+                  ),
+                  controller: _refreshController,
+                  onRefresh: _onRefresh,
+                  child: _buildRequestPaymentList(),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -475,31 +489,18 @@ class _PaymentRequestListState extends State<PaymentRequestList>
           )
         : isLoading && requestPaymentList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SmartRefresher(
-                enablePullDown: true,
-                header: WaterDropHeader(
-                  complete: Container(),
-                  waterDropColor: navyBlue,
-                ),
-                controller: _refreshController,
-                onRefresh: _onRefresh,
-                child: SlidableAutoCloseBehavior(
-                  closeWhenOpened: true,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(4),
-                    //+1 for progressbar
-                    itemCount: requestPaymentList.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == requestPaymentList.length) {
-                        return buildJumpingLoadingIndicator(
-                            isLoading: isLoading);
-                      } else {
-                        return _getSlideLists(requestPaymentList[index], index);
-                      }
-                    },
-                    controller: _scrollController,
-                  ),
-                ),
+            : ListView.builder(
+                padding: const EdgeInsets.all(4),
+                //+1 for progressbar
+                itemCount: requestPaymentList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == requestPaymentList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlideLists(requestPaymentList[index], index);
+                  }
+                },
+                controller: _scrollController,
               );
   }
 

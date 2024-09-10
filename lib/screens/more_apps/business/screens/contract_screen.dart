@@ -299,14 +299,14 @@ class _ContractScreenState extends State<ContractScreen>
   Widget contractListWidget(ContractBloc contractBloc) {
     return contractBloc.isLoading && contractBloc.contractList.isEmpty
         ? buildLoadingIndicator(isLoading: contractBloc.isLoading)
-        : SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-                complete: Container(), waterDropColor: navyBlue),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: SlidableAutoCloseBehavior(
-              closeWhenOpened: true,
+        : SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                  complete: Container(), waterDropColor: navyBlue),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
               child: ListView.builder(
                 padding: const EdgeInsets.all(4),
                 itemCount: contractBloc.contractList.length + 1,

@@ -1,5 +1,6 @@
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
@@ -66,7 +67,7 @@ class LogoutHelper {
     );
 
     Navigator.of(myGlobals.navigationKey.currentContext!)
-        .pushNamed("/index", arguments: {'isIntroDone': true});
+        .pushNamed(Routes.INDEX, arguments: {'isIntroDone': true});
   }
 
   void emptyBasketCart() {

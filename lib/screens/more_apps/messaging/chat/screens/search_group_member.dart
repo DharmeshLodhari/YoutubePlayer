@@ -196,11 +196,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
   }
 
   Widget getScaffoldBody() {
-    return Column(
-      children: [
-        Expanded(child: _buildConnectionsList()),
-      ],
-    );
+    return Expanded(child: _buildConnectionsList());
   }
 
   Widget _buildConnectionsList() {

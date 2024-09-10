@@ -45,6 +45,7 @@ class Routes {
   static const String ADD_BANK_ACCOUNT = "/add-bank-account";
   static const String BANK_ACCOUNT_LIST = "/bank-account-list";
   static const String SCAN_QR = "/scan-qr";
+  static const String SCAN_PRODUCT_QR = "/scan-product-qr";
   static const String PAYOUT = "/payout";
   static const String PAYOUT_LIST = "/payout-list";
   static const String FORGOT_PASSWORD = "/forgot-password";

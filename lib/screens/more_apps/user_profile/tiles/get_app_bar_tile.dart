@@ -1461,7 +1461,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       list.add(
         bottomSheetItem(
           title: AppLocalization.of(context)!.createAPost,
-          iconData: Icons.add_circle_outlined,
+          profileIcon: 'profile_page/create_post_icon',
           onTap: () {
             final PermissionType? hasPermission =
                 userBloc.user.hasWritePermission(ProtectionPermission.blog);
@@ -1479,7 +1479,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       list.add(
         bottomSheetItem(
           title: "Edit Profile",
-          iconData: SlydoAppIcon.edit,
+          profileIcon: 'profile_page/edit_profile_icon',
           onTap: () async {
             final PermissionType? hasPermission =
                 userBloc.user.hasWritePermission(ProtectionPermission.profile);
@@ -1496,10 +1496,283 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           },
         ),
       );
+      if ((searchedUser != null &&
+          searchedUser?.type!.toLowerCase() != 'user')) {
+        list.add(
+          bottomSheetItem(
+            title: "Manage Business",
+            profileIcon: 'profile_page/manage_business_icon',
+            onTap: () async {
+              final PermissionType? hasPermission = userBloc.user
+                  .hasWritePermission(ProtectionPermission.profile);
+              if (hasPermission == PermissionType.WRITE) {
+                Navigator.pop(context);
+                userProfileManageBusinessActionsSheet(context);
+              } else {
+                showToast(
+                    message:
+                        AppLocalization.of(context)?.doNotPermission ?? "");
+              }
+            },
+          ),
+        );
+      }
+    }
+    list.add(
+      bottomSheetItem(
+        title: "Share Profile",
+        profileIcon: 'profile_page/share_profile_icon',
+        onTap: () {
+          Navigator.pop(context);
+          final String merchantUrl =
+              'https://slydo.co/store/${searchedUser?.userName!}';
+          final shareBody = userBloc.user.type != 'User'
+              ? merchantUrl
+              : "https://slydo.co/user/${searchedUser?.userName!}";
+          Share.share(shareBody, subject: "${searchedUser?.displayName()}");
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: "Share in Chat",
+        profileIcon: 'profile_page/share_in_chat_icon',
+        onTap: () async {
+          Navigator.pop(context);
+          sendProfileToUsersInChat();
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: "Share As A Yarn",
+        iconData: SlydoAppIconNew.dashboard_yarn,
+        iconSize: 18,
+        // isLast: searchedUser!.userName == userBloc.user.userName,
+        onTap: () async {
+          Navigator.pop(context);
+          shareAsYarn();
+        },
+      ),
+    );
+
+    if (searchedUser?.userName != userBloc.user.userName) {
+      if (searchedUser?.type?.toLowerCase() != "user") {
+        list.add(
+          bottomSheetItem(
+            title: "Write Review",
+            iconData: SlydoAppIcon.star,
+            iconSize: 18,
+            isLast: userBloc.user.userName == searchedUser?.userName,
+            onTap: () async {
+              Navigator.pop(context);
+              Navigator.of(context).pushNamed("/add-review",
+                  arguments: {"searchedUser": searchedUser});
+            },
+          ),
+        );
+      }
+    }
+
+    ///check if the profile is not for channel
+    if (widget.userType != 'channel') {
+      if (userBloc.user.userName != searchedUser?.userName) {
+        list.addAll(
+          [
+            bottomSheetItem(
+              title: "Message",
+              iconData: SlydoAppIcon.message,
+              iconSize: 18,
+              onTap: () {
+                Navigator.pop(context);
+                if (!isOwner) {
+                  Navigator.of(context)
+                      .pushNamed('/compose_message', arguments: {
+                    'recipient': searchedUser?.userName,
+                    'subject': "",
+                  });
+                }
+              },
+            ),
+            bottomSheetItem(
+              title: "Send",
+              iconData: SlydoAppIcon.send,
+              iconSize: 18,
+              onTap: () {
+                // if (appConfigurationModel?.enablePayment == true) {
+                UserAuth()
+                    .fetchCustomerProfile(searchedUserName)
+                    .then((fetchedUser) {
+                  customerProfileBloc.customer = fetchedUser;
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed('/send-payment',
+                      arguments: <String, dynamic>{
+                        'isFromProfile': false,
+                        'recipient': searchedUser?.userName
+                      });
+                });
+                // } else {
+                //   showToast(message: 'Payment not available at the moment');
+                // }
+              },
+            ),
+            bottomSheetItem(
+                title: "Request",
+                iconData: SlydoAppIcon.receive,
+                iconSize: 18,
+                onTap: () {
+                  // if (appConfigurationModel?.enablePayment == true) {
+                  UserAuth()
+                      .fetchCustomerProfile(searchedUserName)
+                      .then((fetchedUser) {
+                    customerProfileBloc.customer = fetchedUser;
+                    Navigator.pop(context);
+                    Navigator.of(context).pushNamed('/request-payment',
+                        arguments: <String, dynamic>{
+                          'recipient': searchedUser?.userName,
+                          'isFromProfile': false,
+                          'isRequest': true
+                        });
+                  });
+                  // } else {
+                  //   showToast(message: 'Payment not available at the moment');
+                  // }
+                }),
+            bottomSheetItem(
+              title: "Block Account",
+              iconData: SlydoAppIcon.block,
+              iconSize: 18,
+              onTap: () async {
+                Navigator.pop(context);
+                final Future<bool?> check =
+                    blockUserAlert(context, searchedUser!);
+                if (check == true) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        );
+      }
+      if (searchedUser?.type?.toLowerCase() != "user") {
+        list.add(
+          bottomSheetItem(
+            title: "Terms and Condition",
+            iconData: Icons.insert_link_sharp,
+            iconSize: 20,
+            onTap: () async {
+              Navigator.pop(context);
+              final String termsAndConditionUrl =
+                  "https://slydo.co/store/terms-and-conditions/${searchedUser?.userName}/";
+              try {
+                if (!await launchUrl(Uri.parse(termsAndConditionUrl))) {
+                  throw 'Could not launch $termsAndConditionUrl';
+                }
+              } catch (error) {
+                debugPrint("Error:- $error");
+              }
+            },
+          ),
+        );
+      }
+      if (userBloc.user.type == "User" &&
+          userBloc.user.userName == searchedUser?.userName) {
+        list.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: bottomSheetItem(
+              title: "Upgrade",
+              icon: const Icon(Icons.upgrade_rounded),
+              iconSize: 18,
+              isLast: userBloc.user.userName == searchedUser?.userName,
+              onTap: () async {
+                Navigator.pop(context);
+                upgradeAccount();
+              },
+              extraWidget: getColoredLabeledWidget(
+                text: 'Pro',
+                color: naturalGreen,
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    return list;
+  }
+
+  List<Widget> generateBottomSheetItemForManageBusiness() {
+    final List<Widget> list = [];
+
+    if (searchedUser?.userName == userBloc.user.userName) {
+      list.add(
+        bottomSheetItem(
+          title: "Add-ons",
+          profileIcon: 'profile_page/add_ons_icon',
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context)
+                .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
+              'productId': '',
+              'isForCheckboxSelection': false,
+            });
+          },
+        ),
+      );
+
+      list.add(
+        bottomSheetItem(
+          title: "Discount",
+          profileIcon: 'profile_page/discount_icon',
+          onTap: () async {
+            Navigator.pop(context);
+            Navigator.of(context).pushNamed(Routes.DISCOUNT_LIST);
+          },
+        ),
+      );
+
+      list.add(
+        bottomSheetItem(
+          title: "Flash Tag",
+          profileIcon: 'profile_page/flash_tag_icon',
+          onTap: () async {
+            Navigator.pop(context);
+            Navigator.of(context).pushNamed(Routes.FLASH_TAG_LIST,
+                arguments: {"user": searchedUser});
+          },
+        ),
+      );
+
+      list.add(
+        bottomSheetItem(
+          title: "Custom Category",
+          profileIcon: 'profile_page/custom_category_icon',
+          onTap: () async {
+            Navigator.pop(context);
+            Navigator.of(context).pushNamed(Routes.CUSTOM_CATEGORY);
+          },
+        ),
+      );
+
+      list.add(
+        bottomSheetItem(
+          title: "Currency",
+          profileIcon: 'profile_page/currency_icon',
+          onTap: () async {
+            Navigator.pop(context);
+            showToast(message: 'Coming soon');
+          },
+        ),
+      );
+
       list.add(
         bottomSheetItem(
           title: "Customize Profile",
-          iconData: Icons.dashboard_customize_sharp,
+          profileIcon: 'profile_page/customize_profile_icon',
           onTap: () async {
             final PermissionType? hasPermission =
                 userBloc.user.hasWritePermission(ProtectionPermission.profile);
@@ -1536,264 +1809,12 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           },
         ),
       );
-      if ((searchedUser != null &&
-          searchedUser?.type!.toLowerCase() != 'user')) {
-        list.add(
-          bottomSheetItem(
-            title: "Manage Business",
-            iconData: Icons.dashboard_customize_sharp,
-            onTap: () async {
-              final PermissionType? hasPermission = userBloc.user
-                  .hasWritePermission(ProtectionPermission.profile);
-              if (hasPermission == PermissionType.WRITE) {
-                Navigator.pop(context);
-                userProfileManageBusinessActionsSheet(context);
-              } else {
-                showToast(
-                    message:
-                        AppLocalization.of(context)?.doNotPermission ?? "");
-              }
-            },
-          ),
-        );
-      }
-    }
-
-    list.add(
-      bottomSheetItem(
-        title: "Share",
-        iconData: SlydoAppIcon.share,
-        onTap: () {
-          Navigator.pop(context);
-          final String merchantUrl =
-              'https://slydo.co/store/${searchedUser?.userName!}';
-          final shareBody = userBloc.user.type != 'User'
-              ? merchantUrl
-              : "https://slydo.co/user/${searchedUser?.userName!}";
-          Share.share(shareBody, subject: "${searchedUser?.displayName()}");
-        },
-      ),
-    );
-
-    list.add(
-      bottomSheetItem(
-        title: "Share in Chat",
-        iconData: SlydoAppIcon.text_message,
-        onTap: () async {
-          Navigator.pop(context);
-          sendProfileToUsersInChat();
-        },
-      ),
-    );
-
-    list.add(
-      bottomSheetItem(
-        title: "Share As A Yarn",
-        iconData: SlydoAppIconNew.dashboard_yarn,
-        // isLast: searchedUser!.userName == userBloc.user.userName,
-        onTap: () async {
-          Navigator.pop(context);
-          shareAsYarn();
-        },
-      ),
-    );
-
-    if (searchedUser?.userName != userBloc.user.userName) {
-      if (searchedUser?.type?.toLowerCase() != "user") {
-        list.add(
-          bottomSheetItem(
-            title: "Write Review",
-            iconData: SlydoAppIcon.star,
-            isLast: userBloc.user.userName == searchedUser?.userName,
-            onTap: () async {
-              Navigator.pop(context);
-              Navigator.of(context).pushNamed("/add-review",
-                  arguments: {"searchedUser": searchedUser});
-            },
-          ),
-        );
-      }
-    }
-
-    ///check if the profile is not for channel
-    if (widget.userType != 'channel') {
-      if (userBloc.user.userName != searchedUser?.userName) {
-        list.addAll(
-          [
-            bottomSheetItem(
-              title: "Message",
-              iconData: SlydoAppIcon.message,
-              onTap: () {
-                Navigator.pop(context);
-                if (!isOwner) {
-                  Navigator.of(context)
-                      .pushNamed('/compose_message', arguments: {
-                    'recipient': searchedUser?.userName,
-                    'subject': "",
-                  });
-                }
-              },
-            ),
-            bottomSheetItem(
-              title: "Send",
-              iconData: SlydoAppIcon.send,
-              onTap: () {
-                // if (appConfigurationModel?.enablePayment == true) {
-                UserAuth()
-                    .fetchCustomerProfile(searchedUserName)
-                    .then((fetchedUser) {
-                  customerProfileBloc.customer = fetchedUser;
-                  Navigator.pop(context);
-                  Navigator.of(context).pushNamed('/send-payment',
-                      arguments: <String, dynamic>{
-                        'isFromProfile': false,
-                        'recipient': searchedUser?.userName
-                      });
-                });
-                // } else {
-                //   showToast(message: 'Payment not available at the moment');
-                // }
-              },
-            ),
-            bottomSheetItem(
-                title: "Request",
-                iconData: SlydoAppIcon.receive,
-                onTap: () {
-                  // if (appConfigurationModel?.enablePayment == true) {
-                  UserAuth()
-                      .fetchCustomerProfile(searchedUserName)
-                      .then((fetchedUser) {
-                    customerProfileBloc.customer = fetchedUser;
-                    Navigator.pop(context);
-                    Navigator.of(context).pushNamed('/request-payment',
-                        arguments: <String, dynamic>{
-                          'recipient': searchedUser?.userName,
-                          'isFromProfile': false,
-                          'isRequest': true
-                        });
-                  });
-                  // } else {
-                  //   showToast(message: 'Payment not available at the moment');
-                  // }
-                }),
-            bottomSheetItem(
-              title: "Block Account",
-              iconData: SlydoAppIcon.block,
-              onTap: () async {
-                Navigator.pop(context);
-                final Future<bool?> check =
-                    blockUserAlert(context, searchedUser!);
-                if (check == true) {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-          ],
-        );
-      }
-      if (searchedUser?.type?.toLowerCase() != "user") {
-        list.add(
-          bottomSheetItem(
-            title: "Terms and Condition",
-            iconData: Icons.insert_link_sharp,
-            onTap: () async {
-              Navigator.pop(context);
-              final String termsAndConditionUrl =
-                  "https://slydo.co/store/terms-and-conditions/${searchedUser?.userName}/";
-              try {
-                if (!await launchUrl(Uri.parse(termsAndConditionUrl))) {
-                  throw 'Could not launch $termsAndConditionUrl';
-                }
-              } catch (error) {
-                debugPrint("Error:- $error");
-              }
-            },
-          ),
-        );
-      }
-      if (userBloc.user.type == "User" &&
-          userBloc.user.userName == searchedUser?.userName) {
-        list.add(
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: bottomSheetItem(
-              title: "Upgrade",
-              icon: const Icon(Icons.upgrade_rounded),
-              isLast: userBloc.user.userName == searchedUser?.userName,
-              onTap: () async {
-                Navigator.pop(context);
-                upgradeAccount();
-              },
-              extraWidget: getColoredLabeledWidget(
-                text: 'Pro',
-                color: naturalGreen,
-              ),
-            ),
-          ),
-        );
-      }
-    }
-
-    return list;
-  }
-
-  List<Widget> generateBottomSheetItemForManageBusiness() {
-    final List<Widget> list = [];
-
-    if (searchedUser?.userName == userBloc.user.userName) {
-      list.add(
-        bottomSheetItem(
-          title: "Add-ons",
-          iconData: Icons.add_circle_outlined,
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.of(context)
-                .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
-              'productId': '',
-              'isForCheckboxSelection': false,
-            });
-          },
-        ),
-      );
-
-      list.add(
-        bottomSheetItem(
-          title: "Discount",
-          iconData: Icons.discount_outlined,
-          onTap: () async {
-            Navigator.pop(context);
-            Navigator.of(context).pushNamed(Routes.DISCOUNT_LIST);
-          },
-        ),
-      );
-      list.add(
-        bottomSheetItem(
-          title: "Custom Category",
-          iconData: Icons.local_offer,
-          onTap: () async {
-            Navigator.pop(context);
-            Navigator.of(context).pushNamed(Routes.CUSTOM_CATEGORY);
-          },
-        ),
-      );
-      list.add(
-        bottomSheetItem(
-          title: "Flash Tag",
-          iconData: Icons.add_alert,
-          onTap: () async {
-            Navigator.pop(context);
-            Navigator.of(context).pushNamed(Routes.FLASH_TAG_LIST,
-                arguments: {"user": searchedUser});
-          },
-        ),
-      );
 
       if (searchedUser?.type?.toLowerCase() != "user") {
         list.add(
           bottomSheetItem(
             title: AppLocalization.of(context)!.shippingOptions,
-            iconData: SlydoAppIcon.delivery_dining,
+            profileIcon: 'profile_page/shipping_option_icon',
             onTap: () {
               Navigator.pop(context);
               Navigator.of(context).pushNamed(Routes.SHIPPING_OPTIONS);
@@ -1801,10 +1822,11 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           ),
         );
       }
+
       list.add(
         bottomSheetItem(
           title: "Dispatch Address",
-          iconData: SlydoAppIcon.edit,
+          profileIcon: 'profile_page/dispatch_address_icon',
           onTap: () async {
             Navigator.pop(context);
             Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);

@@ -83,15 +83,18 @@ class _CashOutTransactionsListState extends State<CashOutTransactionsList> {
           key: _scaffoldKey,
           backgroundColor: lightGrey,
           body: SafeArea(
-            child: SmartRefresher(
-                enablePullDown: true,
-                header: WaterDropHeader(
-                  complete: Container(),
-                  waterDropColor: navyBlue,
-                ),
-                controller: _refreshController,
-                onRefresh: _onRefresh,
-                child: _buildPayoutTransactionList()),
+            child: SlidableAutoCloseBehavior(
+              closeWhenOpened: true,
+              child: SmartRefresher(
+                  enablePullDown: true,
+                  header: WaterDropHeader(
+                    complete: Container(),
+                    waterDropColor: navyBlue,
+                  ),
+                  controller: _refreshController,
+                  onRefresh: _onRefresh,
+                  child: _buildPayoutTransactionList()),
+            ),
           ),
         ),
       ),
@@ -105,26 +108,23 @@ class _CashOutTransactionsListState extends State<CashOutTransactionsList> {
           )
         : isLoading && payoutList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SlidableAutoCloseBehavior(
-                closeWhenOpened: true,
-                child: ListView.builder(
-                  //+1 for progressbar
-                  itemCount: payoutList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == payoutList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      // return PayoutTile(
-                      //   payout: payoutList[index],
-                      //   key: Key(
-                      //       "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
-                      // );
-                      return _getSlidableWithLists(
-                          context, payoutList[index], index);
-                    }
-                  },
-                  controller: _scrollController,
-                ),
+            : ListView.builder(
+                //+1 for progressbar
+                itemCount: payoutList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == payoutList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    // return PayoutTile(
+                    //   payout: payoutList[index],
+                    //   key: Key(
+                    //       "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
+                    // );
+                    return _getSlidableWithLists(
+                        context, payoutList[index], index);
+                  }
+                },
+                controller: _scrollController,
               );
   }
 

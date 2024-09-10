@@ -20,151 +20,144 @@ class AddOnTile extends StatefulWidget {
 class _AddOnTileState extends State<AddOnTile> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Column(
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    appendStringDot(widget.addOns.name!, 15),
-                    maxLines: 1,
-                    style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15),
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: navyBlue),
-                      borderRadius: const BorderRadius.all(Radius.circular(7)),
-                      color:
-                          widget.addOns.isRequired == true ? navyBlue : white,
-                    ),
-                    child: Text(
-                      widget.addOns.isRequired == true
-                          ? 'Required'
-                          : 'Optional',
-                      maxLines: 1,
-                      style: TextStyle(
-                          color: widget.addOns.isRequired == true
-                              ? white
-                              : navyBlue,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 10),
-                    ),
-                  )
-                ],
+            Text(
+              appendStringDot(widget.addOns.name!, 15),
+              maxLines: 1,
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                fontFamily: "Inter",
               ),
             ),
-            const SizedBox(height: 20),
-            Divider(
-              height: 0,
-              color: dividerColor,
-              thickness: 1,
-            ),
-            ...widget.addOns.options
-                    ?.map(
-                        (option) => _displayAddOnOption(option, widget.addOns))
-                    .toList() ??
-                []
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                border: Border.all(width: 1, color: navyBlue),
+                borderRadius: const BorderRadius.all(Radius.circular(7)),
+                color: widget.addOns.isRequired == true ? navyBlue : white,
+              ),
+              child: Text(
+                widget.addOns.isRequired == true ? 'Required' : 'Optional',
+                maxLines: 1,
+                style: TextStyle(
+                  color: widget.addOns.isRequired == true ? white : navyBlue,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                  fontFamily: "Inter",
+                ),
+              ),
+            )
           ],
         ),
-      ),
+        const SizedBox(
+          height: 8,
+        ),
+        Divider(
+          height: 0,
+          color: dividerColor,
+          thickness: 1,
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        ...widget.addOns.options
+                ?.map((option) => _displayAddOnOption(option, widget.addOns))
+                .toList() ??
+            [],
+      ],
     );
   }
 
   Widget _displayAddOnOption(AddOnOption addOnOption, AddOns addOns) {
-    return Container(
-      padding: const EdgeInsets.only(top: 15, right: 16, left: 16),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              if (addOnOption.picture != null)
-                InkWell(
-                  onTap: () {
-                    showDescription(addOnOption);
-                  },
-                  child: Container(
-                    height: 48,
-                    width: 48,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: dividerColor,
-                        ),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10))),
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      child: CachedNetworkImage(
-                        imageUrl: addOnOption.picture!,
-                        fit: BoxFit.fill,
-                        errorWidget: productAndServiceErrorWidget,
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            if (addOnOption.picture != null)
+              InkWell(
+                onTap: () {
+                  showDescription(addOnOption);
+                },
+                child: Container(
+                  height: 48,
+                  width: 48,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: dividerColor,
                       ),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10))),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    child: CachedNetworkImage(
+                      imageUrl: addOnOption.picture!,
+                      fit: BoxFit.fill,
+                      errorWidget: productAndServiceErrorWidget,
                     ),
                   ),
                 ),
-              const SizedBox(width: 8),
-              Expanded(
-                flex: 4,
-                child: InkWell(
-                  onTap: () {
-                    if (addOnOption.picture == null) {
-                      showDescription(addOnOption);
-                    }
-                  },
-                  child: Text(
-                    appendStringDot(addOnOption.name!, 100),
-                    maxLines: 2,
-                    style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14),
+              ),
+            const SizedBox(width: 8),
+            Expanded(
+              flex: 4,
+              child: InkWell(
+                onTap: () {
+                  if (addOnOption.picture == null) {
+                    showDescription(addOnOption);
+                  }
+                },
+                child: Text(
+                  appendStringDot(addOnOption.name!, 100),
+                  maxLines: 2,
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    fontFamily: "Inter",
                   ),
                 ),
               ),
-              const Spacer(),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      _buildPriceForAddOn(addOnOption: addOnOption),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      _buildAddOnSelection(
-                          addOnOption: addOnOption, addOns: addOns),
-                    ],
-                  ),
-                  if (addOns.inputType == "radio" &&
-                          addOns.groupValue == addOnOption.name ||
-                      addOns.inputType == "checkbox" &&
-                          addOnOption.isChecked == true)
-                    _buildQtySelection(addOnOption: addOnOption, addOns: addOns)
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 15),
-          Divider(
-            height: 0,
-            color: dividerColor,
-            thickness: 1,
-          ),
-        ],
-      ),
+            ),
+            const Spacer(),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    _buildPriceForAddOn(addOnOption: addOnOption),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    _buildAddOnSelection(
+                        addOnOption: addOnOption, addOns: addOns),
+                  ],
+                ),
+                if (addOns.inputType == "radio" &&
+                        addOns.groupValue == addOnOption.name ||
+                    addOns.inputType == "checkbox" &&
+                        addOnOption.isChecked == true)
+                  _buildQtySelection(addOnOption: addOnOption, addOns: addOns)
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Divider(
+          height: 0,
+          color: boxBorderColor,
+          thickness: 1,
+        ),
+        const SizedBox(height: 5),
+      ],
     );
   }
 

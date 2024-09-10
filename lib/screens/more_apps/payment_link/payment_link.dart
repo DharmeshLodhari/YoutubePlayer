@@ -635,21 +635,18 @@ class _PaymentLinkState extends State<PaymentLink>
           )
         : isLoading && paymentLinkList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SlidableAutoCloseBehavior(
-                closeWhenOpened: true,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: paymentLinkList.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == paymentLinkList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context, paymentLinkList[index], index);
-                    }
-                  },
-                  controller: _scrollController,
-                ),
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: paymentLinkList.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == paymentLinkList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context, paymentLinkList[index], index);
+                  }
+                },
+                controller: _scrollController,
               );
   }
 
@@ -658,19 +655,22 @@ class _PaymentLinkState extends State<PaymentLink>
     return Scaffold(
       backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
-      body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: noItemInList
-              ? NoItemInList(
-                  msg: AppLocalization.of(context)!.noPaymentLink,
-                )
-              : _buildFriendsList()),
+      body: SlidableAutoCloseBehavior(
+        closeWhenOpened: true,
+        child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: noItemInList
+                ? NoItemInList(
+                    msg: AppLocalization.of(context)!.noPaymentLink,
+                  )
+                : _buildFriendsList()),
+      ),
     );
   }
 

@@ -460,21 +460,21 @@ class _SearchModuleState extends State<SearchModule>
 
   Widget _buildResultList() {
     if (isSuggestion && results.isEmpty && autoCompleteSearchText.isEmpty) {
-      return SmartRefresher(
-        enablePullDown: true,
-        header: WaterDropHeader(
-          complete: Container(),
-          waterDropColor: navyBlue,
-        ),
-        controller: _refreshCtrl,
-        onRefresh: _onRefresh,
-        child: noItemInSuggestionList
-            ? NoItemInList(msg: AppLocalization.of(context)!.noSuggestions)
-            : isSuggestionLoading && suggestionsList.isEmpty
-                ? buildLoadingIndicator(isLoading: isSuggestionLoading)
-                : SlidableAutoCloseBehavior(
-                    closeWhenOpened: true,
-                    child: ListView.builder(
+      return SlidableAutoCloseBehavior(
+        closeWhenOpened: true,
+        child: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _refreshCtrl,
+          onRefresh: _onRefresh,
+          child: noItemInSuggestionList
+              ? NoItemInList(msg: AppLocalization.of(context)!.noSuggestions)
+              : isSuggestionLoading && suggestionsList.isEmpty
+                  ? buildLoadingIndicator(isLoading: isSuggestionLoading)
+                  : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       physics: const ClampingScrollPhysics(),
                       controller: _scrollCtrl,
@@ -489,7 +489,7 @@ class _SearchModuleState extends State<SearchModule>
                         }
                       },
                     ),
-                  ),
+        ),
       );
     } else {
       return isSearchIsEmpty

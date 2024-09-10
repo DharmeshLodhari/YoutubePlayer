@@ -86,15 +86,18 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
           key: _scaffoldKey,
           backgroundColor: Colors.white,
           appBar: appBar() as PreferredSizeWidget?,
-          body: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: _buildShippingOptionsList()),
+          body: SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: _buildShippingOptionsList()),
+          ),
         ),
       ),
     );
@@ -161,27 +164,24 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
           )
         : isLoading && shippingOptionsList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SlidableAutoCloseBehavior(
-                closeWhenOpened: true,
-                child: ListView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
-                  //+1 for progressbar
-                  itemCount: shippingOptionsList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == shippingOptionsList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context,
-                          bankAccountTile(
-                            shippingModel: shippingOptionsList[index],
-                          ),
-                          shippingOptionsList[index]);
-                    }
-                  },
-                  controller: _scrollController,
-                ),
+            : ListView.builder(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                //+1 for progressbar
+                itemCount: shippingOptionsList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == shippingOptionsList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        bankAccountTile(
+                          shippingModel: shippingOptionsList[index],
+                        ),
+                        shippingOptionsList[index]);
+                  }
+                },
+                controller: _scrollController,
               );
   }
 

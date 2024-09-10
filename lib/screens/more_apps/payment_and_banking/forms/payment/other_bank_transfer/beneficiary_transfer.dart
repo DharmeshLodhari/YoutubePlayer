@@ -893,15 +893,18 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
   }
 
   Widget bottomSheetTabViews() {
-    return SmartRefresher(
-        enablePullDown: true,
-        header: WaterDropHeader(
-          complete: Container(),
-          waterDropColor: navyBlue,
-        ),
-        controller: _refreshController,
-        onRefresh: _onRefresh,
-        child: buildBankList(context));
+    return SlidableAutoCloseBehavior(
+      closeWhenOpened: true,
+      child: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: buildBankList(context)),
+    );
   }
 
   void getList(String searchText) async {
@@ -965,25 +968,22 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
             msg: AppLocalization.of(context)!.noResultFound,
             isResult: true,
           )
-        : SlidableAutoCloseBehavior(
-            closeWhenOpened: true,
-            child: ListView.builder(
-              padding: const EdgeInsets.all(4),
-              shrinkWrap: true,
-              itemCount: bankAccountList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == bankAccountList.length) {
-                  return _buildIndicatorForBankList();
-                } else {
-                  return _getSlidableWithLists(
-                    context,
-                    bankAccountTile(account: bankAccountList[index]),
-                    bankAccountList[index],
-                  );
-                }
-              },
-              controller: _scrollController,
-            ),
+        : ListView.builder(
+            padding: const EdgeInsets.all(4),
+            shrinkWrap: true,
+            itemCount: bankAccountList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == bankAccountList.length) {
+                return _buildIndicatorForBankList();
+              } else {
+                return _getSlidableWithLists(
+                  context,
+                  bankAccountTile(account: bankAccountList[index]),
+                  bankAccountList[index],
+                );
+              }
+            },
+            controller: _scrollController,
           );
   }
 

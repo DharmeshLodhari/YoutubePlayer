@@ -134,15 +134,18 @@ class _MessageListState extends State<MessageList>
         key: _scaffoldMessageKey,
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildMessageList()),
+        body: SlidableAutoCloseBehavior(
+          closeWhenOpened: true,
+          child: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: _buildMessageList()),
+        ),
         floatingActionButton: FloatingActionButton(
           heroTag: "compose_message",
           backgroundColor: navyBlue,
@@ -261,22 +264,19 @@ class _MessageListState extends State<MessageList>
           )
         : isLoading && messageList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SlidableAutoCloseBehavior(
-                closeWhenOpened: true,
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(4),
-                  //+1 for progressbar
-                  itemCount: messageList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == messageList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context, messageList[index], index);
-                    }
-                  },
-                  controller: _scrollController,
-                ),
+            : ListView.builder(
+                padding: const EdgeInsets.all(4),
+                //+1 for progressbar
+                itemCount: messageList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == messageList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context, messageList[index], index);
+                  }
+                },
+                controller: _scrollController,
               );
   }
 

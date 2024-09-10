@@ -132,15 +132,18 @@ class _SharedCartMembersState extends State<SharedCartMembers>
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
+          child: SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: _buildCartMembers(),
             ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildCartMembers(),
           ),
         ),
       ),
@@ -158,21 +161,18 @@ class _SharedCartMembersState extends State<SharedCartMembers>
                 title: AppLocalization.of(context)!.noMembersYet,
                 msg: AppLocalization.of(context)!.noMembersYet,
               )
-            : SlidableAutoCloseBehavior(
-                closeWhenOpened: true,
-                child: ListView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
-                  itemCount: cartDetails.members?.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return _getSlidableWithLists(
-                      context,
-                      cartMemberTile(
-                          member: cartDetails.members?[index], index: index),
-                      cartDetails.members?[index],
-                    );
-                  },
-                ),
+            : ListView.builder(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                itemCount: cartDetails.members?.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return _getSlidableWithLists(
+                    context,
+                    cartMemberTile(
+                        member: cartDetails.members?[index], index: index),
+                    cartDetails.members?[index],
+                  );
+                },
               );
   }
 

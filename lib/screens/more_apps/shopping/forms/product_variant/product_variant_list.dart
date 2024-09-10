@@ -148,15 +148,18 @@ class _ProductVariantListState extends State<ProductVariantList>
           key: _scaffoldKey,
           backgroundColor: Colors.white,
           appBar: appBar() as PreferredSizeWidget?,
-          body: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: _buildProductVariantList()),
+          body: SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: _buildProductVariantList()),
+          ),
         ),
       ),
     );
@@ -230,27 +233,24 @@ class _ProductVariantListState extends State<ProductVariantList>
           )
         : isLoading && productVariantList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SlidableAutoCloseBehavior(
-                closeWhenOpened: true,
-                child: ListView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
-                  //+1 for progressbar
-                  itemCount: productVariantList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == productVariantList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context,
-                          productVariantTile(
-                            variant: productVariantList[index],
-                          ),
-                          productVariantList[index]);
-                    }
-                  },
-                  controller: _scrollController,
-                ),
+            : ListView.builder(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                //+1 for progressbar
+                itemCount: productVariantList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == productVariantList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        productVariantTile(
+                          variant: productVariantList[index],
+                        ),
+                        productVariantList[index]);
+                  }
+                },
+                controller: _scrollController,
               );
   }
 

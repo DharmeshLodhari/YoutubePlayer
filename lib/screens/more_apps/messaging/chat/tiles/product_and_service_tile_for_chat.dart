@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
@@ -64,7 +65,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .pushNamed("/product", arguments: {"product": product});
+            .pushNamed(Routes.PRODUCT, arguments: {"product": product});
       },
       child: Column(
         children: [

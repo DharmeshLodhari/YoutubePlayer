@@ -15,6 +15,7 @@ class HexColor extends Color {
 Color white = HexColor("#FFFFFF");
 Color navyBlue = HexColor("#3F61DB");
 Color navyBlueLight = HexColor("#BEC2F4");
+Color indicatorLightBlue = HexColor("#E2E7FA");
 Color lightGreen = HexColor("#40B869");
 Color naturalGreen = HexColor("#46CE7C");
 Color naturalGreenLight = HexColor("#E9FFF2");
@@ -47,6 +48,7 @@ Color lightRed = HexColor("#FBEAE9");
 Color lightYellow = HexColor("#FEF6E7");
 Color lightGreenBg = HexColor("#E7F6EC");
 Color fontLightGrey = HexColor("#475367");
+Color fontDarkGrey = HexColor("#101928");
 Color pinkFont = HexColor("#D86588");
 Color transparent = Colors.transparent;
 

@@ -1,3 +1,4 @@
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,11 +13,9 @@ import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/curved_btn.dart';
 import '../../../../widget/custom_box_shadow.dart';
-import '../../../../widget/disclaimer_dialogue_for_goods.dart';
 import '../../../../widget/rounded_background_icon.dart';
 import '../../shopping/models/store.dart';
 import '../../shopping/shopping_auth.dart';
-import '../../user_profile/user_auth.dart';
 
 class YarnProductTile extends StatefulWidget {
   final Product? product;
@@ -54,7 +53,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
     return InkWell(
       onTap: () {
         Navigator.of(context)
-            .pushNamed("/product", arguments: {"product": widget.product});
+            .pushNamed(Routes.PRODUCT, arguments: {"product": widget.product});
       },
       child: SizedBox(
         height: getItemHeight(widget.tileRenderPlace, context),

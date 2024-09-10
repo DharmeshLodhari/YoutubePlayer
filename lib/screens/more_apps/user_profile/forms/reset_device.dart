@@ -430,7 +430,7 @@ class _ResetDeviceState extends State<ResetDevice> {
         ),
         Pinput(
           obscuringCharacter: '•',
-          validator: (val) => val!.length < 4
+          validator: (val) => val!.length < 6
               ? AppLocalization.of(context)!.invalidPassword
               : null,
           length: 6,

@@ -245,6 +245,22 @@ class _FollowAndFollowersListState extends State<FollowAndFollowersList> {
 
   @override
   Widget build(BuildContext context) {
+    return SlidableAutoCloseBehavior(
+      closeWhenOpened: true,
+      child: SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _refreshCtrl,
+        onRefresh: _onRefresh,
+        child: getList(),
+      ),
+    );
+  }
+
+  Widget getList() {
     return noItemInList
         ? NoItemInList(
             msg: widget.isFollowing
@@ -253,30 +269,17 @@ class _FollowAndFollowersListState extends State<FollowAndFollowersList> {
           )
         : _isLoading && usersList.isEmpty
             ? buildLoadingIndicator(isLoading: _isLoading)
-            : SmartRefresher(
-                enablePullDown: true,
-                header: WaterDropHeader(
-                  complete: Container(),
-                  waterDropColor: navyBlue,
-                ),
-                controller: _refreshCtrl,
-                onRefresh: _onRefresh,
-                child: SlidableAutoCloseBehavior(
-                  closeWhenOpened: true,
-                  child: ListView.builder(
-                    physics: const ClampingScrollPhysics(),
-                    controller: _scrollCtrl,
-                    itemCount: usersList.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == usersList.length) {
-                        return buildJumpingLoadingIndicator(
-                            isLoading: _isLoading);
-                      } else {
-                        return CustomSlydoUserCard(user: usersList[index]);
-                      }
-                    },
-                  ),
-                ),
+            : ListView.builder(
+                physics: const ClampingScrollPhysics(),
+                controller: _scrollCtrl,
+                itemCount: usersList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == usersList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: _isLoading);
+                  } else {
+                    return CustomSlydoUserCard(user: usersList[index]);
+                  }
+                },
               );
   }
 }

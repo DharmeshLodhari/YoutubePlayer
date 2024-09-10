@@ -88,19 +88,22 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
   }
 
   Widget _buildScaffoldBody() {
-    return SmartRefresher(
-      enablePullDown: true,
-      header: WaterDropHeader(
-        complete: Container(),
-        waterDropColor: navyBlue,
-      ),
-      controller: _refreshController,
-      onRefresh: _onRefresh,
-      child: Column(
-        children: [
-          Expanded(child: _buildFriendsList()),
-          const SizedBox(height: 80),
-        ],
+    return SlidableAutoCloseBehavior(
+      closeWhenOpened: true,
+      child: SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        child: Column(
+          children: [
+            Expanded(child: _buildFriendsList()),
+            const SizedBox(height: 80),
+          ],
+        ),
       ),
     );
   }
@@ -114,23 +117,20 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
           )
         : isLoading && connectionRequestList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SlidableAutoCloseBehavior(
-                closeWhenOpened: true,
-                child: ListView.builder(
-                  padding: const EdgeInsets.only(
-                      left: 4, right: 4, bottom: 80.0, top: 10),
-                  //+1 for progressbar
-                  itemCount: connectionRequestList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == connectionRequestList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context, connectionRequestList[index], index);
-                    }
-                  },
-                  controller: _scrollController,
-                ),
+            : ListView.builder(
+                padding: const EdgeInsets.only(
+                    left: 4, right: 4, bottom: 80.0, top: 10),
+                //+1 for progressbar
+                itemCount: connectionRequestList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == connectionRequestList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context, connectionRequestList[index], index);
+                  }
+                },
+                controller: _scrollController,
               );
   }
 

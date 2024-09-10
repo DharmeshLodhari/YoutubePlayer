@@ -66,6 +66,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   final _auth = ShoppingAuthService();
   Product? product;
+  bool isUserNotLogIn = false;
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc userBloc;
   late BasketBloc basketBloc;
@@ -126,6 +127,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       productId = widget.arguments[
           'productId']; // We get this when we are coming from the moment detail page.
     }
+    isUserNotLogIn = widget.arguments['isUserNotLogIn'] ?? false;
     userBloc = Provider.of<UserBloc>(context, listen: false);
 
     if (mounted) setState(() {});
@@ -274,11 +276,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        if (isValidCustomer) goToCartWidget() else Container(),
+        if (isValidCustomer && !isUserNotLogIn)
+          goToCartWidget()
+        else
+          Container(),
         const SizedBox(
           width: 15,
         ),
-        menuBtn(),
+        if (!isUserNotLogIn) menuBtn(),
         const SizedBox(width: 15),
       ],
     );
@@ -795,39 +800,37 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget floatingActionBar() {
-    return widget.arguments["type"] == "changeAddons"
-        ? Card(
-            elevation: 10,
-            margin: EdgeInsets.zero,
-            shadowColor: boxShadowTwo,
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-              child: _buildOkButtonWidget(),
-            ),
-          )
-        : Card(
-            elevation: 10,
-            margin: EdgeInsets.zero,
-            shadowColor: boxShadowTwo,
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-              child: Row(
-                children: <Widget>[
-                  messageSellerWidget(),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  addToCartWidget(),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  _buildBuyButtonWidget(),
-                ],
-              ),
-            ),
-          );
+    return Card(
+      elevation: 10,
+      margin: EdgeInsets.zero,
+      shadowColor: boxShadowTwo,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+        child: _buildBottomUI(),
+      ),
+    );
+  }
+
+  Widget _buildBottomUI() {
+    if (widget.arguments["type"] == "changeAddons") {
+      return _buildOkButtonWidget();
+    } else if (isUserNotLogIn) {
+      return _buildSignupButtonWidget();
+    } else {
+      return Row(
+        children: <Widget>[
+          messageSellerWidget(),
+          const SizedBox(
+            width: 8,
+          ),
+          addToCartWidget(),
+          const SizedBox(
+            width: 8,
+          ),
+          _buildBuyButtonWidget(),
+        ],
+      );
+    }
   }
 
   Widget _buildProductDetailsPage(BuildContext context) {
@@ -835,56 +838,61 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       return buildProductShimmerLoadingIndicator(isLoading: productIsLoading);
     }
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildProductImagesWidgets(),
-            productStockAndDetailTag(),
-            const SizedBox(height: 5),
-            if (displayProductImages!.length > 1)
-              _buildHorizontalProductImageList()
-            else
-              const SizedBox(),
-            const SizedBox(height: 10),
-            _buildProductTitleAndPriceWidget(),
-            _buildProductWidthHeightWeight(),
-            const SizedBox(height: 10),
-            _buildShortInfoWidget(),
-            const SizedBox(height: 12),
-            getHorizontalDivider(),
-            const SizedBox(height: 12),
-            _buildDescriptionWidget(),
-            const SizedBox(height: 12),
-            getHorizontalDivider(),
-            const SizedBox(height: 12),
-            getProductOrServiceSocialMedia(
-                context, "Product", product?.id ?? ""),
-            const SizedBox(height: 12),
-            getHorizontalDivider(),
-            const SizedBox(height: 12),
-            if (product?.addOnsModels?.isNotEmpty == true) ...[
-              _buildAddonWidget(),
-              const SizedBox(
-                height: 12,
-              ),
+    return ListView(
+      controller: _scrollController,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _buildProductImagesWidgets(),
+              productStockAndDetailTag(),
+              const SizedBox(height: 5),
+              if (displayProductImages!.length > 1)
+                _buildHorizontalProductImageList()
+              else
+                const SizedBox(),
+              const SizedBox(height: 10),
+              _buildProductTitleAndPriceWidget(),
+              _buildProductWidthHeightWeight(),
+              const SizedBox(height: 10),
+              _buildShortInfoWidget(),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              _buildDescriptionWidget(),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              if (!isUserNotLogIn) ...[
+                getProductOrServiceSocialMedia(
+                    context, "Product", product?.id ?? ""),
+                const SizedBox(height: 12),
+                getHorizontalDivider(),
+                const SizedBox(height: 12),
+              ],
+              if (product?.addOnsModels?.isNotEmpty == true) ...[
+                _buildAddonWidget(),
+                const SizedBox(height: 12),
+              ],
+              _buildSellerInfoWidget(),
+              const SizedBox(height: 10),
+              getHorizontalDivider(),
+              const SizedBox(height: 10),
+              _buildReviewList(),
+              if (!isUserNotLogIn) ...[
+                const SizedBox(height: 12),
+                _buildWriteReview(),
+                getHorizontalDivider(),
+                const SizedBox(height: 12),
+                sellersOtherProducts(),
+              ],
+              SizedBox(height: isValidCustomer ? 60.0 : 20),
             ],
-            _buildSellerInfoWidget(),
-            const SizedBox(height: 10),
-            getHorizontalDivider(),
-            const SizedBox(height: 10),
-            _buildReviewList(),
-            const SizedBox(height: 12),
-            _buildWriteReview(),
-            getHorizontalDivider(),
-            const SizedBox(height: 12),
-            sellersOtherProducts(),
-            SizedBox(height: isValidCustomer ? 60.0 : 20),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -911,9 +919,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Text(
       reviewCount != null ? "Review ($reviewCount)" : "Reviews",
       style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 14,
         color: blackFont,
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        fontFamily: "Inter",
       ),
     );
   }
@@ -922,15 +931,28 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Reviews",
-          style: TextStyle(
-            color: blackFont,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            fontFamily: "Inter",
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            buildReviewTitle(),
+            if (reviewList.isNotEmpty)
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed(Routes.REVIEW_LIST_SCREEN,
+                      arguments: {"reviewedProduct": product});
+                },
+                child: Text(
+                  "See all",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: navyBlue,
+                  ),
+                ),
+              ),
+          ],
         ),
+        const SizedBox(height: 12),
         if (reviewList.isEmpty)
           Center(
             child: Column(
@@ -953,42 +975,17 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           )
         else
           Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  buildReviewTitle(),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushNamed(Routes.REVIEW_LIST_SCREEN,
-                          arguments: {"reviewedProduct": product});
-                    },
-                    child: Text(
-                      "See all",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: navyBlue,
-                      ),
+            children: reviewList
+                .map(
+                  (review) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: ReviewTile(
+                      review: review,
+                      product: product,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Column(
-                children: reviewList
-                    .map(
-                      (review) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: ReviewTile(
-                          review: review,
-                          product: product,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
+                )
+                .toList(),
           ),
       ],
     );
@@ -2457,33 +2454,27 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text(
-            "Available Add-ons",
-            style: TextStyle(
-              color: blackFont,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              fontFamily: "Inter",
-            ),
+        Text(
+          "Available Add-ons",
+          style: TextStyle(
+            color: blackFont,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
           ),
         ),
         const SizedBox(
           height: 8,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text(
-            "Spices up your orders with the available aad-ons below.",
-            style: TextStyle(
-              fontSize: 14,
-              color: darkGrey,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w400,
-            ),
-            textAlign: TextAlign.justify,
+        Text(
+          "Spices up your orders with the available aad-ons below.",
+          style: TextStyle(
+            fontSize: 14,
+            color: fontLightGrey,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w400,
           ),
+          textAlign: TextAlign.justify,
         ),
         const SizedBox(
           height: 8,
@@ -2522,18 +2513,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 contentPadding: EdgeInsets.zero,
                 leading: GestureDetector(
                   onTap: () {
-                    String? image = '';
-                    if (product!.sellerAvatar! == "" ||
-                        product!.sellerAvatar! ==
-                            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-                      image =
-                          getInitials(product!.sellerFullName!).toUpperCase();
-                    } else {
-                      image = product!.sellerAvatar!;
-                    }
+                    if (!isUserNotLogIn) {
+                      String? image = '';
+                      if (product!.sellerAvatar! == "" ||
+                          product!.sellerAvatar! ==
+                              "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+                        image =
+                            getInitials(product!.sellerFullName!).toUpperCase();
+                      } else {
+                        image = product!.sellerAvatar!;
+                      }
 
-                    Navigator.of(context)
-                        .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                      Navigator.of(context)
+                          .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                    }
                   },
                   child: userImageUserInitialsPic(
                       product!.sellerAvatar!, product!.sellerFullName!, 15, 35),
@@ -2555,8 +2548,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   textAlign: TextAlign.justify,
                 ),
                 onTap: () {
-                  Navigator.pushNamed(context, '/profile',
-                      arguments: {"searchedUserName": product!.seller});
+                  if (!isUserNotLogIn) {
+                    Navigator.pushNamed(context, '/profile',
+                        arguments: {"searchedUserName": product!.seller});
+                  }
                 },
               ),
             ],
@@ -2682,6 +2677,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           // } else {
           //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
           // }
+        },
+      ),
+    );
+  }
+
+  Widget _buildSignupButtonWidget() {
+    return Expanded(
+      child: CurvedButton(
+        isPaymentBtn: true,
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Signup to Continue",
+        onPressed: () async {
+          Navigator.of(context).pushReplacementNamed(Routes.INDEX);
         },
       ),
     );

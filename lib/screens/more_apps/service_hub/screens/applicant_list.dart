@@ -117,58 +117,61 @@ class _ApplicantListState extends State<ApplicantList>
     return Scaffold(
       backgroundColor: lightGrey,
       appBar: appBar(),
-      body: SmartRefresher(
-        controller: _refreshController,
-        header: WaterDropHeader(
-          complete: Container(),
-          waterDropColor: navyBlue,
-        ),
-        onRefresh: _onRefresh,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              getAppicantListView(),
-              if (isLoading)
-                Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: greyBorderColor,
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                      mainAxisSpacing: 14,
-                      mainAxisExtent: 180,
-                      crossAxisSpacing: 15,
-                      maxCrossAxisExtent: 200,
+      body: SlidableAutoCloseBehavior(
+        closeWhenOpened: true,
+        child: SmartRefresher(
+          controller: _refreshController,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          onRefresh: _onRefresh,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                getAppicantListView(),
+                if (isLoading)
+                  Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: greyBorderColor,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        mainAxisSpacing: 14,
+                        mainAxisExtent: 180,
+                        crossAxisSpacing: 15,
+                        maxCrossAxisExtent: 200,
+                      ),
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        );
+                      },
                     ),
-                    itemCount: 2,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        color: Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      );
-                    },
-                  ),
-                )
-              else
-                const SizedBox.shrink(),
-              Visibility(
-                visible: !isLoading && applicantList.isEmpty,
-                child: Center(
-                  child: Column(
-                    children: [
-                      Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                      const SizedBox(height: 20),
-                      const Text('No items at the moment'),
-                    ],
+                  )
+                else
+                  const SizedBox.shrink(),
+                Visibility(
+                  visible: !isLoading && applicantList.isEmpty,
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Lottie.asset('assets/lottie/no_moment_lottie.json'),
+                        const SizedBox(height: 20),
+                        const Text('No items at the moment'),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -178,17 +181,14 @@ class _ApplicantListState extends State<ApplicantList>
   Flexible getAppicantListView() {
     return Flexible(
       fit: FlexFit.loose,
-      child: SlidableAutoCloseBehavior(
-        closeWhenOpened: true,
-        child: ListView.builder(
-          padding: const EdgeInsets.all(4),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: applicantList.length,
-          itemBuilder: (context, index) {
-            return _getSlidableWithLists(context, index);
-          },
-        ),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(4),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: applicantList.length,
+        itemBuilder: (context, index) {
+          return _getSlidableWithLists(context, index);
+        },
       ),
     );
   }

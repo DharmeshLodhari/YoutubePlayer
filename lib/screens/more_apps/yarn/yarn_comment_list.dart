@@ -185,7 +185,7 @@ class _YarnCommentListState extends State<YarnCommentList> {
       selectFilter = 'created_at';
     }
     if (!isLoading) {
-      if (next.isNotEmpty && !isLoading) {
+      if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 

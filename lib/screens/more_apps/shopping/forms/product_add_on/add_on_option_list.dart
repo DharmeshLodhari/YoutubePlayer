@@ -162,15 +162,18 @@ class _AddOnOptionListState extends State<AddOnOptionList>
           floatingActionButton: getSubmitButton(),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
-          body: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: _buildAddOnOptionList()),
+          body: SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: _buildAddOnOptionList()),
+          ),
         ),
       ),
     );
@@ -250,47 +253,43 @@ class _AddOnOptionListState extends State<AddOnOptionList>
           )
         : isLoading && addOnOptionList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SlidableAutoCloseBehavior(
-                closeWhenOpened: true,
-                child: ListView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
-                  //+1 for progressbar
-                  itemCount: addOnOptionList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == addOnOptionList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context,
-                          GestureDetector(
-                            onTap: () async {
-                              // toggleAddOnCheckedState(index);
-                              final data = await Navigator.of(context)
-                                  .pushNamed(
-                                      Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
-                                      arguments: {
-                                    'addOnOption': addOnOptionList[index],
-                                    'productId': productId,
-                                  });
+            : ListView.builder(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                //+1 for progressbar
+                itemCount: addOnOptionList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == addOnOptionList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        GestureDetector(
+                          onTap: () async {
+                            // toggleAddOnCheckedState(index);
+                            final data = await Navigator.of(context).pushNamed(
+                                Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
+                                arguments: {
+                                  'addOnOption': addOnOptionList[index],
+                                  'productId': productId,
+                                });
 
-                              // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
-                              if (data != null && data is AddOnOption) {
-                                //save the add-on option details for later use
-                                // _onRefresh();
-                                updateItemById(data.id!, data);
-                                if (mounted) setState(() {});
-                              }
-                            },
-                            child: addOnOptionTile(
-                                addOnOption: addOnOptionList[index],
-                                index: index),
-                          ),
-                          addOnOptionList[index]);
-                    }
-                  },
-                  controller: _scrollController,
-                ),
+                            // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
+                            if (data != null && data is AddOnOption) {
+                              //save the add-on option details for later use
+                              // _onRefresh();
+                              updateItemById(data.id!, data);
+                              if (mounted) setState(() {});
+                            }
+                          },
+                          child: addOnOptionTile(
+                              addOnOption: addOnOptionList[index],
+                              index: index),
+                        ),
+                        addOnOptionList[index]);
+                  }
+                },
+                controller: _scrollController,
               );
   }
 

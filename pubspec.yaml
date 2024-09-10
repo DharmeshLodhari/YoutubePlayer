@@ -1,6 +1,6 @@
 name: Slydo
 description: The slydo application.
-version: 2.2.5+68
+version: 2.2.6+69
 
 environment:
   sdk: '>=3.4.1 <4.0.0'
@@ -173,6 +173,8 @@ flutter:
     - assets/images/payout/
     - assets/images/store/
     - assets/images/home/
+    - assets/images/profile_page/
+    - assets/images/onboarding/
     - assets/images/rider/
     - assets/map_style.json
     - assets/
@@ -228,6 +230,11 @@ flutter:
           weight: 700
         - asset: assets/fonts/Inter-ExtraBold.ttf
           weight: 800
+
+    - family: Calistoga
+      fonts:
+        - asset: assets/fonts/Calistoga-Regular.ttf
+
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

@@ -75,20 +75,23 @@ class _BlockedListState extends State<BlockedList>
       child: Scaffold(
         key: _scaffoldBlockListKey,
         backgroundColor: lightGrey,
-        body: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: Column(
-              children: [
-                Expanded(child: _buildFriendsList()),
-                const SizedBox(height: 80),
-              ],
-            )),
+        body: SlidableAutoCloseBehavior(
+          closeWhenOpened: true,
+          child: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: Column(
+                children: [
+                  Expanded(child: _buildFriendsList()),
+                  const SizedBox(height: 80),
+                ],
+              )),
+        ),
       ),
     );
   }
@@ -101,23 +104,19 @@ class _BlockedListState extends State<BlockedList>
           )
         : isLoading && blockList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SlidableAutoCloseBehavior(
-                closeWhenOpened: true,
-                child: ListView.builder(
-                  padding:
-                      const EdgeInsets.only(left: 4, right: 4, bottom: 80.0),
-                  //+1 for progressbar
-                  itemCount: blockList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == blockList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context, blockList[index], index);
-                    }
-                  },
-                  controller: _scrollController,
-                ),
+            : ListView.builder(
+                padding: const EdgeInsets.only(left: 4, right: 4, bottom: 80.0),
+                //+1 for progressbar
+                itemCount: blockList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == blockList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context, blockList[index], index);
+                  }
+                },
+                controller: _scrollController,
               );
   }
 

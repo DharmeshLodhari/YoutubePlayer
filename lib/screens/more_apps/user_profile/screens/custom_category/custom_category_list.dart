@@ -294,7 +294,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       key: _messengerScaffoldKey,
       child: WillPopScope(
         onWillPop: () async {
-          if (widget.arguments["isHome"] == true) {
+          if (widget.arguments != null && widget.arguments["isHome"] == true) {
             Navigator.pop(context);
           } else {
             Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
@@ -415,7 +415,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           size: 24,
         ),
         onPressed: () async {
-          if (widget.arguments["isHome"] == true) {
+          if (widget.arguments != null && widget.arguments["isHome"] == true) {
             Navigator.pop(context);
           } else {
             Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));

@@ -233,7 +233,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         'ForReadPermission': '2',
       },
       {
-        'imagePath': 'home/service',
+        'imagePath': 'home/service_hub',
         'title': ProtectionPermission.servicesHub,
         'ForReadPermission': '2',
       },
@@ -549,7 +549,9 @@ class _HomeQuickViewState extends State<HomeQuickView> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12,
-                        color: black,
+                        color: blackFont,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),
@@ -671,7 +673,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         break;
       case ProtectionPermission.customizeProfile:
         var business = '';
-        if (searchedUser?.type!.toLowerCase() == "user") {
+        if (user?.type!.toLowerCase() == "user") {
           business = 'no';
         } else {
           business = 'yes';
@@ -685,7 +687,6 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         break;
       case ProtectionPermission.shippingOptions:
         Navigator.of(context).pushNamed(Routes.SHIPPING_OPTIONS);
-
         break;
       case ProtectionPermission.customCategory:
         Navigator.of(context)

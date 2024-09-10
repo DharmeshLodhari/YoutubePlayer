@@ -1156,7 +1156,7 @@ Widget userNameWithVerifiedIcon({
             fontSize: 15,
           ),
       text: truncateString(
-        str: messageDecoderWithEmoji(name)!,
+        str: messageDecoderWithEmoji(name) ?? "",
         lengthToTruncateAt: lengthToTruncateAt,
       ),
       children: [

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
@@ -611,7 +612,7 @@ class MainSocketMessageHandler {
         .popUntil(ModalRoute.withName('/splash'));
 
     Navigator.of(myGlobals.navigationKey.currentContext!)
-        .pushNamed("/index", arguments: {'isIntroDone': true});
+        .pushNamed(Routes.INDEX, arguments: {'isIntroDone': true});
 
     showUserLogoutCard(context: myGlobals.navigationKey.currentContext!);
 

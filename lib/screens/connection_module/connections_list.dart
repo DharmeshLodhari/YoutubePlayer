@@ -170,16 +170,19 @@ class _ConnectionListState extends State<ConnectionList>
             children: [
               IgnorePointer(
                 ignoring: snapshot.data!,
-                child: SmartRefresher(
-                  enablePullDown: true,
-                  header: WaterDropHeader(
-                    complete: Container(),
-                    waterDropColor: navyBlue,
-                    refresh: CircularLoadingIndicator(),
+                child: SlidableAutoCloseBehavior(
+                  closeWhenOpened: true,
+                  child: SmartRefresher(
+                    enablePullDown: true,
+                    header: WaterDropHeader(
+                      complete: Container(),
+                      waterDropColor: navyBlue,
+                      refresh: CircularLoadingIndicator(),
+                    ),
+                    controller: _refreshController,
+                    onRefresh: refreshList,
+                    child: _buildConnectionsList(),
                   ),
-                  controller: _refreshController,
-                  onRefresh: refreshList,
-                  child: _buildConnectionsList(),
                 ),
               ),
               if (snapshot.data!) showFetchingMessageUI()
@@ -292,31 +295,28 @@ class _ConnectionListState extends State<ConnectionList>
           ? NoItemInList(msg: noContactMsg, isResult: true)
           : isLoading && _connectionListBloc.connectionUsers.isEmpty
               ? buildLoadingIndicator(isLoading: isLoading)
-              : SlidableAutoCloseBehavior(
-                  closeWhenOpened: true,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    // padding: EdgeInsets.symmetric(vertical: 4),
-                    padding:
-                        const EdgeInsets.only(bottom: 80.0, left: 4, right: 4),
-                    //+1 for progressbar
-                    itemCount: getConnectionListItemCount(),
-                    // physics: const BouncingScrollPhysics(
-                    //     parent: AlwaysScrollableScrollPhysics()),
-                    itemBuilder: (BuildContext context, int index) {
-                      final ChatConversation chatConversation =
-                          _connectionListBloc.connectionUsers[index];
+              : ListView.builder(
+                  shrinkWrap: true,
+                  // padding: EdgeInsets.symmetric(vertical: 4),
+                  padding:
+                      const EdgeInsets.only(bottom: 80.0, left: 4, right: 4),
+                  //+1 for progressbar
+                  itemCount: getConnectionListItemCount(),
+                  // physics: const BouncingScrollPhysics(
+                  //     parent: AlwaysScrollableScrollPhysics()),
+                  itemBuilder: (BuildContext context, int index) {
+                    final ChatConversation chatConversation =
+                        _connectionListBloc.connectionUsers[index];
 
-                      if (appConfigurationModel?.enableGroupChat == false) {
-                        if (chatConversation.isGroupConversation!) {
-                          return const SizedBox.shrink();
-                        }
+                    if (appConfigurationModel?.enableGroupChat == false) {
+                      if (chatConversation.isGroupConversation!) {
+                        return const SizedBox.shrink();
                       }
-                      return _getSlidableWithLists(context,
-                          _connectionListBloc.connectionUsers[index], index);
-                    },
-                    controller: _scrollController,
-                  ),
+                    }
+                    return _getSlidableWithLists(context,
+                        _connectionListBloc.connectionUsers[index], index);
+                  },
+                  controller: _scrollController,
                 );
     } catch (error) {
       debugPrint("ERROR building list =>:- $error");
@@ -327,21 +327,18 @@ class _ConnectionListState extends State<ConnectionList>
             )
           : isLoading && _connectionListBloc.connectionUsers.isEmpty
               ? buildLoadingIndicator(isLoading: isLoading)
-              : SlidableAutoCloseBehavior(
-                  closeWhenOpened: true,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.all(4),
-                    //+1 for progressbar
-                    itemCount: _connectionListBloc.connectionUsers.length,
-                    // physics: const BouncingScrollPhysics(
-                    //     parent: AlwaysScrollableScrollPhysics()),
-                    itemBuilder: (BuildContext context, int index) {
-                      return _getSlidableWithLists(context,
-                          _connectionListBloc.connectionUsers[index], index);
-                    },
-                    controller: _scrollController,
-                  ),
+              : ListView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(4),
+                  //+1 for progressbar
+                  itemCount: _connectionListBloc.connectionUsers.length,
+                  // physics: const BouncingScrollPhysics(
+                  //     parent: AlwaysScrollableScrollPhysics()),
+                  itemBuilder: (BuildContext context, int index) {
+                    return _getSlidableWithLists(context,
+                        _connectionListBloc.connectionUsers[index], index);
+                  },
+                  controller: _scrollController,
                 );
     }
   }

@@ -29,6 +29,7 @@ import 'package:video_player/video_player.dart';
 import 'data/socket_provider.dart';
 import 'data/state_notifier.dart';
 import 'locale/app_localization.dart';
+import 'routes/route_constants.dart';
 import 'screens/more_apps/user_profile/models/device.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -109,7 +110,7 @@ class _SplashScreenState extends State<SplashScreen>
       } else {
         if (timer != null) timer?.cancel();
         Navigator.of(MyGlobals().navigationKey.currentContext!)
-            .pushReplacementNamed("/index");
+            .pushReplacementNamed(Routes.INDEX);
       }
     }
   }

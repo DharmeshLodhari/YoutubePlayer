@@ -182,6 +182,7 @@ import 'package:Slydo/screens/more_apps/utility/cable/screens/select_cabel_plan.
 import 'package:Slydo/screens/more_apps/utility/cable/screens/select_cabel_provider.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_dashboard.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_history.dart';
+import 'package:Slydo/screens/scan_product_qr.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/startup_screen.dart';
@@ -606,6 +607,13 @@ class RouteGenerator {
           child: QRCodeView(
             arguments: settings.arguments,
           ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.SCAN_PRODUCT_QR:
+        return PageTransition(
+          child: const ScanProductQr(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

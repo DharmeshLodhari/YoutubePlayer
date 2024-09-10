@@ -88,15 +88,18 @@ class _BankAccountListState extends State<BankAccountList>
           key: _scaffoldKey,
           backgroundColor: Colors.white,
           appBar: appBar() as PreferredSizeWidget?,
-          body: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: _buildBankAccountList()),
+          body: SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: _buildBankAccountList()),
+          ),
         ),
       ),
     );
@@ -164,27 +167,24 @@ class _BankAccountListState extends State<BankAccountList>
           )
         : isLoading && bankAccountList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SlidableAutoCloseBehavior(
-                closeWhenOpened: true,
-                child: ListView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
-                  //+1 for progressbar
-                  itemCount: bankAccountList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == bankAccountList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context,
-                          bankAccountTile(
-                            account: bankAccountList[index],
-                          ),
-                          bankAccountList[index]);
-                    }
-                  },
-                  controller: _scrollController,
-                ),
+            : ListView.builder(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                //+1 for progressbar
+                itemCount: bankAccountList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == bankAccountList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        bankAccountTile(
+                          account: bankAccountList[index],
+                        ),
+                        bankAccountList[index]);
+                  }
+                },
+                controller: _scrollController,
               );
   }
 
