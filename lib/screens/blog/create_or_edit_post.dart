@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
+import 'package:Slydo/screens/blog/user_post/models/user_post.dart';
+import 'package:Slydo/screens/blog/user_post/user_post_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -23,9 +24,8 @@ import '../../locale/app_localization.dart';
 import '../../utils/video_player_controller/chewie_player.dart';
 import '../../utils/video_player_controller/chewie_progress_colors.dart';
 import '../../widget/loading_indicator.dart';
-import '../more_apps/user_post/models/user_post.dart';
-import '../more_apps/yarn/utils/utils.dart';
-import '../more_apps/yarn/widgets/ask_mention_view.dart';
+import '../yarn/utils/utils.dart';
+import '../yarn/widgets/ask_mention_view.dart';
 
 class CreateOrEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
@@ -612,8 +612,8 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
         setState(() {
           _imagePath = croppedImage;
           isImagePicked = true;
-          debugPrint('Fola cropped:::: $croppedImage');
-          debugPrint('Fola cropped 000:::: $_imagePath');
+          // debugPrint('Fola cropped:::: $croppedImage');
+          // debugPrint('Fola cropped 000:::: $_imagePath');
         });
       }
     }
@@ -627,7 +627,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
 
       final int sizeInMb = (sizeInBytes ~/ (1024 * 1024)).toInt();
 
-      debugPrint('SIZE IN MB --> $sizeInMb');
+      // debugPrint('SIZE IN MB --> $sizeInMb');
 
       if (sizeInMb <= maxVideoFileSize) {
         if (videoPickedCallBack != null) {
@@ -838,7 +838,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     return GestureDetector(
       onTap: () {
         showMoreOptions = !showMoreOptions;
-        debugPrint('SHOW MORE OPTIONS ::: $showMoreOptions');
+        // debugPrint('SHOW MORE OPTIONS ::: $showMoreOptions');
         if (showMoreOptions == true) {
           titleFocusNode.unfocus();
           headerMediaIsVisible = false;
@@ -846,7 +846,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
         } else {
           headerMediaIsVisible = true;
         }
-        debugPrint('HEADER IS VISIBLE :::: $headerMediaIsVisible');
+        // debugPrint('HEADER IS VISIBLE :::: $headerMediaIsVisible');
         if (mounted) setState(() {});
       },
       child: Container(
@@ -957,8 +957,8 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
                       timePicked!.minute);
                 }
 
-                debugPrint(
-                    'FINAL DATE TIME -----> ${publishedDateTime.toString()}');
+                // debugPrint(
+                //     'FINAL DATE TIME -----> ${publishedDateTime.toString()}');
                 setState(() => publishedDateTime = publishedDateTime);
                 // '2022-02-28T13:35:43.590377+01:00'
               },

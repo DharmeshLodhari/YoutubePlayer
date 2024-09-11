@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -11,9 +11,9 @@ import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../locator.dart';
 import '../routes/route_constants.dart';
-import '../screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
-import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../screens/more_apps/user_profile/user_auth.dart';
+import '../screens/messaging/chat/helpers/connection_list_manager.dart';
+import '../screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../screens/user_profile/user_auth.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
 import 'dialog.dart';

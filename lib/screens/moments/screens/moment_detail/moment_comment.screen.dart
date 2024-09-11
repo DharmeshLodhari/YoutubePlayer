@@ -1,15 +1,15 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/screens/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/tiles/moment_comment_tile.dart';
 import 'package:Slydo/screens/moments/widgets/moment_comment_textfield.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/comment_details.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/screens/yarn/models/Topics/comment_details.dart';
+import 'package:Slydo/screens/yarn/models/Topics/yarn_model.dart';
+import 'package:Slydo/screens/yarn/models/share_as_yarn_model.dart';
+import 'package:Slydo/screens/yarn/widgets/yarn_shimmer.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
@@ -438,8 +438,8 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
       addedSelectedGif: (value) {
         //retrieve the selected gif
         selectedGif = value;
-        debugPrint(
-            'Fola gif full view:::: ${selectedGif!.images!.original!.url}');
+        // debugPrint(
+        //     'Fola gif full view:::: ${selectedGif!.images!.original!.url}');
 
         setState(() {});
       },

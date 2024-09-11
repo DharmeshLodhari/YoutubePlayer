@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/payment_link/payment_link_cashout.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/payment_link/payment_link_cashout.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -22,7 +23,6 @@ import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../widget/dialog.dart';
 import '../widget/loading_indicator.dart';
 import 'more_apps/shopping/shopping_auth.dart';
-import 'more_apps/user_profile/user_auth.dart';
 
 // ignore: must_be_immutable
 class QRCodeView extends StatefulWidget {
@@ -191,11 +191,11 @@ class _QRCodeViewState extends State<QRCodeView> {
     final int qrCodeIndex = scanDataList.length - 2;
     String recipient = "";
 
-    debugPrint('SCANNED DATA ::: $scanDataList');
-    debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
+    // debugPrint('SCANNED DATA ::: $scanDataList');
+    // debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
 
     cleanScanDataLink.removeWhere((item) => [""].contains(item));
-    debugPrint('cleean...$cleanScanDataLink');
+    // debugPrint('cleean...$cleanScanDataLink');
 
     if (cleanScanDataLink[2] == 'payment-link') {
       final String paymentLinkId = cleanScanDataLink[3];

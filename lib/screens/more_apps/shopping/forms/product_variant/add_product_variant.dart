@@ -4,7 +4,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -979,7 +979,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
         variant.currency = 'NGN';
         if (optionOnWhatToDo == 'new') {
           //send the variant detail back to the previous page
-          debugPrint('file path::: ${variant.localImages}');
+          // debugPrint('file path::: ${variant.localImages}');
 
           Navigator.pop(context, variant);
         } else if (optionOnWhatToDo == 'edit') {

@@ -2,6 +2,7 @@ import 'package:Slydo/screens/more_apps/movies/models/movie_detail_item.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -10,8 +11,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
-
-import '../messaging/chat/utils.dart';
 
 class MovieDetailPage extends StatefulWidget {
   const MovieDetailPage({super.key});

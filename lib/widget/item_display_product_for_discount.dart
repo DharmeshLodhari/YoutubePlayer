@@ -19,7 +19,7 @@ class DisplayProductForDiscount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(DateTime.now().toString());
+    // debugPrint(DateTime.now().toString());
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, Routes.PRODUCT,

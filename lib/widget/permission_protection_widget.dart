@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';

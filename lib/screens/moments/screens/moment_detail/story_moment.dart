@@ -4,6 +4,9 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/blog/post_detail_page.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
@@ -12,12 +15,9 @@ import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/utils.dart';
 import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
 import 'package:Slydo/screens/moments/widgets/custom_moment_detail_button.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_report_screen.dart';
-import 'package:Slydo/screens/post_detail_page.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/yarn/yarn_report_screen.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -698,7 +698,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
       {required MomentsModel momentsModel}) async {
     final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
-    debugPrint("Selected users = ${listOfRecipient.length}");
+    // debugPrint("Selected users = ${listOfRecipient.length}");
 
     for (var recipient in listOfRecipient) {
       addMomentPostToChat(
@@ -820,8 +820,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   Widget momentPermanentOption(MomentsModel momentModel) {
     bool isPermanent = false;
     String title;
-    debugPrint("MOMENT MODEL IS PERMANENT:- ${momentModel.isPermanent}");
-    debugPrint("MOMENT IS PERMANENT:- ${momentModel.isPermanent}");
+    // debugPrint("MOMENT MODEL IS PERMANENT:- ${momentModel.isPermanent}");
+    // debugPrint("MOMENT IS PERMANENT:- ${momentModel.isPermanent}");
     if (momentModel.isPermanent ?? false) {
       isPermanent = momentModel.isPermanent!;
     }

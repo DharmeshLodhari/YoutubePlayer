@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
+import 'package:Slydo/screens/messaging/chat/utils.dart';
 import 'package:Slydo/screens/moments/models/attachment_item_model.dart';
 import 'package:Slydo/screens/moments/models/create_moment_model.dart';
 import 'package:Slydo/screens/moments/screens/pick_attachment_screen.dart';
 import 'package:Slydo/screens/moments/screens/select_video_cover_page.dart';
 import 'package:Slydo/screens/moments/widgets/corner_radius_image.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -82,7 +82,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
   void changeColor(Color color) {
     pickedColor = color;
-    debugPrint('PICKED COLOR ::: $pickedColor');
+    // debugPrint('PICKED COLOR ::: $pickedColor');
   }
 
   AppConfigurationModel? appConfigurationModel;
@@ -113,7 +113,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
       generateThumbNailFromVideo(videoPath: widget.filePath).then((thumbnail) {
         if (thumbnail != null) {
           generatedVideoThumbnail = thumbnail;
-          debugPrint('file path gen -> $generatedVideoThumbnail');
+          // debugPrint('file path gen -> $generatedVideoThumbnail');
         }
       });
     }
@@ -347,7 +347,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                               onChanged: (value) {
                                 setState(() {
                                   isPublic = !isPublic;
-                                  debugPrint(value.toString());
+                                  // debugPrint(value.toString());
                                 });
                               },
                               thumbIcon:

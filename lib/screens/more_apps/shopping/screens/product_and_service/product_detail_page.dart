@@ -8,19 +8,24 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import 'package:Slydo/screens/more_apps/review/models/review.dart';
-import 'package:Slydo/screens/more_apps/review/review_auth.dart';
-import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/overlay_yarn_photo.dart';
+import 'package:Slydo/screens/review/models/review.dart';
+import 'package:Slydo/screens/review/review_auth.dart';
+import 'package:Slydo/screens/review/tiles/review_tile.dart';
+import 'package:Slydo/screens/shipping_process/models/shared_cart_model.dart';
+import 'package:Slydo/screens/shipping_process/utils.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/yarn/models/share_as_yarn_model.dart';
+import 'package:Slydo/screens/yarn/share_as_a_yarn_screen.dart';
+import 'package:Slydo/screens/yarn/widgets/overlay_yarn_photo.dart';
+import 'package:Slydo/screens/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -44,11 +49,6 @@ import 'package:uuid/uuid.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../../widget/item_display_card.dart';
-import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../../../yarn/models/share_as_yarn_model.dart';
-import '../../../yarn/share_as_a_yarn_screen.dart';
-import '../../../yarn/yarn_auth.dart';
-import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -161,7 +161,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       final List tempList =
           value.containsKey('results') ? value['results'] as List : [];
       value.containsKey('count') ? reviewCount = value["count"] : 0;
-      debugPrint('RESULTS :: ${value['results']}');
+      // debugPrint('RESULTS :: ${value['results']}');
 
       reviewList = [];
 
@@ -189,7 +189,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     data['type'] = 'products';
     data['id'] = product?.id ?? "";
 
-    debugPrint('product URL :: $data');
+    // debugPrint('product URL :: $data');
 
     ReviewAuth().checkIfCanReviewProductOrService(data).then((value) {
       canRate = value;
@@ -452,7 +452,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   void sendItemToUsersInChat() async {
     final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
-    debugPrint("Selected users = ${listOfRecipient.length}");
+    // debugPrint("Selected users = ${listOfRecipient.length}");
 
     final String url =
         "${AppConfig.baseUrl}/api/v1/${product is Product ? "products" : "services"}/${product?.id ?? ""}/";
@@ -689,7 +689,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future<void> addToCart() async {
     const String type = "product";
 
-    debugPrint("BASKETBLOC:- ${basketBloc.basketItems}");
+    // debugPrint("BASKETBLOC:- ${basketBloc.basketItems}");
     final Product products =
         product!.copyWith(quantity: 1, withSelectedAddOn: true);
 
@@ -992,7 +992,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildWriteReview() {
-    debugPrint('CAN RATE :: $canRate');
+    // debugPrint('CAN RATE :: $canRate');
     if (product?.seller == userBloc.user.userName) {
       return Container();
     }
@@ -1401,7 +1401,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   void fetchProduct(String productId) async {
-    debugPrint('PRODUCT ID ::$productId');
+    // debugPrint('PRODUCT ID ::$productId');
     if (mounted) {
       setState(() {
         productIsLoading = true;

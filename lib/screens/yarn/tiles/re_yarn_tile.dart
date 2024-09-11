@@ -1,0 +1,372 @@
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/blog/user_post/models/user_post.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/yarn/models/Topics/yarn_model.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_blog_post_tile.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_customer_post_tile.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_product_tile.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_service_tile.dart';
+import 'package:Slydo/screens/yarn/utils/slydo_yarn_links.dart';
+import 'package:Slydo/screens/yarn/utils/utils.dart';
+import 'package:Slydo/screens/yarn/widgets/rich_text.dart';
+import 'package:Slydo/screens/yarn/widgets/url_reader_of_yarn.dart';
+import 'package:Slydo/screens/yarn/widgets/yarn_media_renderer.dart';
+import 'package:Slydo/screens/yarn/yarn_search_screen.dart';
+import 'package:Slydo/utils/link_preview/flutter_link_preview.dart';
+import 'package:Slydo/utils/link_preview/web_analyzer.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class ReYarnTile extends StatefulWidget {
+  final GestureTapCallback? onOptionsAction;
+
+  final Yarn yarn;
+  final Color? backGroundColor;
+
+  const ReYarnTile({
+    super.key,
+    required this.yarn,
+    this.onOptionsAction,
+    this.backGroundColor,
+  });
+
+  @override
+  State<ReYarnTile> createState() => _ReYarnTileState();
+}
+
+class _ReYarnTileState extends State<ReYarnTile> {
+  /// variables for yarn tile render TYPE
+  bool isMediaPresent = false;
+  bool isAttachmentPresent = false;
+
+  bool isUrlPresent = false;
+  String? linkToBePreview;
+
+  @override
+  void initState() {
+    if (widget.yarn.body != null) {
+      final Map<String, dynamic> linkData =
+          detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
+
+      if (linkData["hasLink"]) {
+        isUrlPresent = true;
+
+        linkToBePreview = linkData['links'][0];
+        if (!linkToBePreview!.contains("http")) {
+          linkToBePreview = "http://${linkToBePreview!}";
+        }
+      }
+    } else {}
+
+    if ((widget.yarn.media.isNotEmpty)) {
+      isMediaPresent = true;
+    }
+    if (widget.yarn.attachment != null &&
+        (widget.yarn.attachment?.isNotEmpty ?? false)) {
+      isAttachmentPresent = true;
+    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onOptionsAction,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: greySecondaryYarn)),
+        child: _buildMain(),
+      ),
+    );
+  }
+
+  Widget _buildMain() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildUserInfoRow(),
+        const SizedBox(
+          height: 10,
+        ),
+        if (widget.yarn.isQuestion) ...[
+          _buildPostTitle(),
+          const SizedBox(height: 8),
+        ],
+        _buildPostDescription(),
+        const SizedBox(
+          height: 9,
+        ),
+        if (isAttachmentPresent && widget.yarn.attachment != null) ...[
+          const SizedBox(height: 8),
+          _buildAttachment(),
+        ],
+        if (isMediaPresent) ...[
+          _buildImagesRow(),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildUserInfoRow() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(
+          height: 4,
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildUserAvatar(),
+            const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.USER_PROFILE,
+                      arguments: {"searchedUserName": widget.yarn.author});
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          messageDecoderWithEmoji(
+                                  widget.yarn.authorName ?? "") ??
+                              "",
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: yarnBlack,
+                              fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        ClipOval(
+                          child: Container(
+                            height: 4,
+                            width: 4,
+                            color: yarnBlack,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        Expanded(
+                          child: Text(
+                            getGetYarnQuestionDateTime(widget.yarn.createdAt!),
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(fontSize: 12, color: yarnBlack),
+                          ),
+                        )
+                      ],
+                    ),
+                    userNameWithVerifiedIcon(
+                      name: "@${widget.yarn.author!}",
+                      isVerified: widget.yarn.authorIsVerified ?? false,
+                      verifiedIconSize: 12,
+                      textStyle: TextStyle(
+                        color: yarnBlack.withOpacity(.7),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      verifiedIconColor: verifyGreen,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUserAvatar() {
+    return InkWell(
+      onTap: () {
+        String? image = '';
+        if (widget.yarn.authorAvatar! == "" ||
+            widget.yarn.authorAvatar! ==
+                "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+          image = getInitials(widget.yarn.authorName!).toUpperCase();
+        } else {
+          image = widget.yarn.authorAvatar!;
+        }
+
+        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+      },
+      child:
+          getUserProfilePic(widget.yarn.authorAvatar!, widget.yarn.authorName!),
+    );
+  }
+
+  Widget _buildPostTitle() {
+    return RichTextForTitle(
+      description: widget.yarn.title ?? '',
+    );
+  }
+
+  Widget _buildPostDescription() {
+    var removedLink = '';
+
+    removedLink = removeLinksAndWords(
+        widget.yarn.body != null ? widget.yarn.body! : '', []);
+
+    if (isUrlPresent) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 5,
+          ),
+          YarnSmartText(
+            text: messageDecoderWithEmoji(removedLink)!,
+            atStyle: TextStyle(color: navyBlue),
+            disableAt: false,
+            onTagClick: (tag) {
+              NavigationUtil.push(context,
+                  screen: SearchScreen(searchText: tag.trim()));
+            },
+            onAtClick: (at) {
+              Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                "searchedUserName": at.replaceFirst("@", "").trim()
+              });
+            },
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                    color: darkGrey.withOpacity(
+                      .4,
+                    ),
+                    width: .5)),
+            child: FlutterLinkPreview(
+              key: ValueKey("${linkToBePreview}233"),
+              url: linkToBePreview!,
+              builder: (info) {
+                if (info == null) {
+                  return InkWell(
+                    onTap: () {
+                      launchUrl(Uri.parse(linkToBePreview!));
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(
+                          left: 10.0, top: 10.0, bottom: 10.0),
+                      child: Text(
+                        linkToBePreview!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: navyBlue, fontSize: 14),
+                      ),
+                    ),
+                  );
+                }
+                if (info is WebImageInfo) {
+                  return CachedNetworkImage(
+                    imageUrl: info.image!,
+                    fit: BoxFit.contain,
+                    errorWidget: imageErrorWidget,
+                  );
+                }
+
+                final WebInfo webInfo = info as WebInfo;
+                if (!WebAnalyzer.isNotEmpty(webInfo.title)) {
+                  return const SizedBox(
+                    height: 0,
+                    width: 0,
+                  );
+                }
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.only(bottom: 4, top: 8),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: getWebPreview(
+                          webInfo, context, linkToBePreview, 150.0)),
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    }
+
+    return YarnSmartText(
+      text: messageDecoderWithEmoji(removedLink)!,
+      atStyle: TextStyle(color: navyBlue, fontSize: 14),
+      disableAt: false,
+      onTagClick: (tag) {
+        NavigationUtil.push(context,
+            screen: SearchScreen(searchText: tag.trim()));
+      },
+      onUrlClicked: (open) {
+        // launch  url
+        launchUrl(Uri.parse(open.toString()));
+      },
+      onAtClick: (at) {
+        Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+          "searchedUserName": at.replaceAll(RegExp('@'), '').trim()
+        });
+      },
+    );
+  }
+
+  Widget _buildAttachment() {
+    Widget childWidget;
+    if (widget.yarn.attachmentType == 'service') {
+      final Service service = Service.fromJson(widget.yarn.attachment);
+      childWidget = YarnServiceTile(
+        service: service,
+      );
+    } else if (widget.yarn.attachmentType == 'product') {
+      final Product product = Product.fromJson(widget.yarn.attachment);
+      childWidget = YarnProductTile(
+        product: product,
+      );
+    } else if (widget.yarn.attachmentType == 'blog') {
+      final UserPost post = UserPost.fromJson(widget.yarn.attachment);
+      childWidget = YarnBlogPostTile(
+        post: post,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else if (widget.yarn.attachmentType == 'profile') {
+      final CustomerProfile customerProfile =
+          CustomerProfile.fromJson(widget.yarn.attachment ?? {});
+      childWidget = YarnCustomerPostTile(
+        customerProfile: customerProfile,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else {
+      childWidget = const SizedBox();
+    }
+    return childWidget;
+  }
+
+  Widget _buildImagesRow() {
+    return YarnMediaRender(
+      yarnTopic: widget.yarn,
+    );
+  }
+}

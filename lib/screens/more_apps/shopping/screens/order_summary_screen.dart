@@ -1,4 +1,6 @@
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +12,6 @@ import '../../../../locale/app_localization.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../../../../widget/loading_indicator.dart';
-import '../../payment_and_banking/payment_and_banking_auth.dart';
-import '../../user_profile/models/user.dart';
 import '../utils.dart';
 
 class OrderSummaryScreen extends StatefulWidget {
@@ -157,7 +157,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               final response =
                   await _auth.makePaymentForCartOrder({"orders": orders});
 
-              debugPrint('STATUS CODE :: ${response.statusCode}');
+              // debugPrint('STATUS CODE :: ${response.statusCode}');
               if (response.statusCode == 200 || response.statusCode == 201) {
                 Navigator.of(context)
                     .popUntil(ModalRoute.withName(Routes.DASHBOARD));

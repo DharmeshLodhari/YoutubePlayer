@@ -10,7 +10,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
-import '../messaging/chat/utils.dart';
 import 'music_player.dart';
 
 // ignore: must_be_immutable

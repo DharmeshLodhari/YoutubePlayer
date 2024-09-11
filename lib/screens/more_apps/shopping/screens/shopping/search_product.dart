@@ -1,6 +1,7 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/material.dart';
 import '../../../../../utils/util.dart';
 import '../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../widget/rounded_background_icon.dart';
-import '../../../user_profile/models/search_user_item_with_filter.dart';
 import '../../models/store.dart';
 
 class SearchProduct extends StatefulWidget {
@@ -154,7 +154,7 @@ class _SearchProductState extends State<SearchProduct> {
         next = result['next'];
         previous = result['previous'];
         final List? tempList = result['results'];
-        debugPrint('TEMP LIST --> $tempList');
+        // debugPrint('TEMP LIST --> $tempList');
         if (mounted) {
           isLoading = false;
           try {
@@ -165,7 +165,7 @@ class _SearchProductState extends State<SearchProduct> {
             debugPrint("error adding products $e");
           }
           setState(() {});
-          debugPrint("ALL $products");
+          // debugPrint("ALL $products");
         }
       }
       if (products.isEmpty) {
@@ -802,7 +802,7 @@ class _SearchProductState extends State<SearchProduct> {
                 CurvedButton(
                   text: 'Pick',
                   onPressed: () {
-                    debugPrint('PICKED CAT ---> $pickedStateList');
+                    // debugPrint('PICKED CAT ---> $pickedStateList');
                     Navigator.pop(context);
                     bottomSheetSetState(() {});
                   },

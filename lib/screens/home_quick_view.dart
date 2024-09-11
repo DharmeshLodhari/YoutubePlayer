@@ -1,7 +1,12 @@
 import 'package:Slydo/constant.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/payment_link/payment_link.dart';
 import 'package:Slydo/screens/super_store/super_store_home.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
+import 'package:Slydo/screens/yarn/add_or_edit_yarn_screen.dart';
+import 'package:Slydo/screens/yarn/models/share_as_yarn_model.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:flutter/material.dart';
@@ -23,13 +28,8 @@ import 'connection_module/channels_list.dart';
 import 'connection_module/connections_dashboard.dart';
 import 'moments/screens/create_moment_screen.dart';
 import 'moments/screens/moments_screen.dart';
-import 'more_apps/payment_link/payment_link.dart';
 import 'more_apps/shopping/screens/my_products.dart';
 import 'more_apps/shopping/screens/my_services.dart';
-import 'more_apps/yarn/add_or_edit_yarn_screen.dart';
-import 'more_apps/yarn/models/share_as_yarn_model.dart';
-import 'more_apps/yarn/yarn_dashboard.dart';
-import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 
 class HomeQuickView extends StatefulWidget {
   final dynamic arguments;

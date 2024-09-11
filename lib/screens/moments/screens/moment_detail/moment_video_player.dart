@@ -37,7 +37,7 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
 
   @override
   void initState() {
-    debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!.length}');
+    // debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!.length}');
     // videoPlayerManager = VideoPlayerManager();
     // videoPlayerManager.init(widget.momentsModel.media!);
     // widget.controller.stop();
@@ -57,13 +57,13 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
     _controller.addListener(() {
       if (_controller.value.isBuffering) {
         if (widget.controller.isAnimating) {
-          debugPrint("BUFFERING !! STOPPING ANIMATION CONTROLLER");
+          // debugPrint("BUFFERING !! STOPPING ANIMATION CONTROLLER");
           widget.controller.stop();
         }
       } else {
-        debugPrint("NOT BUFFERING !!");
+        // debugPrint("NOT BUFFERING !!");
         if (widget.controller.isAnimating == false) {
-          debugPrint("NOT BUFFERING !! STARTIING ANIMATION CONTROLLER");
+          // debugPrint("NOT BUFFERING !! STARTIING ANIMATION CONTROLLER");
           widget.controller.forward();
         }
       }
@@ -159,7 +159,7 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
   }
 
   Widget _buildBackground() {
-    debugPrint("poster ${widget.momentsModel.mediaPoster}");
+    // debugPrint("poster ${widget.momentsModel.mediaPoster}");
     if (widget.momentsModel.mediaPoster != null) {
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.mediaPoster!,

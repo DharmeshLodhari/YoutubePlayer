@@ -7,21 +7,21 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import 'package:Slydo/screens/more_apps/review/models/review.dart';
-import 'package:Slydo/screens/more_apps/review/review_auth.dart';
-import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/share_as_a_yarn_screen.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/screens/review/models/review.dart';
+import 'package:Slydo/screens/review/review_auth.dart';
+import 'package:Slydo/screens/review/tiles/review_tile.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
+import 'package:Slydo/screens/yarn/models/share_as_yarn_model.dart';
+import 'package:Slydo/screens/yarn/share_as_a_yarn_screen.dart';
+import 'package:Slydo/screens/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
@@ -109,7 +109,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   void fetchService(String serviceId) async {
-    debugPrint('SERVICE ID :: $serviceId');
+    // debugPrint('SERVICE ID :: $serviceId');
 
     if (mounted) {
       setState(() {
@@ -141,7 +141,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     data['type'] = 'services';
     data['id'] = service?.id ?? "";
 
-    debugPrint('service data :: $data');
+    // debugPrint('service data :: $data');
 
     ReviewAuth().checkIfCanReviewProductOrService(data).then((value) {
       canRate = value;
@@ -163,7 +163,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       canRate = value['can_rate'];
 
       reviewList = [];
-      tempList?.forEach((element) {
+      tempList.forEach((element) {
         reviewList.add(Review.fromJson(element));
       });
 
@@ -430,7 +430,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   void sendItemToUsersInChat() async {
     final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
-    debugPrint("Selected users = ${listOfRecipient.length}");
+    // debugPrint("Selected users = ${listOfRecipient.length}");
 
     final String url =
         "${AppConfig.baseUrl}/api/v1/${service is Product ? "products" : "services"}/${service?.id ?? ""}/";

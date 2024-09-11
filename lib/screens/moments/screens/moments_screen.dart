@@ -27,7 +27,7 @@ import '../../../locator.dart';
 import '../../../services/app_config_bloc.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
-import '../../more_apps/user_profile/models/user.dart';
+import '../../user_profile/models/user.dart';
 import 'moment_search_screen.dart';
 
 class MomentsScreen extends StatefulWidget {
@@ -221,11 +221,11 @@ class _MomentsScreenState extends State<MomentsScreen> {
         // }
         if (mounted) setState(() {});
 
-        debugPrint(
-            ' MOMENT LOADING --> ${!isContactMomentsLoading && !isExploreMomentsLoading}');
-
-        debugPrint(
-            ' MOMENT EMPTY ${contactMomentsList.isEmpty && exploreMomentsList.isEmpty}');
+        // debugPrint(
+        //     ' MOMENT LOADING --> ${!isContactMomentsLoading && !isExploreMomentsLoading}');
+        //
+        // debugPrint(
+        //     ' MOMENT EMPTY ${contactMomentsList.isEmpty && exploreMomentsList.isEmpty}');
 
         if (isFirstTimeExplore &&
             nextExploreMoments != null &&

@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:Slydo/main.dart';
+import 'package:Slydo/screens/messaging/chat/utils.dart';
 import 'package:Slydo/screens/moments/screens/preview_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/utils/util.dart';
@@ -329,10 +329,10 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   }
 
   void onTakePictureButtonPressed() {
-    debugPrint('onTakePictureButtonPressed');
+    // debugPrint('onTakePictureButtonPressed');
     takePictureOrVideo(mediaType: MediaType.picture).then((file) async {
       if (file != null) {
-        debugPrint('IMAGE PATH XFILE -> $file');
+        // debugPrint('IMAGE PATH XFILE -> $file');
 
         final String? croppedImagePath = await ImageCrop().cropImage(file.path);
         if (croppedImagePath != null) {
@@ -356,10 +356,10 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
 
     try {
       if (mediaType == MediaType.picture) {
-        debugPrint('Taking picture');
+        // debugPrint('Taking picture');
 
         final XFile? file = await cameraController?.takePicture();
-        debugPrint('PICTURE TAKEN :: $file');
+        // debugPrint('PICTURE TAKEN :: $file');
 
         if (file != null) {
           return file;
@@ -400,7 +400,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
 
   Widget showCapturedMedia() {
     if (videoPath != null) {
-      debugPrint('VIDEO SIZE -> ::: ${File(videoPath!).lengthSync()}');
+      // debugPrint('VIDEO SIZE -> ::: ${File(videoPath!).lengthSync()}');
 
       setUpVideoPlayer();
       return Stack(
@@ -431,7 +431,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
       // }
     }
 
-    debugPrint('IMAGE PATH -> ::: $imagePath');
+    // debugPrint('IMAGE PATH -> ::: $imagePath');
 
     if (imagePath != null) {
       return Stack(

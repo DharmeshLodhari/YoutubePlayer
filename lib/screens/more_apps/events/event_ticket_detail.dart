@@ -6,8 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../messaging/chat/utils.dart';
-
 class EventTicketDetail extends StatefulWidget {
   const EventTicketDetail({super.key});
 

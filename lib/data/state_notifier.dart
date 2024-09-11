@@ -1,11 +1,11 @@
-import 'package:Slydo/screens/more_apps/business/models/Item.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/business/models/Item.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_manager.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/directions_modal.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 
 export 'package:Slydo/data/state_notifiers/basket_bloc.dart';
@@ -274,7 +274,7 @@ class ShareMessageToChatBloc extends ChangeNotifier {
   }
 
   void printRecipient() {
-    debugPrint("Sharing to ${_recipientUsers.length} Users");
+    // debugPrint("Sharing to ${_recipientUsers.length} Users");
 
     for (var element in _recipientUsers) {
       debugPrint(
@@ -338,7 +338,7 @@ class ConnectionListBloc extends ChangeNotifier {
 
     _connectionUsers.clear();
     _connectionUsers = await _getConnectionUsers();
-    debugPrint('CONNECTION USERS --> ${_connectionUsers.length}');
+    // debugPrint('CONNECTION USERS --> ${_connectionUsers.length}');
     notifyListeners();
     return Future.value();
   }

@@ -1,6 +1,6 @@
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/payment_link/payment_link_cashout.dart';
-import 'package:Slydo/screens/post_detail_page.dart';
+import 'package:Slydo/screens/blog/post_detail_page.dart';
+import 'package:Slydo/screens/payment_link/payment_link_cashout.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -57,7 +57,7 @@ class UniLinksService {
 
       if (result != null && result == true) return;
 
-      debugPrint("slydo ===>");
+      // debugPrint("slydo ===>");
       if (parts.length >= 3) {
         if (parts[3] == "user") {
           if (parts.length >= 4) {

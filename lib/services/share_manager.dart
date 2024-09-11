@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_message_handler.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/db_socket_message_handler.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/utils.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
 import 'package:Slydo/services/route_provider.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
@@ -46,7 +46,7 @@ class ShareManager {
     _intentDataStreamSubscription = ReceiveSharingIntent.instance
         .getMediaStream()
         .listen((List<SharedMediaFile> value) {
-      debugPrint("ReceiveSharedMedia1:${value.map((f) => f.path).join(",")}");
+      // debugPrint("ReceiveSharedMedia1:${value.map((f) => f.path).join(",")}");
       _sharedFiles = value;
       if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
@@ -59,7 +59,7 @@ class ShareManager {
     ReceiveSharingIntent.instance
         .getInitialMedia()
         .then((List<SharedMediaFile> value) {
-      debugPrint("ReceiveSharedMedia2:${value.map((f) => f.path).join(",")}");
+      // debugPrint("ReceiveSharedMedia2:${value.map((f) => f.path).join(",")}");
       _sharedFiles = value;
       if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
@@ -111,7 +111,7 @@ class ShareManager {
       try {
         if (myGlobals.navigationKey.currentContext != null) {
           _timerForSharingDataListen!.cancel();
-          debugPrint("<====== Opening user list ======>");
+          // debugPrint("<====== Opening user list ======>");
           final RouteProvider routeProvider = Provider.of<RouteProvider>(
               myGlobals.navigationKey.currentContext!,
               listen: false);
@@ -129,7 +129,7 @@ class ShareManager {
 
   void openPopup() async {
     if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
-      debugPrint("ShareContext===> Text ===> $_sharedText");
+      // debugPrint("ShareContext===> Text ===> $_sharedText");
       final String text = _sharedText!.trim();
       _timerForSharingDataListen!.cancel();
       disposeSharedValue();
@@ -140,7 +140,7 @@ class ShareManager {
         await sendTextMessage(text, selectedUser[i]!);
       }
     } else if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
-      debugPrint("ShareContext===> Media ===> $_sharedFiles");
+      // debugPrint("ShareContext===> Media ===> $_sharedFiles");
       final List<SharedMediaFile> files = [];
       files.addAll(_sharedFiles!);
       _timerForSharingDataListen!.cancel();
@@ -178,7 +178,7 @@ class ShareManager {
     data['conversation'] = chatConversation!.conversationId;
     data['author'] = userBloc.user.userName;
 
-    debugPrint("ShareContentMediaData====> $data");
+    debugPrint("ShareContentMediaData====>/ $data");
 
     File? poster;
     if (mediaType == "video") {
@@ -191,7 +191,7 @@ class ShareManager {
     await MessageAuth()
         .sendSocketMessage(data, file, poster: poster)
         .then((value) {
-      debugPrint("ShareContext====> MessageAuth");
+      // debugPrint("ShareContext====> MessageAuth");
     }).catchError((error) {
       debugPrint("ShareContext====> ${Future.error(error)}");
     });
@@ -227,10 +227,10 @@ class ShareManager {
       "type": "chatroom_message",
     };
 
-    debugPrint("ShareContentTextData====> $data");
+    // debugPrint("ShareContentTextData====> $data");
 
-    debugPrint(
-        "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
+    // debugPrint(
+    //     "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
           .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
@@ -254,7 +254,7 @@ class ShareManager {
           DateTime.parse(messageData["created_at"]).toLocal();
       final int time = dateTime.millisecondsSinceEpoch;
 
-      debugPrint("Last message Time => $time");
+      // debugPrint("Last message Time => $time");
 
       final ConnectionListBloc connectionListBloc =
           Provider.of<ConnectionListBloc>(myGlobals.scaffoldKey.currentContext!,

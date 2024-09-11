@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
+import 'package:Slydo/screens/yarn/models/ask_categories_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/tab_selection.dart';
@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
-import '../more_apps/yarn/yarn_dashboard_bloc.dart';
+import '../yarn/yarn_dashboard_bloc.dart';
 
 class ShopCategoryScreen extends StatefulWidget {
   final ProductCategory? productCategories;

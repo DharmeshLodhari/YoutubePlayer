@@ -58,7 +58,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
 
     isVideo = Random().nextBool();
     if (isVideo) {
-      debugPrint("video:- $isVideo");
+      // debugPrint("video:- $isVideo");
       initializeVideoPlayer();
     }
 

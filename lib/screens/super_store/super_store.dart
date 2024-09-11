@@ -1,11 +1,10 @@
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
 import 'package:Slydo/screens/super_store/list_category_product.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
 import 'package:Slydo/screens/super_store/widget/product_category_selection.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/cart_with_badge.dart';

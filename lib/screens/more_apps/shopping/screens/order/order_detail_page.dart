@@ -5,15 +5,15 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/custom_pdf_print_order.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_new.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/shipping_process/auth/shipping_process_auth.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -95,7 +95,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       isLoading = true;
     });
     await _auth.getOrder(orderId).then((value) {
-      debugPrint('VALUE :: $value');
+      // debugPrint('VALUE :: $value');
       if (mounted) {
         setState(() {
           order = value;
@@ -1355,7 +1355,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 .acceptPaymentRequests(order?.refundPaymentRequestId ?? "");
             if (response.statusCode == 200 || response.statusCode == 201) {
               final jsonData = json.decode(response.body);
-              debugPrint("jsonData: ====> $jsonData");
+              // debugPrint("jsonData: ====> $jsonData");
               final String paymentId = jsonData["id"] ?? 0;
               if (paymentId != null || paymentId != 0) {
                 sendOrderRefundPaymentId(paymentId);
@@ -1505,7 +1505,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         if (userBloc.user.userName == order?.merchant) {
           setState!(() {
             statusOfOrder = value;
-            debugPrint(value);
+            // debugPrint(value);
           });
         }
       },
@@ -1568,12 +1568,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       },
     };
 
-    debugPrint("data $data");
+    // debugPrint("data $data");
     await PaymentAndBankingAuth().createPaymentRequests(data).then((value) {
       response = value;
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonData = json.decode(response.body);
-        debugPrint("jsonData: ====> $jsonData");
+        // debugPrint("jsonData: ====> $jsonData");
         final int paymentRequestId = jsonData["id"] ?? 0;
         if (paymentRequestId != null || paymentRequestId != 0) {
           sendOrderRefundPaymentRequestId(paymentRequestId);
@@ -1681,9 +1681,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Future<bool> checkAccountBalance() async {
     final double accountBalance = await getAccountBalance();
-    debugPrint("accountBalance:- $accountBalance");
+    // debugPrint("accountBalance:- $accountBalance");
     final double spendingAmount = order!.totalPrice! / 100;
-    debugPrint("spendingAmount:- $spendingAmount");
+    // debugPrint("spendingAmount:- $spendingAmount");
     if (spendingAmount > accountBalance) {
       showToast(message: "You don't have enough money in Slydo account!!");
       return false;
@@ -1710,9 +1710,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     } else {
       isOrderLoading = false;
       if (mounted) setState(() {});
-      debugPrint(
-        "MakePaymentForOrder Unsuccessful",
-      );
+      // debugPrint(
+      //   "MakePaymentForOrder Unsuccessful",
+      // );
     }
   }
 

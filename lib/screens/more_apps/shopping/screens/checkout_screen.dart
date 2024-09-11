@@ -1,5 +1,5 @@
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
+import 'package:Slydo/screens/user_profile/forms/user_address.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
@@ -337,10 +337,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       deliveryOption = '';
       shippingOptionsLoading = false;
 
-      debugPrint(
-          'NAME COPY::  ${basketBloc.merchantNameMapCopy[merchantFullName]}');
-      debugPrint(
-          'NAME ::: ${basketBloc.getSubTotalPriceByMerchant(merchantUserName: basketBloc.merchantNameMapCopy[merchantFullName] ?? '')}');
+      // debugPrint(
+      //     'NAME COPY::  ${basketBloc.merchantNameMapCopy[merchantFullName]}');
+      // debugPrint(
+      //     'NAME ::: ${basketBloc.getSubTotalPriceByMerchant(merchantUserName: basketBloc.merchantNameMapCopy[merchantFullName] ?? '')}');
       if (mounted) setState(() {});
     }
   }
@@ -366,7 +366,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             shippingOptionsLoading = false;
             if (mounted) setState(() {});
 
-            debugPrint('VALUE :: $value');
+            // debugPrint('VALUE :: $value');
             for (var element in value) {
               // String shippingOption = element.name;
               // int shippingOptionAmount = element.price;
@@ -469,9 +469,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       selectedShippingOptionName = shippingOption?.name;
       userSelectedShippingOption[shippingOption?.owner ?? ""] =
           shippingOption?.id;
-      debugPrint('OWNER -> ${shippingOption?.owner}');
-      debugPrint('OWNER ID -> ${shippingOption?.id}');
-      debugPrint('USER OWNER  -> $userSelectedShippingOption');
+      // debugPrint('OWNER -> ${shippingOption?.owner}');
+      // debugPrint('OWNER ID -> ${shippingOption?.id}');
+      // debugPrint('USER OWNER  -> $userSelectedShippingOption');
       if (mounted) setState(() {});
     }
   }

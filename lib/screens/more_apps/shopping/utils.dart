@@ -18,11 +18,11 @@ Future<bool> checkAccountBalance(int? amount, BuildContext context) async {
   } else {
     final double accountBalance = await getAccountBalance();
     // Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
-    debugPrint("accountBalance:- $accountBalance");
+    // debugPrint("accountBalance:- $accountBalance");
 
     final double spendingAmount =
         amount != null ? amount / 100 : basketBloc.total / 100;
-    debugPrint("spendingAmount:- $spendingAmount");
+    // debugPrint("spendingAmount:- $spendingAmount");
     if (spendingAmount > accountBalance) {
       showToast(message: "You don't have enough money in Slydo account!!");
       return false;

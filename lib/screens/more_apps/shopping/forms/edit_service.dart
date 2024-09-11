@@ -5,7 +5,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/utils.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -20,13 +20,13 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/src/models/config/editor/editor_configurations.dart';
+import 'package:flutter_quill/src/models/documents/document.dart';
+import 'package:flutter_quill/src/widgets/editor/editor.dart';
+import 'package:flutter_quill/src/widgets/quill/quill_controller.dart';
 import 'package:flutter_quill_extensions/flutter_quill_embeds.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_quill/src/widgets/quill/quill_controller.dart';
-import 'package:flutter_quill/src/models/config/editor/editor_configurations.dart';
-import 'package:flutter_quill/src/widgets/editor/editor.dart';
-import 'package:flutter_quill/src/models/documents/document.dart';
 
 import '../shopping_auth.dart';
 

@@ -4,12 +4,12 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/home_tab/qr_code_page.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/product_detail_shimmer.dart';
-import 'package:Slydo/screens/more_apps/user_profile/widgets/user_profile_shimmer.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
+import 'package:Slydo/screens/payment_and_banking/models/virtual_account.dart';
+import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/qr_code_page.dart';
+import 'package:Slydo/screens/user_profile/widgets/user_profile_shimmer.dart';
+import 'package:Slydo/screens/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -41,11 +41,11 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import '../data/currency.dart';
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
-import '../screens/more_apps/messaging/chat/utils.dart';
-import '../screens/more_apps/payment_and_banking/models/transactions.dart';
-import '../screens/more_apps/user_profile/models/user.dart';
-import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../screens/more_apps/user_profile/user_auth.dart';
+import '../screens/messaging/chat/utils.dart';
+import '../screens/payment_and_banking/models/transactions.dart';
+import '../screens/user_profile/models/user.dart';
+import '../screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../screens/user_profile/user_auth.dart';
 import '../widget/dialog.dart';
 import '../widget/image_crop.dart';
 import '../widget/loading_indicator.dart';
@@ -450,7 +450,7 @@ Widget transactionOrKycDetailTile(IconData icon, String title, String subtitle,
     {Transaction? transaction,
     Widget? trailingWidget,
     TextStyle? subtitleTextStyle}) {
-  debugPrint("==>$subtitle");
+  // debugPrint("==>$subtitle");
   return ListTile(
     dense: true,
     leading: RoundedBackgroundIcon(
@@ -1100,7 +1100,7 @@ Future<double> getAccountBalance() async {
   final int spendableBalance = data["spendable_balance"];
 
   final double accountBalanceConverted = spendableBalance / 100;
-  debugPrint("ACCOUNT BALANCE:- $accountBalanceConverted");
+  // debugPrint("ACCOUNT BALANCE:- $accountBalanceConverted");
 
   return accountBalanceConverted;
 }
@@ -1196,7 +1196,7 @@ String? checkSlydoName(String name) {
   if (name.isNotEmpty && name != "") {
     final String lowerCaseInput = name.trim().toLowerCase();
 
-    debugPrint("ERROR lowerCaseInput:- $lowerCaseInput");
+    // debugPrint("ERROR lowerCaseInput:- $lowerCaseInput");
 
     final String cleanName = lowerCaseInput
         .replaceAll(".", "")
@@ -1204,13 +1204,13 @@ String? checkSlydoName(String name) {
         .replaceAll("_", "")
         .replaceAll("-", "");
 
-    debugPrint("ERROR cleanName:- $cleanName");
+    // debugPrint("ERROR cleanName:- $cleanName");
 
     if (cleanName.contains('slydo')) {
       result = slydoNameMsg;
     }
 
-    debugPrint("ERROR:- $result");
+    // debugPrint("ERROR:- $result");
   }
   return result;
 }
@@ -1516,7 +1516,7 @@ String? toTimeAgoLabel({required DateTime dateTime}) {
         : 'just now';
   }
 
-  debugPrint('IN MINUTES --> $inMinutes');
+  // debugPrint('IN MINUTES --> $inMinutes');
 }
 
 String elapsedTime({required DateTime dateTime}) {
@@ -1557,7 +1557,7 @@ String toTimeAgoLabelYarn({required DateTime dateTime}) {
   }
 
   final inMinutes = durationSinceNow.inMinutes;
-  debugPrint('IN MINUTES --> $inMinutes');
+  // debugPrint('IN MINUTES --> $inMinutes');
 
   if (inMinutes >= 2) {
     return inHours >= 2
@@ -2936,4 +2936,19 @@ Widget displayQuillFormattedText(BuildContext context, String formattedText,
       textAlign: TextAlign.justify,
     );
   }
+}
+
+Widget getUserCurrencySymbol(BuildContext context,
+    {Color? color, double? fontSize}) {
+  final UserBloc userBloc = Provider.of<UserBloc>(context);
+
+  return Text(
+    worldCurrencies[userBloc.user.currency!]!,
+    style: TextStyle(
+      color: color ?? navyBlue,
+      fontSize: fontSize ?? 16,
+      fontFamily: "Inter",
+      fontWeight: FontWeight.w500,
+    ),
+  );
 }

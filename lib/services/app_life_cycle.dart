@@ -101,7 +101,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
       _auth.updateAppState(tempData);
     }
 
-    debugPrint("App Life Cycle state is resumed and onResume is called");
+    // debugPrint("App Life Cycle state is resumed and onResume is called");
   }
 
   void onInactive() {
@@ -115,7 +115,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
       _auth.updateAppState(tempData);
     }
 
-    debugPrint("App Life Cycle state is inactive and onInactive is called");
+    // debugPrint("App Life Cycle state is inactive and onInactive is called");
   }
 
   void onPause() {
@@ -129,7 +129,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
       _auth.updateAppState(tempData);
     }
 
-    debugPrint("App Life Cycle state is paused and onPause is called");
+    // debugPrint("App Life Cycle state is paused and onPause is called");
   }
 
   void onDetached() {
@@ -143,7 +143,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
       _auth.updateAppState(tempData);
     }
 
-    debugPrint("App Life Cycle state is detached and onDetached is called");
+    // debugPrint("App Life Cycle state is detached and onDetached is called");
   }
 
   // it will refresh all the list of the app eg: transactions, paymentRequests, messages

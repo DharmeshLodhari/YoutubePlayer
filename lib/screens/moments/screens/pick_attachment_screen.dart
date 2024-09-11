@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/blog/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/moments/models/attachment_item_model.dart';
 import 'package:Slydo/screens/moments/screens/preview_moment_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,7 +12,6 @@ import '../../../widget/loading_indicator.dart';
 import '../../../widget/no_item_in_list.dart';
 import '../../more_apps/shopping/models/store.dart';
 import '../../more_apps/shopping/shopping_auth.dart';
-import '../../more_apps/user_post/user_post_auth.dart';
 
 class PickAttachmentScreen extends StatefulWidget {
   final AttachmentType attachmentType;
@@ -93,7 +93,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
         attachmentLoading = false;
       });
     }
-    debugPrint('RESULT ::: $result');
+    // debugPrint('RESULT ::: $result');
     if (result != null) {
       next = result['next'];
       if (result['results'].isEmpty) {

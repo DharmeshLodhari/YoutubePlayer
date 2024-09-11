@@ -1,8 +1,8 @@
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/main_socket_message_handler.dart';
+import 'package:Slydo/screens/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/secure_storage.dart';
@@ -26,11 +26,11 @@ class LogoutHelper {
 
     MainSocketMessageHandler().dispose();
 
-    debugPrint("logout===>start");
+    // debugPrint("logout===>start");
     await AuthService().logOut().catchError((error) {
       debugPrint("ERROR:- while logging out the user");
     });
-    debugPrint("logout===>stop");
+    // debugPrint("logout===>stop");
 
     CacheManager().deleteCache(clearAll: true);
 
@@ -57,7 +57,7 @@ class LogoutHelper {
 
     /// clearing all data when user is logout
     if (!_sharedPreferences.getBool("isChecked")!) {
-      debugPrint("WorkManager cancel");
+      // debugPrint("WorkManager cancel");
       // Workmanager().cancelAll();
       await SecureStorage().clear();
     }

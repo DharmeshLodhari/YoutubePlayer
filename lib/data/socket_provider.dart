@@ -4,12 +4,12 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/db_socket_message_handler.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';

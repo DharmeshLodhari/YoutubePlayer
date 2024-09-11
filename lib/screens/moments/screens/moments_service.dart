@@ -4,7 +4,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/moments/models/comment_model.dart';
 import 'package:Slydo/screens/moments/models/create_moment_model.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/comment_details.dart';
+import 'package:Slydo/screens/yarn/models/Topics/comment_details.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/foundation.dart';
@@ -72,17 +72,17 @@ class MomentsService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint('URL MOMENTS getContactMoments:: $url');
+    // debugPrint('URL MOMENTS getContactMoments:: $url');
     final headers = await getAuthHeaders();
 
     final Response response = await httpGet(url, headers: headers);
 
-    debugPrint('CONTACT MOMENT ::: ${response.body}');
-    debugPrint('CONTACT MOMENT ::: ${response.statusCode}');
+    // debugPrint('CONTACT MOMENT ::: ${response.body}');
+    // debugPrint('CONTACT MOMENT ::: ${response.statusCode}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
-      debugPrint('GET CONTACT LIST :::: $jsonData');
+      // debugPrint('GET CONTACT LIST :::: $jsonData');
 
       final List<MomentsModel> momentsList = [];
       final List jsonResult = jsonData['results'];
@@ -148,7 +148,7 @@ class MomentsService extends AuthService {
 
     final Response response = await httpGet(url, headers: headers);
 
-    debugPrint('SINGLE MOMENT ::: ${response.body}');
+    // debugPrint('SINGLE MOMENT ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
 
@@ -172,9 +172,9 @@ class MomentsService extends AuthService {
 
     final Map<String, dynamic>? pinnedYarn = await getPinnedComment(momentID);
 
-    debugPrint('COMMENTS MOMENTS ::: ${response.statusCode}');
-    debugPrint('COMMENTS MOMENTS ::: ${response.body}');
-    debugPrint('COMMENTS MOMENTS PINNED ::: $pinnedYarn');
+    // debugPrint('COMMENTS MOMENTS ::: ${response.statusCode}');
+    // debugPrint('COMMENTS MOMENTS ::: ${response.body}');
+    // debugPrint('COMMENTS MOMENTS PINNED ::: $pinnedYarn');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       List results = jsonData['results'];
@@ -214,7 +214,7 @@ class MomentsService extends AuthService {
       String commentId, Map<String, dynamic> body) async {
     String url = "";
     url = "${AppConfig.baseUrl}/api/v1/social/moments/add-comments/$commentId/";
-    debugPrint(url);
+    // debugPrint(url);
 
     final headers = await getAuthHeaders();
 
@@ -245,9 +245,9 @@ class MomentsService extends AuthService {
     final List<MultipartFile> newList = [];
     final List<MultipartFile> thumbnailList = [];
     if (body['media_count'].isNotEmpty) {
-      debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
+      // debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
       for (int i = 0; i < body['media_count'].length; i++) {
-        debugPrint("MEDIA TYPE::: ${body['media_count'][i].mediaType}");
+        // debugPrint("MEDIA TYPE::: ${body['media_count'][i].mediaType}");
         var multipartFile;
         var thumbnailImage;
         if (body['media_count'][i].mediaType == 'image') {
@@ -314,7 +314,7 @@ class MomentsService extends AuthService {
     String url = "";
     url =
         "${AppConfig.baseUrl}/api/v1/social/moments/reply-comments/$commentId/";
-    debugPrint(url);
+    // debugPrint(url);
 
     final headers = await getAuthHeaders();
 
@@ -345,9 +345,9 @@ class MomentsService extends AuthService {
     final List<MultipartFile> newList = [];
     final List<MultipartFile> thumbnailList = [];
     if (body['media_count'].isNotEmpty) {
-      debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
+      // debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
       for (int i = 0; i < body['media_count'].length; i++) {
-        debugPrint("MEDIA TYPE::: ${body['media_count'][i].mediaType}");
+        // debugPrint("MEDIA TYPE::: ${body['media_count'][i].mediaType}");
         var multipartFile;
         var thumbnailImage;
         if (body['media_count'][i].mediaType == 'image') {
@@ -403,28 +403,28 @@ class MomentsService extends AuthService {
   }
 
   Future<Map<String, dynamic>?> getAllComments(String commentId) async {
-    debugPrint("CALLING ALL COMMENTS");
+    // debugPrint("CALLING ALL COMMENTS");
     String url = "";
     url =
         "${AppConfig.baseUrl}/api/v1/social/moments/reply-comments/$commentId/";
 
-    debugPrint(url);
+    // debugPrint(url);
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
     final Map<String, dynamic>? pinnedYarn = await getPinnedComment(commentId);
 
-    debugPrint(
-        "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body.toString()}");
+    // debugPrint(
+    //     "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body.toString()}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       final List<YarnComment> commentsDetails = [];
       final jsonData = json.decode(response.body);
 
-      debugPrint('COMMENTS RESPONSE CODE::: $jsonData');
+      // debugPrint('COMMENTS RESPONSE CODE::: $jsonData');
 
       List<dynamic> results = jsonData['results'];
-      debugPrint('COMMENTS RESPONSE agian CODE::: $results');
+      // debugPrint('COMMENTS RESPONSE agian CODE::: $results');
 
       if (pinnedYarn == null) {
       } else {
@@ -439,7 +439,7 @@ class MomentsService extends AuthService {
 
       for (var item in results) {
         final YarnComment commentsDetail = YarnComment.fromJson(item);
-        debugPrint('Fola test getAllComments::: $item');
+        // debugPrint('Fola test getAllComments::: $item');
 
         commentsDetails.add(commentsDetail);
       }
@@ -461,16 +461,16 @@ class MomentsService extends AuthService {
 
   // get pinned comment
   Future<Map<String, dynamic>?> getPinnedComment(String yarnId) async {
-    debugPrint("CALLING PINNED COMMENT");
+    // debugPrint("CALLING PINNED COMMENT");
     String url = "";
     url = "${AppConfig.baseUrl}/api/v1/social/moments/pinned-comment/$yarnId/";
-    debugPrint(url);
+    // debugPrint(url);
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint(
-        "RESPONSE PINNED GET CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+    // debugPrint(
+    //     "RESPONSE PINNED GET CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
@@ -487,7 +487,7 @@ class MomentsService extends AuthService {
       String? channelUsername}) async {
     String url = "${AppConfig.baseUrl}/api/v1/social/moments/";
 
-    debugPrint("URL FOR CREATE MOMENT test $channelUsername");
+    // debugPrint("URL FOR CREATE MOMENT test $channelUsername");
 
     if (channelUsername!.isNotEmpty) {
       url =
@@ -529,14 +529,14 @@ class MomentsService extends AuthService {
         jsonEncode(createMomentModel.enableCommenting);
     request.fields["is_permanent"] = jsonEncode(createMomentModel.isPermanent);
 
-    debugPrint('REQUEST FIELDS :: ${request.fields}');
+    // debugPrint('REQUEST FIELDS :: ${request.fields}');
     if (createMomentModel.mediaPoster != null) {
       final MultipartFile thumbnailMultipartFile = await MultipartFile.fromPath(
           "media_poster", createMomentModel.mediaPoster!);
       request.files.add(thumbnailMultipartFile);
     }
 
-    debugPrint('FIELDS ::: ${request.fields}');
+    // debugPrint('FIELDS ::: ${request.fields}');
     headers.forEach((k, v) => request.headers[k] = v);
 
     final response = await request.send();
@@ -547,8 +547,8 @@ class MomentsService extends AuthService {
     }
 
     final responseBody = await response.stream.bytesToString();
-    debugPrint(
-        "URL FOR CREATE MOMENT $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+    // debugPrint(
+    //     "URL FOR CREATE MOMENT $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       return true;
@@ -576,8 +576,8 @@ class MomentsService extends AuthService {
       body: jsonEncode(data),
     );
 
-    debugPrint(
-        "URL $url REQUEST FIELD: $data STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    // debugPrint(
+    //     "URL $url REQUEST FIELD: $data STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final MomentsModel momentsModel =
@@ -587,8 +587,8 @@ class MomentsService extends AuthService {
     } else {
       if (response.statusCode != 500) {
         final jsonData = jsonDecode(response.body);
-        debugPrint(
-            "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        // debugPrint(
+        //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
             ? jsonData["error"]
             : jsonData is List
@@ -605,10 +605,10 @@ class MomentsService extends AuthService {
     final Map<String, String> headers = await getAuthHeaders();
     final response = await httpPost(url, headers: headers);
 
-    debugPrint(
-        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    // debugPrint(
+    //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    debugPrint('LIKE URL :: $url');
+    // debugPrint('LIKE URL :: $url');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final MomentsModel momentsModel =
           MomentsModel.fromJson(jsonDecode(response.body));
@@ -617,8 +617,8 @@ class MomentsService extends AuthService {
     } else {
       if (response.statusCode != 500) {
         final jsonData = jsonDecode(response.body);
-        debugPrint(
-            "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        // debugPrint(
+        //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
             ? jsonData["error"]
             : jsonData is List
@@ -635,16 +635,16 @@ class MomentsService extends AuthService {
     final Map<String, String> headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint(
-        "UPDATE MOMENT VIEW URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    // debugPrint(
+    //     "UPDATE MOMENT VIEW URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       if (response.statusCode != 500) {
         final jsonData = jsonDecode(response.body);
-        debugPrint(
-            "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        // debugPrint(
+        //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
             ? jsonData["error"]
             : jsonData is List
@@ -661,10 +661,10 @@ class MomentsService extends AuthService {
     final Map<String, String> headers = await getAuthHeaders();
     final response = await httpPost(url, headers: headers);
 
-    debugPrint(
-        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-
-    debugPrint('LIKE URL :: $url');
+    // debugPrint(
+    //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    //
+    // debugPrint('LIKE URL :: $url');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final MomentsModel momentsModel =
           MomentsModel.fromJson(jsonDecode(response.body));
@@ -673,8 +673,8 @@ class MomentsService extends AuthService {
     } else {
       if (response.statusCode != 500) {
         final jsonData = jsonDecode(response.body);
-        debugPrint(
-            "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        // debugPrint(
+        //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
             ? jsonData["error"]
             : jsonData is List
@@ -696,8 +696,8 @@ class MomentsService extends AuthService {
     final Map<String, String> headers = await getAuthHeaders();
     final response = await httpDelete(url, headers: headers);
 
-    debugPrint(
-        "URL TO DELETE $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    // debugPrint(
+    //     "URL TO DELETE $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 204) {
       return true;
@@ -708,7 +708,7 @@ class MomentsService extends AuthService {
 
   Future<BasePaginationModel<List<SearchMomentModel>>> searchMoment(
       {required String? nextPage, required String? searchText}) async {
-    debugPrint('SEARCHED TEXT ---> $searchText');
+    // debugPrint('SEARCHED TEXT ---> $searchText');
     String url;
 
     if (nextPage != null) {
@@ -720,14 +720,14 @@ class MomentsService extends AuthService {
     final Map<String, String> headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint(
-        "SEARCH MOMENT $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    // debugPrint(
+    //     "SEARCH MOMENT $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       final List results = jsonData['results'];
 
-      debugPrint('RESULT LENGTH -> ${results.length}');
+      // debugPrint('RESULT LENGTH -> ${results.length}');
 
       for (var item in results) {
         debugPrint('RESULT searched item moment:::: $item');

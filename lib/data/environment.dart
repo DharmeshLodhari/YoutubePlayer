@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 /// This File is use to set environment SERVER Urls of the app
@@ -25,7 +24,7 @@ class AppConfig {
   static void initialize() {
     const BUILD_TYPE =
         String.fromEnvironment('BUILD_TYPE', defaultValue: 'PRODUCTION');
-    debugPrint("BUILD_TYPE:- $BUILD_TYPE");
+    // debugPrint("BUILD_TYPE:- $BUILD_TYPE");
     if (BUILD_TYPE == "PRODUCTION") {
       appType = AppType.PRODUCTION;
     } else if (BUILD_TYPE == "DEVELOPMENT") {

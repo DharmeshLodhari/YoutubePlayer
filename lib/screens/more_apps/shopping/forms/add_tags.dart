@@ -110,62 +110,6 @@ class _AddTagsState extends State<AddTags> {
     );
   }
 
-  // Widget _buildBody() {
-  //   return Container(
-  //     width: double.infinity,
-  //     height: 200,
-  //     decoration: BoxDecoration(
-  //         color: Colors.white,
-  //         border: Border.all(width: 1, color: greyBorderColor),
-  //         borderRadius: BorderRadius.circular(5)),
-  //     child: ListView.builder(
-  //       shrinkWrap: true,
-  //       itemCount: tagList.length,
-  //       itemBuilder: (context, index) {
-  //         return ListTile(
-  //           title: Text(
-  //             tagList[index].name,
-  //             softWrap: false,
-  //             overflow: TextOverflow.fade,
-  //             style: TextStyle(
-  //                 color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-  //           ),
-  //           trailing: CustomizedCheckBoxField(
-  //             onTap: () {
-  //               // productIsAvailable = !productIsAvailable;
-  //               setState(() {});
-  //             },
-  //             isChecked: false,
-  //             title: "Is product available now?",
-  //           ),
-  //           dense: true,
-  //           onTap: () {
-  //             // String text = tagList[index]
-  //             //     .name
-  //             //     .replaceFirst(" ", "-");
-  //             // setState(() {
-  //             //   myController.text = text + " ";
-  //             //
-  //             //   myController.selection =
-  //             //       TextSelection.collapsed(
-  //             //           offset: text.length);
-  //             //   userTags.add({
-  //             //     "id": tagList[index].id!,
-  //             //     "name": tagList[index].name
-  //             //   });
-  //             //   userTags = userTags.toSet().toList();
-  //             // });
-  //             // FocusScope.of(context).requestFocus();
-  //             //
-  //             // // debugPrint(userTags);print("______________");
-  //             // userTags.removeWhere((tag) => tag.isEmpty);
-  //           },
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
-
   Widget _buildBody() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -175,53 +119,42 @@ class _AddTagsState extends State<AddTags> {
             controller: searchController,
             suffixIcon: searchIcon(),
             hintText: 'Search tags',
-            // onChanged: (value) {
-            // if (value.toString().isNotEmpty) {
-            //   tagList = tagListCopy!
-            //       .where((element) => element.name!
-            //           .toLowerCase()
-            //           .startsWith(value.toString().toLowerCase()))
-            //       .toList();
-            //   if (mounted) setState(() {});
-            // } else {
-            //   tagList = tagListCopy ?? [];
-            //   if (mounted) setState(() {});
-            // }
-            // },
           ),
           const SizedBox(height: 10),
           Expanded(
-              child: noCategoryInList
-                  ? NoItemInList(
-                      msg: AppLocalization.of(context)!.noTransaction,
-                    )
-                  : ListView.builder(
-                      controller: _scrollController,
-                      shrinkWrap: true,
-                      itemCount: tagList.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == tagList.length) {
-                          return const SizedBox.shrink();
-                        } else {
-                          return Card(
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                    color: selectedListItemBackgroundBlue),
-                                borderRadius: BorderRadius.circular(10)),
-                            margin: const EdgeInsets.symmetric(vertical: 2),
-                            shadowColor: boxShadowTwo,
-                            color: white,
-                            child: Container(
-                              decoration: decorateBox(),
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: _buildTagList(index),
-                              ),
+            child: noCategoryInList
+                ? NoItemInList(
+                    msg: AppLocalization.of(context)!.noTransaction,
+                  )
+                : ListView.builder(
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: tagList.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == tagList.length) {
+                        return const SizedBox.shrink();
+                      } else {
+                        return Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                  color: selectedListItemBackgroundBlue),
+                              borderRadius: BorderRadius.circular(10)),
+                          margin: const EdgeInsets.symmetric(vertical: 2),
+                          shadowColor: boxShadowTwo,
+                          color: white,
+                          child: Container(
+                            decoration: decorateBox(),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: _buildTagList(index),
                             ),
-                          );
-                        }
-                      })),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+          ),
         ],
       ),
     );

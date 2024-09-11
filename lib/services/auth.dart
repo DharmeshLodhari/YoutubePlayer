@@ -6,11 +6,11 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/company_name.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
+import 'package:Slydo/screens/user_profile/models/SecureUser.dart';
+import 'package:Slydo/screens/user_profile/models/company_name.dart';
+import 'package:Slydo/screens/user_profile/models/jwt.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
@@ -142,7 +142,7 @@ class AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/user/merchant-search/?q=$query";
 
-    debugPrint(url);
+    // debugPrint(url);
     final response = await httpGet(url);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -179,7 +179,7 @@ class AuthService {
       "User-Agent": "Slydo-Mobile",
     };
 
-    debugPrint('TRANSACTION-ID :: $transactionId');
+    // debugPrint('TRANSACTION-ID :: $transactionId');
 
     // Because the jwt expires every 5 minutes we will take note of the time they
     // where  created and the use that to compute the expiration time of the
@@ -204,16 +204,16 @@ class AuthService {
     // data['device_id'] = "CB52C6A6-4C0E-4FE0-A753-C9A936AEA8BB";
     body.addAll(data);
 
-    debugPrint("=> $body");
+    // debugPrint("=> $body");
     final Uri url = Uri.parse(uri);
 
-    debugPrint("URL => $url BODY => $body");
+    // debugPrint("URL => $url BODY => $body");
 
     final response = await http.post(url, body: body, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      // debugPrint(
+      //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
       final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       jsonResponse["expiration"] = expirationTime;
@@ -234,8 +234,8 @@ class AuthService {
       return Future.value(user);
     }
 
-    debugPrint(
-        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    // debugPrint(
+    //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     try {
       final jsonData = jsonDecode(response.body);
@@ -254,11 +254,11 @@ class AuthService {
   Future<void> logOut() async {
     final uri = "${AppConfig.baseUrl}/api/v1/user/auth/logout/";
     final headers = await getAuthHeaders();
-    debugPrint("URL:- $uri Called !!");
+    // debugPrint("URL:- $uri Called !!");
     final Uri url = Uri.parse(uri);
     final response = await http.get(url, headers: headers);
-    debugPrint(
-        "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    // debugPrint(
+    //     "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     unRegisterDevice();
   }
 
@@ -332,7 +332,7 @@ class AuthService {
   // For fetching new token for user if somehow user is not found then
   // we are logging out that user to get a fresh token
   Future<Jwt> fetchNewToken() async {
-    debugPrint("Token Expired getting new one");
+    // debugPrint("Token Expired getting new one");
 
     Jwt? jwt;
 
@@ -359,7 +359,7 @@ class AuthService {
         jwt = await _db.getJwt(); // get new token now
 
         if (jwt == null) {
-          debugPrint("ERROR:- while fetching new Token JWT IS FOUND NULL");
+          // debugPrint("ERROR:- while fetching new Token JWT IS FOUND NULL");
           await Future.delayed(const Duration(milliseconds: 500));
           return await fetchNewToken();
         }
@@ -397,12 +397,12 @@ class AuthService {
 
     // Authenticate again if token has expired
     if (isNewTokenNeeded) {
-      debugPrint("TOKEN EXPIRE REASON 1");
+      // debugPrint("TOKEN EXPIRE REASON 1");
       jwt = await fetchNewToken();
     }
 
     if (jwt?.access == null || jwt?.access == "") {
-      debugPrint("TOKEN EXPIRE REASON 2");
+      // debugPrint("TOKEN EXPIRE REASON 2");
       jwt = await fetchNewToken();
     }
 
@@ -427,8 +427,8 @@ class AuthService {
       headers.addAll(locationHeader);
     }
     final endTime = DateTime.now();
-    debugPrint(
-        'Parallel Time in hader: ${endTime.difference(startTime).inMilliseconds}ms');
+    // debugPrint(
+    //     'Parallel Time in hader: ${endTime.difference(startTime).inMilliseconds}ms');
     return headers;
   }
 
@@ -464,8 +464,8 @@ class AuthService {
         });
       }
       final endTime = DateTime.now();
-      debugPrint(
-          'Parallel Time in location: ${endTime.difference(startTime).inMilliseconds}ms');
+      // debugPrint(
+      //     'Parallel Time in location: ${endTime.difference(startTime).inMilliseconds}ms');
     } catch (error) {
       debugPrint("Error $error");
     }
@@ -482,7 +482,7 @@ class AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/user/profile-industries/?page_size=200";
 
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -490,7 +490,7 @@ class AuthService {
       if (!response.body.contains('results')) {
         final Map<String, dynamic> result = {"product": []};
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -536,8 +536,8 @@ class AuthService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
-    debugPrint(
-        "URL:- $url STATUSCODE:- ${response.statusCode} RESPONSEBODY:- ${response.body}");
+    // debugPrint(
+    //     "URL:- $url STATUSCODE:- ${response.statusCode} RESPONSEBODY:- ${response.body}");
     return false;
   }
 
@@ -546,7 +546,7 @@ class AuthService {
     final uri = "${AppConfig.baseUrl}/api/v1/notification/unregister-device/";
     final headers = await getAuthHeaders();
     final data = jsonEncode({});
-    debugPrint("URL:- $uri Called !!");
+    // debugPrint("URL:- $uri Called !!");
     final Uri url = Uri.parse(uri);
     late var response;
     try {
@@ -556,8 +556,8 @@ class AuthService {
           "URL:- $url STATUS CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
       debugPrint("ERROR: WHILE UNREGISTERING DEVICE :-$e");
     }
-    debugPrint(
-        "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    // debugPrint(
+    //     "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     return response.statusCode == 200;
   }
 
@@ -595,7 +595,7 @@ class AuthService {
       "User-Agent": "Slydo-Mobile",
       "App-Version": appVersion,
     };
-    debugPrint('APP VERSION -> $appVersion}');
+    // debugPrint('APP VERSION -> $appVersion}');
 
     return headers;
   }
@@ -614,7 +614,7 @@ class AuthService {
     final response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
-    debugPrint('SEARCH USER ::: ${response.body}');
+    // debugPrint('SEARCH USER ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
@@ -648,8 +648,8 @@ class AuthService {
         final jsonData = jsonDecode(response.body);
         // {detail: Given token not valid for any token type, code: token_not_valid, messages: [{status_code: 423}]}
 
-        debugPrint(
-            "Token Black List ===> ${response.statusCode}  ${response.body}");
+        // debugPrint(
+        //     "Token Black List ===> ${response.statusCode}  ${response.body}");
 
         try {
           if (jsonData["messages"][0]["status_code"] == 423 ||
@@ -675,8 +675,8 @@ class AuthService {
         final jsonData = jsonDecode(response.body);
         // {detail: Given token not valid for any token type, code: token_not_valid, messages: [{status_code: 423}]}
 
-        debugPrint(
-            "Token EXPIRE ===> ${response.statusCode}  ${response.body}");
+        // debugPrint(
+        //     "Token EXPIRE ===> ${response.statusCode}  ${response.body}");
 
         try {
           if (jsonData["messages"][0]["status_code"] == 423 ||
@@ -714,7 +714,7 @@ class AuthService {
     int count = API_CALL_RETRY_COUNT,
   }) async {
     final Uri uri = Uri.parse(url);
-    debugPrint("URL [GET]:- $uri");
+    // debugPrint("URL [GET]:- $uri");
 
     final response = await http
         .get(uri, headers: headers as Map<String, String>?)
@@ -745,7 +745,7 @@ class AuthService {
     int count = API_CALL_RETRY_COUNT,
   }) async {
     final Uri uri = Uri.parse(url);
-    debugPrint("URL [POST]:- $uri");
+    // debugPrint("URL [POST]:- $uri");
     final response = await http
         .post(uri, headers: headers as Map<String, String>?, body: body)
         .timeout(newTimeOutDuration ?? timeOutDuration,
@@ -775,7 +775,7 @@ class AuthService {
     int count = API_CALL_RETRY_COUNT,
   }) async {
     final Uri uri = Uri.parse(url);
-    debugPrint("URL [PATCH]:- $uri");
+    // debugPrint("URL [PATCH]:- $uri");
     final response = await http
         .patch(uri, headers: headers as Map<String, String>?, body: body)
         .timeout(newTimeOutDuration ?? timeOutDuration,
@@ -809,7 +809,7 @@ class AuthService {
       Duration? newTimeOutDuration,
       int count = API_CALL_RETRY_COUNT}) async {
     final Uri uri = Uri.parse(url);
-    debugPrint("URL [DELETE]:- $uri");
+    // debugPrint("URL [DELETE]:- $uri");
     final response =
         await http.delete(uri, headers: headers as Map<String, String>?);
 

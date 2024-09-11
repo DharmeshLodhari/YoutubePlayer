@@ -4,18 +4,23 @@ import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/home_tab/qr_code_page.dart';
+import 'package:Slydo/screens/messaging/button/message_nav_btn.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
-import 'package:Slydo/screens/more_apps/rider_registration/auth/rider_registration_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
+import 'package:Slydo/screens/payment_and_banking/models/virtual_account.dart';
+import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/qr_code_page.dart';
+import 'package:Slydo/screens/rider_registration/auth/rider_registration_auth.dart';
+import 'package:Slydo/screens/user_profile/forms/add_edit_shipping_address.dart';
+import 'package:Slydo/screens/user_profile/models/SecureUser.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_list_tile.dart';
+import 'package:Slydo/screens/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/screens/yarn/yarn_detail_screen.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -49,12 +54,7 @@ import '../widget/loading_indicator.dart';
 import '../widget/rounded_background_icon.dart';
 import '../widget/user_dashboard_item_tile.dart';
 import 'moments/screens/moments_screen.dart';
-import 'more_apps/messaging/button/message_nav_btn.dart';
-import 'more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'more_apps/user_profile/models/SecureUser.dart';
-import 'more_apps/user_profile/models/user.dart';
-import 'more_apps/user_profile/user_auth.dart';
-import 'more_apps/yarn/yarn_dashboard.dart';
+import 'yarn/models/Topics/yarn_model.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -128,7 +128,7 @@ class _HomeState extends State<Home> {
         final bool result =
             await _sharedPreferences?.setBool("isAppTutorialDone", true) ??
                 false;
-        debugPrint("result:- $result");
+        // debugPrint("result:- $result");
         await Future.delayed(const Duration(milliseconds: 1500)).then((value) {
           AppTutorialController().showTutorial(context);
         });

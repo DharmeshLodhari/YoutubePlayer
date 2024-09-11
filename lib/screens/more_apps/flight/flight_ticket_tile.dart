@@ -1,7 +1,6 @@
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
-import '../messaging/chat/utils.dart';
 import 'models/Transport.dart';
 
 class FlightTicketTile extends StatelessWidget {

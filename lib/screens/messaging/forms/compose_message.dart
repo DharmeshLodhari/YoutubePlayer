@@ -1,0 +1,542 @@
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
+import 'package:Slydo/screens/search_user.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+// ignore: must_be_immutable
+class ComposeMessage extends StatefulWidget {
+  final dynamic arguments;
+  String? username;
+
+  ComposeMessage({super.key, this.arguments, this.username});
+
+  @override
+  State<ComposeMessage> createState() => _ComposeMessageState();
+}
+
+class _ComposeMessageState extends State<ComposeMessage> {
+  late DashboardBloc _dashboardBloc;
+
+  final TextEditingController _recipientController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+  final FocusNode _recipientFocus = FocusNode();
+
+  bool isValidRecipient = false;
+  bool isReplyMessage = false;
+  bool isSubjectIsPresent = false;
+  final _messageAuth = MessageAuth();
+  final _formKey = GlobalKey<FormState>();
+  CustomerProfile? messageReceiver;
+  late UserBloc userBloc;
+  String? subject = "";
+  String message = "";
+  String errorMessage = "";
+  String? recipient;
+
+  @override
+  void initState() {
+    // to adding listener on recipient field when user leave that textField it will convert that
+    // recipient text lowercase
+    makeUsernameLowercase();
+
+    // checking if the message is replay message then we fetch recipient and subject Details
+    // and set into recipient field and subject field and also display the recipent data tile
+
+    if (widget.arguments != null) {
+      setState(() {
+        isReplyMessage = widget.arguments['isReply'] == 1 ? true : false;
+      });
+      recipient = widget.arguments['recipient'];
+      _recipientController.text = recipient!;
+      subject = widget.arguments['subject'];
+      if (subject != "") {
+        setState(() {
+          isSubjectIsPresent = true;
+        });
+      }
+      _subjectController.text = subject!;
+      fetchCustomer();
+    }
+
+    super.initState();
+  }
+
+  void fetchCustomer() async {
+    // debugPrint('recipient:::: $recipient');
+    final customerProfile = await UserAuth().fetchCustomerProfile(recipient);
+
+    messageReceiver = customerProfile;
+    isValidRecipient = messageReceiver!.userName != userBloc.user.userName;
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void makeUsernameLowercase() {
+    /* adding listener on recipientFocus when user unFocus
+    From Recipient Field then value of that field should be in lowerCase */
+    _recipientFocus.addListener(() {
+      if (!_recipientFocus.hasFocus) {
+        setState(() {
+          _recipientController.text = _recipientController.text.toLowerCase();
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
+
+    return WillPopScope(
+      onWillPop: () async {
+        messageReceiver = null;
+        return true;
+      },
+      child: Scaffold(
+          backgroundColor: lightGrey,
+          resizeToAvoidBottomInset: true,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: scaffoldBody()),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          messageReceiver = null;
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        AppLocalization.of(context)!.composeMessage,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget scaffoldBody() {
+    return SingleChildScrollView(
+      child: Container(
+        height: MediaQuery.of(context).size.height -
+            (AppBar().preferredSize.height +
+                MediaQuery.of(context).padding.top),
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Column(
+          children: [
+            Expanded(
+              flex: 8,
+              child: Card(
+                elevation: 2,
+                margin: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                shadowColor: iconBtnGrey,
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: iconBtnGrey, width: 1)),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        getDisplayCard(),
+                        Expanded(
+                            child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            children: [
+                              flexibleSpace(),
+                              getRecipientField(),
+                              flexibleSpace(),
+                              getSubjectField(),
+                              flexibleSpace(),
+                              getContentField(),
+                              flexibleSpace(),
+                              Text(
+                                errorMessage,
+                                style: const TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16),
+                              ),
+                              flexibleSpace(),
+                            ],
+                          ),
+                        )),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+                flex: 3,
+                child: Column(
+                  children: [
+                    flexibleSpace(),
+                    getSubmitButton(),
+                    flexibleSpace(flex: 2),
+                  ],
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getSubmitButton() {
+    return CurvedButton(
+      onPressed: onSubmit,
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Send message",
+    );
+  }
+
+  void onSubmit() {
+    if (!isValidRecipient) {
+      setState(() {
+        showToast(message: '4');
+        errorMessage = AppLocalization.of(context)!.invalidRecipient;
+        return;
+      });
+    } else if (_recipientController.text == userBloc.user.userName) {
+      setState(() {
+        showToast(message: '3');
+
+        errorMessage = AppLocalization.of(context)!.invalidRecipient;
+        return;
+      });
+    } else if (_recipientController.text == messageReceiver!.userName) {
+      if (!isValidRecipient) {
+        setState(() {
+          showToast(message: '2');
+
+          errorMessage = AppLocalization.of(context)!.invalidRecipient;
+          return;
+        });
+      }
+      if (_formKey.currentState!.validate()) {
+        if (userBloc.user.userName != _recipientController.text) {
+          showDialog(
+              context: context,
+              builder: (context) => Center(child: CircularLoadingIndicator()));
+          try {
+            final data = {
+              "sender": userBloc.user.userName,
+              "recipient": _recipientController.text.trim(),
+              "body": message.trim(),
+              "subject": subject!.trim(),
+            };
+            _messageAuth.sendMessage(data).then((value) {
+              if (value) {
+                if (widget.arguments == null) {
+                  Navigator.popUntil(
+                      context, ModalRoute.withName(Routes.DASHBOARD));
+                  _dashboardBloc.index = 0;
+                  Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+                } else {
+                  Navigator.pop(context); // Dismiss the loader.
+                  Navigator.pop(context); // Dismiss the compose message page.
+                  showToast(message: 'Message sent');
+                }
+              } else {
+                Navigator.pop(context);
+                final msg = AppLocalization.of(context)!.error;
+                showToast(message: msg);
+              }
+            });
+          } catch (e) {
+            Navigator.pop(context);
+            showToast(message: e.toString());
+          }
+        } else {
+          showToast(message: '1');
+          final msg = AppLocalization.of(context)!.invalidRecipient;
+          showToast(message: msg);
+        }
+      }
+    } else {
+      final msg = AppLocalization.of(context)!.invalidRecipient;
+      showToast(message: msg);
+    }
+  }
+
+  Widget sendMessage() {
+    return IconButton(
+        icon: const Icon(Icons.send),
+        onPressed: () {
+          if (!isValidRecipient) {
+            setState(() {
+              errorMessage = AppLocalization.of(context)!.invalidRecipient;
+              return;
+            });
+          } else if (_recipientController.text == userBloc.user.userName) {
+            setState(() {
+              errorMessage = AppLocalization.of(context)!.invalidRecipient;
+              return;
+            });
+          } else if (_recipientController.text == messageReceiver!.userName) {
+            if (!isValidRecipient) {
+              setState(() {
+                errorMessage = AppLocalization.of(context)!.invalidRecipient;
+                return;
+              });
+            }
+            if (_formKey.currentState!.validate()) {
+              if (userBloc.user.userName != _recipientController.text) {
+                showDialog(
+                    context: context,
+                    builder: (context) => CircularLoadingIndicator());
+                try {
+                  final data = {
+                    "sender": userBloc.user.userName,
+                    "recipient": _recipientController.text.trim(),
+                    "body": message.trim(),
+                    "subject": subject!.trim(),
+                  };
+                  _messageAuth.sendMessage(data).then((value) {
+                    if (value) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        Routes.DASHBOARD,
+                        (Route<dynamic> route) => false,
+                        arguments: {"dashboardIndex": 4},
+                      );
+                    } else {
+                      Navigator.pop(context);
+                      final msg = AppLocalization.of(context)!.error;
+                      showToast(message: msg);
+                    }
+                  });
+                } catch (e) {
+                  Navigator.pop(context);
+                  showToast(message: e.toString());
+                }
+              } else {
+                final msg = AppLocalization.of(context)!.invalidRecipient;
+                showToast(message: msg);
+              }
+            }
+          } else {
+            final msg = AppLocalization.of(context)!.invalidRecipient;
+            showToast(message: msg);
+          }
+        });
+  }
+
+  Widget showBackArrow() {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back_ios),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  Widget getDisplayCard() {
+    var avatarImage;
+    var qrCodeImage;
+    if (messageReceiver != null) {
+      final Color borderColor = getUserTypeColor(user: messageReceiver!);
+
+      avatarImage = Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                arguments: messageReceiver!.avatar);
+          },
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: messageReceiver!.avatar!,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fill,
+              filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
+            ),
+          ),
+        ),
+      );
+      qrCodeImage = CachedNetworkImage(
+        height: 48,
+        width: 48,
+        imageUrl: messageReceiver!.qrCode!,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.fitWidth,
+        filterQuality: FilterQuality.high,
+        errorWidget: imageErrorWidget,
+      );
+    }
+
+    return messageReceiver == null
+        ? Container()
+        : Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    messageReceiver!.displayName()!,
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  ),
+                  subtitle: Text(
+                    messageReceiver!.userName!,
+                    style: TextStyle(fontSize: 14, color: darkGrey),
+                  ),
+                  leading: avatarImage,
+                  trailing: qrCodeImage,
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.USER_PROFILE,
+                        arguments: {
+                          "searchedUserName": messageReceiver!.userName
+                        });
+                  },
+                ),
+              ),
+              Divider(
+                color: dividerColor,
+                height: 1,
+                thickness: 1,
+              ),
+            ],
+          );
+  }
+
+  Widget getRecipientField() {
+    return CustomizedTextFormField(
+      isReadOnly: true,
+      labelText: AppLocalization.of(context)!.recipient,
+      hintText: "Enter user's slydo username",
+      controller: _recipientController,
+      focusNode: _recipientFocus,
+      enabled: !isReplyMessage && !isSubjectIsPresent,
+      validator: (value) {
+        if (value != messageReceiver!.userName) {
+          return AppLocalization.of(context)!.invalidRecipient;
+        }
+        return null;
+      },
+      onChanged: (val) {
+        setState(() {
+          if (isReplyMessage && messageReceiver != null) {
+            recipient = messageReceiver!.userName;
+          } else {
+            recipient = val.toLowerCase();
+          }
+        });
+      },
+      onTap: () async {
+        final CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: const SearchUser());
+
+        if (userFound != null) {
+          messageReceiver = userFound;
+          isValidRecipient =
+              messageReceiver!.userName != userBloc.user.userName;
+          _recipientController.text = messageReceiver!.userName!;
+          if (mounted) setState(() {});
+        }
+      },
+    );
+  }
+
+  Widget getSubjectField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.subject,
+      controller: _subjectController,
+      enabled: !isReplyMessage && !isSubjectIsPresent,
+      validator: (val) {
+        if (val.length == 0) {
+          return "Subject Should Not Be Empty ";
+        }
+        return null;
+      },
+      onChanged: (val) {
+        setState(() {
+          subject = val;
+        });
+      },
+      onTap: () async {
+        // if (recipient != null) {
+        //   recipient = recipient!.trim();
+        //   if (mounted) {
+        //     setState(() {
+        //       _recipientController.text = recipient!;
+        //     });
+        //   }
+        //   var customerProfile =
+        //       await UserAuth().fetchCustomerProfile(recipient);
+        //   setState(() {
+        //     messageReceiver = customerProfile;
+        //     isValidRecipient =
+        //         messageReceiver!.userName != userBloc.user.userName;
+        //   });
+        // }
+      },
+    );
+  }
+
+  Widget getContentField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.message,
+      maxLines: 5,
+      validator: (val) {
+        if (val.length == 0) {
+          return "Message Should Not Be Empty ";
+        }
+        return null;
+      },
+      onChanged: (val) {
+        setState(() {
+          message = val;
+        });
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _recipientController.dispose();
+    _recipientFocus.dispose();
+    _subjectController.dispose();
+    super.dispose();
+  }
+}

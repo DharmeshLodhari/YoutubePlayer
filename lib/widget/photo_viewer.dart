@@ -19,7 +19,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
   @override
   void initState() {
     imageUrl = widget.imageUrl;
-    debugPrint('IMAGE URL --> $imageUrl');
+    // debugPrint('IMAGE URL --> $imageUrl');
     if (imageUrl == null || imageUrl == "") {
       imageUrl = defaultImage;
     }

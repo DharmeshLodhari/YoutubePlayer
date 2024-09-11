@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:Slydo/data/database_helper.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/models/near_by_location.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/directions_modal.dart';
+import 'package:Slydo/screens/rider_delivery/auth/rider_delivery_auth.dart';
+import 'package:Slydo/screens/rider_delivery/models/delivery_model.dart';
+import 'package:Slydo/screens/rider_delivery/models/near_by_location.dart';
 import 'package:flutter/material.dart';
 
 class RiderDeliveryBloc extends ChangeNotifier {

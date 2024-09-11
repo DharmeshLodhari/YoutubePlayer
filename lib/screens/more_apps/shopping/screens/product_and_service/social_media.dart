@@ -1,6 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/user_profile/tiles/moment_tab_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
+import 'package:Slydo/screens/user_profile/tiles/moment_tab_tile.dart';
+import 'package:Slydo/screens/yarn/widgets/myfeed.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

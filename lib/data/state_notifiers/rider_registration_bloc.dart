@@ -1,5 +1,5 @@
-import 'package:Slydo/screens/more_apps/rider_registration/models/kyc_data_model.dart';
-import 'package:Slydo/screens/more_apps/rider_registration/models/rider_registration_model.dart';
+import 'package:Slydo/screens/rider_registration/models/kyc_data_model.dart';
+import 'package:Slydo/screens/rider_registration/models/rider_registration_model.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 

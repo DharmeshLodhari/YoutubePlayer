@@ -12,7 +12,7 @@ class ListRefresher {
   static Timer? _timerForListRefresher;
 
   void initialize() {
-    debugPrint("Refresher initializing");
+    // debugPrint("Refresher initializing");
 
     if (_timerForListRefresher?.isActive ?? false) {
       _timerForListRefresher!.cancel();

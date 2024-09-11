@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifiers/basket_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/financial_institution.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/payment_and_banking/models/financial_institution.dart';
+import 'package:Slydo/screens/shipping_process/models/shared_cart_model.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 

@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile_for_connection.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_manager.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/tiles/user_tile_for_connection.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -120,7 +120,7 @@ class _ConnectionListState extends State<ConnectionList>
     if (mounted) setState(() {});
 
     final int result = await connectionListBloc.getConnectionsCount();
-    debugPrint("RESULT FROM CONNECTION LIST :- $result");
+    // debugPrint("RESULT FROM CONNECTION LIST :- $result");
     if (result == 0) {
       isLoading = false;
       refreshList();
@@ -363,7 +363,7 @@ class _ConnectionListState extends State<ConnectionList>
 
         final List tempList = result['results'];
 
-        debugPrint("List:- $tempList");
+        // debugPrint("List:- $tempList");
 
         final List<ChatConversation> users = [];
 
@@ -372,7 +372,7 @@ class _ConnectionListState extends State<ConnectionList>
         }
 
         // connectionsList.addAll(users);
-        debugPrint("List Length users:- ${users.length}");
+        // debugPrint("List Length users:- ${users.length}");
 
         connectionListBloc.setConnectionUsers(users: users);
 

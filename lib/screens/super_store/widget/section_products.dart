@@ -1,7 +1,6 @@
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
 import 'package:Slydo/screens/super_store/widget/single_store_card.dart';
 import 'package:Slydo/utils/navigation_util.dart';

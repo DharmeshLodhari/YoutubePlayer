@@ -1,6 +1,6 @@
-import 'package:Slydo/screens/more_apps/yarn/widgets/category_chip.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/screens/yarn/widgets/category_chip.dart';
+import 'package:Slydo/screens/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

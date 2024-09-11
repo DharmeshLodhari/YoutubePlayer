@@ -1,22 +1,24 @@
 import 'dart:convert';
 import 'dart:developer';
+
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/product_details.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/states_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
+import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/models/flash_tags/flash_tag_alert_model.dart';
+import 'package:Slydo/screens/user_profile/models/search_user_item_with_filter.dart';
+import 'package:Slydo/screens/user_profile/models/states_model.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+
 import 'models/store.dart';
 
 class ShoppingAuthService extends AuthService {
@@ -45,15 +47,15 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint('STORE URL ---> $url');
+    // debugPrint('STORE URL ---> $url');
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
-    debugPrint('STORE URL BODY ---> ${response.body}');
+    // debugPrint('STORE URL BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
-      debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
+      // debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
 
       final List<ShoppingProduct> shoppingProducts = [];
       for (var item in jsonData["results"]) {
@@ -92,11 +94,11 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint('STORE URL ---> $url');
+    // debugPrint('STORE URL ---> $url');
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
-    debugPrint('STORE URL BODY ---> ${response.body}');
+    // debugPrint('STORE URL BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
@@ -180,7 +182,7 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint('SEARCH BODY ---> ${response.body}');
+    // debugPrint('SEARCH BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
@@ -212,7 +214,7 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint('SEARCH BODY ---> ${response.body}');
+    // debugPrint('SEARCH BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
@@ -236,15 +238,15 @@ class ShoppingAuthService extends AuthService {
     if (next == null) {
       return null;
     }
-    debugPrint('STORE URL ---> $url');
+    // debugPrint('STORE URL ---> $url');
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url ?? "", headers: headers);
-    debugPrint('STORE URL BODY ---> ${response.body}');
+    // debugPrint('STORE URL BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
-      debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
+      // debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
 
       final List<Product> product = [];
       for (var item in jsonData["results"]) {
@@ -271,15 +273,15 @@ class ShoppingAuthService extends AuthService {
     String? previous, {
     String? url,
   }) async {
-    debugPrint('STORE URL ---> $url');
+    // debugPrint('STORE URL ---> $url');
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url ?? "", headers: headers);
-    debugPrint('STORE URL BODY ---> ${response.body}');
+    // debugPrint('STORE URL BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
-      debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
+      // debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
 
       final List<Product> product = [];
       for (var item in jsonData["results"]) {
@@ -316,15 +318,15 @@ class ShoppingAuthService extends AuthService {
       apiUrl = '$apiUrl&merchant=$merchantId';
     }
 
-    debugPrint('STORE URL ---> $apiUrl');
+    // debugPrint('STORE URL ---> $apiUrl');
 
     final headers = await getAuthHeaders();
     final response = await httpGet(apiUrl, headers: headers);
-    debugPrint('STORE URL BODY ---> ${response.body}');
+    // debugPrint('STORE URL BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
-      debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
+      // debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
 
       final List<Product> product = [];
       for (var item in jsonData["results"]) {
@@ -355,7 +357,7 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint('SEARCH BODY ---> ${response.body}');
+    // debugPrint('SEARCH BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
@@ -376,10 +378,10 @@ class ShoppingAuthService extends AuthService {
 
   Future<bool> deleteProductOrServiceImage(String imageId) async {
     final String url = "${AppConfig.baseUrl}/api/v1/images/$imageId/";
-    debugPrint("URL:- $url");
+    // debugPrint("URL:- $url");
     final headers = await getAuthHeaders();
     final response = await httpDelete(url, headers: headers);
-    debugPrint("response:- ${response.body}");
+    // debugPrint("response:- ${response.body}");
     if (response.statusCode == 204) {
       return true;
     } else {
@@ -393,7 +395,7 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint('SHOPPING CART MODEL ::: ${response.body}');
+    // debugPrint('SHOPPING CART MODEL ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final ShoppingCartModelFromQrCode shoppingCartModel =
           ShoppingCartModelFromQrCode.fromJson(jsonDecode(response.body));
@@ -421,15 +423,15 @@ class ShoppingAuthService extends AuthService {
   // super store deal of the day
   Future<Map<String, dynamic>?> getProductsStoreDeal(
       String? next, String? previous, String url) async {
-    debugPrint('STORE URL ---> $url');
+    // debugPrint('STORE URL ---> $url');
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
-    debugPrint('STORE URL BODY ---> ${response.body}');
+    // debugPrint('STORE URL BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
-      debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
+      // debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
 
       final List<Product> product = [];
       for (var item in jsonData["results"]) {
@@ -534,8 +536,8 @@ class ShoppingAuthService extends AuthService {
     String selectedFilter = "",
     bool otherDeals = false,
   }) async {
-    debugPrint('CALLING PRODUCT');
-    debugPrint('CALLING PRODUCT channel::: $channel');
+    // debugPrint('CALLING PRODUCT');
+    // debugPrint('CALLING PRODUCT channel::: $channel');
 
     String url = "";
     if (next == null) {
@@ -564,7 +566,7 @@ class ShoppingAuthService extends AuthService {
       url = "${AppConfig.baseUrl}/api/v1/channels-merchandise/$userName";
     }
 
-    debugPrint("product list url _______________________$url");
+    // debugPrint("product list url _______________________$url");
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -577,7 +579,7 @@ class ShoppingAuthService extends AuthService {
           "results": []
         };
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -650,13 +652,13 @@ class ShoppingAuthService extends AuthService {
         url = "$url&price__lte=${filterOptions.maxAmount}";
       }
 
-      debugPrint('SEARCH FILTER URL ---> $url');
+      // debugPrint('SEARCH FILTER URL ---> $url');
       url = Uri.encodeFull(url);
     } else {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint("product list url _______________________$url");
+    // debugPrint("product list url _______________________$url");
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -669,7 +671,7 @@ class ShoppingAuthService extends AuthService {
           "results": []
         };
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -713,7 +715,7 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint("product list url _______________________$url");
+    // debugPrint("product list url _______________________$url");
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -726,7 +728,7 @@ class ShoppingAuthService extends AuthService {
           "results": []
         };
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -799,13 +801,13 @@ class ShoppingAuthService extends AuthService {
         url = "$url&price__lte=${filterOptions.maxAmount}";
       }
 
-      debugPrint('SEARCH FILTER URL ---> $url');
+      // debugPrint('SEARCH FILTER URL ---> $url');
       url = Uri.encodeFull(url);
     } else {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint("product list url _______________________$url");
+    // debugPrint("product list url _______________________$url");
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -818,7 +820,7 @@ class ShoppingAuthService extends AuthService {
           "results": []
         };
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -862,7 +864,7 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint("service list url _______________________$url");
+    // debugPrint("service list url _______________________$url");
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -875,7 +877,7 @@ class ShoppingAuthService extends AuthService {
           "results": []
         };
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -930,7 +932,7 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint("service list url _______________________$url");
+    // debugPrint("service list url _______________________$url");
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -943,7 +945,7 @@ class ShoppingAuthService extends AuthService {
           "results": []
         };
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -976,7 +978,7 @@ class ShoppingAuthService extends AuthService {
     final String url = sectionUrl ??
         "${AppConfig.baseUrl}/api/v1/products/seller-products-by-custom-category/$name/?";
 
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -984,7 +986,7 @@ class ShoppingAuthService extends AuthService {
       if (!response.body.contains('results')) {
         final Map<String, dynamic> result = {"sectionProducts": []};
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -995,7 +997,7 @@ class ShoppingAuthService extends AuthService {
         sectionProducts.add(data);
       }
 
-      debugPrint("_______________________________________$sectionProducts");
+      // debugPrint("_______________________________________$sectionProducts");
 
       final Map<String, dynamic> result = {
         "sectionProducts": sectionProducts,
@@ -1016,7 +1018,7 @@ class ShoppingAuthService extends AuthService {
     final String url =
         sectionUrl ?? "${AppConfig.baseUrl}/api/v1/products/super-store/";
 
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -1024,7 +1026,7 @@ class ShoppingAuthService extends AuthService {
       if (!response.body.contains('results')) {
         final Map<String, dynamic> result = {"store": []};
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -1057,7 +1059,7 @@ class ShoppingAuthService extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/products/industries/?home=true";
 
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -1065,7 +1067,7 @@ class ShoppingAuthService extends AuthService {
       if (!response.body.contains('results')) {
         final Map<String, dynamic> result = {"product": []};
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -1115,7 +1117,7 @@ class ShoppingAuthService extends AuthService {
       data['width'] = 0.0;
       data['width_si_unit'] = '';
     }
-    debugPrint('DATA from ---> $data');
+    // debugPrint('DATA from ---> $data');
 
     if (productAddOnsList.isNotEmpty) {
       final List ids = productAddOnsList
@@ -1133,12 +1135,12 @@ class ShoppingAuthService extends AuthService {
       }
     });
 
-    debugPrint('DATA from two ---> $data');
+    // debugPrint('DATA from two ---> $data');
 
     final List<MultipartFile> newList = [];
 
     for (int i = 0; i < product.localImages!.length; i++) {
-      debugPrint('DATA from two ---> ${product.localImages![i].path}');
+      // debugPrint('DATA from two ---> ${product.localImages![i].path}');
       // Add fields
       request.fields["imagefile_$i"] = product.localImages![i].path;
 
@@ -1150,7 +1152,7 @@ class ShoppingAuthService extends AuthService {
       newList.add(multipartFile);
     }
 
-    debugPrint('DATA from newList ---> $newList');
+    // debugPrint('DATA from newList ---> $newList');
     // Add multipart to request
     request.files.addAll(newList);
 
@@ -1162,12 +1164,12 @@ class ShoppingAuthService extends AuthService {
     }
     final responseBody = await response.stream.bytesToString();
 
-    debugPrint(
-        "URL $url PRODUCT STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+    // debugPrint(
+    //     "URL $url PRODUCT STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
 
     bool backValue = false;
     if (response.statusCode == 200 || response.statusCode == 201) {
-      debugPrint('DATA from add product ---> $responseBody');
+      // debugPrint('DATA from add product ---> $responseBody');
 
       final jsonData = json.decode(responseBody);
       String productId = "";
@@ -1179,8 +1181,8 @@ class ShoppingAuthService extends AuthService {
       }
       return [backValue, productId];
     } else {
-      debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+      // debugPrint(
+      //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
 
       throw responseBody;
     }
@@ -1196,7 +1198,7 @@ class ShoppingAuthService extends AuthService {
     final request = http.MultipartRequest("POST", Uri.parse(url));
 
     final Map<dynamic, dynamic> data = item.toMap();
-    debugPrint('DATA ---> $data');
+    // debugPrint('DATA ---> $data');
     // _data["available_from"] = dateToString(variant.availableFrom!);
     data["image_count"] = item.localImages!.length;
 
@@ -1206,7 +1208,7 @@ class ShoppingAuthService extends AuthService {
 
     final List<MultipartFile> newList = [];
 
-    debugPrint('DATA from pictures ---> ${item.localImages!.length}');
+    // debugPrint('DATA from pictures ---> ${item.localImages!.length}');
 
     for (int i = 0; i < item.localImages!.length; i++) {
       // Add fields
@@ -1220,7 +1222,7 @@ class ShoppingAuthService extends AuthService {
       newList.add(multipartFile);
     }
 
-    debugPrint('DATA from pictures 2 ---> $newList');
+    // debugPrint('DATA from pictures 2 ---> $newList');
     // Add multipart to request
     request.files.addAll(newList);
 
@@ -1235,8 +1237,8 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 201 || response.statusCode == 200) {
       return true;
     } else {
-      debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+      // debugPrint(
+      //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
 
       throw responseBody;
     }
@@ -1251,7 +1253,7 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint('SEARCH BODY ---> ${response.body}');
+    // debugPrint('SEARCH BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final List<Variant> variantList = [];
@@ -1302,7 +1304,7 @@ class ShoppingAuthService extends AuthService {
     final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
     final Map<dynamic, dynamic> data = item.toMap();
-    debugPrint('DATA from ---> $data');
+    // debugPrint('DATA from ---> $data');
     // _data["available_from"] = dateToString(variant.availableFrom!);
     data["image_count"] = item.localImages!.length;
 
@@ -1312,7 +1314,7 @@ class ShoppingAuthService extends AuthService {
 
     final List<MultipartFile> newList = [];
 
-    debugPrint('DATA from pictures ---> ${item.localImages!.length}');
+    // debugPrint('DATA from pictures ---> ${item.localImages!.length}');
 
     for (int i = 0; i < item.localImages!.length; i++) {
       // Add fields
@@ -1326,7 +1328,7 @@ class ShoppingAuthService extends AuthService {
       newList.add(multipartFile);
     }
 
-    debugPrint('DATA from pictures 2 ---> $newList');
+    // debugPrint('DATA from pictures 2 ---> $newList');
     // Add multipart to request
     request.files.addAll(newList);
 
@@ -1341,8 +1343,8 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 201 || response.statusCode == 200) {
       return true;
     } else {
-      debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+      // debugPrint(
+      //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
 
       throw responseBody;
     }
@@ -1405,7 +1407,7 @@ class ShoppingAuthService extends AuthService {
 
     // Add multipart to request
     request.files.addAll(newList);
-    debugPrint('UPDATE PRODUCT FIELDS -> $data');
+    // debugPrint('UPDATE PRODUCT FIELDS -> $data');
     headers.forEach((k, v) => request.headers[k] = v);
 
     final response = await request.send();
@@ -1415,7 +1417,7 @@ class ShoppingAuthService extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     final responseBody = await response.stream.bytesToString();
-    debugPrint('UPDATE PRODUCT RESPONSE -> $responseBody');
+    // debugPrint('UPDATE PRODUCT RESPONSE -> $responseBody');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -1436,8 +1438,8 @@ class ShoppingAuthService extends AuthService {
       final Product product = createProduct(jsonData);
       return product;
     } else {
-      debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      // debugPrint(
+      //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       throw jsonData;
     }
   }
@@ -1475,7 +1477,7 @@ class ShoppingAuthService extends AuthService {
 
   //Service
   Service createService(Map<String, dynamic> item) {
-    debugPrint("==> $item");
+    // debugPrint("==> $item");
     final Service service = Service();
     service.id = item['id'];
     service.cover = item['cover'];
@@ -1506,7 +1508,7 @@ class ShoppingAuthService extends AuthService {
   // List services
   Future<Map<String, dynamic>?> listOfServices(String? next, String? previous,
       {String? userName, bool otherDeals = false}) async {
-    debugPrint('CALLING PRODUCT');
+    // debugPrint('CALLING PRODUCT');
     String url = "";
     if (next == null) {
       return null;
@@ -1520,7 +1522,7 @@ class ShoppingAuthService extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -1686,8 +1688,8 @@ class ShoppingAuthService extends AuthService {
         service.localImages![i].path,
       );
 
-      debugPrint('DATA FOR SERVICE -> $data');
-      debugPrint('DATA FOR SERVICE FIELDS -> ${request.fields}');
+      // debugPrint('DATA FOR SERVICE -> $data');
+      // debugPrint('DATA FOR SERVICE FIELDS -> ${request.fields}');
 
       // Add multipart to newList
       newList.add(multipartFile);
@@ -1770,8 +1772,8 @@ class ShoppingAuthService extends AuthService {
       final Service service = createService(jsonData);
       return service;
     } else {
-      debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      // debugPrint(
+      //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       throw jsonData;
     }
   }
@@ -1934,7 +1936,7 @@ class ShoppingAuthService extends AuthService {
     if (url.endsWith("?")) {
       url = url.replaceAll("?", "");
     }
-    debugPrint('URL ::: $url');
+    // debugPrint('URL ::: $url');
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
@@ -1975,9 +1977,9 @@ class ShoppingAuthService extends AuthService {
     final response = await httpGet(url, headers: headers);
     final jsonData = jsonDecode(response.body);
 
-    debugPrint('URL :: $url');
-    debugPrint('BODY shipping:: ${response.body}');
-    debugPrint('STATUS CO  :: ${response.statusCode}');
+    // debugPrint('URL :: $url');
+    // debugPrint('BODY shipping:: ${response.body}');
+    // debugPrint('STATUS CO  :: ${response.statusCode}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final List jsonDataResult = jsonData['results'];
@@ -2097,7 +2099,7 @@ class ShoppingAuthService extends AuthService {
 
     for (int i = 0; i < data.length; i++) {
       if (data[i]["type"] == "product") {
-        debugPrint('fola one one:::: ${data[i]["qty"]}');
+        // debugPrint('fola one one:::: ${data[i]["qty"]}');
 
         // for (int j = 0; j < data[i]["qty"]; j++) {
         final product = Product.fromJson(data[i]);
@@ -2260,16 +2262,16 @@ class ShoppingAuthService extends AuthService {
         url = "$url&price__lte=${filterOptions.maxAmount}";
       }
 
-      debugPrint('SEARCH FILTER URL ---> $url');
+      // debugPrint('SEARCH FILTER URL ---> $url');
       url = Uri.encodeFull(url);
     } else {
       url = getSecureUrl(url: next);
     }
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
-    debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
-    debugPrint('SEARCH FILTER BODY ---> ${response.body}');
+    // debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
+    // debugPrint('SEARCH FILTER BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final List<Product> productList = [];
@@ -2285,7 +2287,7 @@ class ShoppingAuthService extends AuthService {
         "previous": jsonData["previous"],
         "results": productList
       };
-      debugPrint("result:- $result");
+      // debugPrint("result:- $result");
       return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";
@@ -2309,7 +2311,7 @@ class ShoppingAuthService extends AuthService {
     if (next == null) {
       return null;
     }
-    debugPrint('SORT BY Search -> ${filterOptions.sortBy}');
+    // debugPrint('SORT BY Search -> ${filterOptions.sortBy}');
 
     if (next == "") {
       url =
@@ -2339,13 +2341,13 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint('SEARCH FILTER URL ---> $url');
+    // debugPrint('SEARCH FILTER URL ---> $url');
 
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
-    debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
-    debugPrint('SEARCH FILTER BODY ---> ${response.body}');
+    // debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
+    // debugPrint('SEARCH FILTER BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final List<Product> productList = [];
@@ -2361,7 +2363,7 @@ class ShoppingAuthService extends AuthService {
         "previous": jsonData["previous"],
         "results": productList
       };
-      debugPrint("result:- $result");
+      // debugPrint("result:- $result");
       return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";
@@ -2382,12 +2384,12 @@ class ShoppingAuthService extends AuthService {
   Future<Map<String, dynamic>?> searchServiceInServices(
       String? next, String? previous,
       {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
-    debugPrint('SEARCH FILTER BODY ........');
+    // debugPrint('SEARCH FILTER BODY ........');
     String url = "";
     if (next == null) {
       return null;
     }
-    debugPrint('SORT BY Search -> ${filterOptions.sortBy}');
+    // debugPrint('SORT BY Search -> ${filterOptions.sortBy}');
 
     if (next == "") {
       url =
@@ -2414,13 +2416,13 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint('SEARCH FILTER URL ---> $url');
+    // debugPrint('SEARCH FILTER URL ---> $url');
 
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
-    debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
-    debugPrint('SEARCH FILTER BODY ---> ${response.body}');
+    // debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
+    // debugPrint('SEARCH FILTER BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final List<Service> serviceList = [];
@@ -2436,7 +2438,7 @@ class ShoppingAuthService extends AuthService {
         "previous": jsonData["previous"],
         "results": serviceList
       };
-      debugPrint("result:- $result");
+      // debugPrint("result:- $result");
       return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";
@@ -2469,8 +2471,8 @@ class ShoppingAuthService extends AuthService {
 
       return categories;
     } else {
-      debugPrint(
-          "URL: $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      // debugPrint(
+      //     "URL: $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
       return Future.value(<ServiceCategory>[]);
     }
   }
@@ -2480,8 +2482,8 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint(
-        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    // debugPrint(
+    //     "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
 
@@ -2507,8 +2509,8 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint(
-        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    // debugPrint(
+    //     "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
 
@@ -2537,7 +2539,7 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint('Merchant Category BODY ---> ${response.body}');
+    // debugPrint('Merchant Category BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
@@ -2563,7 +2565,7 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint('Merchant Category BODY ---> ${response.body}');
+    // debugPrint('Merchant Category BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
@@ -2592,7 +2594,7 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint('Merchant Category BODY ---> ${response.body}');
+    // debugPrint('Merchant Category BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
@@ -2613,12 +2615,12 @@ class ShoppingAuthService extends AuthService {
   Future<List<ProductCategory>> obtainCustomCategory(name) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/products/merchant-custom-categories/merchant/$name/";
-    debugPrint("_________________________________________$url");
+    // debugPrint("_________________________________________$url");
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint(
-        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    // debugPrint(
+    //     "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
 
@@ -2662,10 +2664,10 @@ class ShoppingAuthService extends AuthService {
 
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers, body: data0);
-    debugPrint("__________________________________ ${response.statusCode}");
-    debugPrint("__________________________________ $data");
-    debugPrint("__________________________________ $response");
-    debugPrint("__________________________________ $id");
+    // debugPrint("__________________________________ ${response.statusCode}");
+    // debugPrint("__________________________________ $data");
+    // debugPrint("__________________________________ $response");
+    // debugPrint("__________________________________ $id");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -2683,10 +2685,10 @@ class ShoppingAuthService extends AuthService {
 
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers, body: data0);
-    debugPrint("__________________________________ ${response.statusCode}");
-    debugPrint("__________________________________ $data");
-    debugPrint("__________________________________ $response");
-    debugPrint("__________________________________ $merchantUsername");
+    // debugPrint("__________________________________ ${response.statusCode}");
+    // debugPrint("__________________________________ $data");
+    // debugPrint("__________________________________ $response");
+    // debugPrint("__________________________________ $merchantUsername");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -2705,7 +2707,7 @@ class ShoppingAuthService extends AuthService {
       return true;
     } else {
       final jsonData = json.decode(response.body);
-      debugPrint("_________________________________$response");
+      // debugPrint("_________________________________$response");
       throw jsonData;
     }
   }
@@ -2716,8 +2718,8 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint(
-        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    // debugPrint(
+    //     "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
 
@@ -2759,15 +2761,15 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint(
-        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    // debugPrint(
+    //     "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       final List<Tags> categories = [];
       final jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
         final Tags customerProfile = Tags.fromJson(item);
 
-        debugPrint('SEARCH FILTER BODY ---> ${customerProfile.toJson()}');
+        // debugPrint('SEARCH FILTER BODY ---> ${customerProfile.toJson()}');
 
         categories.add(customerProfile);
       }
@@ -2778,7 +2780,7 @@ class ShoppingAuthService extends AuthService {
         "previous": jsonData["previous"],
         "results": categories
       };
-      debugPrint("result:- $result");
+      // debugPrint("result:- $result");
       return result;
     } else {
       debugPrint(
@@ -2799,8 +2801,8 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint(
-        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    // debugPrint(
+    //     "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
@@ -2826,7 +2828,7 @@ class ShoppingAuthService extends AuthService {
   Future<Map<String, dynamic>?> listOfMerchant(
       String? next, String? previous, String category,
       {String? userName, bool nearBy = false}) async {
-    debugPrint('CALLING MERCHANT LIST');
+    // debugPrint('CALLING MERCHANT LIST');
 
     String url = '';
     if (next == null) {
@@ -2848,7 +2850,7 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -2888,7 +2890,7 @@ class ShoppingAuthService extends AuthService {
     if (next == null) {
       return null;
     }
-    debugPrint('STATE BY Search -> ${filterOptions.state}');
+    // debugPrint('STATE BY Search -> ${filterOptions.state}');
 
     if (next == "") {
       url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/";
@@ -2916,12 +2918,12 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint('SEARCH FILTER URL ---> $url');
+    // debugPrint('SEARCH FILTER URL ---> $url');
 
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
-    debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
+    // debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
     // debugPrint('SEARCH FILTER BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -2930,7 +2932,7 @@ class ShoppingAuthService extends AuthService {
       for (var item in jsonData["results"]) {
         final CustomerProfile customerProfile = CustomerProfile.fromJson(item);
 
-        debugPrint('SEARCH FILTER BODY ---> ${customerProfile.toJson()}');
+        // debugPrint('SEARCH FILTER BODY ---> ${customerProfile.toJson()}');
 
         customerProfileList.add(customerProfile);
       }
@@ -2941,7 +2943,7 @@ class ShoppingAuthService extends AuthService {
         "previous": jsonData["previous"],
         "results": customerProfileList
       };
-      debugPrint("result:- $result");
+      // debugPrint("result:- $result");
       return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";
@@ -2970,7 +2972,7 @@ class ShoppingAuthService extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -2983,7 +2985,7 @@ class ShoppingAuthService extends AuthService {
           "results": []
         };
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -3065,7 +3067,7 @@ class ShoppingAuthService extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/shipping/states/?country_code=NG";
 
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -3095,7 +3097,7 @@ class ShoppingAuthService extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/shipping/addresses/$id/set-as-default/";
 
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers);
 
@@ -3108,7 +3110,7 @@ class ShoppingAuthService extends AuthService {
           "results": []
         };
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -3142,7 +3144,7 @@ class ShoppingAuthService extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/shipping/cities/?state_code=$code";
 
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -3179,7 +3181,7 @@ class ShoppingAuthService extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -3192,13 +3194,13 @@ class ShoppingAuthService extends AuthService {
           "results": []
         };
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
       final List<ShippingAddress> shippingAddressList = [];
       final jsonData = json.decode(response.body);
-      debugPrint("$jsonData");
+      // debugPrint("$jsonData");
       for (var item in jsonData["results"]) {
         final ShippingAddress address = ShippingAddress.fromJson(item);
         shippingAddressList.add(address);
@@ -3236,7 +3238,7 @@ class ShoppingAuthService extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -3249,7 +3251,7 @@ class ShoppingAuthService extends AuthService {
           "results": []
         };
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -3269,8 +3271,8 @@ class ShoppingAuthService extends AuthService {
       };
 
       final endTime = DateTime.now();
-      debugPrint(
-          'discount List: ${endTime.difference(startTime).inMilliseconds}ms');
+      // debugPrint(
+      //     'discount List: ${endTime.difference(startTime).inMilliseconds}ms');
       // debugPrint('CALLING OTHER check ---> ${result}');
       return result;
     } else if (response.statusCode == 500) {
@@ -3293,7 +3295,7 @@ class ShoppingAuthService extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    debugPrint(url);
+    // debugPrint(url);
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -3306,7 +3308,7 @@ class ShoppingAuthService extends AuthService {
           "results": []
         };
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        // debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -3424,7 +3426,7 @@ class ShoppingAuthService extends AuthService {
       request.files.add(multipartFile);
     }
 
-    debugPrint("Request ${request.fields}");
+    // debugPrint("Request ${request.fields}");
 
     headers.forEach((k, v) => request.headers[k] = v);
     final response = await request.send();
@@ -3467,7 +3469,7 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint('Add-Ons BODY ---> ${response.body}');
+    // debugPrint('Add-Ons BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
@@ -3503,7 +3505,7 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    debugPrint('Add-On Options BODY ---> ${response.body}');
+    // debugPrint('Add-On Options BODY ---> ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
@@ -3554,7 +3556,7 @@ class ShoppingAuthService extends AuthService {
       request.files.add(multipartFile);
     }
 
-    debugPrint('createAddOnOption FIELDS -> ${request.fields}');
+    // debugPrint('createAddOnOption FIELDS -> ${request.fields}');
 
     headers.forEach((k, v) => request.headers[k] = v);
 
@@ -3568,12 +3570,12 @@ class ShoppingAuthService extends AuthService {
           "Please upload smaller image, Your image is too large.");
     }
     final responseBody = await response.stream.bytesToString();
-    debugPrint(responseBody);
+    // debugPrint(responseBody);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      debugPrint("DATA:- ${request.fields}");
-      debugPrint(
-          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      // debugPrint("DATA:- ${request.fields}");
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
       final AddOnOption addOnOption =
           AddOnOption.fromJson(jsonDecode(responseBody));
@@ -3612,12 +3614,12 @@ class ShoppingAuthService extends AuthService {
     final response = await request.send();
 
     final responseBody = await response.stream.bytesToString();
-    debugPrint(responseBody);
+    // debugPrint(responseBody);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       // debugPrint("DATA:- ${request.fields}");
-      debugPrint(
-          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
       final jsonData = jsonDecode(responseBody);
 
@@ -3662,8 +3664,8 @@ class ShoppingAuthService extends AuthService {
       headers: headers,
     );
 
-    debugPrint(
-        "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    // debugPrint(
+    //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
     if (response.statusCode == 204) {
       return true;
     } else {
@@ -3682,8 +3684,8 @@ class ShoppingAuthService extends AuthService {
       headers: headers,
     );
 
-    debugPrint(
-        "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    // debugPrint(
+    //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
     if (response.statusCode == 204) {
       return true;
     } else {
@@ -3710,20 +3712,20 @@ class ShoppingAuthService extends AuthService {
       "options": idList.isNotEmpty ? idList : "null"
     });
 
-    debugPrint('DATA from ---> ${addOns.id}');
-    debugPrint('DATA from ---> ${request.body}');
+    // debugPrint('DATA from ---> ${addOns.id}');
+    // debugPrint('DATA from ---> ${request.body}');
 
     headers.forEach((k, v) => request.headers[k] = v);
 
     final response = await request.send();
 
     final responseBody = await response.stream.bytesToString();
-    debugPrint(responseBody);
+    // debugPrint(responseBody);
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       // debugPrint("DATA:- ${request.fields}");
-      debugPrint(
-          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
       final jsonData = jsonDecode(responseBody);
 
@@ -3738,7 +3740,7 @@ class ShoppingAuthService extends AuthService {
       final List<AddOnOption> options = [];
 
       for (var item in jsonData['options']) {
-        debugPrint("add-on option id:- ${item['id']}");
+        // debugPrint("add-on option id:- ${item['id']}");
 
         final AddOnOption addOnOption = AddOnOption.fromJson(item);
         // addOnOption.id = item['id'];
@@ -3787,7 +3789,7 @@ class ShoppingAuthService extends AuthService {
       request.files.add(multipartFile);
     }
 
-    debugPrint('createAddOnOption FIELDS -> ${request.fields}');
+    // debugPrint('createAddOnOption FIELDS -> ${request.fields}');
 
     headers.forEach((k, v) => request.headers[k] = v);
 
@@ -3801,12 +3803,12 @@ class ShoppingAuthService extends AuthService {
           "Please upload smaller image, Your image is too large.");
     }
     final responseBody = await response.stream.bytesToString();
-    debugPrint(responseBody);
+    // debugPrint(responseBody);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      debugPrint("DATA:- ${request.fields}");
-      debugPrint(
-          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      // debugPrint("DATA:- ${request.fields}");
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
       final AddOnOption addOnOption =
           AddOnOption.fromJson(jsonDecode(responseBody));
@@ -3824,7 +3826,7 @@ class ShoppingAuthService extends AuthService {
     final String url = "${AppConfig.baseUrl}/api/v1/products/add-by-token/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
-    debugPrint('Status of KYC...${response.body} and ${response.statusCode}');
+    // debugPrint('Status of KYC...${response.body} and ${response.statusCode}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       return ProductDetails.fromJson(jsonData);

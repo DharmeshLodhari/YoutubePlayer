@@ -1,6 +1,9 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/order_summary_product_service.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
+import 'package:Slydo/screens/user_profile/widgets/pick_state_widget.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
@@ -11,10 +14,6 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../../locale/app_localization.dart';
-import '../../../user_profile/user_auth.dart';
-import '../../../user_profile/widgets/pick_state_widget.dart';
 
 class UserAddressProductService extends StatefulWidget {
   final String? customerName;
@@ -62,7 +61,7 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
       cityController.text = addressBloc.address?.city ?? "";
       selectedCountry = CountryPickerUtils.getCountryByIsoCode(
           addressBloc.address?.countryIsoCode);
-      debugPrint('STATE ID::: $pickedStateId');
+      // debugPrint('STATE ID::: $pickedStateId');
 
       if (mounted) setState(() {});
     }).catchError((e) {

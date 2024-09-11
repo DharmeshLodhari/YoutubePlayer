@@ -9,8 +9,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../messaging/chat/utils.dart';
-
 class MovieExploreScreen extends StatefulWidget {
   const MovieExploreScreen({super.key});
 

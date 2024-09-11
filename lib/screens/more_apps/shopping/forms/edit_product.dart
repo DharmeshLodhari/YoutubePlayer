@@ -10,9 +10,9 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/utils.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/forms/add_edit_shipping_address.dart';
+import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -342,8 +342,8 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
                   currentProduct.searchKeywords?.join(", ")) ??
               "";
 
-          debugPrint(
-              'CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
+          // debugPrint(
+          //     'CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
 
           for (var condition in conditions) {
             if (condition.name == currentProduct.condition) {
@@ -1028,7 +1028,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
               onPressed: () {
                 final imageId =
                     currentProduct.getImageId(productImagesFromServer[index]);
-                debugPrint("imageId:- $imageId");
+                // debugPrint("imageId:- $imageId");
                 _auth.deleteProductOrServiceImage(imageId).then((value) {
                   if (value) {
                     if (mounted) {

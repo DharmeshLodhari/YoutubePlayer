@@ -1,8 +1,7 @@
 import 'dart:convert';
 
+import 'package:Slydo/screens/yarn/models/Topics/yarn_model.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../more_apps/yarn/models/Topics/yarn_model.dart';
 
 class BasePaginationModel<T> {
   T result;

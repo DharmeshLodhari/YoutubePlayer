@@ -1,6 +1,8 @@
 import 'package:Slydo/constant.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/user_product_list.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +13,6 @@ import 'package:provider/provider.dart';
 import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../widget/rounded_background_icon.dart';
-import '../../user_profile/models/user.dart';
-import '../../user_profile/screens/user_profile_module_new/user_product_list.dart';
 
 class MyProducts extends StatefulWidget {
   const MyProducts({super.key});

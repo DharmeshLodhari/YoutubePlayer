@@ -1,7 +1,7 @@
-import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/shipping_process/models/package_details_model.dart';
+import 'package:Slydo/screens/shipping_process/models/shipping_option_model.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 
 class ShippingProcessBloc extends ChangeNotifier {

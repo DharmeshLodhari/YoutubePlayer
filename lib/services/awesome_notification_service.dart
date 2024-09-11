@@ -22,7 +22,7 @@ class AwesomeNotificationService {
   AwesomeNotificationService._internal();
 
   Future<void> init() async {
-    debugPrint("INITIALIZING AWESOME NOTIFICATION !!!");
+    // debugPrint("INITIALIZING AWESOME NOTIFICATION !!!");
     try {
       await awesomeNotifications.initialize(
         'resource://drawable/app_icon',

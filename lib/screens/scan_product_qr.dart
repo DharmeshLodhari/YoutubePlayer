@@ -207,11 +207,11 @@ class _ScanProductQrViewState extends State<ScanProductQr> {
     final List<String> cleanScanDataLink = scanDataList;
     final int qrCodeIndex = scanDataList.length - 2;
 
-    debugPrint('SCANNED DATA ::: $scanDataList');
-    debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
+    // debugPrint('SCANNED DATA ::: $scanDataList');
+    // debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
 
     cleanScanDataLink.removeWhere((item) => [""].contains(item));
-    debugPrint('cleean...$cleanScanDataLink');
+    // debugPrint('cleean...$cleanScanDataLink');
 
     if (scanDataList[qrCodeIndex] == "products") {
       final productId = scanDataList.last;

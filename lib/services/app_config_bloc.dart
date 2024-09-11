@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:Slydo/services/auth.dart';
-import 'package:flutter/cupertino.dart';
 
 import '../data/environment.dart';
 
@@ -21,7 +20,7 @@ class AppFeaturesService extends AuthService {
     final response =
         await httpGet(url, headers: headers as Map<String, dynamic>?);
 
-    debugPrint('SETTINGS :: ${response.body}');
+    // debugPrint('SETTINGS :: ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);

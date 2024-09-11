@@ -8,9 +8,9 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/utils.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/forms/add_edit_shipping_address.dart';
+import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -2285,7 +2285,7 @@ class _AddProductState extends State<AddProduct> {
     }
 
     // This will be executed after all API calls are completed
-    debugPrint("All API calls are done!");
+    // debugPrint("All API calls are done!");
     Navigator.pop(context);
     showToast(message: AppLocalization.of(context)!.productAddedSuccessfully);
 
@@ -2298,7 +2298,6 @@ class _AddProductState extends State<AddProduct> {
     await _auth.addVariant(variantItem, productId).then((value) {
       // backValue = true;
     }).catchError((error) {
-      debugPrint(error.toString());
       debugPrint("Product check variant::: ${error.toString()}");
       // showToast(message: error.toString());
     });

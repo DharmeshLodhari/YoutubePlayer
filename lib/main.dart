@@ -8,14 +8,14 @@ import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/routes/route_generator.dart';
+import 'package:Slydo/screens/business/bloc/contract_bloc.dart';
+import 'package:Slydo/screens/business/bloc/invoice_bloc.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/business/bloc/contract_bloc.dart';
-import 'package:Slydo/screens/more_apps/business/bloc/invoice_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/hotels/hotel_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/music/music_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/music/music_player.dart';
@@ -23,7 +23,7 @@ import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
@@ -78,7 +78,7 @@ void main() async {
     AppConfig();
 
     /// ENABLE and DISABLE Logs
-    AppConfig.enableLogs.value = true;
+    AppConfig.enableLogs.value = false;
 
     getAppFeaturesFromServer();
     await FlutterDownloader.initialize();
@@ -159,11 +159,11 @@ void getAppFeaturesFromServer() async {
     (timer) async {
       await AppFeaturesService().getAppFeatures().then(
         (value) async {
-          debugPrint('APP FEATURE AFTER 15 MINUTES ::: $value');
+          // debugPrint('APP FEATURE AFTER 15 MINUTES ::: $value');
 
           getIt<AppConfigurationBloc>().appConfigurationModel = value;
-          debugPrint(
-              'GET IT AFTER 15 MINUTES --> ${getIt<AppConfigurationBloc>().appConfigurationModel}');
+          // debugPrint(
+          //     'GET IT AFTER 15 MINUTES --> ${getIt<AppConfigurationBloc>().appConfigurationModel}');
         },
       );
     },

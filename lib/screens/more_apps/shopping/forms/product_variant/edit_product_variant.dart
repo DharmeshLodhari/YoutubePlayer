@@ -4,7 +4,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -706,7 +706,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
               onPressed: () async {
                 final imageId =
                     variant?.getImageId(productImagesFromServer[index]) ?? "";
-                debugPrint("imageId:- $imageId");
+                // debugPrint("imageId:- $imageId");
                 _auth.deleteProductOrServiceImage(imageId).then((value) {
                   if (value) {
                     if (mounted) {

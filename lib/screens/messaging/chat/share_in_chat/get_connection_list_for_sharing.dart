@@ -1,0 +1,236 @@
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class GetUserConnectionList extends StatefulWidget {
+  const GetUserConnectionList({super.key});
+
+  @override
+  State<GetUserConnectionList> createState() => _GetUserConnectionListState();
+}
+
+class _GetUserConnectionListState extends State<GetUserConnectionList> {
+  final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
+      GlobalKey<ScaffoldState>();
+  List<ChatConversation> connectionsList = [];
+  final ScrollController _scrollController = ScrollController();
+
+  bool isLoading = false;
+  bool noItemInList = false;
+
+  @override
+  void initState() {
+    getList();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldContactsListKey,
+      backgroundColor: lightGrey,
+      body: _buildConnectionsList(),
+    );
+  }
+
+  Widget _buildConnectionsList() {
+    return noItemInList
+        ? NoItemInList(
+            msg: "You Have No Connections",
+          )
+        : isLoading && connectionsList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 4,
+                ),
+                //+1 for progressbar
+                itemCount: connectionsList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == connectionsList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return ShareToUserTile(
+                      user: connectionsList[index],
+                    );
+                  }
+                },
+                controller: _scrollController,
+              );
+  }
+
+  void getList() async {
+    final ConnectionListBloc _connectionListBloc =
+        Provider.of<ConnectionListBloc>(context, listen: false);
+
+    connectionsList.addAll(_connectionListBloc.connectionUsers);
+
+    if (mounted) setState(() {});
+
+    // if (!isLoading) {
+    //   if (next != null && !isLoading) {
+    //     if (mounted) {
+    //       setState(() {
+    //         isLoading = true;
+    //       });
+    //     }
+    //     Map<String, dynamic> result = await UserAuth().contacts(next, previous);
+    //     count = result['count'];
+    //     next = result['next'];
+    //     previous = result['previous'];
+    //
+    //     List tempList = result['results'];
+    //     List<ChatConversation> users = List<ChatConversation>();
+    //
+    //     tempList.forEach(
+    //         (element) => users.add(ChatConversation.fromJson(element)));
+    //
+    //     isLoading = false;
+    //     connectionsList.addAll(users);
+    //
+    //     if (mounted) setState(() {});
+    //
+    //     /// adding chat Users in database
+    //     ChatUserManager().addUsers(users);
+    //   }
+    //   if (connectionsList.isEmpty) {
+    //     noItemInList = true;
+    //     if (mounted) setState(() {});
+    //   } else if (next == null && connectionsList.length > 6) {
+    //     _scaffoldContactsListKey.currentState.showSnackBar(SnackBar(
+    //       content:
+    //           Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+    //       duration: Duration(milliseconds: 500),
+    //     ));
+    //   }
+    // }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+}
+
+class ShareToUserTile extends StatefulWidget {
+  final ChatConversation? user;
+
+  const ShareToUserTile({super.key, this.user});
+
+  @override
+  State<ShareToUserTile> createState() => _ShareToUserTileState();
+}
+
+class _ShareToUserTileState extends State<ShareToUserTile> {
+  bool isSelected = false;
+  Widget? avatarImage;
+
+  late Color borderColor;
+
+  late ShareMessageToChatBloc _shareMessageToChatBloc;
+
+  @override
+  void initState() {
+    borderColor = getUserTypeColorByType(type: widget.user!.type!);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _shareMessageToChatBloc = Provider.of<ShareMessageToChatBloc>(context);
+    return getTile();
+  }
+
+  Widget getAvatar() {
+    return Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl:
+                widget.user!.avatar == "" ? defaultImage : widget.user!.avatar!,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+            errorWidget: imageErrorWidget,
+          ),
+        ));
+  }
+
+  Widget getTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: GestureDetector(
+        onTap: () {
+          isSelected = !isSelected;
+          if (isSelected) {
+            if (_shareMessageToChatBloc.getRecipients().length < 5) {
+              _shareMessageToChatBloc.addRecipient(
+                  chatConversation: widget.user);
+            } else {
+              showToast(
+                  message: "You can only share with 5 people at a time !!");
+            }
+          } else {
+            _shareMessageToChatBloc.removeRecipient(
+                customerProfile: widget.user);
+          }
+
+          setState(() {});
+        },
+        child: Container(
+          decoration: decorateBox(),
+          child: ListTile(
+            dense: true,
+            title: getTitle(),
+            subtitle: getSubtitle(),
+            leading: getAvatar(),
+            trailing: getTrailing(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getTitle() {
+    return userNameWithVerifiedIcon(
+      name: widget.user!.fullName!,
+      isVerified: widget.user!.isVerified!,
+    );
+  }
+
+  Widget getSubtitle() {
+    return Text(
+      widget.user!.userName!,
+      maxLines: 1,
+      style: TextStyle(
+        color: darkGrey,
+        fontSize: 12,
+      ),
+      overflow: TextOverflow.fade,
+      softWrap: false,
+    );
+  }
+
+  Widget getTrailing() {
+    return Icon(
+      isSelected
+          ? Icons.radio_button_checked_outlined
+          : Icons.radio_button_off_outlined,
+      color: isSelected ? navyBlue : dividerColor,
+    );
+  }
+}

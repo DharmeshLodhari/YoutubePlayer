@@ -2,18 +2,18 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:Slydo/data/database_migrations.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_user_model.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/models/near_by_location.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_user_model.dart';
+import 'package:Slydo/screens/messaging/chat/models/document_file_in_chat_download_model.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/payment_and_banking/models/fee_structure.dart';
+import 'package:Slydo/screens/payment_and_banking/models/virtual_account.dart';
+import 'package:Slydo/screens/rider_delivery/models/near_by_location.dart';
+import 'package:Slydo/screens/user_profile/models/jwt.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/yarn/models/ask_categories_model.dart';
 import "package:collection/collection.dart";
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -55,11 +55,11 @@ class DatabaseHelper {
     int res;
     try {
       res = await dbClient.insert(USER_TABLE, user.toMap());
-      debugPrint("DATABASE:- $USER_TABLE saved to db");
+      // debugPrint("DATABASE:- $USER_TABLE saved to db");
     } catch (error) {
       await dbClient.delete(USER_TABLE);
       res = await dbClient.insert("User", user.toMap());
-      debugPrint("DATABASE:- $USER_TABLE saved to db");
+      // debugPrint("DATABASE:- $USER_TABLE saved to db");
     }
     return res;
   }
@@ -68,7 +68,7 @@ class DatabaseHelper {
     final dbClient = await db;
     int res;
     res = await dbClient.update(USER_TABLE, {"password": password});
-    debugPrint("DATABASE:- $USER_TABLE Password Updated to db");
+    // debugPrint("DATABASE:- $USER_TABLE Password Updated to db");
     return res;
   }
 
@@ -76,7 +76,7 @@ class DatabaseHelper {
   Future<int> deleteUsers() async {
     final dbClient = await db;
     final int res = await dbClient.delete(USER_TABLE);
-    debugPrint("DATABASE:- $USER_TABLE deleted from db");
+    // debugPrint("DATABASE:- $USER_TABLE deleted from db");
     return res;
   }
 
@@ -130,7 +130,7 @@ class DatabaseHelper {
         jwt.expiration != "") {
       res = await dbClient.update(JWT_TABLE, jwt.toDBJson());
       if (res == 0) res = await dbClient.insert(JWT_TABLE, jwt.toDBJson());
-      debugPrint("DATABASE:- $JWT_TABLE saved to db");
+      // debugPrint("DATABASE:- $JWT_TABLE saved to db");
     }
     return res ?? 0;
   }
@@ -139,7 +139,7 @@ class DatabaseHelper {
   Future<int> deleteJwt() async {
     final dbClient = await db;
     final int res = await dbClient.delete(JWT_TABLE);
-    debugPrint("DATABASE:- $JWT_TABLE deleted from db");
+    // debugPrint("DATABASE:- $JWT_TABLE deleted from db");
     return res;
   }
 
@@ -228,7 +228,7 @@ class DatabaseHelper {
     final int res = await dbClient.insert(CHAT_USER_TABLE, user.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
-    debugPrint("DATABASE:- Save $CHAT_USER_TABLE !!");
+    // debugPrint("DATABASE:- Save $CHAT_USER_TABLE !!");
 
     return res;
   }
@@ -237,7 +237,7 @@ class DatabaseHelper {
   Future<int> deleteChatUsers() async {
     final dbClient = await db;
     final int res = await dbClient.delete(CHAT_USER_TABLE);
-    debugPrint("DATABASE:- $CHAT_USER_TABLE deleted from db");
+    // debugPrint("DATABASE:- $CHAT_USER_TABLE deleted from db");
     return res;
   }
 
@@ -245,7 +245,7 @@ class DatabaseHelper {
     final dbClient = await db;
     final int res = await dbClient.delete(CHAT_USER_TABLE,
         where: "conversationId = ?", whereArgs: [conversationId]);
-    debugPrint("DATABASE:- ChatUser $conversationId is Deleted !!");
+    // debugPrint("DATABASE:- ChatUser $conversationId is Deleted !!");
     return res;
   }
 
@@ -262,8 +262,8 @@ class DatabaseHelper {
       await dbClient.execute(
           "UPDATE $CHAT_USER_TABLE SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ? AND hashedMessage != ?",
           [hashedMessage, conversationId, hashedMessage]);
-      debugPrint(
-          "DATABASE:- Chat message count updated from db $conversationId hashedMessage = $hashedMessage");
+      // debugPrint(
+      //     "DATABASE:- Chat message count updated from db $conversationId hashedMessage = $hashedMessage");
     } catch (e) {
       debugPrint("DATABASE:- ERROR:- while updating the Chat Message count $e");
     }
@@ -318,7 +318,7 @@ class DatabaseHelper {
     final int res = await dbClient.insert(SOCKET_QUEUE_TABLE, message.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
-    debugPrint("DATABASE:- <<<<< SocketQueueChatMessage Added !! $res");
+    // debugPrint("DATABASE:- <<<<< SocketQueueChatMessage Added !! $res");
 
     return res;
   }
@@ -337,8 +337,8 @@ class DatabaseHelper {
     final dbClient = await db;
     final int res = await dbClient.delete(SOCKET_QUEUE_TABLE,
         where: "conversation_id = ?", whereArgs: [conversationId]);
-    debugPrint(
-        "DATABASE:- >>>> SocketQueueChatMessage deleted for Conversation $conversationId !!");
+    // debugPrint(
+    //     "DATABASE:- >>>> SocketQueueChatMessage deleted for Conversation $conversationId !!");
     return res;
   }
 
@@ -414,7 +414,7 @@ class DatabaseHelper {
     }
 
     final result = await insertUserBatch.commit();
-    debugPrint("Result From Batch:- $result");
+    // debugPrint("Result From Batch:- $result");
 
     return result;
   }
@@ -462,7 +462,7 @@ class DatabaseHelper {
         connectionList.add(result[i]['username']);
       }
 
-      debugPrint('CONNECTIONS LIST NAME ::: $connectionList');
+      // debugPrint('CONNECTIONS LIST NAME ::: $connectionList');
 
       return connectionList;
     }
@@ -478,8 +478,8 @@ class DatabaseHelper {
         whereArgs: [userName],
         limit: 1);
 
-    debugPrint('CONNECTION RESULT NAME ::: $userName');
-    debugPrint('CONNECTION RESULT ::: $result');
+    // debugPrint('CONNECTION RESULT NAME ::: $userName');
+    // debugPrint('CONNECTION RESULT ::: $result');
     return result.isNotEmpty;
   }
 
@@ -493,7 +493,7 @@ class DatabaseHelper {
       final List<ChatConversation> connectionList =
           res.map((element) => ChatConversation.fromDBJson(element)).toList();
 
-      debugPrint('CONNECTION LIST ---> ${connectionList[0].isVerified}');
+      // debugPrint('CONNECTION LIST ---> ${connectionList[0].isVerified}');
       return connectionList;
     }
     return [];
@@ -575,7 +575,7 @@ class DatabaseHelper {
     final dbClient = await db;
     final int res = await dbClient.delete(USER_CONNECTION_TABLE,
         where: "conversation_id = ?", whereArgs: [conversationId]);
-    debugPrint("UserConnection $conversationId is Deleted !!");
+    // debugPrint("UserConnection $conversationId is Deleted !!");
     await deleteSingleChatUsers(conversationId: conversationId);
     await deleteSingleUserChatMessage(conversationId: conversationId);
     return res;
@@ -614,7 +614,7 @@ class DatabaseHelper {
 
     final List<ChatMessage> insertedMessages =
         await getInsertedChatMessages(result);
-    debugPrint("Batch Result:- $result");
+    // debugPrint("Batch Result:- $result");
     return insertedMessages;
   }
 
@@ -654,7 +654,7 @@ class DatabaseHelper {
 
     final List<dynamic> result = await insertUserBatch.commit();
 
-    debugPrint("Batch Result:- $result");
+    // debugPrint("Batch Result:- $result");
 
     return result;
   }
@@ -672,12 +672,12 @@ class DatabaseHelper {
           CHAT_MESSAGE_TABLE, chatMessage.toDBJson(),
           where: "conversation_id = ? AND check_id = ?",
           whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
-      debugPrint("MISSED MESSAGE UPDATED $result");
+      // debugPrint("MISSED MESSAGE UPDATED $result");
       return 0;
     } else {
       final int result =
           await dbClient.insert(CHAT_MESSAGE_TABLE, chatMessage.toDBJson());
-      debugPrint("MISSED MESSAGE INSERTED $result");
+      // debugPrint("MISSED MESSAGE INSERTED $result");
       return 1;
     }
   }
@@ -768,7 +768,7 @@ class DatabaseHelper {
     final dbClient = await db;
     final int res = await dbClient.delete(CHAT_MESSAGE_TABLE,
         where: "conversation_id = ?", whereArgs: [conversationId]);
-    debugPrint("DATABASE:- ChatMessage $conversationId is Deleted !!");
+    // debugPrint("DATABASE:- ChatMessage $conversationId is Deleted !!");
 
     await deleteSingleChatMessagePagination(conversationId: conversationId);
     return res;
@@ -809,12 +809,12 @@ class DatabaseHelper {
           CHAT_MESSAGE_TABLE, chatMessage.toDBJson(),
           where: "conversation_id = ? AND check_id = ?",
           whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
-      debugPrint("MISSED MESSAGE UPDATED $result");
+      // debugPrint("MISSED MESSAGE UPDATED $result");
       return 0;
     } else {
       final int result =
           await dbClient.insert(CHAT_MESSAGE_TABLE, chatMessage.toDBJson());
-      debugPrint("MISSED MESSAGE INSERTED $result");
+      // debugPrint("MISSED MESSAGE INSERTED $result");
       return 1;
     }
   }
@@ -846,7 +846,7 @@ class DatabaseHelper {
       for (var message in messages) {
         chatMessages.add(ChatMessage.fromDBJson(message));
       }
-      debugPrint("Messages from DB:- ${chatMessages.length}");
+      // debugPrint("Messages from DB:- ${chatMessages.length}");
       return chatMessages;
     }
     return null;
@@ -883,7 +883,7 @@ class DatabaseHelper {
         CHAT_MESSAGE_PAGINATION_TABLE, chatMessagePagination.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
-    debugPrint("DATABASE:- Save ChatMessagePagination !!");
+    // debugPrint("DATABASE:- Save ChatMessagePagination !!");
 
     return res;
   }
@@ -927,8 +927,8 @@ class DatabaseHelper {
     final dbClient = await db;
     final int res = await dbClient.delete(CHAT_MESSAGE_PAGINATION_TABLE,
         where: "conversation_id = ?", whereArgs: [conversationId]);
-    debugPrint(
-        "DATABASE:- ChatMessagePagination $conversationId is Deleted !!");
+    // debugPrint(
+    //     "DATABASE:- ChatMessagePagination $conversationId is Deleted !!");
     return res;
   }
 
@@ -941,8 +941,8 @@ class DatabaseHelper {
         VIRTUAL_ACCOUNT_TABLE, virtualAccount.toDBJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
-    debugPrint("DATABASE:- Saved Virtual Account !!");
-    debugPrint('SAVE VIR :: $res');
+    // debugPrint("DATABASE:- Saved Virtual Account !!");
+    // debugPrint('SAVE VIR :: $res');
     return res;
   }
 
@@ -962,7 +962,7 @@ class DatabaseHelper {
 
     final int res = await dbClient.delete(VIRTUAL_ACCOUNT_TABLE);
 
-    debugPrint("DATABASE:- DELETE VirtualAccount !!");
+    // debugPrint("DATABASE:- DELETE VirtualAccount !!");
     return res;
   }
 
@@ -974,7 +974,7 @@ class DatabaseHelper {
     final int res = await dbClient.insert(APP_SETTING_TABLE, data,
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
-    debugPrint("DATABASE:- Saved GeneralSettings !!");
+    // debugPrint("DATABASE:- Saved GeneralSettings !!");
     return res;
   }
 
@@ -983,7 +983,7 @@ class DatabaseHelper {
 
     final int res = await dbClient.update(APP_SETTING_TABLE, data);
 
-    debugPrint("DATABASE:- Update GeneralSettings !!");
+    // debugPrint("DATABASE:- Update GeneralSettings !!");
     return res;
   }
 
@@ -1003,7 +1003,7 @@ class DatabaseHelper {
 
     final int res = await dbClient.delete(APP_SETTING_TABLE);
 
-    debugPrint("DATABASE:- DELETE GeneralSettings !!");
+    // debugPrint("DATABASE:- DELETE GeneralSettings !!");
     return res;
   }
 
@@ -1015,7 +1015,7 @@ class DatabaseHelper {
     await deleteFeeStructure();
     final int res = await dbClient.insert(FEE_STRUCTURE, feeStructure.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
-    debugPrint("DATABASE:- $FEE_STRUCTURE saved to db");
+    // debugPrint("DATABASE:- $FEE_STRUCTURE saved to db");
     return res;
   }
 
@@ -1023,7 +1023,7 @@ class DatabaseHelper {
   Future<int> deleteFeeStructure() async {
     final dbClient = await db;
     final int res = await dbClient.delete(FEE_STRUCTURE);
-    debugPrint("DATABASE:- $FEE_STRUCTURE deleted from db");
+    // debugPrint("DATABASE:- $FEE_STRUCTURE deleted from db");
     return res;
   }
 
@@ -1049,7 +1049,7 @@ class DatabaseHelper {
     final int res = await dbClient.insert(
         YARN_CATEGORY, userCategoriesStructure.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
-    debugPrint("DATABASE:- $YARN_CATEGORY saved to db");
+    // debugPrint("DATABASE:- $YARN_CATEGORY saved to db");
     return res;
   }
 
@@ -1057,7 +1057,7 @@ class DatabaseHelper {
   Future<int> deleteUserSelectedYarnCategories() async {
     final dbClient = await db;
     final int res = await dbClient.delete(YARN_CATEGORY);
-    debugPrint("DATABASE:- $YARN_CATEGORY deleted from db");
+    // debugPrint("DATABASE:- $YARN_CATEGORY deleted from db");
     return res;
   }
 
@@ -1081,9 +1081,9 @@ class DatabaseHelper {
         DOWNLOAD_FILE_IN_CHAT_TABLE, model.toDBJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
-    debugPrint("DOCUMENT FILE DATABASE:- Save $DOWNLOAD_FILE_IN_CHAT_TABLE !!");
-
-    debugPrint('SAVED FILE TO DB ::: $res');
+    // debugPrint("DOCUMENT FILE DATABASE:- Save $DOWNLOAD_FILE_IN_CHAT_TABLE !!");
+    //
+    // debugPrint('SAVED FILE TO DB ::: $res');
     return res;
   }
 
@@ -1106,10 +1106,10 @@ class DatabaseHelper {
       filePathInOs = downloadedFileInChatTable[0]['file_path_in_os'];
     }
 
-    debugPrint('FILE CHECK ID ::: ${model.checkID}');
-    debugPrint('FILE DATA ::: $downloadedFileInChatTable');
-    debugPrint('FILE CONVERSATION ::: ${model.conversationID}');
-    debugPrint('FILE DATA LENGTH ::: ${downloadedFileInChatTable.length}');
+    // debugPrint('FILE CHECK ID ::: ${model.checkID}');
+    // debugPrint('FILE DATA ::: $downloadedFileInChatTable');
+    // debugPrint('FILE CONVERSATION ::: ${model.conversationID}');
+    // debugPrint('FILE DATA LENGTH ::: ${downloadedFileInChatTable.length}');
 
     return filePathInOs;
   }
@@ -1123,8 +1123,8 @@ class DatabaseHelper {
       whereArgs: [model.checkID, model.conversationID],
     );
 
-    debugPrint(
-        "DATABASE:- $DOWNLOAD_FILE_IN_CHAT_TABLE ${model.checkID} is Deleted !!");
+    // debugPrint(
+    //     "DATABASE:- $DOWNLOAD_FILE_IN_CHAT_TABLE ${model.checkID} is Deleted !!");
 
     return res;
   }
@@ -1160,7 +1160,7 @@ class DatabaseHelper {
     final int res = await dbClient.insert(
         RIDER_AT_LOCATION, atPickupLocation.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
-    debugPrint('SAVE Location :: $res');
+    // debugPrint('SAVE Location :: $res');
     return res;
   }
 
@@ -1191,7 +1191,7 @@ class DatabaseHelper {
 
     final int res = await dbClient
         .delete(RIDER_AT_LOCATION, where: "order_id = ?", whereArgs: [orderId]);
-    debugPrint("DATABASE:- Job $orderId is Deleted !!");
+    // debugPrint("DATABASE:- Job $orderId is Deleted !!");
     return res;
   }
 }

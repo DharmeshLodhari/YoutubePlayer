@@ -6,8 +6,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../messaging/chat/utils.dart';
-
 class MovieTile extends StatelessWidget {
   final MovieItem? movieItem;
 

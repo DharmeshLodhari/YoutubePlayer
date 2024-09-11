@@ -409,8 +409,8 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
         Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
             widget.momentsModelList.map((e) => e.numberOfComments).toList();
 
-        debugPrint(
-            'NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
+        // debugPrint(
+        //     'NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
       }
     });
   }

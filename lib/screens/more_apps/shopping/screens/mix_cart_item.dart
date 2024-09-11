@@ -3,10 +3,10 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/movies/models/movie_item.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
@@ -62,7 +62,7 @@ class _MixCartItemState extends State<MixCartItem> {
   }
 
   void initializeShoppingCart() async {
-    debugPrint("initializeShoppingCart called");
+    // debugPrint("initializeShoppingCart called");
     final List items = await ShoppingAuthService().getShoppingCart();
     for (var element in items) {
       final String type = element is Product ? "product" : "service";
@@ -411,7 +411,7 @@ class _MixCartItemState extends State<MixCartItem> {
       "id": mapData["item"].conversationID,
       "qty": mapData["qty"],
     };
-    debugPrint("Data From increasing the  item : $data");
+    // debugPrint("Data From increasing the  item : $data");
     await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
   }
 
@@ -433,7 +433,7 @@ class _MixCartItemState extends State<MixCartItem> {
       "qty": mapData["qty"] - 1,
     };
 
-    debugPrint("Data send From Remove Button : $data");
+    // debugPrint("Data send From Remove Button : $data");
     basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
     await ShoppingAuthService().removeItemFromShoppingCart(data);
   }

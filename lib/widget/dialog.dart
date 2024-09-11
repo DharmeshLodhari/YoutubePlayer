@@ -670,7 +670,7 @@ void showHoldHintCard({required BuildContext context}) {
 }
 
 void showUserLogoutCard({required BuildContext context}) {
-  debugPrint("WorkManager cancel");
+  // debugPrint("WorkManager cancel");
   // Workmanager().cancelAll();
   showDialog(
     barrierDismissible: true,

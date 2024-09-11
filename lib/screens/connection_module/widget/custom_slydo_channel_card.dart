@@ -2,7 +2,11 @@ import 'dart:async';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/channel_model.dart';
+import 'package:Slydo/screens/messaging/chat/models/channel_model.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/yarn/utils/utils.dart';
+import 'package:Slydo/screens/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +15,6 @@ import 'package:provider/provider.dart';
 import '../../../routes/route_constants.dart';
 import '../../../widget/item_display_card.dart';
 import '../../../widget/loading_indicator.dart';
-import '../../more_apps/messaging/message_auth.dart';
-import '../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../../more_apps/yarn/utils/utils.dart';
-import '../../more_apps/yarn/utils/yarn_enum.dart';
 
 // ignore: must_be_immutable
 class CustomSlydoChannelCard extends StatefulWidget {

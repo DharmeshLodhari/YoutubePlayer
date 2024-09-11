@@ -364,7 +364,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
             shippingOptionsLoading = false;
             if (mounted) setState(() {});
 
-            debugPrint('VALUE :: $value');
+            // debugPrint('VALUE :: $value');
             for (var element in value) {
               // String shippingOption = element.name;
               // int shippingOptionAmount = element.price;
@@ -467,9 +467,9 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
       selectedShippingOptionName = shippingOption?.name;
       userSelectedShippingOption[shippingOption?.owner ?? ""] =
           shippingOption?.id;
-      debugPrint('OWNER -> ${shippingOption?.owner}');
-      debugPrint('OWNER ID -> ${shippingOption?.id}');
-      debugPrint('USER OWNER  -> $userSelectedShippingOption');
+      // debugPrint('OWNER -> ${shippingOption?.owner}');
+      // debugPrint('OWNER ID -> ${shippingOption?.id}');
+      // debugPrint('USER OWNER  -> $userSelectedShippingOption');
       if (mounted) setState(() {});
     }
   }

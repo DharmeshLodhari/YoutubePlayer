@@ -1,3 +1,5 @@
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,8 +11,6 @@ import '../routes/route_constants.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
 import '../widget/no_item_in_list.dart';
-import 'more_apps/user_profile/models/user.dart';
-import 'more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class SearchUser extends StatefulWidget {
   const SearchUser({super.key});
@@ -91,7 +91,7 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget getUserTile(var object) {
-    debugPrint('object::::$object');
+    // debugPrint('object::::$object');
     final CustomerProfile user = CustomerProfile.fromJson(object);
 
     if (user.userName.toString().toLowerCase() == "slydo" ||

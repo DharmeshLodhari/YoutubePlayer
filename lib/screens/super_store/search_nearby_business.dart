@@ -11,9 +11,9 @@ import '../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../widget/rounded_background_icon.dart';
 import '../../widget/item_display_card.dart';
 import '../more_apps/shopping/models/store.dart';
-import '../more_apps/user_profile/models/search_user_item_with_filter.dart';
-import '../more_apps/user_profile/models/user.dart';
-import '../more_apps/yarn/utils/yarn_enum.dart';
+import '../user_profile/models/search_user_item_with_filter.dart';
+import '../user_profile/models/user.dart';
+import '../yarn/utils/yarn_enum.dart';
 
 class SearchNearByBusiness extends StatefulWidget {
   const SearchNearByBusiness({super.key});
@@ -135,7 +135,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         next = result['next'];
         previous = result['previous'];
         final List? tempList = result['results'];
-        debugPrint('TEMP LIST --> $tempList');
+        // debugPrint('TEMP LIST --> $tempList');
         if (mounted) {
           isLoading = false;
           try {
@@ -146,7 +146,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
             debugPrint("error adding products $e");
           }
           setState(() {});
-          debugPrint("ALL $nearByBusiness");
+          // debugPrint("ALL $nearByBusiness");
         }
       }
       if (nearByBusiness.isEmpty) {
@@ -868,7 +868,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                 CurvedButton(
                   text: 'Pick',
                   onPressed: () {
-                    debugPrint('PICKED CAT ---> $pickedLgaList');
+                    // debugPrint('PICKED CAT ---> $pickedLgaList');
                     Navigator.pop(context);
                     bottomSheetSetState(() {});
                   },

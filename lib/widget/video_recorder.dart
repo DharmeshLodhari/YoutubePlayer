@@ -101,7 +101,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
         key: _scaffoldKey,
         // appBar: appBar(),
         body: OrientationBuilder(builder: (context, orientation) {
-          debugPrint("=> ${orientation.index}");
+          // debugPrint("=> ${orientation.index}");
           if (orientation == Orientation.portrait) {
             return Stack(
               children: <Widget>[
@@ -382,7 +382,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
     // If the controller is updated then update the UI.
     controller!.addListener(() {
-      debugPrint("===>> ${controller!.value.aspectRatio} ");
+      // debugPrint("===>> ${controller!.value.aspectRatio} ");
 
       if (mounted) {
         setState(() {});

@@ -1,5 +1,5 @@
+import 'package:Slydo/screens/blog/post_detail_page.dart';
 import 'package:Slydo/screens/more_apps/news/news_auth.dart';
-import 'package:Slydo/screens/post_detail_page.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';

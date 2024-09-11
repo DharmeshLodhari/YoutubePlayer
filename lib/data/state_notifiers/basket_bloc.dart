@@ -1,8 +1,8 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/shipping_process/models/shared_cart_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -152,8 +152,8 @@ class BasketBloc extends ChangeNotifier {
     merchantNameMap[merchantFullName] = merchantUserName;
     merchantNameMapCopy[merchantFullName] = merchantUserName;
 
-    debugPrint('MERCHANT NAME COPY LENGTH ::: ${merchantNameMapCopy.length}');
-    debugPrint('MERCHANT NAME COPY ::: $merchantNameMapCopy');
+    // debugPrint('MERCHANT NAME COPY LENGTH ::: ${merchantNameMapCopy.length}');
+    // debugPrint('MERCHANT NAME COPY ::: $merchantNameMapCopy');
   }
 
   void removeMerchantName(var item) {

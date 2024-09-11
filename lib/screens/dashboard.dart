@@ -6,14 +6,19 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/main_socket_message_handler.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/settings/general_setting.dart';
 import 'package:Slydo/screens/super_store/super_store_home.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
+import 'package:Slydo/screens/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
@@ -40,11 +45,6 @@ import 'connection_module/connections_dashboard.dart';
 import 'home.dart';
 import 'moments/screens/moment_detail/moment_detail_page.dart';
 import 'moments/screens/moments_service.dart';
-import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
-import 'more_apps/settings/general_setting.dart';
-import 'more_apps/yarn/yarn_auth.dart';
-import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
@@ -161,12 +161,12 @@ class _DashboardState extends State<Dashboard> {
     ChatMessageSynchronizer().updateFetchStream(isFetching: true);
 
     final int result = await connectionListBloc.getConnectionsCount();
-    debugPrint("CONNECTION LIST LENGTH:- $result");
+    // debugPrint("CONNECTION LIST LENGTH:- $result");
     if (result == 0) {
       await ConnectionSynchronizer().fetch(isRefresh: true);
 
       final int result = await connectionListBloc.getConnectionsCount();
-      debugPrint("CONNECTION LIST LENGTH:- $result");
+      // debugPrint("CONNECTION LIST LENGTH:- $result");
 
       for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
         if (backgroundFetchStopBloc.isAllowed) {
@@ -196,8 +196,8 @@ class _DashboardState extends State<Dashboard> {
     MyGlobals.notificationStream = AwesomeNotificationService()
         .notificationActionStream!
         .listen((receivedNotification) async {
-      debugPrint("action:-  ${receivedNotification.buttonKeyPressed}");
-      debugPrint("data:-  ${receivedNotification.payload}");
+      // debugPrint("action:-  ${receivedNotification.buttonKeyPressed}");
+      // debugPrint("data:-  ${receivedNotification.payload}");
 
       final Map<String, dynamic>? payload = receivedNotification.payload;
 
@@ -223,7 +223,7 @@ class _DashboardState extends State<Dashboard> {
           navigateToNotification(receivedNotification.toMap());
         });
       } else {
-        debugPrint("===> ${receivedNotification.toMap()}");
+        // debugPrint("===> ${receivedNotification.toMap()}");
 
         // saveNotification(payload);
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -271,19 +271,19 @@ class _DashboardState extends State<Dashboard> {
     /// dismissedLifeCycle: null,
     /// buttonKeyPressed: null, buttonKeyInput: null}
     ///
-    debugPrint('NOTIFICAITON TYPE --> $data');
+    // debugPrint('NOTIFICAITON TYPE --> $data');
 
     final Map<String, dynamic> notification = data['payload'] is String
         ? jsonDecode(data['payload'])
         : data['payload'];
 
-    debugPrint('NOTIFICAITON TYPE --> ${notification['type']}');
+    // debugPrint('NOTIFICAITON TYPE --> ${notification['type']}');
 
     if (notification['type'] == "chatroom_message" ||
         notification['type'] == "nudge_user") {
       final String? recipientUsername =
           notification['actions'].replaceAll("/chat-screen/", "");
-      debugPrint("Recipient user name = $recipientUsername");
+      // debugPrint("Recipient user name = $recipientUsername");
 
       if (recipientUsername != null) {
         showDialog(

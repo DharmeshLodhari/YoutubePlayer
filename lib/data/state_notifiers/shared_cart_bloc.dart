@@ -1,8 +1,8 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/shipping_process/auth/shared_cart_auth.dart';
+import 'package:Slydo/screens/shipping_process/models/shared_cart_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -158,7 +158,7 @@ class SharedCartBloc extends ChangeNotifier {
         await getSharedCartProductDetail(context, sharedCartModel);
       }
 
-      debugPrint("CART LIST:- ${cartList.length} ");
+      // debugPrint("CART LIST:- ${cartList.length} ");
     }
   }
 
@@ -230,7 +230,7 @@ class SharedCartBloc extends ChangeNotifier {
         }
       }
     }
-    debugPrint("CART DETAIL ID:- ${cart.id} ");
+    // debugPrint("CART DETAIL ID:- ${cart.id} ");
   }
 
   Future<SharedCartModel> refreshCartDetail(String? cartId,
@@ -249,7 +249,6 @@ class SharedCartBloc extends ChangeNotifier {
         updateCartModel(value);
       }
     }).catchError((error) {
-      debugPrint(error.toString());
       debugPrint("Product check variant::: ${error.toString()}");
       // showToast(message: error.toString());
     });

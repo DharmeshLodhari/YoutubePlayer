@@ -2,10 +2,12 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/moments/models/comment_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -27,8 +29,6 @@ import '../widget/dialog.dart';
 import '../widget/rounded_background_icon.dart';
 import '../widget/tab_selection.dart';
 import 'connection_module/channels.dart';
-import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
-import 'more_apps/user_profile/user_auth.dart';
 
 class SearchModule extends StatefulWidget {
   final dynamic arguments;
@@ -536,7 +536,7 @@ class _SearchModuleState extends State<SearchModule>
       suggestionsList.addAll(value.result);
       nextPageUrl = basePaginationModel!.next;
       isFirstTime = false;
-      debugPrint('NEXT PAGE URL -> ${basePaginationModel!.next}');
+      // debugPrint('NEXT PAGE URL -> ${basePaginationModel!.next}');
 
       if (suggestionsList.isEmpty) {
         if (mounted) setState(() => noItemInSuggestionList = true);
@@ -562,7 +562,7 @@ class _SearchModuleState extends State<SearchModule>
 
   Future<void> getSearchUserList() async {
     if (!isLoading) {
-      debugPrint('GET LIST ---------->');
+      // debugPrint('GET LIST ---------->');
 
       if (next != null && !isLoading) {
         if (mounted) {
@@ -587,7 +587,7 @@ class _SearchModuleState extends State<SearchModule>
         previous = result['previous'];
         final List? tempList = result['results'];
 
-        debugPrint('RESULT ::: $tempList');
+        // debugPrint('RESULT ::: $tempList');
 
         if (mounted) {
           isLoading = false;
@@ -597,7 +597,7 @@ class _SearchModuleState extends State<SearchModule>
             for (var result in tempList!) {
               results.add(getResultTile(result));
             }
-            debugPrint('FINAL RESULT-> $results');
+            // debugPrint('FINAL RESULT-> $results');
           } catch (e) {
             debugPrint('CANNOT SHOW SEARCH RESULT -> ${e.toString()}');
           }
@@ -637,7 +637,7 @@ class _SearchModuleState extends State<SearchModule>
   Widget getResultTile(var result) {
     switch (selectedMenuItemIndex) {
       case 0:
-        debugPrint('RESULT OKAY->');
+        // debugPrint('RESULT OKAY->');
         return getUserTile(result);
 
       case 1:

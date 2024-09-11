@@ -25,7 +25,7 @@ Future<bool> commitMsg() async {
 Future<bool> preCommit() async {
   try {
     final ProcessResult result = await Process.run('dartanalyzer', ['bin']);
-    debugPrint("Result : ${result.stdout}");
+    // debugPrint("Result : ${result.stdout}");
     if (result.exitCode != 0) return false;
   } catch (e) {
     return false;

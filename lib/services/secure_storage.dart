@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
+import 'package:Slydo/screens/user_profile/models/SecureUser.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorage {

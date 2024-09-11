@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/main.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

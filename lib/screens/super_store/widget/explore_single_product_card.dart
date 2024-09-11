@@ -4,7 +4,7 @@ import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
+import 'package:Slydo/screens/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';

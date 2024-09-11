@@ -6,14 +6,14 @@ import 'package:Slydo/data/state_notifiers/basket_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_new.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/shipping_process/auth/shipping_process_auth.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -649,7 +649,7 @@ class _OrderTileState extends State<OrderTile> {
                 .acceptPaymentRequests(order?.refundPaymentRequestId ?? "");
             if (response.statusCode == 200 || response.statusCode == 201) {
               final jsonData = json.decode(response.body);
-              debugPrint("jsonData: ====> $jsonData");
+              // debugPrint("jsonData: ====> $jsonData");
               final String paymentId = jsonData["id"] ?? 0;
               if (paymentId != null || paymentId != 0) {
                 sendOrderRefundPaymentId(paymentId);
@@ -873,12 +873,12 @@ class _OrderTileState extends State<OrderTile> {
       },
     };
 
-    debugPrint("data $data");
+    // debugPrint("data $data");
     await PaymentAndBankingAuth().createPaymentRequests(data).then((value) {
       response = value;
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonData = json.decode(response.body);
-        debugPrint("jsonData: ====> $jsonData");
+        // debugPrint("jsonData: ====> $jsonData");
         final int paymentRequestId = jsonData["id"] ?? 0;
         if (paymentRequestId != null || paymentRequestId != 0) {
           sendOrderRefundPaymentRequestId(paymentRequestId);
@@ -964,7 +964,7 @@ class _OrderTileState extends State<OrderTile> {
           setState!(() {
             // updateStatus(value);
             statusOfOrder = value;
-            debugPrint(value);
+            // debugPrint(value);
           });
         }
       },
@@ -1004,9 +1004,9 @@ class _OrderTileState extends State<OrderTile> {
 
   Future<bool> checkAccountBalance() async {
     final double accountBalance = await getAccountBalance();
-    debugPrint("accountBalance:- $accountBalance");
+    // debugPrint("accountBalance:- $accountBalance");
     final double spendingAmount = order!.totalPrice! / 100;
-    debugPrint("spendingAmount:- $spendingAmount");
+    // debugPrint("spendingAmount:- $spendingAmount");
     if (spendingAmount > accountBalance) {
       showToast(message: "You don't have enough money in Slydo account!!");
       return false;

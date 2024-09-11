@@ -1,0 +1,1195 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/screens/messaging/chat/models/add_group_model.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/chat/models/gif_model/gif_model.dart';
+import 'package:Slydo/screens/messaging/chat/models/group_detail_model.dart';
+import 'package:Slydo/screens/messaging/models/message.dart';
+import 'package:Slydo/screens/moments/models/comment_model.dart';
+import 'package:Slydo/screens/payment_and_banking/models/envelope_model.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import 'chat/models/channel_model.dart';
+
+class MessageAuth extends AuthService {
+  // Send email to user.
+  Future<bool> sendMessage(Map data) async {
+    final String url = "${AppConfig.baseUrl}/api/v1/messaging/send/";
+    final headers = await getAuthHeaders();
+    final data0 = jsonEncode(data);
+    final response = await httpPost(url, body: data0, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> sendSocketMessage(Map data, File media, {File? poster}) async {
+    final String url = "${AppConfig.chatUrl}/api/v1/chat/create/";
+    final headers = await getAuthHeaders();
+
+    final request = http.MultipartRequest("POST", Uri.parse(url));
+
+    data.forEach((k, v) {
+      request.fields[k] = v.toString();
+    });
+
+    // Add fields
+    request.fields["media"] = media.path;
+
+    // Create multipart using filepath, string or bytes
+    final multipartFile1 =
+        await http.MultipartFile.fromPath("media", media.path);
+
+    // Add multipart to request
+    request.files.add(multipartFile1);
+
+    // adding poster
+    if (poster != null) {
+      request.fields["poster"] = poster.path;
+      final multipartFile2 =
+          await http.MultipartFile.fromPath("poster", poster.path);
+      request.files.add(multipartFile2);
+    }
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    request.fields.forEach((key, value) {
+      // debugPrint("$key :- $value");
+    });
+
+    final response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller image, Your image is too large.");
+    }
+    final responseBody = await response.stream.bytesToString();
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+  }
+
+  Future<bool> sendReplyMessage(
+      {String? messageId, String? data, String? conversationId}) async {
+    final String url =
+        "${AppConfig.chatUrl}/api/v1/chat/reply-chat-message/$messageId/$conversationId/";
+    final headers = await getAuthHeaders();
+    // debugPrint(
+    //     "Data Sent MESSAGE ID:- $messageId CONVERSATION ID:- $conversationId DATA:- $data");
+    final response = await httpPost(url, body: data, headers: headers);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
+  Future<bool> updateMessage(String id, String action) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/messaging/update/$id/$action/";
+    final headers = await getAuthHeaders();
+    final response = await httpPatch(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  // it will delete the message
+  Future<bool> deleteMessage(String id) async {
+    final String url = "${AppConfig.baseUrl}/api/v1/messaging/delete/$id/";
+    final headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  // Get single message
+  Future<Message> getMessage(String id) async {
+    final String url = "${AppConfig.baseUrl}/api/v1/messaging/read/$id/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+      final Message message = Message(
+        subject: jsonData["subject"],
+        id: jsonData["id"],
+        body: jsonData["body"],
+        timeStamp: jsonData["time_sent"],
+        isRead: jsonData["is_read"],
+        recipient: jsonData["recipient"],
+        recipientType: jsonData["recipient_type"] ?? "User",
+        sender: jsonData["sender"],
+        senderAvatar: jsonData["sender_avatar"],
+        senderType: jsonData["sender_type"] ?? "User",
+        recipientAvatar: jsonData["recipient_avatar"],
+        isArchivedByRecipient: jsonData["is_archived_by_recipient"],
+        isStarredByRecipient: jsonData["is_starred_by_recipient"],
+        isArchivedBySender: jsonData["is_archived_by_sender"],
+        isStarredBySender: jsonData["is_starred_by_sender"],
+      );
+      return message;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  // Get single message
+  Future<int> getUnreadMessageCount() async {
+    final String url = "${AppConfig.baseUrl}/api/v1/messaging/unread-count/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+      return jsonData["count"] as int;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<int> getUnreadNotificationCount() async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/social/ask/notifications-count/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+      return jsonData["count"] as int;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  // List messages filters: [archived,sent,starred,all]
+  Future<Map<String, dynamic>?> listMessages(String? next, String? previous,
+      {String? filter}) async {
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      if (filter == null) {
+        url = "${AppConfig.baseUrl}/api/v1/messaging/list/all";
+      } else {
+        url = "${AppConfig.baseUrl}/api/v1/messaging/list/$filter/";
+      }
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    final headers = await getAuthHeaders();
+
+    final response = await httpGet(url, headers: headers);
+
+    // debugPrint('MESSAGE URL ::: ${response.statusCode}');
+    // debugPrint('MESSAGE ::: ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final List<PartialMessage> messagesList = [];
+      final jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        final PartialMessage message = PartialMessage(
+          subtitle: item["subtitle"],
+          subject: item["sender"],
+          id: item["id"],
+          timeStamp: item["time_sent"],
+          isRead: item["is_read"],
+          recipient: item["recipient"],
+          recipientType: item["recipient_type"] ?? "User",
+          sender: item["sender"],
+          senderAvatar: item["sender_avatar"],
+          senderType: item["sender_type"] ?? "User",
+          recipientAvatar: item["recipient_avatar"],
+          isArchivedByRecipient: item["is_archived_by_recipient"],
+          isStarredByRecipient: item["is_starred_by_recipient"],
+          isArchivedBySender: item["is_archived_by_sender"],
+          isStarredBySender: item["is_starred_by_sender"],
+        );
+        messagesList.add(message);
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": messagesList
+      };
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  // List messages filters: [archived,sent,starred,all]
+  Future<Map<String, dynamic>?> getChatMessages(String? next, String? previous,
+      {String? conversionId}) async {
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = "${AppConfig.chatUrl}/api/v1/chat/messages/${conversionId!}/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    final headers = await getAuthHeaders();
+
+    // var response = await http
+    //     .get(url, headers: headers)
+    //     .timeout(timeOutDuration, onTimeout: () => timeOutFunction(url: url));
+
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final List<String> previousMessages = [];
+      final jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        previousMessages.add(jsonEncode(item));
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": previousMessages
+      };
+      return result;
+    } else if (response.statusCode == 500) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("Server Error");
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error(response.body);
+    }
+  }
+
+  // Get status of the user you are chatting with
+  Future<Map?> getChatUserStatus(String id) async {
+    final String url =
+        "${AppConfig.chatUrl}/api/v1/chat/retrieve-user-chat-status/$id/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+      return jsonData;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  // List the  item with pagination
+  Future<Map<String, dynamic>?> searchProductAndServiceOfUser(
+      String url, String? next, String? previous) async {
+    // debugPrint("URl:- $url");
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = getSecureUrl(url: next);
+    }
+    final headers = await getAuthHeaders();
+
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<ChatConversation> createGroupChat(
+      {required AddGroupModel group, required String type}) async {
+    final String url = "${AppConfig.baseUrl}/api/v1/user/group-conversation/";
+    final headers = await getAuthHeaders();
+
+    final request = http.MultipartRequest("POST", Uri.parse(url));
+
+    final List<String?> listOfUser = [];
+
+    for (var element in group.users!) {
+      listOfUser.add(element.userName);
+    }
+
+    request.fields["group_name"] = group.name!;
+    request.fields["participants"] = jsonEncode(listOfUser);
+    request.fields["description"] = group.description!;
+    request.fields["type"] = type;
+    request.fields["conversation_type"] = type;
+    request.fields["is_group_conversation"] = jsonEncode(true);
+    request.fields["is_public_group"] = jsonEncode(group.makePublic);
+    request.fields["age_restriction"] = jsonEncode(group.ageRestriction);
+    //PAID GROUP OPTIONS
+    request.fields["group_subscription_currency"] = 'NGN';
+    // request.fields["conversation_type"] = 'NGN';
+    if (group.channelFee != null) {
+      request.fields["group_subscription_fee"] =
+          jsonEncode(group.channelFee! * 100);
+    }
+    request.fields["group_max_allowed_users"] =
+        jsonEncode(group.maxAllowedMembers);
+    if (group.groupProfilePhoto != null) {
+      // Create multipart using filepath, string or bytes
+      final multipartFile1 =
+          await http.MultipartFile.fromPath("banner", group.groupProfilePhoto!);
+
+      // Add multipart to request
+      request.files.add(multipartFile1);
+    }
+    if (group.avatar != null) {
+      // Create multipart using filepath, string or bytes
+      final multipartFile2 =
+          await http.MultipartFile.fromPath("avatar", group.avatar!);
+
+      // Add multipart to request
+      request.files.add(multipartFile2);
+    }
+
+    // debugPrint('CREATE GROUP FIELDS -> ${request.fields}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    request.fields.forEach((key, value) {
+      debugPrint("$key :- $value");
+    });
+
+    final response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller image, Your image is too large.");
+    }
+    final responseBody = await response.stream.bytesToString();
+    // debugPrint(responseBody);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // debugPrint("DATA:- ${request.fields}");
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+
+      final ChatConversation chatConversation =
+          ChatConversation.fromJson(jsonDecode(responseBody));
+
+      return chatConversation;
+    } else {
+      // debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+  }
+
+  Future<Map<String, dynamic>?> updateGroupChat(
+      {required AddGroupModel group}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/${group.groupConversationId}/";
+    final headers = await getAuthHeaders();
+
+    final request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    request.fields["group_name"] = group.name!;
+    request.fields["description"] = group.description!;
+    request.fields["age_restriction"] = jsonEncode(group.ageRestriction);
+    request.fields["is_public_group"] = jsonEncode(group.makePublic);
+    request.fields["group_subscription_currency"] = 'NGN';
+    if (group.channelFee != null) {
+      request.fields["group_subscription_fee"] =
+          jsonEncode(group.channelFee! * 100);
+    }
+    request.fields["group_max_allowed_users"] =
+        jsonEncode(group.maxAllowedMembers);
+
+    if (group.groupProfilePhoto != null) {
+      // Create multipart using filepath, string or bytes
+      final multipartFile1 =
+          await http.MultipartFile.fromPath("banner", group.groupProfilePhoto!);
+
+      // Add multipart to request
+      request.files.add(multipartFile1);
+    }
+
+    if (group.avatar != null) {
+      // Create multipart using filepath, string or bytes
+      final multipartFile2 =
+          await http.MultipartFile.fromPath("avatar", group.avatar!);
+
+      // Add multipart to request
+      request.files.add(multipartFile2);
+    }
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    request.fields.forEach((key, value) {
+      debugPrint("$key :- $value");
+    });
+
+    final response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller image, Your image is too large.");
+    }
+    final responseBody = await response.stream.bytesToString();
+    // debugPrint(responseBody);
+
+    log("URL:- $url REQUEST FIELDS:- ${request.fields} RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return jsonDecode(responseBody);
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+  }
+
+  // Get status of the user you are chatting with
+  Future<GroupDetailModel> getGroupConversationDetail(
+      String conversationID) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/detail/$conversationID/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final Map<String, dynamic> jsonData = json.decode(response.body);
+      log("URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- \n${response.body}");
+      final GroupDetailModel groupDetailModel =
+          GroupDetailModel.fromJson(jsonData);
+      return groupDetailModel;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- \n${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  // Get status of the user you are chatting with
+  Future<dynamic> fetchChannels() async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/chat/conversation/channels/";
+
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final Map<String, dynamic> jsonData = json.decode(response.body);
+      // GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
+      // debugPrint(jsonData.toString());
+      return 'channels';
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- \n${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> addParticipantToGroup(
+      {required String conversationId,
+      required List<CustomerProfile> users}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/add-user/$conversationId/";
+    final headers = await getAuthHeaders();
+
+    final List<String?> userList = users.map((user) => user.userName).toList();
+
+    // debugPrint("List of users to add:- $userList");
+
+    final Map<String, dynamic> data = {"users": userList};
+
+    final response =
+        await httpPost(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> joinChannel(
+      {required String channelId, required String userName}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/join-channel/$channelId/";
+    final headers = await getAuthHeaders();
+
+    // debugPrint("List of users to add:- ${[userName]}");
+
+    final Map<String, dynamic> data = {
+      "users": [userName]
+    };
+
+    final response =
+        await httpPost(url, headers: headers, body: jsonEncode(data));
+
+    // debugPrint(
+    //     "JOIN CHANNEL:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else if (response.statusCode == 412) {
+      return Future.error(jsonDecode(response.body)['error']);
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> removeParticipantFromAdmin(
+      {required String conversationId, String? userName}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/remove-admin-user/$conversationId/";
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
+
+    final data0 = jsonEncode(data);
+
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> makeParticipantAdmin(
+      {required String conversationId, String? userName}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/add-admin-user/$conversationId/";
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
+
+    final data0 = jsonEncode(data);
+
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> muteParticipantFromGroup(
+      {required String conversationId, String? userName}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/mute-participant/$conversationId/";
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
+
+    final data0 = jsonEncode(data);
+
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> unMuteParticipantFromGroup(
+      {required String conversationId, String? userName}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/unmute-participant/$conversationId/";
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
+
+    final data0 = jsonEncode(data);
+
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> blockParticipantFromGroup(
+      {required String conversationId, String? userName}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/block-participants/$conversationId/";
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
+
+    final data0 = jsonEncode(data);
+
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> unBlockParticipantFromGroup(
+      {required String conversationId, String? userName}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/unblock-participants/$conversationId/";
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
+
+    final data0 = jsonEncode(data);
+
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> removeParticipantFromGroup(
+      {required String conversationId, String? userName}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/remove-user/$conversationId/";
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
+
+    final data0 = jsonEncode(data);
+
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> exitFromGroup({required String conversationId}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/exit-group/$conversationId/";
+    final headers = await getAuthHeaders();
+
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> deleteGroup({required String conversationId}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/delete-group/$conversationId/";
+    final headers = await getAuthHeaders();
+
+    final response = await httpDelete(url, headers: headers);
+
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 204) {
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  // Search User in Contact
+  Future<Map<String, dynamic>?> searchParticipantInGroup(
+      String? next, String? previous,
+      {String? conversationId, String? query}) async {
+    String url =
+        "${AppConfig.baseUrl}/api/v1/user/group-conversation/search-participants/$conversationId";
+    if (query != "") {
+      url = "$url?q=$query/";
+    }
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = getSecureUrl(url: next);
+    }
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  void sendStopNudge({Map<String, dynamic>? dataToSend}) async {
+    final String url =
+        "${AppConfig.chatUrl}/api/v1/chat/conversation/stop-nudge/";
+    final headers = await getAuthHeaders();
+
+    final response =
+        await httpPost(url, headers: headers, body: jsonEncode(dataToSend));
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<Map<String, dynamic>?> fetchMissedMessages(
+      {String? next, String? previous}) async {
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = "${AppConfig.chatUrl}/api/v1/chat/fetch-missed-messages/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    final headers = await getAuthHeaders();
+
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // debugPrint(
+      //     "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+      final List<String> missedMessages = [];
+      final jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        missedMessages.add(jsonEncode(item));
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": missedMessages
+      };
+      return result;
+    } else {
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> acknowledgeMessagesToServer(
+      {List? dataToBeSent}) async {
+    final String url = "${AppConfig.chatUrl}/api/v1/chat/acknowledge-messages/";
+
+    final headers = await getAuthHeaders();
+
+    final Map<String, dynamic> data = {"data": dataToBeSent};
+
+    if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
+
+    ///{id: 82860938-6308-4bb9-988d-1b2fc9f60f85,
+    /// check_id: 3161786e-5fb8-48ce-91fa-8677001e56e0,
+    /// conversation: ced68efb-dc48-4d20-9811-e2515aa47207,
+    /// author: abiola.rasheed.19, text: hi,
+    /// read_by_author: true, read_by_recipient: true,
+    /// was_edited: false,
+    /// updated_at: 2021-07-04T01:22:58.092910+01:00,
+    /// created_at: 2021-07-04T01:22:58.092936+01:00,
+    /// kind: text, deleted_for_recipient: false,
+    /// deleted_for_author: false,
+    /// delivered: true, meta_data: {},
+    /// replied_to: null,
+    /// from_customer_avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/4059d32af9974a66b898964736173075.jpg,
+    /// to_customer_avatar: , type: acknowledge_message, processed: acknowledge_message}
+
+    /// {"check_id": "6d2408ac-a2dc-4864-a306-600a702da378",
+    /// "conversation_id": "ced68efb-dc48-4d20-9811-e2515aa47207",
+    /// "username": "black",
+    /// "delivered": true, "type": "acknowledge_message"}
+
+    final data0 = jsonEncode(data);
+
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // debugPrint(
+      //     "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return jsonDecode(response.body);
+    } else {
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> readByRecipientToServer(
+      {Map<String, dynamic>? dataToBeSent}) async {
+    final String url =
+        "${AppConfig.chatUrl}/api/v1/chat/acknowledge-message-read-by-recipient/";
+
+    final headers = await getAuthHeaders();
+
+    final Map<String, dynamic> data = {"data": dataToBeSent};
+
+    if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
+
+    final data0 = jsonEncode(data);
+
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // debugPrint(
+      //     "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return jsonDecode(response.body);
+    } else {
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return Future.error("");
+    }
+  }
+
+  Future<bool> sendEnvelope(
+      {required bool isEmpty, Map<String, dynamic>? data}) async {
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/magic-envelop/";
+
+    if (isEmpty) {
+      url = "${AppConfig.baseUrl}/api/v1/transactions/empty-envelop/";
+    }
+
+    final headers = await getAuthHeaders();
+    final data0 = jsonEncode(data);
+
+    final response = await httpPost(url, headers: headers, body: data0);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> putMoneyInEnvelope(
+      {Map<String, dynamic>? data, required Envelope envelope}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/transactions/empty-envelop/${envelope.id}/";
+
+    final headers = await getAuthHeaders();
+    final data0 = jsonEncode(data);
+
+    // debugPrint("Data sent => $data");
+
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<Envelope> getEnvelope({required Envelope envelope, String? id}) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/transactions/magic-envelop/${envelope.id.toString()}/?message_id=$id";
+
+    final headers = await getAuthHeaders();
+
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      //   debugPrint(
+      //       "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      final Envelope envelope = Envelope.fromJson(jsonDecode(response.body));
+
+      return envelope;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> cancelEnvelope(
+      {required Envelope envelope, required Map<String, dynamic> data}) async {
+    final type = envelope.type!.replaceAll("-envelop", "");
+
+    // debugPrint("Message DATA:- $data");
+
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/transactions/cancel-envelop/$type/${envelope.id}/";
+
+    final headers = await getAuthHeaders();
+
+    final param = {
+      "check_id": data['check_id'],
+      "conversation_id": data["conversation_id"] ?? data["conversation"],
+    };
+
+    final data0 = jsonEncode(param);
+
+    final response = await httpPatch(url, body: data0, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<List<GIFModel>> searchGIF(
+      {String? query, bool isRandom = false, bool isSticker = false}) async {
+    String url = "";
+
+    url =
+        "https://api.giphy.com/v1/${isSticker ? "stickers" : "gifs"}/search?api_key=${AppConfig.gifApiKey}&q=$query&limit=50";
+    if (isRandom) {
+      if (isSticker) {
+        url =
+            "https://api.giphy.com/v1/stickers/trending?type=stickers&limit=50&api_key=${AppConfig.gifApiKey}";
+      } else {
+        url =
+            "https://api.giphy.com/v1/gifs/trending?type=gifs&limit=50&api_key=${AppConfig.gifApiKey}";
+      }
+    }
+
+    url = Uri.encodeFull(url);
+
+    final headers = await getAuthHeaders();
+
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+      final List data = responseBody['data'];
+
+      final List<GIFModel> gifs = [];
+      for (var item in data) {
+        gifs.add(GIFModel.fromJson(item));
+      }
+      return gifs;
+    } else {
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> getChatWallpapers(
+      String? next, String? previous,
+      {String? filter}) async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    // final String url = "";
+
+    // if (next == null) {
+    //   return null;
+    // }
+    // if (next == "") {
+    //   if (filter == null) {
+    //     url = AppConfig.baseUrl + "/api/v1/messaging/list/all";
+    //   } else {
+    //     url = AppConfig.baseUrl + "/api/v1/messaging/list/" + filter + "/";
+    //   }
+    // } else {
+    //   url = getSecureUrl(url: next);
+    // }
+
+    //var headers = await getAuthHeaders();
+    //
+    //var response = await httpGet(url, headers: headers);
+    //
+    // debugPrint('MESSAGE URL ::: ${response.statusCode}');
+    // debugPrint('MESSAGE ::: ${response.body}');
+
+    if (true) {
+      final jsonData = {
+        'count': 0,
+        'next': '',
+        'previous': '',
+        'results': [
+          'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
+          'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
+          'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
+        ]
+      };
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData['results']
+      };
+      return result;
+    }
+    // else if (response.statusCode == 500) {
+    //   throw "Server Error";
+    // } else {
+    //   debugPrint(
+    //       "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    //   return Future.error("ERROR:- ${response.body}");
+    // }
+  }
+
+  Future<BasePaginationModel<List<ChannelModel>>> getChannels(
+      {required String? nextUrl, String? searchText, String? ownerName}) async {
+    String url = "${AppConfig.baseUrl}/api/v1/user/channels/";
+
+    if (searchText != null && searchText.isNotEmpty) {
+      url = "$url?search=$searchText";
+    }
+
+    if (ownerName != null && ownerName.isNotEmpty) {
+      url = "$url?owner=$ownerName";
+    }
+
+    final headers = await getAuthHeaders();
+
+    final response = await httpGet(url, headers: headers);
+    // debugPrint(
+    //     "GET CHANNELS $url ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+      final jsonData = jsonDecode(response.body);
+      final List results = jsonData['results'];
+
+      return BasePaginationModel<List<ChannelModel>>.fromJson(
+        jsonData,
+        results.map((e) => ChannelModel.fromJson(e)).toList(),
+      );
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<Map<String, dynamic>?> getSingleChannel({String? channelId}) async {
+    String url = "${AppConfig.baseUrl}/api/v1/user/get-channel/";
+
+    if (channelId != null && channelId.isNotEmpty) {
+      url = "$url$channelId/";
+    }
+
+    final headers = await getAuthHeaders();
+
+    final response = await httpGet(url, headers: headers);
+    // debugPrint(
+    //     "GET CHANNELS two $url ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // debugPrint(
+      //     "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+      final jsonData = jsonDecode(response.body);
+
+      final Map<String, dynamic> result = {
+        "results": jsonData,
+      };
+
+      return result;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+}

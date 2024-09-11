@@ -1,8 +1,8 @@
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/tracker_stepper.dart'
     as track;
+import 'package:Slydo/screens/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_elevated_button.dart';
 import 'package:badges/badges.dart' as badges;

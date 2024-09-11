@@ -524,7 +524,7 @@ class _AddPropertyState extends State<AddProperty> {
     final path = await Navigator.of(context)
         .pushNamed("/video-recorder", arguments: {"duration": videoDuration});
     if (path != null) {
-      debugPrint("$path");
+      // debugPrint("$path");
       propertyVideos.add(File(path as String));
       getVideoThumbnail(propertyVideos.length - 1);
       setState(() {});

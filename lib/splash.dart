@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/screens/user_profile/models/SecureUser.dart';
+import 'package:Slydo/screens/user_profile/models/device.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/secure_storage.dart';
@@ -30,7 +31,6 @@ import 'data/socket_provider.dart';
 import 'data/state_notifier.dart';
 import 'locale/app_localization.dart';
 import 'routes/route_constants.dart';
-import 'screens/more_apps/user_profile/models/device.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -95,8 +95,8 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void navigationPage() {
-    debugPrint(
-        "isUserFound => $isUserFound playerController.value.isPlaying => ${playerController!.value.isPlaying}");
+    // debugPrint(
+    //     "isUserFound => $isUserFound playerController.value.isPlaying => ${playerController!.value.isPlaying}");
     if (isUserFound != null && playerController?.value.isPlaying == false) {
       playerController!.setVolume(0.0);
       playerController!.removeListener(listener);
@@ -180,20 +180,20 @@ class _SplashScreenState extends State<SplashScreen>
     if (sharedPreferences.containsKey("language")) {
       final String languageCode = sharedPreferences.getString("language")!;
       AppLocalization.load(Locale(languageCode, ""));
-      debugPrint("Language Set From SharedPreference => $languageCode ");
+      // debugPrint("Language Set From SharedPreference => $languageCode ");
       return;
     }
 
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       languagesList = await Devicelocale.preferredLanguages;
-      debugPrint("Device preferred languages => $languagesList");
+      // debugPrint("Device preferred languages => $languagesList");
     } on PlatformException {
       debugPrint("Error obtaining preferred languages");
     }
     try {
       currentLocale = await Devicelocale.currentLocale;
-      debugPrint("Device current language => $currentLocale");
+      // debugPrint("Device current language => $currentLocale");
       late Language language;
       for (var lang in languages) {
         if (lang.languageCode == currentLocale!.substring(0, 2)) {
@@ -203,18 +203,18 @@ class _SplashScreenState extends State<SplashScreen>
       }
 
       AppLocalization.load(Locale(language.languageCode, ""));
-      debugPrint("Language Set From System ${language.name}");
+      // debugPrint("Language Set From System ${language.name}");
 
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       if (sharedPreferences.containsKey("language")) {
         final bool result = await sharedPreferences.setString(
             "language", language.languageCode);
-        debugPrint("Language is updated in sharedPreference => $result");
+        // debugPrint("Language is updated in sharedPreference => $result");
       } else {
         final bool result = await sharedPreferences.setString(
             "language", language.languageCode);
-        debugPrint("Language is set in sharedPreference => $result");
+        // debugPrint("Language is set in sharedPreference => $result");
       }
     } on PlatformException {
       debugPrint("Error obtaining current locale");
@@ -290,7 +290,7 @@ class _SplashScreenState extends State<SplashScreen>
     // for not showing intro second time we are maintaining this variable in shared pref
     isLoggedOut = _sharedPreferences.getBool('isLoggedOut') ?? false;
     if (isLoggedOut) {
-      debugPrint("IsLoggedOut:- $isLoggedOut");
+      // debugPrint("IsLoggedOut:- $isLoggedOut");
       isUserFound = false;
       return;
     }

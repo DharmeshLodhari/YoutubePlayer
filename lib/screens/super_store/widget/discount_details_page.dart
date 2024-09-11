@@ -1,15 +1,10 @@
-// import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifiers/basket_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
-// import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
-// import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
 import 'package:Slydo/utils/navigation_util.dart';
-// import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
@@ -126,7 +121,7 @@ class DiscountDetailsPageState extends State<DiscountDetailsPage> {
     super.didUpdateWidget(oldWidget);
     if (widget.category != _currentCategory) {
       _currentCategory = widget.category!;
-      debugPrint('CALLING OTHER ::: $_currentCategory');
+      // debugPrint('CALLING OTHER ::: $_currentCategory');
       // _refreshPage(); // Reload shop list when category changes
     }
   }

@@ -2,7 +2,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
-import '../screens/more_apps/utility/select_provider_screen.dart';
+import '../screens/utility/select_provider_screen.dart';
 import '../utils/enums.dart';
 import '../utils/navigation_util.dart';
 

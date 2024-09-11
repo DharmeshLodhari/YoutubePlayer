@@ -1,6 +1,8 @@
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/connection_module/widget/custom_slydo_channel_card.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/messaging/chat/models/channel_model.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
+import 'package:Slydo/screens/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -9,8 +11,6 @@ import '../../locale/app_localization.dart';
 import '../../utils/slydo_app_icon_icons.dart';
 import '../../widget/no_item_in_list.dart';
 import '../moments/models/comment_model.dart';
-import '../more_apps/messaging/chat/models/channel_model.dart';
-import '../more_apps/yarn/utils/yarn_enum.dart';
 
 class ChannelsList extends StatefulWidget {
   const ChannelsList({super.key});
