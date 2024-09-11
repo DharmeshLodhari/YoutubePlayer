@@ -6,7 +6,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
 import 'package:Slydo/screens/payment_and_banking/models/payout.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
-import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
