@@ -79,9 +79,9 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": widget.product});
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         child: SizedBox(
-          width: 230,
+          width: 170,
           child: Card(
             semanticContainer: true,
             color: Colors.transparent,
@@ -93,7 +93,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                 _buildProductImage(),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 2, left: 2, top: 4),
+                    padding: const EdgeInsets.only(right: 2, left: 2, top: 2),
                     child: IntrinsicHeight(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -101,9 +101,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                         children: [
                           _buildProductName(),
                           _buildProductShortDescription(),
-                          const SizedBox(
-                            height: 2,
-                          ),
+                          const SizedBox(height: 2),
                           _buildProductRating(),
                           Flexible(child: getPreparationTime()),
                           const SizedBox(height: 2),
@@ -529,12 +527,12 @@ class _DisplayProductState extends State<DisplayProduct> {
         }
       },
       child: RoundedBackgroundIcon(
-        height: 25,
-        width: 25,
+        height: 30,
+        width: 30,
         borderRadius: 20,
         icon: Icon(
           iconValue,
-          size: 12,
+          size: 14,
           color: iconColor,
         ),
         backgroundColor: iconBackgroundColor,
@@ -626,7 +624,7 @@ class _DisplayProductState extends State<DisplayProduct> {
     return Text(
       price,
       style: TextStyle(
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w500,
         fontSize: 14,
         color: navyBlue,
         overflow: TextOverflow.ellipsis,
@@ -635,15 +633,19 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   Widget _getProductReviews() {
-    return Text(
-      "(${widget.product.reviewScore} ${(widget.product.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
-      style: TextStyle(
-        fontWeight: FontWeight.w400,
-        fontSize: 12,
-        fontFamily: 'Inter',
-        color: fontLightGrey,
-      ),
-    );
+    if ((widget.product.reviewScore ?? 0) != 0) {
+      return Text(
+        "(${widget.product.reviewScore} ${(widget.product.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
+        style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+          fontFamily: 'Inter',
+          color: fontLightGrey,
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
   Widget getPreparationTime() {
@@ -711,7 +713,7 @@ class _DisplayProductState extends State<DisplayProduct> {
     return Stack(
       children: [
         SizedBox(
-          height: 130,
+          height: 150,
           child: CachedNetworkImage(
             imageUrl: widget.product.cover!,
             fit: BoxFit.cover,
@@ -753,26 +755,24 @@ class _DisplayProductState extends State<DisplayProduct> {
         color: blackFont,
         fontSize: 14,
         fontFamily: "Inter",
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w500,
       ),
     );
   }
 
   Widget _buildProductShortDescription() {
-    return Flexible(
-      child: Text(
-        truncateString(
-          str: messageDecoderWithEmoji(widget.product.shortDescription) ?? "",
-          lengthToTruncateAt: 45,
-          showEllipsis: true,
-        ),
-        maxLines: 2,
-        style: TextStyle(
-          fontFamily: "Inter",
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-          color: fontLightGrey,
-        ),
+    return Text(
+      truncateString(
+        str: messageDecoderWithEmoji(widget.product.shortDescription) ?? "",
+        lengthToTruncateAt: 45,
+        showEllipsis: true,
+      ),
+      maxLines: 2,
+      style: TextStyle(
+        fontFamily: "Inter",
+        fontWeight: FontWeight.w400,
+        fontSize: 12,
+        color: fontLightGrey,
       ),
     );
   }
@@ -797,7 +797,7 @@ class _DisplayProductState extends State<DisplayProduct> {
             worldCurrencies[widget.product.currency] ?? "NGN",
             style: TextStyle(
               fontFamily: "Inter",
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               fontSize: 14,
               color: navyBlue,
               overflow: TextOverflow.ellipsis,
@@ -820,18 +820,18 @@ class _DisplayProductState extends State<DisplayProduct> {
                 worldCurrencies[widget.product.currency] ?? "NGN",
                 style: TextStyle(
                   fontFamily: "Inter",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12,
-                  color: blackFont,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: fontLightGrey,
                   decoration: TextDecoration.lineThrough,
                 ),
               ),
               Text(
                 moneyDisplayNormalizer(widget.product.price!),
                 style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12,
-                  color: blackFont,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: fontLightGrey,
                   decoration: TextDecoration.lineThrough,
                 ),
               ),
@@ -914,7 +914,7 @@ class _DisplayServiceState extends State<DisplayService> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: SizedBox(
-          width: 230,
+          width: 170,
           child: Card(
             semanticContainer: true,
             color: Colors.transparent,
@@ -929,26 +929,22 @@ class _DisplayServiceState extends State<DisplayService> {
                 // ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 5.0),
+                    padding: const EdgeInsets.only(right: 2, left: 2, top: 4),
                     child: IntrinsicHeight(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildServiceName(),
-                          const SizedBox(
-                            height: 4,
-                          ),
                           _buildServiceShortDescription(),
+                          const SizedBox(height: 2),
                           _buildServiceRating(),
-                          const SizedBox(height: 6),
+                          _buildServiceRating(),
                           Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _buildServiceCurrency(),
                               _buildServicePrice(),
-                              const Expanded(child: SizedBox(width: 50)),
                               Flexible(
                                   child: displayShoppingAddingToCartControl())
                             ],
@@ -1091,12 +1087,12 @@ class _DisplayServiceState extends State<DisplayService> {
       iconColor = blackFont;
     }
     return RoundedBackgroundIcon(
-      height: 25,
-      width: 25,
+      height: 30,
+      width: 30,
       borderRadius: 20,
       icon: Icon(
         iconValue,
-        size: 12,
+        size: 14,
         color: iconColor,
       ),
       backgroundColor: iconBackgroundColor,
@@ -1276,22 +1272,26 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   Widget _getServiceReviews() {
-    return Text(
-      "(${widget.service.reviewScore} ${(widget.service.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
-      style: TextStyle(
-        fontWeight: FontWeight.w400,
-        fontSize: 12,
-        fontFamily: 'Inter',
-        color: fontLightGrey,
-      ),
-    );
+    if ((widget.service.reviewScore ?? 0) != 0) {
+      return Text(
+        "(${widget.service.reviewScore} ${(widget.service.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
+        style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+          fontFamily: 'Inter',
+          color: fontLightGrey,
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
   Widget _buildAServiceImage() {
     return Stack(
       children: [
         SizedBox(
-          height: 130,
+          height: 150,
           child: CachedNetworkImage(
             imageUrl: widget.service.cover!,
             fit: BoxFit.cover,
@@ -1334,25 +1334,25 @@ class _DisplayServiceState extends State<DisplayService> {
       style: TextStyle(
         color: blackFont,
         fontSize: 14,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w500,
+        fontFamily: "Inter",
       ),
     );
   }
 
   Widget _buildServiceShortDescription() {
-    return Flexible(
-      child: Text(
-        truncateString(
-          str: messageDecoderWithEmoji(widget.service.shortDescription) ?? "",
-          lengthToTruncateAt: 45,
-          showEllipsis: true,
-        ),
-        style: TextStyle(
-          fontFamily: "Inter",
-          fontWeight: FontWeight.w300,
-          fontSize: 12,
-          color: fontLightGrey,
-        ),
+    return Text(
+      truncateString(
+        str: messageDecoderWithEmoji(widget.service.shortDescription) ?? "",
+        lengthToTruncateAt: 45,
+        showEllipsis: true,
+      ),
+      maxLines: 2,
+      style: TextStyle(
+        fontFamily: "Inter",
+        fontWeight: FontWeight.w400,
+        fontSize: 12,
+        color: fontLightGrey,
       ),
     );
   }
@@ -1374,7 +1374,7 @@ class _DisplayServiceState extends State<DisplayService> {
       worldCurrencies[widget.service.currency!]!,
       style: TextStyle(
         fontFamily: "Inter",
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w500,
         fontSize: 14,
         color: navyBlue,
       ),
@@ -1382,13 +1382,19 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   Widget _buildServicePrice() {
-    return Text(
-      moneyDisplayNormalizer(int.parse(widget.service.price!)),
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 14,
-        color: navyBlue,
-      ),
+    return Row(
+      children: [
+        _buildServiceCurrency(),
+        Text(
+          moneyDisplayNormalizer(int.parse(widget.service.price!)),
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: navyBlue,
+            fontFamily: "Inter",
+          ),
+        ),
+      ],
     );
   }
 }

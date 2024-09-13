@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
@@ -485,7 +484,7 @@ class MessageAuth extends AuthService {
     final responseBody = await response.stream.bytesToString();
     // debugPrint(responseBody);
 
-    log("URL:- $url REQUEST FIELDS:- ${request.fields} RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+    // log("URL:- $url REQUEST FIELDS:- ${request.fields} RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       // debugPrint(
@@ -509,7 +508,7 @@ class MessageAuth extends AuthService {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final Map<String, dynamic> jsonData = json.decode(response.body);
-      log("URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- \n${response.body}");
+      // log("URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- \n${response.body}");
       final GroupDetailModel groupDetailModel =
           GroupDetailModel.fromJson(jsonData);
       return groupDetailModel;

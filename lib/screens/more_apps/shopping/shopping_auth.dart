@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
@@ -1433,7 +1432,7 @@ class ShoppingAuthService extends AuthService {
     final response = await httpGet(url, headers: headers);
 
     final jsonData = json.decode(response.body);
-    log("jsonData :- $jsonData");
+    // log("jsonData :- $jsonData");
     if (response.statusCode == 200 || response.statusCode == 201) {
       final Product product = createProduct(jsonData);
       return product;
@@ -2002,7 +2001,7 @@ class ShoppingAuthService extends AuthService {
     final jsonData = json.decode(response.body);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      log("DATA=> $jsonData");
+      // log("DATA=> $jsonData");
       // final List items = [];
       final data = jsonData["results"];
       for (int i = 0; i < data.length; i++) {

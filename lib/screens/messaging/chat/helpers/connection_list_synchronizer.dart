@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
@@ -23,7 +21,7 @@ class ConnectionSynchronizer {
   static String? _previous = "";
 
   Future<void> fetch({bool isRefresh = false}) async {
-    log("CHAT SYNCHRONIZER FETCH");
+    // log("CHAT SYNCHRONIZER FETCH");
     if (isRefresh) {
       _next = "";
       _previous = "";
@@ -64,7 +62,7 @@ class ConnectionSynchronizer {
   }
 
   Future<void> update() async {
-    log("CHAT SYNCHRONIZER UPDATE");
+    // log("CHAT SYNCHRONIZER UPDATE");
     final ChatConversation? chatConversation = await ConnectionListManager()
         .getLastChatConversation()
         .catchError((error) {

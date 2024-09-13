@@ -1001,7 +1001,7 @@ class PaymentAndBankingAuth extends AuthService {
       url,
       headers: headers,
     );
-    log("message${response.statusCode} and ${response.body}");
+    // log("message${response.statusCode} and ${response.body}");
     if (response.statusCode == 201 || response.statusCode == 200) {
       // final result = jsonDecode(response.body);
       return true;

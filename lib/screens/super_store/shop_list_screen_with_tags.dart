@@ -752,7 +752,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
             height: 15,
           ),
           SizedBox(
-            height: 260,
+            height: 280,
             child: ListView.separated(
               separatorBuilder: (BuildContext context, int index) {
                 return const SizedBox(width: 16);

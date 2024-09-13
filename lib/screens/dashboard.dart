@@ -19,6 +19,7 @@ import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/screens/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
@@ -493,11 +494,14 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: lightGrey,
         extendBody: true,
         body: SafeArea(
-            maintainBottomViewPadding: true, child: _pages[_bottomNavIndex]),
+          maintainBottomViewPadding: true,
+          child: _pages[_bottomNavIndex],
+        ),
         floatingActionButton: SizedBox(
           width: 70,
           height: 70,
           child: GestureDetector(
+            key: tutorialSlydoKey,
             onLongPress: () {
               logoutDialog(context);
             },
@@ -577,6 +581,7 @@ class _DashboardState extends State<Dashboard> {
         tabBuilder: (int index, bool isActive) {
           final color = isActive ? navyBlue : darkGreyYarn;
           return Column(
+            key: getKeysForTutorial(index),
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -684,6 +689,19 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
+  }
+
+  GlobalKey getKeysForTutorial(int index) {
+    if (list[index] == 'Store') {
+      return tutorialHomeSuperStoreKey;
+    }
+    if (list[index] == 'Chat') {
+      return tutorialChatKey;
+    }
+    if (list[index] == 'Settings') {
+      return tutorialHomeSettingsKey;
+    }
+    return GlobalKey();
   }
 
   @override

@@ -63,6 +63,19 @@ int amountLimit =
 
 enum MediaType { picture, video }
 
+String decryptPassword(String encodedPassword) {
+  // Decode the Base64 string to the original password
+  return utf8.decode(base64Decode(encodedPassword));
+}
+
+String encryptPassword(String password) {
+  // Convert password string to Base64 encoding
+  return base64Encode(utf8.encode(password));
+  // final bytes = utf8.encode(password);
+  // final hash = sha256.convert(bytes);
+  // return hash.toString();
+}
+
 Future<String?> getFile(BuildContext context,
     {MediaType fileType = MediaType.picture}) async {
   String? videoPath;
@@ -118,6 +131,27 @@ Future<String?> getFile(BuildContext context,
     }
   }
   return fileType == MediaType.picture ? croppedImage : videoPath;
+}
+
+Future<void> exitAppDialog(BuildContext context) async {
+  final bool? result = await showDialogBox(
+    context: context,
+    actionOneBgColor: mateRed,
+    actionOneTextColor: Colors.white,
+    actionTwoBgColor: greyBorderColor,
+    actionTwoTextColor: blackFont,
+    title: "Exit app",
+    description: "Are you sure want to exit app?",
+    actionOneText: AppLocalization.of(context)!.exit,
+    actionTwoText: AppLocalization.of(context)!.cancel,
+  );
+  if (result != null && result) {
+    if (Platform.isAndroid) {
+      SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+    } else if (Platform.isIOS) {
+      exit(0); // Not recommended as it forces the app to crash
+    }
+  }
 }
 
 Future<String?> getCroppedImage(BuildContext context) async {
@@ -2740,6 +2774,7 @@ Future<XFile?> selectSingleImageVideo() async {
 
 Future<List<XFile>> selectMultipleImageVideo() async {
   final List<XFile> file = await ImagePicker().pickMultipleMedia(
+    limit: 4,
     maxWidth: 1800,
     maxHeight: 1800,
   );

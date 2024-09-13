@@ -241,7 +241,9 @@ class RouteGenerator {
     switch (settings.name) {
       case Routes.LOGIN:
         return PageTransition(
-          child: const UserLogin(),
+          child: UserLogin(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

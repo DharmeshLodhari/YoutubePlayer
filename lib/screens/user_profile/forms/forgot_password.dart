@@ -125,7 +125,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             labelColor: darkGrey,
             keyboardType: TextInputType.phone,
             controller: phoneNumberController,
-            hintText: "08023000000",
+            hintText: "8023000000",
             inputFormatters: [
               LengthLimitingTextInputFormatter(10),
               FilteringTextInputFormatter.digitsOnly,

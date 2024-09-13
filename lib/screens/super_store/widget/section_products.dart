@@ -72,10 +72,10 @@ class _SectionProductsState extends State<SectionProducts> {
                 ),
                 const SizedBox(height: 10),
                 SizedBox(
-                  height: 260,
+                  height: 280,
                   child: ListView.separated(
                     separatorBuilder: (BuildContext context, int index) {
-                      return const SizedBox(width: 16);
+                      return const SizedBox(width: 0);
                     },
                     shrinkWrap: true,
                     physics: const ScrollPhysics(),

@@ -388,10 +388,10 @@ class DiscountDetailsPageState extends State<DiscountDetailsPage> {
                   childCount: productList.length,
                 ),
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  // mainAxisSpacing: 5,
-                  mainAxisExtent: 250,
-                  // crossAxisSpacing: 5,
-                  maxCrossAxisExtent: 200,
+                  mainAxisSpacing: 8,
+                  mainAxisExtent: 280,
+                  crossAxisSpacing: 8,
+                  maxCrossAxisExtent: 300,
                 ),
               ),
               SliverToBoxAdapter(

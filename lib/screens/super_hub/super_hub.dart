@@ -244,10 +244,10 @@ class _SuperHubState extends State<SuperHub> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 22,
-                  mainAxisExtent: 260,
-                  crossAxisSpacing: 15,
-                  maxCrossAxisExtent: 200,
+                  mainAxisSpacing: 8,
+                  mainAxisExtent: 280,
+                  crossAxisSpacing: 8,
+                  maxCrossAxisExtent: 300,
                 ),
                 itemCount: productList.length,
                 itemBuilder: (context, index) {

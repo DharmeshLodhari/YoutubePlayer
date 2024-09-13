@@ -5,6 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 GlobalKey tutorialUserProfileDetailKey = GlobalKey();
+GlobalKey tutorialChangeLocationKey = GlobalKey();
+GlobalKey tutorialSearchUserKey = GlobalKey();
+GlobalKey tutorialItemCartKey = GlobalKey();
+GlobalKey tutorialHomeQrCodeKey = GlobalKey();
+GlobalKey tutorialSlydoKey = GlobalKey();
+GlobalKey tutorialHomeSuperStoreKey = GlobalKey();
+GlobalKey tutorialChatKey = GlobalKey();
+GlobalKey tutorialHomeSettingsKey = GlobalKey();
+GlobalKey tutorialSocialKey = GlobalKey();
 GlobalKey tutorialSendPaymentKey = GlobalKey();
 GlobalKey tutorialRequestPaymentKey = GlobalKey();
 GlobalKey tutorialQrCodeKey = GlobalKey();
@@ -56,6 +65,7 @@ class AppTutorialController {
       // focusAnimationDuration: Duration(milliseconds: 500),
       // pulseAnimationDuration: Duration(milliseconds: 500),
       // pulseVariation: Tween(begin: 1.0, end: 0.99),
+      pulseEnable: false,
       onFinish: () {
         debugPrint("finish");
       },
@@ -91,37 +101,174 @@ class AppTutorialController {
     );
   }
 
+  Widget doneButton() {
+    return Container(
+      padding: const EdgeInsets.only(top: 16),
+      width:
+          MediaQuery.of(MyGlobals().navigationKey.currentContext!).size.width /
+              2,
+      child: CurvedButton(
+        onPressed: () {
+          tutorial?.skip();
+        },
+        text: "Done",
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+      ),
+    );
+  }
+
   TargetFocus _getUserProfileTutorial() {
-    return TargetFocus(
-        identify: "Target 1",
-        keyTarget: tutorialUserProfileDetailKey,
-        shape: ShapeLightFocus.RRect,
-        // color: starYellow.withOpacity(0.2),
-        contents: [
-          TargetContent(
-              align: ContentAlign.bottom,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text(
-                    "User Profile",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 20.0),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "Click here to navigate to user profile.",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  nextButton()
-                ],
-              ))
-        ]);
+    return _createTutorial(
+      identify: "Target 1",
+      keyTarget: tutorialUserProfileDetailKey,
+      title: "User Profile",
+      description: "Click here to navigate to user profile",
+      align: ContentAlign.bottom,
+      alignSkip: Alignment.bottomRight,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      textAlign: TextAlign.left,
+      currentStep: 1,
+      totalSteps: 10,
+    );
+  }
+
+  TargetFocus _getChangeLocationTutorial() {
+    return _createTutorial(
+      identify: "Target 2",
+      keyTarget: tutorialChangeLocationKey,
+      title: "Location",
+      description: "Click here to change your location",
+      align: ContentAlign.bottom,
+      alignSkip: Alignment.bottomRight,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      textAlign: TextAlign.left,
+      currentStep: 2,
+      totalSteps: 10,
+    );
+  }
+
+  TargetFocus _getSearchUserTutorial() {
+    return _createTutorial(
+      identify: "Target 3",
+      keyTarget: tutorialSearchUserKey,
+      title: "Search",
+      description: "Click here to search users & browse channels",
+      align: ContentAlign.bottom,
+      alignSkip: Alignment.bottomRight,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      textAlign: TextAlign.right,
+      currentStep: 3,
+      totalSteps: 10,
+    );
+  }
+
+  TargetFocus _getItemCartTutorial() {
+    return _createTutorial(
+      identify: "Target 4",
+      keyTarget: tutorialItemCartKey,
+      title: "Basket",
+      description: "Click here to view all the items added to cart",
+      align: ContentAlign.bottom,
+      alignSkip: Alignment.bottomRight,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      textAlign: TextAlign.right,
+      currentStep: 4,
+      totalSteps: 10,
+    );
+  }
+
+  TargetFocus _getHomeQrCodeTutorial() {
+    return _createTutorial(
+      identify: "Target 5",
+      keyTarget: tutorialHomeQrCodeKey,
+      title: "QR Code",
+      description:
+          "Click here to view your qrcode to receive payment & scan qrcode to send payment",
+      align: ContentAlign.bottom,
+      alignSkip: Alignment.bottomRight,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      textAlign: TextAlign.right,
+      currentStep: 5,
+      totalSteps: 10,
+    );
+  }
+
+  TargetFocus _getSlydoTutorial() {
+    return _createTutorial(
+      identify: "Target 6",
+      keyTarget: tutorialSlydoKey,
+      title: "Slydo",
+      description: "Click here to create & Press down to logout",
+      align: ContentAlign.top,
+      alignSkip: Alignment.topLeft,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      textAlign: TextAlign.center,
+      currentStep: 6,
+      totalSteps: 10,
+    );
+  }
+
+  TargetFocus _getHomeSuperStoreTutorial() {
+    return _createTutorial(
+      identify: "Target 7",
+      keyTarget: tutorialHomeSuperStoreKey,
+      title: "Slydo",
+      description:
+          "Click here to navigate to Super store to buy and view exciting offers",
+      align: ContentAlign.top,
+      alignSkip: Alignment.topLeft,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      textAlign: TextAlign.left,
+      currentStep: 7,
+      totalSteps: 10,
+    );
+  }
+
+  TargetFocus _getChatTutorial() {
+    return _createTutorial(
+      identify: "Target 8",
+      keyTarget: tutorialChatKey,
+      title: "Chat",
+      description: "Click here to start a conversation",
+      align: ContentAlign.top,
+      alignSkip: Alignment.topLeft,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      textAlign: TextAlign.right,
+      currentStep: 8,
+      totalSteps: 10,
+    );
+  }
+
+  TargetFocus _getHomeSettingsTutorial() {
+    return _createTutorial(
+      identify: "Target 9",
+      keyTarget: tutorialHomeSettingsKey,
+      title: "Settings",
+      description: "Click here to view all applicable settings",
+      align: ContentAlign.top,
+      alignSkip: Alignment.topLeft,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      textAlign: TextAlign.right,
+      currentStep: 9,
+      totalSteps: 10,
+    );
+  }
+
+  TargetFocus _getSocialTutorial() {
+    return _createTutorial(
+      identify: "Target 10",
+      keyTarget: tutorialSocialKey,
+      title: "Socials",
+      description: "Swipe up to view your social feed",
+      align: ContentAlign.top,
+      alignSkip: Alignment.topLeft,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      textAlign: TextAlign.center,
+      currentStep: 10,
+      totalSteps: 10,
+      type: "social",
+    );
   }
 
   TargetFocus _getSendPaymentTutorial() {
@@ -328,7 +475,7 @@ class AppTutorialController {
 
   TargetFocus _getShoppingCartTutorial() {
     return TargetFocus(
-      identify: "Target 8",
+      identify: "Target 12",
       keyTarget: tutorialShoppingCartKey,
       shape: ShapeLightFocus.RRect,
 
@@ -399,7 +546,7 @@ class AppTutorialController {
 
   TargetFocus _getScanQrCodeTutorial() {
     return TargetFocus(
-      identify: "Target 10",
+      identify: "Target 11",
       keyTarget: tutorialScanQrCodeKey,
       shape: ShapeLightFocus.RRect,
 
@@ -723,6 +870,15 @@ class AppTutorialController {
 
   void _fillTargets() {
     _targets.add(_getUserProfileTutorial());
+    _targets.add(_getChangeLocationTutorial());
+    _targets.add(_getSearchUserTutorial());
+    _targets.add(_getItemCartTutorial());
+    _targets.add(_getHomeQrCodeTutorial());
+    _targets.add(_getSlydoTutorial());
+    _targets.add(_getHomeSuperStoreTutorial());
+    _targets.add(_getChatTutorial());
+    _targets.add(_getHomeSettingsTutorial());
+    _targets.add(_getSocialTutorial());
     // _targets.add(_getSendPaymentTutorial());
     // _targets.add(_getRequestPaymentTutorial());
     // _targets.add(_getQrCodeTutorial());
@@ -742,5 +898,85 @@ class AppTutorialController {
     // _targets.add(_getInboxTutorial());
     // _targets.add(_getWalletTutorial());
     // _targets.add(_getBlogsTutorial());
+  }
+
+  TargetFocus _createTutorial({
+    required String identify,
+    required GlobalKey keyTarget,
+    required String title,
+    required String description,
+    required ContentAlign align,
+    required AlignmentGeometry alignSkip,
+    required CrossAxisAlignment crossAxisAlignment,
+    required TextAlign textAlign,
+    required int currentStep,
+    required int totalSteps,
+    String? type,
+  }) {
+    return TargetFocus(
+      identify: identify,
+      keyTarget: keyTarget,
+      shape: ShapeLightFocus.RRect,
+      radius: 5,
+      alignSkip: alignSkip,
+      paddingFocus: type == "social" ? 0 : 10,
+      unFocusAnimationDuration: const Duration(milliseconds: 0),
+      focusAnimationDuration: const Duration(milliseconds: 0),
+      pulseVariation: type == "social"
+          ? Tween<double>(begin: 0, end: 0) // Disable pulse for last item
+          : Tween<double>(begin: 1.0, end: 0.99),
+      contents: [
+        TargetContent(
+          align: align,
+          child: Column(
+            crossAxisAlignment: crossAxisAlignment,
+            mainAxisAlignment: MainAxisAlignment.start,
+            verticalDirection: VerticalDirection.down,
+            children: <Widget>[
+              if (type == "social") ...[
+                Image.asset(
+                  'assets/images/home/arrow_up.png',
+                  height: 150,
+                  width: 50,
+                  fit: BoxFit.fitHeight,
+                ),
+                const SizedBox(height: 50),
+              ],
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                description,
+                textAlign: textAlign,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: "Inter",
+                ),
+              ),
+              if (type == "social") doneButton() else nextButton(),
+              const SizedBox(height: 10),
+              Text(
+                "$currentStep/$totalSteps",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

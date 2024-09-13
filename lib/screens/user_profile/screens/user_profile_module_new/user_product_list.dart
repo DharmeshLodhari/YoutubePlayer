@@ -639,7 +639,7 @@ class _UserProductListState extends State<UserProductList> {
           height: 15,
         ),
         SizedBox(
-          height: 260,
+          height: 280,
           child: ListView.separated(
             separatorBuilder: (BuildContext context, int index) {
               return const SizedBox(width: 16);
@@ -837,9 +837,9 @@ class _UserProductListState extends State<UserProductList> {
                 ),
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 8,
-                  mainAxisExtent: 260,
-                  crossAxisSpacing: 15,
-                  maxCrossAxisExtent: 200,
+                  mainAxisExtent: 280,
+                  crossAxisSpacing: 8,
+                  maxCrossAxisExtent: 300,
                 ),
               ),
               SliverToBoxAdapter(
@@ -868,7 +868,7 @@ class _UserProductListState extends State<UserProductList> {
   Widget productTile(int index) {
     return CustomBoxShadow(
       child: SizedBox(
-        height: 250,
+        height: 280,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: DisplayProduct(

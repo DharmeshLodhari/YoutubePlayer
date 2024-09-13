@@ -185,7 +185,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future canReviewProduct() async {
     final Map<String, String> data = {};
     data['provider'] = product?.seller?.toString() ?? "";
-    data['buyer'] = userBloc.user.userName!;
+    data['buyer'] = userBloc.user.userName ?? "";
     data['type'] = 'products';
     data['id'] = product?.id ?? "";
 
@@ -1027,6 +1027,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   color: navyBlue,
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
+                  fontFamily: "Inter",
                 ),
               ),
             ),
@@ -1059,7 +1060,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                         }
                       },
                       child: CachedNetworkImage(
-                        height: 250,
+                        height: MediaQuery.of(context).size.width - 50,
                         width: double.infinity,
                         placeholder: (context, url) =>
                             Center(child: CircularLoadingIndicator()),
@@ -1080,7 +1081,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                 viewportFraction: 1.0,
                                 enlargeCenterPage: true,
                                 autoPlay: false,
-                                height: 250,
+                                height: MediaQuery.of(context).size.width - 50,
                                 onPageChanged: (index, _) {
                                   setState(() {
                                     selectedIndex = index;
@@ -1103,7 +1104,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                     ),
                                     imageUrl: item ?? "",
                                     fit: BoxFit.cover,
-                                    height: 250,
+                                    height:
+                                        MediaQuery.of(context).size.width - 50,
                                     width: double.infinity,
                                     errorWidget:
                                         productAndServiceBigErrorWidget,
@@ -1261,7 +1263,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         (product?.availableFrom?.isAfter(DateTime.now()) ?? false)) {
       return SizedBox(
         width: double.infinity,
-        height: 25,
+        height: 30,
         child: showColoredLabeledWidgetProductDetails(
           product: product,
           selectedVariant: selectedVariant,
@@ -1274,7 +1276,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ((product?.quantity ?? 0) <= 0)) {
       return SizedBox(
         width: double.infinity,
-        height: 25,
+        height: 30,
         child: showColoredLabeledWidgetProductDetails(
           product: product,
           selectedVariant: selectedVariant,
@@ -1298,7 +1300,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       if (product?.checkVariantDiscount(selectedVariant) ?? false) {
         return SizedBox(
           width: double.infinity,
-          height: 25,
+          height: 30,
           child: showDiscountValue(
             selectedVariant?.discountType ?? "",
             selectedVariant?.discountValue ?? 0,
@@ -1313,7 +1315,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       if (product?.checkProductDiscount() ?? false) {
         return SizedBox(
           width: double.infinity,
-          height: 25,
+          height: 30,
           child: showDiscountValue(
             product?.discountType ?? "",
             product?.discountValue ?? 0,
@@ -1616,31 +1618,28 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildDiscountedPrice() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 4.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            worldCurrencies[product?.currency] ?? "NGN",
-            style: TextStyle(
-                fontFamily: "Inter",
-                fontSize: 16.0,
-                color: navyBlue,
-                fontWeight: FontWeight.bold),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[product?.currency] ?? "NGN",
+          style: TextStyle(
+            fontFamily: "Inter",
+            fontSize: 16.0,
+            color: navyBlue,
+            fontWeight: FontWeight.bold,
           ),
-          Text(
-            moneyDisplayNormalizer(
-                product?.getDiscountedPrice(selectedVariant)),
-            style: TextStyle(
-              fontSize: 16.0,
-              color: navyBlue,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Inter',
-            ),
+        ),
+        Text(
+          moneyDisplayNormalizer(product?.getDiscountedPrice(selectedVariant)),
+          style: TextStyle(
+            fontSize: 16.0,
+            color: navyBlue,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Inter',
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -1704,41 +1703,48 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildProductCondition() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(2),
-            color: bgLightPink,
-          ),
-          child: Text(
-            product?.condition ?? '',
-            style: TextStyle(
-              fontFamily: "Inter",
-              color: pinkFont,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ],
-    );
+    return product?.condition != null || product?.condition != ""
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: bgLightPink,
+                ),
+                child: Text(
+                  product?.condition ?? '',
+                  style: TextStyle(
+                    fontFamily: "Inter",
+                    color: pinkFont,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          )
+        : const SizedBox.shrink();
   }
 
   Widget _getProductReviews() {
-    return Text(
-      "(${product?.reviewScore} ${(product?.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
-      style: TextStyle(
-        fontWeight: FontWeight.w400,
-        fontSize: 12,
-        fontFamily: 'Inter',
-        color: fontLightGrey,
-      ),
-    );
+    if ((product?.reviewScore ?? 0) != 0) {
+      return Text(
+        "(${product?.reviewScore} ${(product?.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
+        style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+          fontFamily: 'Inter',
+          color: fontLightGrey,
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
   Widget customRichText({String? text, String? subText}) {
@@ -2506,6 +2512,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   color: blackFont,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
                 ),
               ),
               ListTile(

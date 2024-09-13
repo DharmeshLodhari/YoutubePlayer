@@ -11,6 +11,7 @@ import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/review/models/review.dart';
 import 'package:Slydo/screens/review/review_auth.dart';
@@ -202,7 +203,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   @override
   Widget build(BuildContext context) {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
-    // _dashboardBloc = Provider.of<DashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     isValidCustomer = userBloc.user.userName != service?.provider;
@@ -600,20 +600,25 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               const SizedBox(height: 10),
               _buildServiceTitleAndPriceWidget(),
               const SizedBox(height: 10),
+              _buildAvailableFromAndShareWidgets(),
+              const SizedBox(height: 12),
               _buildShortInfoWidget(),
               const SizedBox(height: 12),
-              getHorizontalDivider(),
-              const SizedBox(height: 12),
-              _buildAvailableFromAndShareWidgets(),
-              const SizedBox(height: 16),
               getHorizontalDivider(),
               const SizedBox(height: 12),
               _buildDescriptionWidget(),
               const SizedBox(height: 12),
               getHorizontalDivider(),
               const SizedBox(height: 12),
+              getProductOrServiceSocialMedia(
+                  context, "Service", service?.id ?? ""),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
               _buildSellerInfoWidget(),
               const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 10),
               _buildReviewList(),
               const SizedBox(height: 12),
               _buildWriteReview(),
@@ -643,8 +648,33 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildReviewList() {
-    return reviewList.isEmpty
-        ? Center(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            buildReviewTitle(),
+            if (reviewList.isNotEmpty)
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed(Routes.REVIEW_LIST_SCREEN,
+                      arguments: {"reviewedService": service});
+                },
+                child: Text(
+                  "See all",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: navyBlue,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (reviewList.isEmpty)
+          Center(
             child: Column(
               children: [
                 Image.asset(
@@ -663,44 +693,22 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ],
             ),
           )
-        : Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  buildReviewTitle(),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushNamed(Routes.REVIEW_LIST_SCREEN,
-                          arguments: {"reviewedService": service});
-                    },
-                    child: Text(
-                      "See all",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: navyBlue,
-                      ),
+        else
+          Column(
+            children: reviewList
+                .map(
+                  (review) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: ReviewTile(
+                      review: review,
+                      service: service,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Column(
-                children: reviewList
-                    .map(
-                      (review) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: ReviewTile(
-                          review: review,
-                          service: service,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
-          );
+                )
+                .toList(),
+          ),
+      ],
+    );
   }
 
   Widget _buildDescriptionWidget() {
@@ -711,7 +719,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           "Description",
           style: TextStyle(
             color: blackFont,
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             fontFamily: "Inter",
           ),
@@ -757,7 +765,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               child: Text(
                 "Write a review",
                 style: TextStyle(
-                    color: navyBlue, fontWeight: FontWeight.w700, fontSize: 16),
+                  color: navyBlue,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  fontFamily: "Inter",
+                ),
               ),
             ),
           ),
@@ -774,18 +786,17 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Provider",
+                "Merchant",
                 style: TextStyle(
-                    color: blackFont,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 8,
+                  color: blackFont,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
+                ),
               ),
               ListTile(
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
                 leading: GestureDetector(
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
@@ -830,117 +841,102 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildServiceImagesWidgets() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: displayServiceImage?.length == 0
-          ? AspectRatio(
-              aspectRatio: 1.5,
-              child: Center(
-                child: CircularLoadingIndicator(),
-              ),
-            )
-          : displayServiceImage?.length == 1
-              ? Stack(
-                  children: [
-                    AspectRatio(
-                      aspectRatio: 1.5,
-                      child: Center(
-                        child: CachedNetworkImage(
-                          placeholder: (context, url) =>
-                              Center(child: CircularLoadingIndicator()),
-                          imageUrl: displayServiceImage![0]!,
-                          fit: BoxFit.cover,
-                          height: double.infinity,
-                          width: double.infinity,
-                          errorWidget: productAndServiceBigErrorWidget,
-                        ),
-                      ),
-                    ),
-                    // serviceStockAndDetailTag(),
-                    // getOutOfStockTag(),
-                  ],
-                )
-              : Column(
-                  children: [
-                    Stack(
-                      children: [
-                        CarouselSlider.builder(
-                          key: ValueKey<int>(selectedIndex),
-                          options: CarouselOptions(
-                            initialPage: selectedIndex,
-                            enableInfiniteScroll: false,
-                            viewportFraction: 1.0,
-                            enlargeCenterPage: true,
-                            autoPlay: false,
-                            aspectRatio: 1.5,
-                            onPageChanged: (index, _) {
-                              setState(() {
-                                selectedIndex = index;
-                              });
-                              _current = index;
-                            },
-                          ),
-                          itemCount: displayServiceImage?.length,
-                          itemBuilder: (context, index, realIndex) {
-                            final item = displayServiceImage?[index];
-                            return Center(
-                              child: CachedNetworkImage(
-                                placeholder: (context, url) => Center(
-                                  child: CircularLoadingIndicator(),
-                                ),
-                                imageUrl: item ?? "",
-                                fit: BoxFit.cover,
-                                height: double.infinity,
-                                width: double.infinity,
-                                errorWidget: productAndServiceBigErrorWidget,
-                              ),
-                            );
+    return displayServiceImage?.length == 0
+        ? AspectRatio(
+            aspectRatio: 1.5,
+            child: Center(
+              child: CircularLoadingIndicator(),
+            ),
+          )
+        : displayServiceImage?.length == 1
+            ? CachedNetworkImage(
+                height: MediaQuery.of(context).size.width - 50,
+                width: double.infinity,
+                placeholder: (context, url) =>
+                    Center(child: CircularLoadingIndicator()),
+                imageUrl: displayServiceImage![0]!,
+                fit: BoxFit.cover,
+                errorWidget: productAndServiceBigErrorWidget,
+              )
+            : Column(
+                children: [
+                  Stack(
+                    children: [
+                      CarouselSlider.builder(
+                        key: ValueKey<int>(selectedIndex),
+                        options: CarouselOptions(
+                          initialPage: selectedIndex,
+                          enableInfiniteScroll: false,
+                          viewportFraction: 1.0,
+                          enlargeCenterPage: true,
+                          autoPlay: false,
+                          height: MediaQuery.of(context).size.width - 50,
+                          onPageChanged: (index, _) {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                            _current = index;
                           },
                         ),
-                        Positioned(
-                          bottom: 10,
-                          left: 0,
-                          right: 0,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: bgLightGrey,
-                                borderRadius: BorderRadius.circular(20),
+                        itemCount: displayServiceImage?.length,
+                        itemBuilder: (context, index, realIndex) {
+                          final item = displayServiceImage?[index];
+                          return Center(
+                            child: CachedNetworkImage(
+                              placeholder: (context, url) => Center(
+                                child: CircularLoadingIndicator(),
                               ),
-                              padding: const EdgeInsets.all(2),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  _buildServiceCustomTabPhotoAndVideo(
-                                    onTap: () {
-                                      _onServiceTabSelected(0);
-                                    },
-                                    text:
-                                        "Photo ${selectedIndex + 1}/${displayServiceImage?.length}",
-                                    backgroundColor: selectedIndex == 0
-                                        ? transparent
-                                        : white,
-                                  ),
-                                  // video
-                                  // _buildCustomTabPhotoAndVideo(
-                                  //     onTap: () {
-                                  //       _onTabSelected(1);
-                                  //     },
-                                  //     text: "Video",
-                                  //     backgroundColor: selectedIndex == 1
-                                  //         ? transparent
-                                  //         : white),
-                                ],
-                              ),
+                              imageUrl: item ?? "",
+                              fit: BoxFit.cover,
+                              height: MediaQuery.of(context).size.width - 50,
+                              width: double.infinity,
+                              errorWidget: productAndServiceBigErrorWidget,
+                            ),
+                          );
+                        },
+                      ),
+                      Positioned(
+                        bottom: 10,
+                        left: 0,
+                        right: 0,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: bgLightGrey,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: const EdgeInsets.all(2),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildServiceCustomTabPhotoAndVideo(
+                                  onTap: () {
+                                    _onServiceTabSelected(0);
+                                  },
+                                  text:
+                                      "Photo ${selectedIndex + 1}/${displayServiceImage?.length}",
+                                  backgroundColor:
+                                      selectedIndex == 0 ? transparent : white,
+                                ),
+                                // video
+                                // _buildCustomTabPhotoAndVideo(
+                                //     onTap: () {
+                                //       _onTabSelected(1);
+                                //     },
+                                //     text: "Video",
+                                //     backgroundColor: selectedIndex == 1
+                                //         ? transparent
+                                //         : white),
+                              ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-    );
+                      ),
+                    ],
+                  ),
+                ],
+              );
   }
 
   Widget _buildServiceCustomTabPhotoAndVideo(
@@ -1035,14 +1031,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       return SizedBox(
         width: double.infinity,
         height: 30,
-        child: Positioned(
-          top: 20,
-          right: 10,
-          child: showColoredLabeledWidgetServiceDetails(
-              service: service,
-              text: AppLocalization.of(context)!.outOfStock,
-              color: lightRed),
-        ),
+        child: showColoredLabeledWidgetServiceDetails(
+            service: service,
+            text: AppLocalization.of(context)!.outOfStock,
+            color: lightRed),
       );
     } else {
       return const SizedBox();
@@ -1074,44 +1066,70 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 //name,
                 messageDecoderWithEmoji(service?.name)!,
                 style: TextStyle(
-                    fontSize: 16,
-                    color: blackFont,
-                    fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      worldCurrencies[service?.currency!]!,
-                      style: TextStyle(
-                          fontFamily: "Inter",
-                          fontSize: 18.0,
-                          color: navyBlue,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      moneyDisplayNormalizer(
-                          int.parse(service?.price.toString() ?? "")),
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          color: navyBlue,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                  fontSize: 18,
+                  color: blackFont,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Inter',
                 ),
               ),
-              const SizedBox(height: 5),
-              getRating(
-                numberOfRating: service?.rating?.toInt(),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    worldCurrencies[service?.currency!]!,
+                    style: TextStyle(
+                      fontFamily: "Inter",
+                      fontSize: 16.0,
+                      color: navyBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    moneyDisplayNormalizer(
+                        int.parse(service?.price.toString() ?? "")),
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: navyBlue,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              Row(
+                children: [
+                  getRating(
+                    numberOfRating: service?.rating?.toInt(),
+                    starSize: 14,
+                  ),
+                  const SizedBox(width: 5),
+                  _getServiceReviews(),
+                ],
               ),
             ],
           ),
         ),
-        copyQrCode(),
+        qrCodeIcon(
+            context, service!.getNavigationData(), service!.getQRCodeInfo()),
       ],
     );
+  }
+
+  Widget _getServiceReviews() {
+    if ((service?.reviewScore ?? 0) != 0) {
+      return Text(
+        "(${service?.reviewScore} ${(service?.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
+        style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+          fontFamily: 'Inter',
+          color: fontLightGrey,
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
   Widget copyQrCode() {

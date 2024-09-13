@@ -456,7 +456,7 @@ class _VerifyRegistrationOTPScreenState
     return CustomizedTextFormField(
       labelColor: darkGrey,
       labelText: "Phone number",
-      hintText: "08023000000",
+      hintText: "8023000000",
       isNumberOnlyInput: true,
       keyboardType: TextInputType.phone,
       controller: phoneNumberController,

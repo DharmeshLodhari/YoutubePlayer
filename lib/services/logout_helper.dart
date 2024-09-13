@@ -67,7 +67,7 @@ class LogoutHelper {
     );
 
     Navigator.of(myGlobals.navigationKey.currentContext!)
-        .pushNamed(Routes.INDEX, arguments: {'isIntroDone': true});
+        .pushNamed(Routes.LOGIN, arguments: {"isLoginOut": true});
   }
 
   void emptyBasketCart() {

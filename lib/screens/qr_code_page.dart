@@ -331,6 +331,10 @@ class _QrCodePageState extends State<QrCodePage> {
       return widget.arguments['productUrl'];
     }
 
+    if (widget.arguments['service'] != null) {
+      return widget.arguments['serviceUrl'];
+    }
+
     if (path == 'User' || path == null) {
       path = 'user';
     } else {

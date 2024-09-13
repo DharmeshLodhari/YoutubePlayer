@@ -879,7 +879,7 @@ class Product extends PurchasableItem {
   }
 
   String getUrl() {
-    return "https://slydo.co/store/$seller/products/$id";
+    return "https://slydo.co/api/v1/products/$id";
   }
 
   Map<String, dynamic> getQRCodeInfo() {
@@ -1836,6 +1836,30 @@ class Service extends PurchasableItem {
     this.isChecked = false,
     this.reviewScore,
   });
+
+  String getUrl() {
+    return "https://slydo.co/api/v1/services/$id";
+  }
+
+  Map<String, dynamic> getQRCodeInfo() {
+    final Map<String, dynamic> accountData = {
+      "accountName": shortDescription,
+      "accountNumber": name,
+      "financialInstitution": FinancialInstitution.fromJson({}),
+      "customerUsername": provider,
+      "note": "",
+    };
+    return accountData;
+  }
+
+  Map<String, dynamic> getNavigationData() {
+    final Map<String, dynamic> navigationData = {
+      'isProfile': 'false',
+      'service': provider,
+      'serviceUrl': getUrl(),
+    };
+    return navigationData;
+  }
 
   String? getMerchantUserName() {
     return provider;

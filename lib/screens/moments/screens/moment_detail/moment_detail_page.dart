@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/single_moment_detail.dart';
@@ -255,7 +254,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
   }
 
   void clearAllMedia() {
-    log("DISPOSING VIDEO CONTROLLERS:- ${_videoPlayerControllers.length} PHOTO CONTROLLERS:- ${_photoViewController.length}");
+    // log("DISPOSING VIDEO CONTROLLERS:- ${_videoPlayerControllers.length} PHOTO CONTROLLERS:- ${_photoViewController.length}");
     for (var element in _videoPlayerControllers) {
       try {
         element.dispose();

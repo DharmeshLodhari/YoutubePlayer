@@ -224,7 +224,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
     if (_formKey.currentState!.validate()) {
       // debugPrint("userBloc.user.password ${userBloc.user.password}");
-      if (userBloc.user.password == oldPassword) {
+      if (userBloc.user.isValidPassword(oldPassword)) {
         final data = {
           "new_password1": newPassword,
           "new_password2": confirmPassword,
@@ -240,7 +240,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
         await UserAuth().changePassword(data).then((value) async {
           if (value.isNotEmpty) {
-            userBloc.user.password = value["new_password"];
+            userBloc.user.password = encryptPassword(value["new_password"]);
 
             await storePasswordInSecureStorage(
                 password: userBloc.user.password);

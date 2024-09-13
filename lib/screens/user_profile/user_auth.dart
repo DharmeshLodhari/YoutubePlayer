@@ -957,7 +957,7 @@ class UserAuth extends AuthService {
     final headers = await getAuthHeaders();
     final data0 = jsonEncode(data);
     final response = await httpPost(url, headers: headers, body: data0);
-    log("Headers:- $headers body :- $data0 URL:- $url statuscode ${response.statusCode}  body:- ${response.body}");
+    // log("Headers:- $headers body :- $data0 URL:- $url statuscode ${response.statusCode}  body:- ${response.body}");
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       return true;

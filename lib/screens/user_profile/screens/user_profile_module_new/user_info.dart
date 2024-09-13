@@ -186,7 +186,7 @@ class _UserInfoState extends State<UserInfo> {
           const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               itemCount: popularProductItem.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => DisplayProduct(

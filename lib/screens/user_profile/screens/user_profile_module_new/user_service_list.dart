@@ -154,9 +154,9 @@ class _UserServiceListState extends State<UserServiceList> {
                 ),
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 8,
-                  mainAxisExtent: 260,
-                  crossAxisSpacing: 15,
-                  maxCrossAxisExtent: 200,
+                  mainAxisExtent: 270,
+                  crossAxisSpacing: 8,
+                  maxCrossAxisExtent: 300,
                 ),
               ),
               SliverToBoxAdapter(
@@ -224,7 +224,7 @@ class _UserServiceListState extends State<UserServiceList> {
   Widget serviceTile(int index) {
     return CustomBoxShadow(
       child: SizedBox(
-        height: 250,
+        height: 270,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: DisplayService(

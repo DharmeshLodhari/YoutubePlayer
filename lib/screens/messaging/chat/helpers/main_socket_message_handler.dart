@@ -612,7 +612,7 @@ class MainSocketMessageHandler {
         .popUntil(ModalRoute.withName('/splash'));
 
     Navigator.of(myGlobals.navigationKey.currentContext!)
-        .pushNamed(Routes.INDEX, arguments: {'isIntroDone': true});
+        .pushNamed(Routes.LOGIN, arguments: {"isLoginOut": true});
 
     showUserLogoutCard(context: myGlobals.navigationKey.currentContext!);
 

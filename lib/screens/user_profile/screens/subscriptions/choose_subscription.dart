@@ -402,7 +402,8 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
 
   void _refreshUser() async {
     await _auth
-        .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
+        .authenticate(userBloc.user.phoneNumber,
+            decryptPassword(userBloc.user.password ?? ""))
         .then((newUser) async {
       userBloc.user = newUser;
       if (mounted) setState(() {});

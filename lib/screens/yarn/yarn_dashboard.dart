@@ -165,8 +165,8 @@ class _YarnDashboardState extends State<YarnDashboard> {
           )),
       const SizedBox(width: 15),
       RoundedBackgroundIcon(
-        height: 34,
-        width: 34,
+        height: 36,
+        width: 36,
         icon: badges.Badge(
             badgeContent: getUnReadCount(count),
             position: badges.BadgePosition.topEnd(

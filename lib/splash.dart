@@ -94,7 +94,7 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
-  void navigationPage() {
+  Future<void> navigationPage() async {
     // debugPrint(
     //     "isUserFound => $isUserFound playerController.value.isPlaying => ${playerController!.value.isPlaying}");
     if (isUserFound != null && playerController?.value.isPlaying == false) {
@@ -109,8 +109,16 @@ class _SplashScreenState extends State<SplashScreen>
         );
       } else {
         if (timer != null) timer?.cancel();
-        Navigator.of(MyGlobals().navigationKey.currentContext!)
-            .pushReplacementNamed(Routes.INDEX);
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+
+        if (isFirstTime) {
+          Navigator.of(MyGlobals().navigationKey.currentContext!)
+              .pushReplacementNamed(Routes.INDEX);
+        } else {
+          Navigator.of(myGlobals.navigationKey.currentContext!)
+              .pushNamed(Routes.LOGIN, arguments: {"isLoginOut": true});
+        }
       }
     }
   }
@@ -327,7 +335,7 @@ class _SplashScreenState extends State<SplashScreen>
 
         final SecureUser secureUser = await SecureStorage().getUser();
         userPhoneNumber = secureUser.phoneNumber;
-        userPassword = secureUser.password;
+        userPassword = decryptPassword(secureUser.password ?? "");
         company = secureUser.company;
         isStaffLogin = secureUser.isStaffLogin ?? false;
 

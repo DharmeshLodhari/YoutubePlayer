@@ -25,6 +25,7 @@ import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,9 @@ import '../../../../routes/route_constants.dart';
 import '../../yarn/yarn_auth.dart';
 
 class UserLogin extends StatefulWidget {
-  const UserLogin({super.key});
+  const UserLogin({super.key, this.arguments});
+
+  final dynamic arguments;
 
   @override
   State<UserLogin> createState() => _UserLoginState();
@@ -67,6 +70,7 @@ class _UserLoginState extends State<UserLogin> {
   late BasketBloc basketBloc;
   late SharedCartBloc sharedCartBloc;
   late UserBloc userBloc;
+  bool isLoginOut = false;
 
   final FocusNode _pinPutFocusNode = FocusNode();
 
@@ -81,6 +85,8 @@ class _UserLoginState extends State<UserLogin> {
 
   @override
   void initState() {
+    isLoginOut =
+        widget.arguments != null ? widget.arguments["isLoginOut"] : false;
     _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
     getSharedPreference();
     phoneNumberController = TextEditingController();
@@ -105,7 +111,7 @@ class _UserLoginState extends State<UserLogin> {
 
       final SecureUser secureUser = await SecureStorage().getUser();
       phoneNumberFromPref = secureUser.phoneNumber;
-      passwordFromPref = secureUser.password;
+      passwordFromPref = decryptPassword(secureUser.password ?? "");
       companyFromPref = secureUser.company;
 
       //setting fetched userdata into screen
@@ -113,7 +119,7 @@ class _UserLoginState extends State<UserLogin> {
         phoneNumberController?.text = phoneNumberFromPref!;
       }
       if (passwordFromPref != null) {
-        passwordController?.text = passwordFromPref!;
+        passwordController?.text = decryptPassword(passwordFromPref ?? "");
       }
       if (companyFromPref != null) {
         companyController?.text = companyFromPref!;
@@ -137,9 +143,26 @@ class _UserLoginState extends State<UserLogin> {
     userBloc = Provider.of<UserBloc>(context);
 
     return WillPopScope(
-      onWillPop: () {
+      onWillPop: () async {
         if (FocusScope.of(context).hasFocus) {
           FocusScope.of(context).unfocus();
+        }
+        if (isLoginOut) {
+          final bool? result = await showDialogBox(
+            context: context,
+            actionOneBgColor: mateRed,
+            actionOneTextColor: Colors.white,
+            actionTwoBgColor: greyBorderColor,
+            actionTwoTextColor: blackFont,
+            title: "Exit app",
+            description: "Are you sure want to exit app?",
+            actionOneText: AppLocalization.of(context)!.exit,
+            actionTwoText: AppLocalization.of(context)!.cancel,
+          );
+          if (result != null && result) {
+            SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+          }
+          return Future.value(false);
         }
         return Future.value(true);
       },
@@ -162,7 +185,11 @@ class _UserLoginState extends State<UserLogin> {
           color: navyBlue,
         ),
         onPressed: () {
-          Navigator.pop(context);
+          if (isLoginOut) {
+            exitAppDialog(context);
+          } else {
+            Navigator.pop(context);
+          }
         },
       ),
     );
@@ -487,7 +514,7 @@ class _UserLoginState extends State<UserLogin> {
           child: CustomizedTextFormField(
             labelColor: darkGrey,
             keyboardType: TextInputType.phone,
-            hintText: "08023000000",
+            hintText: "8023000000",
             inputFormatters: [
               LengthLimitingTextInputFormatter(10),
               FilteringTextInputFormatter.digitsOnly,
@@ -955,7 +982,7 @@ class _UserLoginState extends State<UserLogin> {
 
     final SecureUser secureUser = SecureUser(
       phoneNumber: phoneNumberFromTextField,
-      password: password,
+      password: encryptPassword(password ?? ""),
       company: companyName,
       isStaffLogin: isStaffLogin,
     );

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
@@ -230,7 +229,7 @@ class MainSocketProvider extends ChangeNotifier {
     // Set auth headers or socket will be closed
     _headers = await MessageAuth().getAuthHeaders();
 
-    log("$_headers");
+    // log("$_headers");
 
     /// for connecting the socket
     try {

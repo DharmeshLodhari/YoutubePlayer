@@ -316,7 +316,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
         await DatabaseHelper().checkIfFileExistsInDB(model: model);
 
     if (filePathInOs != null && filePathInOs != "") {
-      log("FILE PATH:- $filePathInOs");
+      // log("FILE PATH:- $filePathInOs");
       try {
         final OpenResult openResult = await OpenFilex.open(filePathInOs);
       } catch (error) {

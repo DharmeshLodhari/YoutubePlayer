@@ -30,16 +30,11 @@ class SuperStoreIndustry extends StatefulWidget {
 }
 
 class _SuperStoreState extends State<SuperStoreIndustry> {
-  int? productCount = 0;
   late BasketBloc basketBloc;
   late PageController _pageViewController;
   int currentAskTapOnHome = 0;
   bool _tabsVisible = true;
   String categoryName = '';
-  String firstTabName = 'Shop';
-  String secondTabName = 'Find Stores';
-  String? appTitle;
-  List<String> categoryList = [];
 
   @override
   void initState() {

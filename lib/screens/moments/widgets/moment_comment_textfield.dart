@@ -1000,7 +1000,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
               ],
             ),
             onTap: () async {
-              if (selectedImages.length == 4) {
+              if (selectedImages.length > 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
                 final bool isPermissionGranted =
@@ -1152,6 +1152,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
 
     // if (widget.addedSelectedMedia != null) {
     widget.addedSelectedMedia?.call(selectedMedia);
+    isShowExtension = true;
     // }
     setState(() {});
   }

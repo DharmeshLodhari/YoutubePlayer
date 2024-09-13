@@ -125,10 +125,7 @@ class _HomeState extends State<Home> {
       }
 
       if (!isAppTutorialDone) {
-        final bool result =
-            await _sharedPreferences?.setBool("isAppTutorialDone", true) ??
-                false;
-        // debugPrint("result:- $result");
+        await _sharedPreferences?.setBool("isAppTutorialDone", true) ?? false;
         await Future.delayed(const Duration(milliseconds: 1500)).then((value) {
           AppTutorialController().showTutorial(context);
         });
@@ -395,7 +392,9 @@ class _HomeState extends State<Home> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(height: 10),
+          Container(
+            height: 10,
+          ),
           Container(
               padding: const EdgeInsets.only(left: 5.0), child: _appBar()),
           const SizedBox(
@@ -429,7 +428,6 @@ class _HomeState extends State<Home> {
           Container(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: _displayShortcutExtraCard(shortcutExtraBusiness)),
-
           if (momentsList.isNotEmpty)
             Container(
               color: Colors.white,
@@ -437,6 +435,9 @@ class _HomeState extends State<Home> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  SizedBox.shrink(
+                    key: tutorialSocialKey,
+                  ),
                   GestureDetector(
                     onTap: () => NavigationUtil.push(context,
                         screen: const MomentsScreen()),
@@ -525,6 +526,7 @@ class _HomeState extends State<Home> {
             ),
           ),
           const SizedBox(height: 32),
+
           Container(
             color: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -904,10 +906,11 @@ class _HomeState extends State<Home> {
               Text(
                 title,
                 style: TextStyle(
-                    fontSize: 16,
-                    color: white,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: "Inter"),
+                  fontSize: 16,
+                  color: white,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: "Inter",
+                ),
               ),
               if (userBloc.user.type!.toLowerCase() == 'user' &&
                   title == 'Business') ...[
@@ -1084,6 +1087,7 @@ class _HomeState extends State<Home> {
 
   Widget _searchBtn() {
     return RoundedBackgroundIcon(
+      key: tutorialSearchUserKey,
       backgroundColor: transparent,
       onTap: () {
         Navigator.of(context).pushNamed(
@@ -1103,6 +1107,7 @@ class _HomeState extends State<Home> {
 
   Widget _cartBtn() {
     return CartWithBadge(
+      key: tutorialItemCartKey,
       items: basketBloc.basketItems,
       backgroundColor: iconBtnGrey,
       height: 30,
@@ -1172,6 +1177,7 @@ class _HomeState extends State<Home> {
     final bool getLocationStatus =
         _sharedPreferences?.getBool('isCurrentLocation') ?? false;
     return InkWell(
+      key: tutorialChangeLocationKey,
       onTap: () {
         if (!isEmpty) {
           showChangeAddressDialog(context);
@@ -1547,6 +1553,7 @@ class _HomeState extends State<Home> {
 
   Widget qrCodeIcon() {
     return GestureDetector(
+      key: tutorialHomeQrCodeKey,
       onTap: () async {
         try {
           user = await UserAuth()
@@ -2040,7 +2047,7 @@ class _HomeState extends State<Home> {
 
         final SecureUser secureUser = await SecureStorage().getUser();
         String phoneNumber = secureUser.phoneNumber ?? "";
-        String password = secureUser.password ?? "";
+        String password = decryptPassword(secureUser.password ?? "");
         String company = secureUser.company ?? "";
         bool isStaffLogin = secureUser.isStaffLogin ?? false;
 
@@ -2050,7 +2057,7 @@ class _HomeState extends State<Home> {
 
         if (phoneNumber == "" || password == "") {
           phoneNumber = _user?.phoneNumber ?? "";
-          password = _user?.password ?? "";
+          password = decryptPassword(_user?.password ?? "");
           company = _user?.staff?.employerUsername ?? "";
           if (company.isNotEmpty) {
             isStaffLogin = true;

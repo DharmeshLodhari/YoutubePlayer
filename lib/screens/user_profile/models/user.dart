@@ -101,6 +101,10 @@ class User {
     return user;
   }
 
+  bool isValidPassword(String userPassword) {
+    return password == encryptPassword(userPassword);
+  }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['account_type'] = type;
@@ -109,7 +113,7 @@ class User {
     data['full_name'] = fullName;
     data['nickname'] = nickName;
     data['is_verified'] = isVerified;
-    data['password'] = password;
+    // data['password'] = password;
     data['phone_number'] = phoneNumber;
     data['qr_code'] = qrCode;
     data['url'] = url;

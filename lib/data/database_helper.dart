@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:Slydo/data/database_migrations.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
@@ -861,7 +860,7 @@ class DatabaseHelper {
         whereArgs: [chatMessage.conversationId, chatMessage.checkId],
         conflictAlgorithm: ConflictAlgorithm.replace);
 
-    log("RESULT:-    $result");
+    // log("RESULT:-    $result");
     if (result == 0) {
       await dbClient.insert(
         "ChatMessage",

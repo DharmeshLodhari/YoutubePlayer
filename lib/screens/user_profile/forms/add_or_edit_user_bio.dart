@@ -1383,7 +1383,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           .addOrUpdateUserBio(userAbout: userBioDetail, nickName: nickName)
           .then((value) async {
         await UserAuth()
-            .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
+            .authenticate(userBloc.user.phoneNumber,
+                decryptPassword(userBloc.user.password ?? ""))
             .then((user) {
           userBloc.user = user;
 

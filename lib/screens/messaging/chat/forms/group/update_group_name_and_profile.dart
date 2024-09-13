@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/locale/app_localization.dart';
@@ -760,7 +759,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
         if (value != null) {
           showToast(message: "Group detail updated successfully !!");
 
-          log("Group detail updated successfully !! $value");
+          // log("Group detail updated successfully !! $value");
           final Map<String, dynamic> data = value;
 
           groupDetail!.avatar = data["avatar"];

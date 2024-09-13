@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
@@ -115,7 +114,7 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
           final String hashedMessage =
               generateHashedMessage(jsonEncode(data['data']));
 
-          log("====> UPDATE CHAT USER MESSAGE COUNT FROM FCM");
+          // log("====> UPDATE CHAT USER MESSAGE COUNT FROM FCM");
 
           /// update the message count
           await ChatUserManager().updateChatUserMessageCount(
@@ -378,7 +377,7 @@ class PushNotificationService {
         if (!isDialogueOpen) {
           // debugPrint('FRANK DIALOG NOT OPEN');
 
-          log("BLACK LOG => $notification");
+          // log("BLACK LOG => $notification");
 
           Future.delayed(const Duration(seconds: 3), () {
             showAlertMessage(

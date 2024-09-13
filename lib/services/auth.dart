@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
@@ -15,6 +14,7 @@ import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
@@ -194,10 +194,13 @@ class AuthService {
       body = {
         "password": password,
         "phone_number": phoneNumber,
-        "company": company
+        "company": company,
       };
     } else {
-      body = {"password": password, "phone_number": phoneNumber};
+      body = {
+        "password": password,
+        "phone_number": phoneNumber,
+      };
     }
 
     final data = await getDeviceInfo();
@@ -223,8 +226,8 @@ class AuthService {
 
       // Save user to database
       final jsonData = jsonResponse["user"];
-      log("User=> $jsonData");
-      jsonData["password"] = password;
+      // log("User=> $jsonData");
+      jsonData["password"] = encryptPassword(password ?? "");
       jsonData["url"] =
           "${AppConfig.baseUrl}/api/v1/user/customer/" + jsonData["username"];
       final User user = await createUser(jsonData,
@@ -316,7 +319,7 @@ class AuthService {
 
     final SecureUser secureUser = await SecureStorage().getUser();
     String phoneNumber = secureUser.phoneNumber ?? "";
-    String password = secureUser.password ?? "";
+    String password = decryptPassword(secureUser.password ?? "");
 
     if (phoneNumber != "") {
       phoneNumber = "+${country.phoneCode!}$phoneNumber";
@@ -324,7 +327,7 @@ class AuthService {
 
     if (phoneNumber == "" || password == "") {
       phoneNumber = user?.phoneNumber ?? "";
-      password = user?.password ?? "";
+      password = decryptPassword(user?.password ?? "");
     }
     return {'phoneNumber': phoneNumber, 'password': password};
   }
@@ -701,7 +704,7 @@ class AuthService {
       final Jwt jwt = await fetchNewToken();
       final String bearer = "Bearer ${jwt.access ?? ""}";
       headers["Authorization"] = bearer;
-      log("NEW TOKEN GENERATED :- ${headers["Authorization"]}");
+      // log("NEW TOKEN GENERATED :- ${headers["Authorization"]}");
     }
 
     return headers;
