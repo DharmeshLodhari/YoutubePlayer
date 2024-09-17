@@ -32,6 +32,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/cart_with_badge.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -48,7 +49,6 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
-import '../../../../../widget/item_display_card.dart';
 import '../../shopping_auth.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -1124,7 +1124,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                     color: bgLightGrey,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
-                                  padding: const EdgeInsets.all(2),
+                                  padding: const EdgeInsets.all(7),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -1134,9 +1134,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                         },
                                         text:
                                             "Photo ${selectedIndex + 1}/${displayProductImages?.length}",
-                                        backgroundColor: selectedIndex == 0
-                                            ? transparent
-                                            : white,
+                                        backgroundColor: white,
+                                        // backgroundColor: selectedIndex == 0
+                                        //     ? transparent
+                                        //     : white,
                                       ),
                                       // video
                                       // _buildCustomTabPhotoAndVideo(
@@ -1170,7 +1171,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           borderRadius: BorderRadius.circular(20),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           child: Text(
             text ?? "",
             style: TextStyle(
@@ -1703,7 +1704,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildProductCondition() {
-    return product?.condition != null || product?.condition != ""
+    return product?.condition != null &&
+            product?.condition != "" &&
+            product?.condition != "New"
         ? Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -2566,53 +2569,58 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildSellersOtherProducts() {
-    return SizedBox(
-      height: 290,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                AppLocalization.of(context)!.sellersOtherProduct,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: blackFont,
-                  fontFamily: "Inter",
-                ),
-              ),
-              GestureDetector(
-                child: Text(
-                  AppLocalization.of(context)!.seeAll,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      fontFamily: "Inter",
-                      color: navyBlue),
-                ),
-                onTap: () {
-                  Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-                    "searchedUserName": product!.seller,
-                    "index": 2
-                  });
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: ListView.builder(
-              itemCount: sellersOtherItems.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => DisplayProduct(
-                product: sellersOtherItems[index],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              AppLocalization.of(context)!.sellersOtherProduct,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: blackFont,
+                fontFamily: "Inter",
               ),
             ),
-          )
-        ],
-      ),
+            GestureDetector(
+              child: Text(
+                AppLocalization.of(context)!.seeAll,
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    fontFamily: "Inter",
+                    color: navyBlue),
+              ),
+              onTap: () {
+                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                  "searchedUserName": product!.seller,
+                  "index": 2
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: sellersOtherItems
+                .map(
+                  (element) => Padding(
+                    padding: const EdgeInsets.only(right: 7.0),
+                    child: DisplayProduct(
+                      product: element,
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+      ],
     );
   }
 

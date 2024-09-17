@@ -4,9 +4,9 @@ import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
+import 'package:Slydo/screens/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -110,7 +110,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
           truncateString(
             str: messageDecoderWithEmoji(widget.product.name) ?? "",
             lengthToTruncateAt: 13,
-            showEllipsis: false,
+            showEllipsis: true,
           ),
           style: TextStyle(
             color: blackFont,
@@ -119,7 +119,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
           ),
         ),
         const SizedBox(
-          height: 8,
+          height: 5,
         ),
         Text(
           messageDecoderWithEmoji(

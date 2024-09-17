@@ -345,10 +345,14 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
           // debugPrint(
           //     'CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
 
-          for (var condition in conditions) {
-            if (condition.name == currentProduct.condition) {
-              selectedProductCondition = condition;
+          if (currentProduct.condition != null) {
+            for (var condition in conditions) {
+              if (condition.name == currentProduct.condition) {
+                selectedProductCondition = condition;
+              }
             }
+          } else {
+            // selectedProductCondition = condition[3];
           }
           for (var preparation in deliverTimeCondition) {
             if (preparation.name == currentProduct.preparationTime.toString()) {
@@ -2574,12 +2578,11 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   }
 
   bool validateDropdown() {
-    if (selectedProductCategory != null && selectedProductCondition != null) {
+    if (selectedProductCategory != null) {
       return true;
     } else {
       showToast(
-          message: AppLocalization.of(context)!
-              .pleaseSelectProductCategoryAndCondition);
+          message: AppLocalization.of(context)!.pleaseSelectProductCategory);
       return false;
     }
   }

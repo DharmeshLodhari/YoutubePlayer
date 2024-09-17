@@ -237,215 +237,66 @@ class _SuperHubState extends State<SuperHub> {
     }
     return productNext == "" && isProductLoading
         ? const SizedBox.shrink()
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 8,
-                  mainAxisExtent: 280,
-                  crossAxisSpacing: 8,
-                  maxCrossAxisExtent: 300,
+        : CustomScrollView(
+            physics: const ScrollPhysics(),
+            controller: _productScrollController,
+            shrinkWrap: true,
+            slivers: <Widget>[
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    // Calculate indices for the row items
+                    final int startIndex = index * 2;
+                    final int endIndex = startIndex + 2;
+
+                    // Get the items for this row
+                    final List<Service> rowItems = productList.sublist(
+                      startIndex,
+                      endIndex > productList.length
+                          ? productList.length
+                          : endIndex,
+                    );
+
+                    return IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // First Item
+                            Expanded(
+                              child: SuperStoreSingleCard(
+                                service: rowItems[0],
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            // Second Item
+                            if (rowItems.length == 2)
+                              Expanded(
+                                child: SuperStoreSingleCard(
+                                  service: rowItems[1],
+                                ),
+                              ),
+                            // Add an empty widget if there is only one item
+                            if (rowItems.length == 1)
+                              const Expanded(
+                                child: SizedBox.shrink(),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: (productList.length / 2).ceil(), // Number of rows
                 ),
-                itemCount: productList.length,
-                itemBuilder: (context, index) {
-                  return SuperStoreSingleCard(
-                    service: productList[index],
-                  );
-                },
+              ),
+              SliverToBoxAdapter(
+                child:
+                    buildJumpingLoadingIndicator(isLoading: isProductLoading),
               ),
             ],
           );
   }
-
-  // Widget getTodaysDealList() {
-  //   return Column(
-  //     children: [
-  //       todaysDealsEmpty
-  //           ? SizedBox.shrink()
-  //           : Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: <Widget>[
-  //                 Row(
-  //                   children: [
-  //                     Text(
-  //                       "Today's deal",
-  //                       style: TextStyle(
-  //                         fontWeight: FontWeight.w700,
-  //                         fontSize: 18,
-  //                         color: blackFont,
-  //                       ),
-  //                     ),
-  //                     Icon(
-  //                       Icons.bolt_rounded,
-  //                       color: mateRed,
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 // GestureDetector(
-  //                 //   child: Row(
-  //                 //     children: [
-  //                 //       Text(
-  //                 //         "See all",
-  //                 //         style: TextStyle(
-  //                 //             fontWeight: FontWeight.w600,
-  //                 //             fontSize: 14,
-  //                 //             color: navyBlue),
-  //                 //       ),
-  //                 //       SizedBox(width: 8),
-  //                 //       Icon(Icons.arrow_forward_ios_sharp,
-  //                 //           size: 14, color: navyBlue),
-  //                 //     ],
-  //                 //   ),
-  //                 //   onTap: () {
-  //                 //     Navigator.of(context).pushNamed("/shopping-category");
-  //                 //   },
-  //                 // ),
-  //               ],
-  //             ),
-  //       // Container(
-  //       //   height: 180,
-  //       //   child: ListView.builder(
-  //       //     padding: EdgeInsets.only(bottom: 6),
-  //       //     scrollDirection: Axis.horizontal,
-  //       //     controller: _todayDealScrollController,
-  //       //     itemCount: todaysDealList.length + 1,
-  //       //     itemBuilder: (BuildContext context, int index) {
-  //       //       if (index == todaysDealList.length) {
-  //       //         return isTodayDealLoading
-  //       //             ? Shimmer.fromColors(
-  //       //                 baseColor: Colors.white,
-  //       //                 highlightColor: greyBorderColor,
-  //       //                 child: SizedBox(
-  //       //                   height: 100,
-  //       //                   child: ListView.builder(
-  //       //                     shrinkWrap: true,
-  //       //                     scrollDirection: Axis.horizontal,
-  //       //                     physics: NeverScrollableScrollPhysics(),
-  //       //                     itemCount: 3,
-  //       //                     itemBuilder: (context, index) {
-  //       //                       return SizedBox(
-  //       //                         width: 160,
-  //       //                         child: Card(
-  //       //                           shape: RoundedRectangleBorder(
-  //       //                             borderRadius: BorderRadius.circular(12),
-  //       //                           ),
-  //       //                         ),
-  //       //                       );
-  //       //                     },
-  //       //                   ),
-  //       //                 ),
-  //       //               )
-  //       //             : SizedBox.shrink();
-  //       //       } else {
-  //       //         ShoppingProduct shoppingProduct = todaysDealList[index];
-  //       //         return DisplayProduct(
-  //       //           giveRightPadding: true,
-  //       //           product: Product(
-  //       //             id: shoppingProduct.id,
-  //       //             name: shoppingProduct.name,
-  //       //             price: shoppingProduct.price.toString(),
-  //       //             currency: shoppingProduct.currency,
-  //       //             cover: shoppingProduct.cover,
-  //       //             isAvailable: shoppingProduct.isAvailable,
-  //       //             seller: shoppingProduct.seller,
-  //       //             sellerFullName: shoppingProduct.sellerFullname,
-  //       //           ),
-  //       //         );
-  //       //       }
-  //       //     },
-  //       //   ),
-  //       // ),
-  //     ],
-  //   );
-  // }
-
-  // Widget todaysDealWidget({required ShoppingProduct product}) {
-  //   return GestureDetector(
-  //     onTap: () {
-  //       ShoppingAuthService().getProduct(product.id!).then((value) {
-  //         Navigator.pushNamed(context, '/product',
-  //             arguments: {"product": value});
-  //       });
-  //     },
-  //     child: SizedBox(
-  //       width: 160,
-  //       child: Card(
-  //         elevation: 12,
-  //         color: Colors.white,
-  //         shadowColor: lightGrey.withOpacity(0.4),
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(12),
-  //         ),
-  //         margin: EdgeInsets.only(top: 20, right: 14),
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.stretch,
-  //           children: [
-  //             Expanded(
-  //               child: Padding(
-  //                 padding: EdgeInsets.all(16),
-  //                 child: ClipRRect(
-  //                   borderRadius: BorderRadius.only(
-  //                     topLeft: Radius.circular(10),
-  //                     topRight: Radius.circular(10),
-  //                   ),
-  //                   child: CachedNetworkImage(
-  //                     imageUrl: product.cover!,
-  //                     errorWidget: productAndServiceErrorWidget,
-  //                     memCacheHeight:
-  //                         (MediaQuery.of(context).size.height * 0.6).toInt(),
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //             SizedBox(height: 10),
-  //             Padding(
-  //               padding: EdgeInsets.only(left: 10, bottom: 10),
-  //               child: Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.stretch,
-  //                 children: [
-  //                   Text(
-  //                     product.name!,
-  //                     textAlign: TextAlign.center,
-  //                     style: TextStyle(
-  //                       fontWeight: FontWeight.w400,
-  //                       fontSize: 14,
-  //                       color: blackFont,
-  //                     ),
-  //                     maxLines: 2,
-  //                   ),
-  //                   SizedBox(height: 5),
-  //                   RichText(
-  //                     textAlign: TextAlign.center,
-  //                     text: TextSpan(
-  //                       text: worldCurrencies[product.currency!]!,
-  //                       style: TextStyle(
-  //                         fontSize: 16.0,
-  //                         color: blackFont,
-  //                         fontWeight: FontWeight.w600,
-  //                       ),
-  //                       children: [
-  //                         TextSpan(
-  //                           text: truncateString(
-  //                             str: moneyDisplayNormalizer(
-  //                                 int.parse(product.price.toString())),
-  //                             lengthToTruncateAt: 16,
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget searchBox() {
     return Theme(

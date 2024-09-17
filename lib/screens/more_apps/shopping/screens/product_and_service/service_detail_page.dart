@@ -906,7 +906,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                               color: bgLightGrey,
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            padding: const EdgeInsets.all(2),
+                            padding: const EdgeInsets.all(7),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -916,8 +916,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                                   },
                                   text:
                                       "Photo ${selectedIndex + 1}/${displayServiceImage?.length}",
-                                  backgroundColor:
-                                      selectedIndex == 0 ? transparent : white,
+                                  backgroundColor: white,
+                                  // backgroundColor:
+                                  //     selectedIndex == 0 ? transparent : white,
                                 ),
                                 // video
                                 // _buildCustomTabPhotoAndVideo(
@@ -1021,21 +1022,52 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       return SizedBox(
         width: double.infinity,
         height: 30,
-        child: showColoredLabeledWidgetServiceDetails(
-            date: formatDate1(service?.availableFrom),
-            service: service,
-            text: AppLocalization.of(context)!.comingSoon,
-            color: lightYellow),
+        child: showColoredLabeledWidgetService(
+          date: formatDate1(service?.availableFrom),
+          service: service,
+          text: AppLocalization.of(context)!.comingSoon,
+          color: lightYellow,
+          fontSize: 14,
+          verticalPadding: 8,
+        ),
       );
     } else if (service?.isAvailable == false) {
       return SizedBox(
         width: double.infinity,
         height: 30,
-        child: showColoredLabeledWidgetServiceDetails(
-            service: service,
-            text: AppLocalization.of(context)!.outOfStock,
-            color: lightRed),
+        child: showColoredLabeledWidgetService(
+          service: service,
+          text: AppLocalization.of(context)!.outOfStock,
+          color: lightRed,
+          fontSize: 14,
+          verticalPadding: 8,
+        ),
       );
+    } else if ((service?.discountedPrice != null &&
+            service?.discountedPrice != 0) ||
+        (service?.pricePercentageChange != null &&
+            service?.pricePercentageChange != 0.0)) {
+      return buildServiceDiscountPrice();
+    } else {
+      return const SizedBox();
+    }
+  }
+
+  Widget buildServiceDiscountPrice() {
+    if (service?.discountedPrice != null && service?.discountedPrice != 0) {
+      if (service?.checkServiceDiscount() ?? false) {
+        return SizedBox(
+          width: double.infinity,
+          height: 30,
+          child: showDiscountValue(
+            service?.discountType ?? "",
+            service?.discountValue ?? 0,
+            service?.currency,
+          ),
+        );
+      } else {
+        return const SizedBox();
+      }
     } else {
       return const SizedBox();
     }
@@ -1235,53 +1267,58 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildProviderOtherServices() {
-    return SizedBox(
-      height: 290,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                AppLocalization.of(context)!.providersOtherService,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              AppLocalization.of(context)!.providersOtherService,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: blackFont,
+                fontFamily: "Inter",
+              ),
+            ),
+            GestureDetector(
+              child: Text(
+                AppLocalization.of(context)!.seeAll,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
-                  color: blackFont,
-                  fontFamily: "Inter",
+                  color: navyBlue,
                 ),
               ),
-              GestureDetector(
-                child: Text(
-                  AppLocalization.of(context)!.seeAll,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: navyBlue,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-                    "searchedUserName": service!.provider,
-                    "index": 3
-                  });
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: ListView.builder(
-              itemCount: sellersOtherItems.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => DisplayService(
-                service: sellersOtherItems[index],
-              ),
+              onTap: () {
+                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                  "searchedUserName": service!.provider,
+                  "index": 3
+                });
+              },
             ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: sellersOtherItems
+                .map(
+                  (element) => Padding(
+                    padding: const EdgeInsets.only(right: 7.0),
+                    child: DisplayService(
+                      service: element,
+                    ),
+                  ),
+                )
+                .toList(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

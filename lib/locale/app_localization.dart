@@ -2860,6 +2860,13 @@ class AppLocalization {
     );
   }
 
+  String get pleaseSelectProductCategory {
+    return Intl.message(
+      "Please Select Product Category",
+      name: "pleaseSelectProductCategory",
+    );
+  }
+
   String get pleaseSelectWeightHeightWidth {
     return Intl.message(
       "Please Select Weight, Height and Width SI Unit",

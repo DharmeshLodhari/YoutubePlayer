@@ -1489,6 +1489,10 @@ class ShoppingAuthService extends AuthService {
     service.availableFrom = DateTime.parse(item['available_from']);
     service.discountId = item['discount'];
     service.discountIsActive = item['discount_is_active'];
+    service.discountValue = item["discoundiscount_valueted_price"];
+    service.discountType = item["discount_type"];
+    service.discountedPrice = item["discounted_price"];
+    service.pricePercentageChange = item["price_percentage_change"] ?? 0.0;
     service.description = item['description'];
     service.shortDescription = item["short_description"];
     service.category = item['category'];

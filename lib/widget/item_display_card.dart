@@ -5,7 +5,6 @@ import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
 import 'package:Slydo/screens/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +15,9 @@ import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../routes/route_constants.dart';
 import '../screens/more_apps/shopping/shopping_auth.dart';
-import '../screens/user_profile/models/user.dart';
 import '../screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../screens/user_profile/user_auth.dart';
 import '../screens/yarn/models/share_as_yarn_model.dart';
 import '../screens/yarn/share_as_a_yarn_screen.dart';
-import '../screens/yarn/utils/utils.dart';
-import '../screens/yarn/utils/yarn_enum.dart';
 import '../screens/yarn/yarn_auth.dart';
 import '../screens/yarn/yarn_dashboard_bloc.dart';
 import '../utils/navigation_util.dart';
@@ -54,6 +49,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   late SharedCartBloc sharedCartBloc;
   bool showAddToCartButton = true;
   late YarnDashboardBloc yarnDashboardBloc;
+  final GlobalKey _key = GlobalKey();
 
   @override
   void initState() {
@@ -78,183 +74,132 @@ class _DisplayProductState extends State<DisplayProduct> {
         Navigator.pushNamed(context, '/product',
             arguments: {"product": widget.product});
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
-        child: SizedBox(
-          width: 170,
-          child: Card(
-            semanticContainer: true,
-            color: Colors.transparent,
-            elevation: 0,
-            shadowColor: boxShadow,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                _buildProductImage(),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 2, left: 2, top: 2),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildProductName(),
-                          _buildProductShortDescription(),
-                          const SizedBox(height: 2),
-                          _buildProductRating(),
-                          Flexible(child: getPreparationTime()),
-                          const SizedBox(height: 2),
-                          Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _buildProductCurrency(),
-                                    _buildProductPrice(),
-                                  ],
-                                ),
-                                Flexible(
-                                    child: displayShoppingAddingToCartControl())
-                              ]),
-                        ],
-                      ),
+      child: SizedBox(
+        width: 170,
+        child: Card(
+          semanticContainer: true,
+          color: Colors.transparent,
+          elevation: 0,
+          shadowColor: boxShadow,
+          child: Column(
+            key: _key,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _buildProductImage(),
+              if (widget.product.variantModels?.isEmpty ?? false)
+                _buildProductDiscountAndTag(),
+              const SizedBox(height: 2),
+              _buildItemName(widget.product.name),
+              _buildItemShortDescription(widget.product.shortDescription),
+              const SizedBox(height: 2),
+              Row(
+                children: [
+                  getRating(numberOfRating: widget.product.rating?.toInt()),
+                  const SizedBox(width: 5),
+                  _getItemReviews(widget.product.reviewScore),
+                ],
+              ),
+              getPreparationTime(widget.product.preparationTime),
+              Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            _buildItemCurrency(widget.product.currency),
+                            _buildProductPrice(),
+                          ],
+                        ),
+                        _buildProductNormalPrice(),
+                      ],
                     ),
-                  ),
-                ),
-              ],
-            ),
+                    displayShoppingAddingToCartControl()
+                  ]),
+            ],
           ),
         ),
       ),
     );
   }
 
-  void showProductProfileActionsSheet() {
-    showModalBottomSheet<void>(
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (BuildContext context) {
-          return Card(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
+  Widget _buildProductImage() {
+    return Stack(
+      children: [
+        _buildItemImage(widget.product.cover),
+        _buildHeartIcon(widget.isProductShowIcon),
+        displayShoppingCartControls(),
+      ],
+    );
+  }
+
+  Widget _buildProductPrice() {
+    String price;
+    if (widget.product.priceRange != null && widget.product.priceRange != "0") {
+      price = widget.product.priceRange ?? "0";
+      if (widget.product.priceRange?.contains('-') == false) {
+        price =
+            moneyDisplayNormalizer(int.parse(widget.product.priceRange ?? "0"));
+      } else {
+        price = price.replaceAll(
+            " - ", " - ${worldCurrencies[widget.product.currency] ?? "NGN"}");
+      }
+    } else {
+      price = moneyDisplayNormalizer(
+        int.parse(
+          widget.product.getPriceRange(),
+        ),
+      );
+    }
+    return Text(
+      price,
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 14,
+        color: navyBlue,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Widget _buildProductNormalPrice() {
+    if ((widget.product.variantModels?.isEmpty ?? false) &&
+        widget.product.discountedPrice != null) {
+      if (widget.product.checkProductDiscount()) {
+        return Row(
+          children: [
+            Text(
+              worldCurrencies[widget.product.currency] ?? "NGN",
+              style: TextStyle(
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                color: fontLightGrey,
+                decoration: TextDecoration.lineThrough,
               ),
-              color: Colors.white,
-              margin: EdgeInsets.zero,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: generateBottomSheetItem(),
-                ),
-              ));
-        });
-  }
-
-  List<Widget> generateBottomSheetItem() {
-    final List<Widget> list = [];
-
-    list.add(
-      bottomSheetItem(
-        title: AppLocalization.of(context)!.print,
-        iconData: SlydoAppIcon.share,
-        onTap: () {
-          Navigator.pop(context);
-          Navigator.of(context).pushNamed(
-            '/print-qr',
-            arguments: {
-              "imageUrl": widget.product.qrCode,
-              "itemName": widget.product.name,
-            },
-          );
-        },
-      ),
-    );
-
-    list.add(
-      bottomSheetItem(
-        title: "Edit product",
-        iconData: SlydoAppIcon.edit,
-        onTap: () async {
-          Navigator.pop(context);
-
-          final result = await Navigator.of(context).pushNamed(
-            '/edit-product',
-            arguments: {
-              "productId": widget.product.id.toString(),
-            },
-          );
-
-          if (result != null) {
-            if (result is String) {
-              if (result == "delete_item" || result == "update_item") {
-                if (widget.onProductRefresh != null) {
-                  widget.onProductRefresh!();
-                }
-              }
-            }
-          }
-        },
-      ),
-    );
-
-    list.add(
-      bottomSheetItem(
-        isLast: true,
-        title: "Share As A Yarn",
-        iconData: SlydoAppIconNew.dashboard_yarn,
-        onTap: () async {
-          Navigator.pop(context);
-          shareAsYarn();
-        },
-      ),
-    );
-
-    return list;
-  }
-
-  void shareAsYarn() {
-    NavigationUtil.push(context,
-        screen: ShareAsAyarnScreen(
-            askCategories: yarnDashboardBloc.yarnCategories,
-            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-            callback: (params) async {
-              params.body = widget.product.name ?? "";
-              params.attachment = {
-                "product": widget.product.toJson().cast<String, dynamic>()
-              };
-              final bool data =
-                  await YarnAuth().addYarnAndQuestion(params, '', '');
-              if (data) {
-                showToast(message: "Shared in Yarn successfully");
-              }
-            }));
-  }
-
-  Widget getFavouriteIcon() {
-    return !isOwner
-        ? const Padding(
-            padding: EdgeInsets.only(bottom: 4.0),
-            child: InkWell(
-              child: Icon(Icons.favorite_border),
             ),
-          )
-        : const SizedBox.shrink();
-  }
-
-  Widget favouriteIcon() {
-    return const Padding(
-      padding: EdgeInsets.only(bottom: 4.0),
-      child: InkWell(
-        child: Icon(Icons.favorite_border),
-      ),
-    );
+            Text(
+              moneyDisplayNormalizer(widget.product.price),
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                color: fontLightGrey,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
+          ],
+        );
+      } else {
+        const SizedBox();
+      }
+    } else {
+      const SizedBox();
+    }
+    return const SizedBox.shrink();
   }
 
   void addProductToCart() async {
@@ -298,170 +243,92 @@ class _DisplayProductState extends State<DisplayProduct> {
     );
   }
 
-  /*Widget productStockAndDetailTag() {
-    if (widget.product.availableFrom?.isAfter(DateTime.now()) ?? false) {
-      return Positioned(
-        top: 10,
-        right: 10,
-        child: showColoredLabeledWidget(
-            text: AppLocalization.of(context)!.comingSoon, color: starYellow),
-      );
-    } else if (widget.product.trackInventory == true &&
-        widget.product.quantity! <= 0) {
-      return Positioned(
-        top: 10,
-        right: 10,
-        child: showColoredLabeledWidget(
-            text: AppLocalization.of(context)!.outOfStock, color: red),
-      );
-    } else if ((widget.product.discountedPrice != null &&
-            widget.product.discountedPrice != 0) ||
-        (widget.product.pricePercentageChange != null &&
-            widget.product.pricePercentageChange != 0.0)) {
-      return buildDiscountPrice();
-    } else {
-      return const SizedBox();
-    }
-  }*/
-
-  /*Widget buildDiscountPrice() {
+  Widget buildProductDiscountPrice() {
     if (widget.product.discountedPrice != null &&
         widget.product.discountedPrice != 0) {
       if (widget.product.checkProductDiscount()) {
-        return Positioned(
-            top: 10,
-            right: 10,
-            child: showDiscountValue(widget.product.discountType!,
-                widget.product.discountValue!, widget.product.currency));
+        return SizedBox(
+          width: double.infinity,
+          height: 22,
+          child: showDiscountValue(
+            widget.product.discountType!,
+            widget.product.discountValue!,
+            widget.product.currency,
+          ),
+        );
       } else {
         return const SizedBox();
       }
     } else {
       return const SizedBox();
     }
-    // if ((widget.product.pricePercentageChange != null) &
-    // (widget.product.pricePercentageChange != 0.0)) ...[
-    // Positioned(
-    // top: 8,
-    // right: 8,
-    // child: Container(
-    // padding: EdgeInsets.only(
-    // left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
-    // decoration: BoxDecoration(
-    // color: naturalGreen,
-    // borderRadius: BorderRadius.all(Radius.circular(8)),
-    // ),
-    // child: Text(
-    // "${widget.product.pricePercentageChange!.toString()}% off",
-    // style: TextStyle(
-    // color: Colors.white,
-    // ),
-    // ),
-    // ),
-    // )
-  }*/
-
-  Widget buildDiscountPrice() {
-    if (widget.product.discountedPrice != null &&
-        widget.product.discountedPrice != 0) {
-      if (widget.product.checkProductDiscount()) {
-        return showDiscountValue(widget.product.discountType!,
-            widget.product.discountValue!, widget.product.currency);
-      } else {
-        return const SizedBox();
-      }
-    } else {
-      return const SizedBox();
-    }
-    // if ((widget.product.pricePercentageChange != null) &
-    // (widget.product.pricePercentageChange != 0.0)) ...[
-    // Positioned(
-    // top: 8,
-    // right: 8,
-    // child: Container(
-    // padding: EdgeInsets.only(
-    // left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
-    // decoration: BoxDecoration(
-    // color: naturalGreen,
-    // borderRadius: BorderRadius.all(Radius.circular(8)),
-    // ),
-    // child: Text(
-    // "${widget.product.pricePercentageChange!.toString()}% off",
-    // style: TextStyle(
-    // color: Colors.white,
-    // ),
-    // ),
-    // ),
-    // )
   }
 
   Widget displayShoppingCartControls() {
-    if (isInCart() == true) {
-      return Positioned(
-          right: 10,
-          bottom: 5,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 6),
-            height: 25,
-            decoration: BoxDecoration(
-                color: white, borderRadius: BorderRadius.circular(20)),
-            child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (widget.product.addOnsModels?.isNotEmpty ?? false) {
-                        confirmAddOnsDialog();
-                      } else {
-                        basketBloc.increaseQty(
+    return Positioned(
+      right: 10,
+      bottom: 5,
+      child: isInCart() == true
+          ? Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 6),
+              height: 25,
+              decoration: BoxDecoration(
+                  color: white, borderRadius: BorderRadius.circular(20)),
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (widget.product.addOnsModels?.isNotEmpty ?? false) {
+                          confirmAddOnsDialog();
+                        } else {
+                          basketBloc.increaseQty(
+                            currentProduct: widget.product,
+                            currentUser: userBloc.user.convertToUser(),
+                          );
+                        }
+                      },
+                      child: SvgPicture.asset(
+                        'assets/images/add.svg',
+                        height: 17,
+                        width: 17,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      '${basketBloc.getProductOrServiceQuantityInCart(widget.product.id!)}',
+                      style: TextStyle(
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: yarnBlack,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        basketBloc.decreaseQty(
                           currentProduct: widget.product,
                           currentUser: userBloc.user.convertToUser(),
                         );
-                      }
-                    },
-                    child: SvgPicture.asset(
-                      'assets/images/add.svg',
-                      height: 17,
-                      width: 17,
+                      },
+                      child: SvgPicture.asset(
+                        'assets/images/minus.svg',
+                        height: 17,
+                        width: 17,
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    '${basketBloc.getProductOrServiceQuantityInCart(widget.product.id!)}',
-                    style: TextStyle(
-                      fontFamily: "Inter",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                      color: yarnBlack,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      basketBloc.decreaseQty(
-                        currentProduct: widget.product,
-                        currentUser: userBloc.user.convertToUser(),
-                      );
-                    },
-                    child: SvgPicture.asset('assets/images/minus.svg',
-                        height: 17, width: 17),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ));
-    } else {
-      return Positioned(
-        right: 10,
-        bottom: 5,
-        child: Container(),
-      );
-    }
+            )
+          : const SizedBox.shrink(),
+    );
   }
 
   Future<void> confirmAddOnsDialog() async {
@@ -582,99 +449,12 @@ class _DisplayProductState extends State<DisplayProduct> {
     return result;
   }
 
-  void removeProductFromCartOld() async {
-    const String type = "product";
-
-    late var mapData;
-    for (var element in basketBloc.items) {
-      if (element["item"].id == widget.product.id) {
-        mapData = element;
-        continue;
-      }
-    }
-    final Map data = {
-      "type": type,
-      "id": mapData["item"].id,
-      "qty": int.parse(mapData["qty"].toString()) - 1,
-    };
-
-    debugPrint("Data send From Remove Main : $data");
-    basketBloc.removeItemFromCart(widget.product);
-    await ShoppingAuthService().removeItemFromShoppingCart(data);
-  }
-
-  Widget priceText() {
-    String price;
-    if (widget.product.priceRange != null && widget.product.priceRange != "0") {
-      price = widget.product.priceRange ?? "0";
-      if (widget.product.priceRange?.contains('-') == false) {
-        price =
-            moneyDisplayNormalizer(int.parse(widget.product.priceRange ?? "0"));
-      } else {
-        price = price.replaceAll(
-            " - ", " - ${worldCurrencies[widget.product.currency] ?? "NGN"}");
-      }
-    } else {
-      price = moneyDisplayNormalizer(
-        int.parse(
-          widget.product.getPriceRange(),
-        ),
-      );
-    }
-    return Text(
-      price,
-      style: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 14,
-        color: navyBlue,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
-  Widget _getProductReviews() {
-    if ((widget.product.reviewScore ?? 0) != 0) {
-      return Text(
-        "(${widget.product.reviewScore} ${(widget.product.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
-        style: TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-          fontFamily: 'Inter',
-          color: fontLightGrey,
-        ),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
-  }
-
-  Widget getPreparationTime() {
-    if (widget.product.preparationTime != null &&
-        widget.product.preparationTime != 0) {
-      return Column(
-        children: [
-          const SizedBox(height: 2),
-          Text(
-            "${widget.product.preparationTime}",
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 12,
-              fontFamily: 'Inter',
-              color: fontLightGrey,
-            ),
-          ),
-        ],
-      );
-    }
-    return const SizedBox.shrink();
-  }
-
   Widget _buildProductDiscountAndTag() {
     if ((widget.product.availableFrom?.isAfter(DateTime.now()) ?? false) &&
         (widget.product.variantModels?.isEmpty ?? false)) {
       return SizedBox(
         width: double.infinity,
-        height: 25,
+        height: 22,
         child: showColoredLabeledWidgetProductStock(
           text: AppLocalization.of(context)!.comingSoon,
           color: lightYellow,
@@ -688,7 +468,7 @@ class _DisplayProductState extends State<DisplayProduct> {
         (widget.product.quantity ?? 0) <= 0) {
       return SizedBox(
         width: double.infinity,
-        height: 25,
+        height: 22,
         child: showColoredLabeledWidgetProductStock(
           text: AppLocalization.of(context)!.outOfStock,
           color: lightRed,
@@ -699,152 +479,10 @@ class _DisplayProductState extends State<DisplayProduct> {
             widget.product.discountedPrice != 0) ||
         (widget.product.pricePercentageChange != null &&
             widget.product.pricePercentageChange != 0.0)) {
-      return SizedBox(
-        width: double.infinity,
-        height: 25,
-        child: buildDiscountPrice(),
-      );
+      return buildProductDiscountPrice();
     } else {
       return const SizedBox();
     }
-  }
-
-  Widget _buildProductImage() {
-    return Stack(
-      children: [
-        SizedBox(
-          height: 150,
-          child: CachedNetworkImage(
-            imageUrl: widget.product.cover!,
-            fit: BoxFit.cover,
-            width: double.infinity,
-            errorWidget: productAndServiceBigErrorWidget,
-          ),
-        ),
-        if (widget.isProductShowIcon == true)
-          Positioned(
-            top: 10,
-            left: 10,
-            child: Image.asset(
-              "assets/images/appIcon/heart.png",
-              height: 17,
-              width: 17,
-            ),
-          ),
-        if (widget.product.variantModels?.isEmpty ?? false)
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: _buildProductDiscountAndTag(),
-          ),
-        displayShoppingCartControls(),
-      ],
-    );
-  }
-
-  Widget _buildProductName() {
-    return Text(
-      truncateString(
-        str: messageDecoderWithEmoji(widget.product.name) ?? "",
-        lengthToTruncateAt: 16,
-        showEllipsis: false,
-      ),
-      maxLines: 1,
-      style: TextStyle(
-        color: blackFont,
-        fontSize: 14,
-        fontFamily: "Inter",
-        fontWeight: FontWeight.w500,
-      ),
-    );
-  }
-
-  Widget _buildProductShortDescription() {
-    return Text(
-      truncateString(
-        str: messageDecoderWithEmoji(widget.product.shortDescription) ?? "",
-        lengthToTruncateAt: 45,
-        showEllipsis: true,
-      ),
-      maxLines: 2,
-      style: TextStyle(
-        fontFamily: "Inter",
-        fontWeight: FontWeight.w400,
-        fontSize: 12,
-        color: fontLightGrey,
-      ),
-    );
-  }
-
-  Widget _buildProductRating() {
-    return Flexible(
-      child: Row(
-        children: [
-          getRating(numberOfRating: widget.product.rating?.toInt()),
-          const SizedBox(width: 5),
-          _getProductReviews(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProductCurrency() {
-    return Flexible(
-      child: Row(
-        children: [
-          Text(
-            worldCurrencies[widget.product.currency] ?? "NGN",
-            style: TextStyle(
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-              color: navyBlue,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          priceText(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProductPrice() {
-    if ((widget.product.variantModels?.isEmpty ?? false) &&
-        widget.product.discountedPrice != null) {
-      if (widget.product.checkProductDiscount()) {
-        return Flexible(
-          child: Row(
-            children: [
-              Text(
-                worldCurrencies[widget.product.currency] ?? "NGN",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  color: fontLightGrey,
-                  decoration: TextDecoration.lineThrough,
-                ),
-              ),
-              Text(
-                moneyDisplayNormalizer(widget.product.price!),
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  color: fontLightGrey,
-                  decoration: TextDecoration.lineThrough,
-                ),
-              ),
-            ],
-          ),
-        );
-      } else {
-        const SizedBox();
-      }
-    } else {
-      const SizedBox();
-    }
-    return const SizedBox.shrink();
   }
 }
 
@@ -911,94 +549,109 @@ class _DisplayServiceState extends State<DisplayService> {
         Navigator.pushNamed(context, '/service-detail',
             arguments: {"service": currentService});
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
-        child: SizedBox(
-          width: 170,
-          child: Card(
-            semanticContainer: true,
-            color: Colors.transparent,
-            elevation: 0,
-            shadowColor: boxShadow,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                _buildAServiceImage(),
-                // const SizedBox(
-                //   height: 7,
-                // ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 2, left: 2, top: 4),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildServiceName(),
-                          _buildServiceShortDescription(),
-                          const SizedBox(height: 2),
-                          _buildServiceRating(),
-                          _buildServiceRating(),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _buildServicePrice(),
-                              Flexible(
-                                  child: displayShoppingAddingToCartControl())
-                            ],
-                          ),
-                        ],
-                      ),
+      child: SizedBox(
+        width: 170,
+        child: Card(
+          semanticContainer: true,
+          color: Colors.transparent,
+          elevation: 0,
+          shadowColor: boxShadow,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _buildServiceImage(),
+              _buildServiceStockAndDetailTag(),
+              const SizedBox(height: 2),
+              _buildItemName(widget.service.name),
+              _buildItemShortDescription(widget.service.shortDescription),
+              const SizedBox(height: 2),
+              Row(
+                children: [
+                  getRating(numberOfRating: widget.service.rating?.toInt()),
+                  const SizedBox(width: 5),
+                  _getItemReviews(widget.service.reviewScore),
+                ],
+              ),
+              // getPreparationTime(widget.service.preparationTime),
+              Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            _buildItemCurrency(widget.service.currency),
+                            _buildServicePrice(),
+                          ],
+                        ),
+                        _buildServiceNormalPrice(),
+                      ],
                     ),
-                  ),
-                ),
-              ],
-            ),
+                    displayShoppingAddingToCartControl()
+                  ]),
+            ],
           ),
         ),
       ),
     );
   }
 
-/*  Widget serviceStockAndDetailTag() {
+  Widget _buildServiceStockAndDetailTag() {
     if (widget.service.availableFrom?.isAfter(DateTime.now()) ?? false) {
-      return Positioned(
-        top: 10,
-        right: 10,
+      return SizedBox(
+        width: double.infinity,
+        height: 22,
         child: showColoredLabeledWidgetService(
-            text: AppLocalization.of(context)!.comingSoon, color: starYellow),
+          date: formatDate1(widget.service.availableFrom),
+          service: widget.service,
+          text: AppLocalization.of(context)!.comingSoon,
+          color: lightYellow,
+          fontSize: 12,
+          verticalPadding: 5,
+        ),
       );
     } else if (widget.service.isAvailable == false) {
-      return Positioned(
-        top: 10,
-        right: 10,
+      return SizedBox(
+        width: double.infinity,
+        height: 22,
         child: showColoredLabeledWidgetService(
-            text: AppLocalization.of(context)!.outOfStock, color: red),
+          service: widget.service,
+          text: AppLocalization.of(context)!.outOfStock,
+          color: lightRed,
+          fontSize: 12,
+          verticalPadding: 5,
+        ),
       );
+    } else if ((widget.service.discountedPrice != null &&
+            widget.service.discountedPrice != 0) ||
+        (widget.service.pricePercentageChange != null &&
+            widget.service.pricePercentageChange != 0.0)) {
+      return buildServiceDiscountPrice();
     } else {
       return const SizedBox();
     }
-  }*/
+  }
 
-  Widget serviceStockAndDetailTag() {
-    if (widget.service.availableFrom?.isAfter(DateTime.now()) ?? false) {
-      return SizedBox(
+  Widget buildServiceDiscountPrice() {
+    if (widget.service.discountedPrice != null &&
+        widget.service.discountedPrice != 0) {
+      if (widget.service.checkServiceDiscount()) {
+        return SizedBox(
           width: double.infinity,
-          height: 28,
-          child: showColoredLabeledWidgetService(
-              service: widget.service,
-              text: AppLocalization.of(context)!.comingSoon,
-              color: lightYellow));
-    } else if (widget.service.isAvailable == false) {
-      return SizedBox(
-          width: double.infinity,
-          height: 28,
-          child: showColoredLabeledWidgetService(
-              service: widget.service,
-              text: AppLocalization.of(context)!.outOfStock,
-              color: lightRed));
+          height: 22,
+          child: showDiscountValue(
+            widget.service.discountType ?? "",
+            widget.service.discountValue ?? 0,
+            widget.service.currency,
+          ),
+        );
+      } else {
+        return const SizedBox();
+      }
     } else {
       return const SizedBox();
     }
@@ -1056,8 +709,11 @@ class _DisplayServiceState extends State<DisplayService> {
                     onTap: () {
                       removeServiceFromCart();
                     },
-                    child: SvgPicture.asset('assets/images/minus.svg',
-                        height: 17, width: 17),
+                    child: SvgPicture.asset(
+                      'assets/images/minus.svg',
+                      height: 17,
+                      width: 17,
+                    ),
                   ),
                 ],
               ),
@@ -1271,48 +927,10 @@ class _DisplayServiceState extends State<DisplayService> {
     );
   }
 
-  Widget _getServiceReviews() {
-    if ((widget.service.reviewScore ?? 0) != 0) {
-      return Text(
-        "(${widget.service.reviewScore} ${(widget.service.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
-        style: TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-          fontFamily: 'Inter',
-          color: fontLightGrey,
-        ),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
-  }
-
-  Widget _buildAServiceImage() {
+  Widget _buildServiceImage() {
     return Stack(
       children: [
-        SizedBox(
-          height: 150,
-          child: CachedNetworkImage(
-            imageUrl: widget.service.cover!,
-            fit: BoxFit.cover,
-            width: double.infinity,
-            errorWidget: productAndServiceBigErrorWidget,
-          ),
-        ),
-        // Positioned(
-        //   right: 10,
-        //   bottom: 10,
-        //   child: getRating(
-        //     numberOfRating: widget.service.rating?.toInt(),
-        //   ),
-        // ),
-        // serviceStockAndDetailTag(),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: serviceStockAndDetailTag(),
-        ),
+        _buildItemImage(widget.service.cover),
         displayShoppingCartControls(),
         //TODO: to be implemented later in future
         // Positioned(right: 10, top: 10, child: favouriteIcon())
@@ -1320,489 +938,157 @@ class _DisplayServiceState extends State<DisplayService> {
     );
   }
 
-  Widget _buildServiceName() {
+  Widget _buildServicePrice() {
     return Text(
-      messageDecoderWithEmoji(
-            truncateString(
-              str: widget.service.name!,
-              lengthToTruncateAt: 16,
-              showEllipsis: false,
-            ),
-          ) ??
-          "",
-      maxLines: 1,
+      moneyDisplayNormalizer(int.parse(widget.service.getServiceRealPrice())),
       style: TextStyle(
-        color: blackFont,
+        fontWeight: FontWeight.w600,
         fontSize: 14,
-        fontWeight: FontWeight.w500,
+        color: navyBlue,
         fontFamily: "Inter",
       ),
     );
   }
 
-  Widget _buildServiceShortDescription() {
+  Widget _buildServiceNormalPrice() {
+    if (widget.service.discountedPrice != null) {
+      if (widget.service.checkServiceDiscount()) {
+        return Row(
+          children: [
+            Text(
+              worldCurrencies[widget.service.currency] ?? "NGN",
+              style: TextStyle(
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                color: fontLightGrey,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
+            Text(
+              moneyDisplayNormalizer(int.parse(widget.service.price ?? "0")),
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                color: fontLightGrey,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
+          ],
+        );
+      } else {
+        const SizedBox();
+      }
+    } else {
+      const SizedBox();
+    }
+    return const SizedBox.shrink();
+  }
+}
+
+Widget _buildItemImage(String? cover) {
+  return CachedNetworkImage(
+    height: 170,
+    imageUrl: cover ?? "",
+    fit: BoxFit.cover,
+    width: double.infinity,
+    errorWidget: productAndServiceBigErrorWidget,
+  );
+}
+
+Widget _buildHeartIcon(bool isProductShowIcon) {
+  return Positioned(
+    top: 10,
+    left: 10,
+    child: isProductShowIcon == true
+        ? Image.asset(
+            "assets/images/appIcon/heart.png",
+            height: 17,
+            width: 17,
+          )
+        : const SizedBox.shrink(),
+  );
+}
+
+Widget _buildItemName(String? itemName) {
+  return Text(
+    truncateString(
+      str: messageDecoderWithEmoji(itemName) ?? "",
+      lengthToTruncateAt: 38,
+      showEllipsis: true,
+    ),
+    maxLines: 2,
+    style: TextStyle(
+      color: blackFont,
+      fontSize: 14,
+      fontFamily: "Inter",
+      fontWeight: FontWeight.w600,
+    ),
+  );
+}
+
+Widget _buildItemShortDescription(String? shortDescription) {
+  return Text(
+    truncateString(
+      str: messageDecoderWithEmoji(shortDescription) ?? "",
+      lengthToTruncateAt: 60,
+      showEllipsis: true,
+    ),
+    maxLines: 2,
+    style: TextStyle(
+      fontFamily: "Inter",
+      fontWeight: FontWeight.w400,
+      fontSize: 12,
+      color: fontLightGrey,
+    ),
+  );
+}
+
+Widget _getItemReviews(int? reviewScore) {
+  if ((reviewScore ?? 0) != 0) {
     return Text(
-      truncateString(
-        str: messageDecoderWithEmoji(widget.service.shortDescription) ?? "",
-        lengthToTruncateAt: 45,
-        showEllipsis: true,
-      ),
-      maxLines: 2,
+      "($reviewScore ${(reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
       style: TextStyle(
-        fontFamily: "Inter",
         fontWeight: FontWeight.w400,
         fontSize: 12,
+        fontFamily: 'Inter',
         color: fontLightGrey,
       ),
     );
+  } else {
+    return const SizedBox.shrink();
   }
+}
 
-  Widget _buildServiceRating() {
-    return Row(
+Widget getPreparationTime(int? preparationTime) {
+  if (preparationTime != null && preparationTime != 0) {
+    return Column(
       children: [
-        getRating(
-          numberOfRating: widget.service.rating?.toInt(),
-        ),
-        const SizedBox(width: 5),
-        _getServiceReviews(),
-      ],
-    );
-  }
-
-  Widget _buildServiceCurrency() {
-    return Text(
-      worldCurrencies[widget.service.currency!]!,
-      style: TextStyle(
-        fontFamily: "Inter",
-        fontWeight: FontWeight.w500,
-        fontSize: 14,
-        color: navyBlue,
-      ),
-    );
-  }
-
-  Widget _buildServicePrice() {
-    return Row(
-      children: [
-        _buildServiceCurrency(),
+        const SizedBox(height: 2),
         Text(
-          moneyDisplayNormalizer(int.parse(widget.service.price!)),
+          "$preparationTime",
           style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-            color: navyBlue,
-            fontFamily: "Inter",
+            fontWeight: FontWeight.w400,
+            fontSize: 12,
+            fontFamily: 'Inter',
+            color: fontLightGrey,
           ),
         ),
       ],
     );
   }
+  return const SizedBox.shrink();
 }
 
-class FindBusiness extends StatefulWidget {
-  CustomerProfile customerProfile;
-  final Function()? onProductRefresh;
-  final TileRenderPlace tileRenderPlace;
-  final Function(String, bool) callback;
-
-  FindBusiness(
-      {super.key,
-      required this.customerProfile,
-      this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
-      this.onProductRefresh,
-      required this.callback});
-
-  @override
-  State<FindBusiness> createState() => _FindBusinessState();
-}
-
-class _FindBusinessState extends State<FindBusiness> {
-  bool isLoadingFollowingAction = false;
-  late UserBloc userBloc;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    userBloc = Provider.of<UserBloc>(context);
-
-    return getNearByBusiness();
-  }
-
-  Widget getNearByBusiness() {
-    return Card(
-      color: Colors.white,
-      semanticContainer: true,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      margin: EdgeInsets.zero,
-      shadowColor: boxShadow,
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.topCenter,
-            children: [
-              SizedBox(
-                  height: getContainerHeight(widget.tileRenderPlace, context),
-                  child: getWallpaper()),
-              Positioned(
-                left: 10,
-                top: getContainerHeight(widget.tileRenderPlace, context) - 20,
-                child: InkWell(
-                  onTap: () {
-                    String? image = '';
-                    if (widget.customerProfile.avatar! == "" ||
-                        widget.customerProfile.avatar! ==
-                            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-                      image = getInitials(widget.customerProfile.fullName!)
-                          .toUpperCase();
-                    } else {
-                      image = widget.customerProfile.avatar!;
-                    }
-
-                    Navigator.of(context)
-                        .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
-                  },
-                  child: SizedBox(
-                      width: widget.tileRenderPlace == TileRenderPlace.Thiny
-                          ? 40
-                          : 50,
-                      height: widget.tileRenderPlace == TileRenderPlace.Thiny
-                          ? 40
-                          : 50,
-                      child: CircularUserColorImage(
-                          imageUrl: widget.customerProfile.avatar!,
-                          name: widget.customerProfile.fullName!)),
-                ),
-              ),
-            ],
-          ),
-          Container(
-            padding: widget.tileRenderPlace == TileRenderPlace.Thiny
-                ? const EdgeInsets.only(left: 15, top: 20, bottom: 5, right: 15)
-                : const EdgeInsets.only(
-                    left: 15, top: 30, bottom: 10, right: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, Routes.USER_PROFILE, arguments: {
-                            "searchedUserName": widget.customerProfile.userName
-                          });
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  appendStringDot(
-                                      messageDecoderWithEmoji(
-                                              widget.customerProfile.fullName ??
-                                                  "") ??
-                                          "",
-                                      widget.tileRenderPlace ==
-                                              TileRenderPlace.Thiny
-                                          ? 13
-                                          : 20),
-                                  style: TextStyle(
-                                      fontSize: widget.tileRenderPlace ==
-                                              TileRenderPlace.Thiny
-                                          ? 12
-                                          : 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: yarnBlack),
-                                )),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: userNameWithVerifiedIcon(
-                                  name: appendStringDot(
-                                      messageDecoderWithEmoji(
-                                              '@${widget.customerProfile.userName}') ??
-                                          "",
-                                      widget.tileRenderPlace ==
-                                              TileRenderPlace.Thiny
-                                          ? 13
-                                          : 20),
-                                  isVerified: widget.customerProfile.isVerified,
-                                  textStyle: TextStyle(
-                                    fontSize: widget.tileRenderPlace ==
-                                            TileRenderPlace.Thiny
-                                        ? 11
-                                        : 14,
-                                    color: HexColor("#151515"),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  verifiedIconColor: verifyGreen,
-                                  verifiedIconSize: widget.tileRenderPlace ==
-                                          TileRenderPlace.Thiny
-                                      ? 12
-                                      : 15),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      // padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: getFollowUnFollowBtn(),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: widget.tileRenderPlace == TileRenderPlace.Thiny
-                      ? 2.0
-                      : 5.0,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(60),
-                  ),
-                  padding: widget.tileRenderPlace == TileRenderPlace.Thiny
-                      ? const EdgeInsets.symmetric(horizontal: 3, vertical: 1)
-                      : const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                  child: getRating(
-                      numberOfRating: widget.customerProfile.rating.toInt()),
-                ),
-                if (widget.customerProfile.bio!.isNotEmpty ||
-                    widget.customerProfile.bio != null) ...[
-                  const SizedBox(
-                    height: 10.0,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          messageDecoderWithEmoji(widget.customerProfile.bio) ??
-                              "",
-                          style: TextStyle(
-                            fontSize:
-                                getFontSize(widget.tileRenderPlace, context),
-                            fontWeight: FontWeight.w600,
-                            color: blackFont,
-                          ),
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ],
-            ),
-          ),
-          SizedBox(
-            height:
-                widget.tileRenderPlace == TileRenderPlace.Thiny ? 5.0 : 10.0,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget getFollowUnFollowBtn() {
-    if (isLoadingFollowingAction) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        child: SizedBox(
-          width: 20,
-          height: 20,
-          child: CircularLoadingIndicator(),
-        ),
-      );
-    }
-
-    if (widget.customerProfile.userName! == userBloc.user.userName) {
-      return const SizedBox.shrink();
-    }
-    if (widget.customerProfile.isFollowing != null &&
-        widget.customerProfile.isFollowing == true) {
-      return InkWell(
-        onTap: () {
-          isLoadingFollowingAction = true;
-          if (mounted) setState(() {});
-          UserAuth()
-              .followOrUnfollowUser(widget.customerProfile.userName!,
-                  shouldFollow: false)
-              .then((value) async {
-            if (value == true) {
-              // await getSearchedUser(load: false);
-              // Call the callback function and pass the username and bool as false
-              widget.callback(widget.customerProfile.userName!, false);
-            }
-            isLoadingFollowingAction = false;
-            if (mounted) setState(() {});
-          }).catchError((e) {
-            isLoadingFollowingAction = false;
-            if (mounted) setState(() {});
-            showToast(message: e.toString());
-          });
-        },
-        child: Container(
-          height: widget.tileRenderPlace == TileRenderPlace.Thiny ? 20 : 30,
-          width: widget.tileRenderPlace == TileRenderPlace.Thiny ? 60 : 80,
-          margin: const EdgeInsets.symmetric(vertical: 6),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          decoration: BoxDecoration(
-              color: blackFont,
-              borderRadius: BorderRadius.circular(50),
-              border: Border.all(color: HexColor("#292929"), width: 1)),
-          child: Center(
-            child: Text(
-              'Following',
-              style: TextStyle(
-                fontSize:
-                    widget.tileRenderPlace == TileRenderPlace.Thiny ? 10 : 12,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return InkWell(
-      onTap: () {
-        isLoadingFollowingAction = true;
-        if (mounted) setState(() {});
-        UserAuth()
-            .followOrUnfollowUser(widget.customerProfile.userName!,
-                shouldFollow: true)
-            .then((value) async {
-          if (value == true) {
-            // await getSearchedUser(load: false);
-            // Call the callback function and pass the username and bool as true
-            widget.callback(widget.customerProfile.userName!, true);
-          }
-          isLoadingFollowingAction = false;
-          if (mounted) setState(() {});
-        }).catchError((e) {
-          isLoadingFollowingAction = true;
-          if (mounted) setState(() {});
-          showToast(message: e.toString());
-        });
-      },
-      child: Container(
-        height: widget.tileRenderPlace == TileRenderPlace.Thiny ? 20 : 30,
-        width: widget.tileRenderPlace == TileRenderPlace.Thiny ? 60 : 80,
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: HexColor("#292929"), width: 1)),
-        child: Center(
-          child: Text(
-            'Follow',
-            style: TextStyle(
-              fontSize:
-                  widget.tileRenderPlace == TileRenderPlace.Thiny ? 11 : 13,
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget getWallpaper() {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(10),
-        topRight: Radius.circular(10),
-      ),
-      child: widget.customerProfile.wallpaper == "" ||
-              widget.customerProfile.wallpaper == null
-          ? Image.asset(
-              "assets/images/default_user_wallpaper.png",
-              width: double.infinity,
-              fit: BoxFit.cover,
-            )
-          : GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed("/photo-viewer",
-                    arguments: widget.customerProfile.wallpaper);
-              },
-              child: Container(
-                color: navyBlue,
-                child: CachedNetworkImage(
-                  width: double.infinity,
-                  // height: double.infinity,
-                  errorWidget: wallpaperErrorWidget,
-                  imageUrl: widget.customerProfile.wallpaper!,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                      Center(child: CircularLoadingIndicator()),
-                  color: blackFont.withOpacity(0.4),
-                  colorBlendMode: BlendMode.darken,
-                  filterQuality: FilterQuality.high,
-                ),
-              ),
-            ),
-    );
-  }
-
-  Future<void> getSearchedUser({bool load = true}) async {
-    late CustomerProfile user;
-
-    if (load) {
-      isLoadingFollowingAction = true;
-      if (mounted) setState(() {});
-    }
-
-    try {
-      user = await UserAuth().fetchCustomerProfileWithAuth(
-          widget.customerProfile.userName!.toString());
-    } catch (e) {
-      Navigator.pop(context);
-      showToast(message: 'User not found');
-    }
-
-    widget.customerProfile = user;
-
-    isLoadingFollowingAction = false;
-    if (mounted) setState(() {});
-  }
-}
-
-class CircularUserColorImage extends StatelessWidget {
-  final String imageUrl;
-  final String name;
-
-  const CircularUserColorImage(
-      {super.key, required this.imageUrl, required this.name});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipOval(
-      child: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: naturalGreen,
-            width: 3.0,
-          ),
-        ),
-        child: getUserProfilePic(imageUrl, name),
-      ),
-    );
-  }
+Widget _buildItemCurrency(String? currency) {
+  return Text(
+    worldCurrencies[currency] ?? "NGN",
+    style: TextStyle(
+      fontFamily: "Inter",
+      fontWeight: FontWeight.w600,
+      fontSize: 14,
+      color: navyBlue,
+      overflow: TextOverflow.ellipsis,
+    ),
+  );
 }

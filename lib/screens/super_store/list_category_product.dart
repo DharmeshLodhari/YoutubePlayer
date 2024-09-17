@@ -149,22 +149,70 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
             controller: _productScrollController,
             shrinkWrap: true,
             slivers: <Widget>[
-              SliverGrid(
+              SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (c, i) => SizedBox(
-                    child: SuperStoreSingleCard(
-                      product: productList[i],
-                    ),
-                  ),
-                  childCount: productList.length,
-                ),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 8,
-                  mainAxisExtent: 280,
-                  crossAxisSpacing: 8,
-                  maxCrossAxisExtent: 300,
+                  (context, index) {
+                    // Calculate indices for the row items
+                    final int startIndex = index * 2;
+                    final int endIndex = startIndex + 2;
+
+                    // Get the items for this row
+                    final List<Product> rowItems = productList.sublist(
+                      startIndex,
+                      endIndex > productList.length
+                          ? productList.length
+                          : endIndex,
+                    );
+
+                    return IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // First Item
+                            Expanded(
+                              child: SuperStoreSingleCard(
+                                product: rowItems[0],
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            // Second Item
+                            if (rowItems.length == 2)
+                              Expanded(
+                                child: SuperStoreSingleCard(
+                                  product: rowItems[1],
+                                ),
+                              ),
+                            // Add an empty widget if there is only one item
+                            if (rowItems.length == 1)
+                              const Expanded(
+                                child: SizedBox.shrink(),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: (productList.length / 2).ceil(), // Number of rows
                 ),
               ),
+              // SliverGrid(
+              //   delegate: SliverChildBuilderDelegate(
+              //     (c, i) => SizedBox(
+              //       child: SuperStoreSingleCard(
+              //         product: productList[i],
+              //       ),
+              //     ),
+              //     childCount: productList.length,
+              //   ),
+              //   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              //     mainAxisSpacing: 8,
+              //     mainAxisExtent: 280,
+              //     crossAxisSpacing: 8,
+              //     maxCrossAxisExtent: 300,
+              //   ),
+              // ),
               SliverToBoxAdapter(
                 child:
                     buildJumpingLoadingIndicator(isLoading: isProductLoading),

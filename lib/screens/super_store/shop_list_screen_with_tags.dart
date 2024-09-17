@@ -2,13 +2,13 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
+import 'package:Slydo/screens/super_store/widget/find_business_card.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
 import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
 import 'package:Slydo/screens/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/utils/navigation_util.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,6 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../data/currency.dart';
 import '../../data/state_notifier.dart';
 import '../../utils/util.dart';
 import '../../widget/item_display_card.dart';
@@ -751,28 +750,25 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
           const SizedBox(
             height: 15,
           ),
-          SizedBox(
-            height: 280,
-            child: ListView.separated(
-              separatorBuilder: (BuildContext context, int index) {
-                return const SizedBox(width: 16);
-              },
-              shrinkWrap: true,
-              physics: const ScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              itemCount: showViewMoreButton
-                  ? productHorizontalLength
-                  : superStoreDealOftheDay.length,
-              itemBuilder: (context, index) {
-                if (index == superStoreDealOftheDay.length) {
-                  return buildLoadingIndicator(isLoading: isLoading);
-                } else {
-                  return SuperStoreSingleCard(
-                    product: superStoreDealOftheDay[index],
-                    // next: headers['next_url']
-                  );
-                }
-              },
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: superStoreDealOftheDay
+                  .take(showViewMoreButton
+                      ? productHorizontalLength
+                      : todaysDealList.length)
+                  .map(
+                    (element) => Padding(
+                      padding: const EdgeInsets.only(right: 7.0),
+                      child: SuperStoreSingleCard(
+                        product: element,
+                        // next: headers['next_url']
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ],
@@ -917,280 +913,6 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
 
   Widget rowTitle(headers, {bool isLast = false}) {
     return SectionProducts(headers: headers, isLast: isLast);
-  }
-
-  Widget getTodaysDealList() {
-    return Column(
-      children: [
-        if (noItemInList)
-          const SizedBox.shrink()
-        else
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              // Row(
-              //   children: [
-              //     Text(
-              //       "Today's deal",
-              //       style: TextStyle(
-              //         fontWeight: FontWeight.w700,
-              //         fontSize: 18,
-              //         color: blackFont,
-              //       ),
-              //     ),
-              //     Icon(
-              //       Icons.bolt_rounded,
-              //       color: mateRed,
-              //     ),
-              //   ],
-              // ),
-              // GestureDetector(
-              //   child: Row(
-              //     children: [
-              //       Text(
-              //         "See all",
-              //         style: TextStyle(
-              //             fontWeight: FontWeight.w600,
-              //             fontSize: 14,
-              //             color: navyBlue),
-              //       ),
-              //       SizedBox(width: 8),
-              //       Icon(Icons.arrow_forward_ios_sharp,
-              //           size: 14, color: navyBlue),
-              //     ],
-              //   ),
-              //   onTap: () {
-              //     Navigator.of(context).pushNamed("/shopping-category");
-              //   },
-              // ),
-            ],
-          ),
-        SizedBox(
-          height: 280,
-          child: ListView.builder(
-            padding: const EdgeInsets.only(bottom: 6),
-            scrollDirection: Axis.horizontal,
-            controller: _todayDealScrollController,
-            itemCount: todaysDealList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == todaysDealList.length) {
-                return isLoading
-                    ? Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: SizedBox(
-                          height: 100,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: 3,
-                            itemBuilder: (context, index) {
-                              return SizedBox(
-                                width: 160,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink();
-              } else {
-                final ShoppingProduct shoppingProduct = todaysDealList[index];
-                return DisplayProduct(
-                  giveRightPadding: true,
-                  product: Product(
-                    id: shoppingProduct.id,
-                    name: shoppingProduct.name,
-                    price: shoppingProduct.price,
-                    currency: shoppingProduct.currency,
-                    cover: shoppingProduct.cover,
-                    isAvailable: shoppingProduct.isAvailable,
-                    seller: shoppingProduct.seller,
-                    sellerFullName: shoppingProduct.sellerFullName,
-                    shortDescription: shoppingProduct.shortDescription,
-                    discountValue: shoppingProduct.discountValue,
-                    discountIsActive: shoppingProduct.discountIsActive,
-                    discountType: shoppingProduct.discountType,
-                    discountedPrice: shoppingProduct.discountedPrice,
-                  ),
-                );
-              }
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget todaysDealWidget({required ShoppingProduct product}) {
-    return GestureDetector(
-      onTap: () {
-        ShoppingAuthService().getProduct(product.id!).then((value) {
-          Navigator.pushNamed(context, '/product',
-              arguments: {"product": value});
-        });
-      },
-      child: SizedBox(
-        width: 160,
-        child: Card(
-          elevation: 12,
-          color: Colors.white,
-          shadowColor: lightGrey.withOpacity(0.4),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          margin: const EdgeInsets.only(top: 20, right: 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                    child: CachedNetworkImage(
-                      imageUrl: product.cover!,
-                      errorWidget: productAndServiceErrorWidget,
-                      memCacheHeight:
-                          (MediaQuery.of(context).size.height * 0.6).toInt(),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, bottom: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      messageDecoderWithEmoji(product.name) ?? "",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        fontFamily: "Inter",
-                        color: blackFont,
-                      ),
-                      maxLines: 2,
-                    ),
-                    const SizedBox(height: 5),
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        text: worldCurrencies[product.currency!]!,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontFamily: "Inter",
-                          color: blackFont,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: truncateString(
-                              str: moneyDisplayNormalizer(
-                                  int.parse(product.price.toString())),
-                              lengthToTruncateAt: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget searchBox() {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        textSelectionTheme: TextSelectionThemeData(
-          selectionHandleColor: navyBlue,
-        ),
-      ),
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).pushNamed("/search-product");
-        },
-        child: IgnorePointer(
-          ignoring: true,
-          child: TextFormField(
-            readOnly: true,
-            style: TextStyle(
-              fontSize: 16,
-              fontFamily: "Inter",
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-            ),
-            cursorWidth: 1.5,
-            cursorColor: navyBlue,
-            decoration: InputDecoration(
-              hintStyle: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: darkGrey,
-              ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  SlydoAppIcon.search,
-                  color: darkGrey,
-                  size: 14,
-                ),
-                onPressed: () {},
-              ),
-              hintText: "Search",
-              fillColor: Colors.white,
-              filled: true,
-              contentPadding: const EdgeInsets.symmetric(vertical: 10),
-              prefix: const Padding(
-                padding: EdgeInsets.only(left: 16),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: dividerColor,
-                  width: 1.0,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: navyBlue,
-                  width: 1.0,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: dividerColor,
-                  width: 1.0,
-                ),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: dividerColor,
-                  width: 1.0,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   void onPageFunction(int index, CarouselPageChangedReason reason) {

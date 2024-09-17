@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/super_store/widget/find_business_card.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/screens/yarn/utils/yarn_enum.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../locale/app_localization.dart';
 import '../../utils/util.dart';
-import '../../widget/item_display_card.dart';
 import '../../widget/no_item_in_list.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 

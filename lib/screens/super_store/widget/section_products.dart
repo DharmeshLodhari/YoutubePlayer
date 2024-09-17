@@ -71,26 +71,21 @@ class _SectionProductsState extends State<SectionProducts> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                SizedBox(
-                  height: 280,
-                  child: ListView.separated(
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const SizedBox(width: 0);
-                    },
-                    shrinkWrap: true,
-                    physics: const ScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: result.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == result.length) {
-                        return buildLoadingIndicator(isLoading: isLoading);
-                      } else {
-                        return SuperStoreSingleCard(
-                          product: result[index],
-                          // next: headers['next_url']
-                        );
-                      }
-                    },
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: result
+                        .map(
+                          (element) => Padding(
+                            padding: const EdgeInsets.only(right: 7.0),
+                            child: SuperStoreSingleCard(
+                              product: element,
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ),
               ],

@@ -3,7 +3,6 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
@@ -140,24 +139,69 @@ class _UserServiceListState extends State<UserServiceList> {
             controller: _serviceScrollController,
             shrinkWrap: true,
             slivers: <Widget>[
-              SliverGrid(
+              SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (c, i) => SizedBox(
-                    child: DisplayService(
-                      service: serviceList[i],
-                      onServiceRefresh: () {
-                        _onServiceRefresh();
-                      },
-                    ),
-                  ),
-                  childCount: serviceList.length,
+                  (context, index) {
+                    // Calculate indices for the row items
+                    final int startIndex = index * 2;
+                    final int endIndex = startIndex + 2;
+
+                    // Get the items for this row
+                    final List<Service> rowItems = serviceList.sublist(
+                      startIndex,
+                      endIndex > serviceList.length
+                          ? serviceList.length
+                          : endIndex,
+                    );
+
+                    return IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // First Item
+                            Expanded(
+                              child: DisplayService(
+                                service: rowItems[0],
+                                onServiceRefresh: _onServiceRefresh,
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            // Second Item
+                            if (rowItems.length == 2)
+                              Expanded(
+                                child: DisplayService(
+                                  service: rowItems[1],
+                                  onServiceRefresh: _onServiceRefresh,
+                                ),
+                              ),
+                            // Add an empty widget if there is only one item
+                            if (rowItems.length == 1)
+                              const Expanded(
+                                child: SizedBox.shrink(),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: (serviceList.length / 2).ceil(), // Number of rows
                 ),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 8,
-                  mainAxisExtent: 270,
-                  crossAxisSpacing: 8,
-                  maxCrossAxisExtent: 300,
-                ),
+                // (c, i) => DisplayProduct(
+                //   product: productList[i],
+                //   onProductRefresh: () {
+                //     _onProductRefresh();
+                //   },
+                // ),
+                // childCount: productList.length,
+                // ),
+                // gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                //   mainAxisSpacing: 8,
+                //   mainAxisExtent: 365,
+                //   crossAxisSpacing: 8,
+                //   maxCrossAxisExtent: 300,
+                // ),
               ),
               SliverToBoxAdapter(
                 child:
@@ -218,46 +262,6 @@ class _UserServiceListState extends State<UserServiceList> {
           duration: const Duration(milliseconds: 500),
         ));
       }
-    }
-  }
-
-  Widget serviceTile(int index) {
-    return CustomBoxShadow(
-      child: SizedBox(
-        height: 270,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: DisplayService(
-            service: serviceList[index],
-            onServiceRefresh: () {
-              _onServiceRefresh();
-            },
-          ),
-        ),
-      ),
-    );
-
-    Widget getOutOfStockTag(int index) {
-      if (!serviceList[index].isAvailable!) {
-        if (widget.isOwner) {
-          return Positioned(
-            left: 38,
-            top: 24,
-            child: getColoredLabeledWidget(
-                text: AppLocalization.of(context)!.outOfStock,
-                color: starYellow),
-          );
-        } else {
-          return Positioned(
-            left: 8,
-            top: 20,
-            child: getColoredLabeledWidget(
-                text: AppLocalization.of(context)!.outOfStock,
-                color: starYellow),
-          );
-        }
-      }
-      return const SizedBox.shrink();
     }
   }
 }

@@ -10,7 +10,6 @@ import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profi
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
@@ -638,27 +637,24 @@ class _UserProductListState extends State<UserProductList> {
         const SizedBox(
           height: 15,
         ),
-        SizedBox(
-          height: 280,
-          child: ListView.separated(
-            separatorBuilder: (BuildContext context, int index) {
-              return const SizedBox(width: 16);
-            },
-            shrinkWrap: true,
-            physics: const ScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            itemCount: showViewMoreButton
-                ? productHorizontalLength
-                : productDealOfTheDayList.length,
-            itemBuilder: (context, index) {
-              if (index == productDealOfTheDayList.length) {
-                return buildLoadingIndicator(isLoading: isLoading);
-              } else {
-                return SuperStoreSingleCard(
-                  product: productDealOfTheDayList[index],
-                );
-              }
-            },
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: productDealOfTheDayList
+                .take(showViewMoreButton
+                    ? productHorizontalLength
+                    : productDealOfTheDayList.length)
+                .map(
+                  (element) => Padding(
+                    padding: const EdgeInsets.only(right: 7.0),
+                    child: SuperStoreSingleCard(
+                      product: element,
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ),
       ],
@@ -825,22 +821,69 @@ class _UserProductListState extends State<UserProductList> {
             controller: _productScrollController,
             shrinkWrap: true,
             slivers: <Widget>[
-              SliverGrid(
+              SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (c, i) => DisplayProduct(
-                    product: productList[i],
-                    onProductRefresh: () {
-                      _onProductRefresh();
-                    },
-                  ),
-                  childCount: productList.length,
+                  (context, index) {
+                    // Calculate indices for the row items
+                    final int startIndex = index * 2;
+                    final int endIndex = startIndex + 2;
+
+                    // Get the items for this row
+                    final List<Product> rowItems = productList.sublist(
+                      startIndex,
+                      endIndex > productList.length
+                          ? productList.length
+                          : endIndex,
+                    );
+
+                    return IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // First Item
+                            Expanded(
+                              child: DisplayProduct(
+                                product: rowItems[0],
+                                onProductRefresh: _onProductRefresh,
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            // Second Item
+                            if (rowItems.length == 2)
+                              Expanded(
+                                child: DisplayProduct(
+                                  product: rowItems[1],
+                                  onProductRefresh: _onProductRefresh,
+                                ),
+                              ),
+                            // Add an empty widget if there is only one item
+                            if (rowItems.length == 1)
+                              const Expanded(
+                                child: SizedBox.shrink(),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: (productList.length / 2).ceil(), // Number of rows
                 ),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 8,
-                  mainAxisExtent: 280,
-                  crossAxisSpacing: 8,
-                  maxCrossAxisExtent: 300,
-                ),
+                // (c, i) => DisplayProduct(
+                //   product: productList[i],
+                //   onProductRefresh: () {
+                //     _onProductRefresh();
+                //   },
+                // ),
+                // childCount: productList.length,
+                // ),
+                // gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                //   mainAxisSpacing: 8,
+                //   mainAxisExtent: 365,
+                //   crossAxisSpacing: 8,
+                //   maxCrossAxisExtent: 300,
+                // ),
               ),
               SliverToBoxAdapter(
                 child:
@@ -861,20 +904,6 @@ class _UserProductListState extends State<UserProductList> {
         size: 20,
         color: navyBlue,
         // size: 20,
-      ),
-    );
-  }
-
-  Widget productTile(int index) {
-    return CustomBoxShadow(
-      child: SizedBox(
-        height: 280,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: DisplayProduct(
-            product: productList[index],
-          ),
-        ),
       ),
     );
   }
@@ -906,4 +935,13 @@ class Filter {
   String? value;
 
   Filter({this.title, this.value});
+}
+
+extension ListExtension<E> on List<E> {
+  /// Adds an item to the list if the condition is true.
+  void addIf(bool condition, E element) {
+    if (condition) {
+      add(element);
+    }
+  }
 }

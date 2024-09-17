@@ -154,6 +154,7 @@ class _AddProductState extends State<AddProduct> {
     _focusNodeDescription.addListener(_handleFocusChange);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateKeyboardVisibility();
+      selectedProductCondition = conditions[3];
     });
     super.initState();
   }
@@ -2304,12 +2305,11 @@ class _AddProductState extends State<AddProduct> {
   }
 
   bool validateDropdown() {
-    if (selectedProductCategory != null && selectedProductCondition != null) {
+    if (selectedProductCategory != null) {
       return true;
     } else {
       showToast(
-          message: AppLocalization.of(context)!
-              .pleaseSelectProductCategoryAndCondition);
+          message: AppLocalization.of(context)!.pleaseSelectProductCategory);
       return false;
     }
   }

@@ -367,7 +367,7 @@ Widget showColoredLabeledWidgetProductDetails(
           color: getProductDetailsColors(product!, selectedVariant),
           fontSize: 12,
           fontFamily: 'Inter',
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
         ),
         children: [
           const WidgetSpan(child: SizedBox(width: 5)),
@@ -389,31 +389,34 @@ Widget showColoredLabeledWidgetProductDetails(
   );
 }
 
-Widget showColoredLabeledWidgetServiceDetails({
+Widget showColoredLabeledWidgetService({
   required String text,
   String? date,
   required Color color,
   required Service? service,
+  double? verticalPadding,
+  double? fontSize,
 }) {
   return Container(
     alignment: Alignment.center,
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    padding:
+        EdgeInsets.symmetric(horizontal: 10, vertical: verticalPadding ?? 5),
     color: color,
     child: RichText(
       text: TextSpan(
         text: text,
         style: TextStyle(
-          color: getServiceDetailsColors(service!),
-          fontSize: 12,
+          color: getServiceStockTextColors(service!),
+          fontSize: fontSize ?? 12,
           fontFamily: 'Inter',
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
         ),
         children: [
           const WidgetSpan(child: SizedBox(width: 5)),
           TextSpan(
             text: date ?? "",
             style: TextStyle(
-              fontSize: 12,
+              fontSize: fontSize ?? 12,
               fontFamily: 'Inter',
               color: blackFont,
               fontWeight: FontWeight.w500,
@@ -428,7 +431,7 @@ Widget showColoredLabeledWidgetServiceDetails({
   );
 }
 
-Color getServiceDetailsColors(Service service) {
+Color getServiceStockTextColors(Service service) {
   if (service.availableFrom?.isAfter(DateTime.now()) ?? false) {
     return starYellow;
   } else if (service.isAvailable == false) {
@@ -457,43 +460,13 @@ Color getProductDetailsColors(Product product, Variant? selectedVariant) {
   }
 }
 
-Widget showColoredLabeledWidgetService({
-  required String text,
-  required Color color,
-  required Service service,
-}) {
-  return Container(
-    alignment: Alignment.center,
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-    color: color,
-    child: Text(
-      text,
-      style: TextStyle(
-        color: getServiceStockTextColors(service),
-        fontSize: 10,
-        fontFamily: 'Inter',
-        fontWeight: FontWeight.w700,
-      ),
-    ),
-  );
-}
-
-Color getServiceStockTextColors(Service service) {
-  if (service.availableFrom?.isAfter(DateTime.now()) ?? false) {
-    return starYellow;
-  } else if (service.isAvailable == false) {
-    return red;
-  } else {
-    return transparent;
-  }
-}
-
 Widget showColoredLabeledWidgetProductStock(
     {required String text,
     required Color color,
     required Product product,
     String? date}) {
   return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
     alignment: Alignment.center,
     color: color,
     child: RichText(
@@ -503,7 +476,7 @@ Widget showColoredLabeledWidgetProductStock(
           color: getProductStockTextColors(product),
           fontSize: 12,
           fontFamily: 'Inter',
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
         ),
         children: [
           const WidgetSpan(child: SizedBox(width: 5)),

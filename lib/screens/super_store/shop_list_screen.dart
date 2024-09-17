@@ -532,22 +532,73 @@ class ShopListScreenState extends State<ShopListScreen> {
             physics: const ScrollPhysics(),
             shrinkWrap: true,
             slivers: <Widget>[
-              SliverGrid(
+              SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (c, i) => SizedBox(
-                    child: SuperStoreSingleCard(
-                      product: productList[i],
-                    ),
-                  ),
-                  childCount: productList.length,
-                ),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 8,
-                  mainAxisExtent: 280,
-                  crossAxisSpacing: 8,
-                  maxCrossAxisExtent: 300,
+                  (context, index) {
+                    // Calculate indices for the row items
+                    final int startIndex = index * 2;
+                    final int endIndex = startIndex + 2;
+
+                    // Get the items for this row
+                    final List<Product> rowItems = productList.sublist(
+                      startIndex,
+                      endIndex > productList.length
+                          ? productList.length
+                          : endIndex,
+                    );
+
+                    return IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Container(
+                          color: Colors.red,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // First Item
+                              Expanded(
+                                child: SuperStoreSingleCard(
+                                  product: rowItems[0],
+                                ),
+                              ),
+                              const SizedBox(width: 10.0),
+                              // Second Item
+                              if (rowItems.length == 2)
+                                Expanded(
+                                  child: SuperStoreSingleCard(
+                                    product: rowItems[1],
+                                  ),
+                                ),
+                              // Add an empty widget if there is only one item
+                              if (rowItems.length == 1)
+                                const Expanded(
+                                  child: SizedBox.shrink(),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: (productList.length / 2).ceil(), // Number of rows
                 ),
               ),
+              // SliverGrid(
+              //   delegate: SliverChildBuilderDelegate(
+              //     (c, i) => SizedBox(
+              //       child: SuperStoreSingleCard(
+              //         product: productList[i],
+              //       ),
+              //     ),
+              //     childCount: productList.length,
+              //   ),
+              //   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              //     mainAxisSpacing: 8,
+              //     mainAxisExtent: 280,
+              //     crossAxisSpacing: 8,
+              //     maxCrossAxisExtent: 300,
+              //   ),
+              // ),
               SliverToBoxAdapter(
                 child:
                     buildJumpingLoadingIndicator(isLoading: isProductLoading),
@@ -582,59 +633,34 @@ class ShopListScreenState extends State<ShopListScreen> {
               _buildViewMoreStore(context),
             ],
           ),
-        SizedBox(
-          height: 280,
-          child: ListView.builder(
-            padding: const EdgeInsets.only(bottom: 6),
-            scrollDirection: Axis.horizontal,
-            controller: _todayDealScrollController,
-            itemCount: showViewMoreButton
-                ? productHorizontalLength
-                : todaysDealList.length,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == todaysDealList.length) {
-                return isTodayDealLoading
-                    ? Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: SizedBox(
-                          height: 100,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: 3,
-                            itemBuilder: (context, index) {
-                              return SizedBox(
-                                width: 160,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink();
-              } else {
-                final ShoppingProduct shoppingProduct = todaysDealList[index];
-                return DisplayProduct(
-                  giveRightPadding: true,
-                  product: Product(
-                      id: shoppingProduct.id,
-                      name: shoppingProduct.name,
-                      price: shoppingProduct.price,
-                      currency: shoppingProduct.currency,
-                      cover: shoppingProduct.cover,
-                      isAvailable: shoppingProduct.isAvailable,
-                      seller: shoppingProduct.seller,
-                      sellerFullName: shoppingProduct.sellerFullName,
-                      shortDescription: shoppingProduct.shortDescription),
-                );
-              }
-            },
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: todaysDealList
+                .take(showViewMoreButton
+                    ? productHorizontalLength
+                    : todaysDealList.length)
+                .map(
+                  (element) => Padding(
+                    padding: const EdgeInsets.only(right: 7.0),
+                    child: DisplayProduct(
+                      giveRightPadding: true,
+                      product: Product(
+                          id: element.id,
+                          name: element.name,
+                          price: element.price,
+                          currency: element.currency,
+                          cover: element.cover,
+                          isAvailable: element.isAvailable,
+                          seller: element.seller,
+                          sellerFullName: element.sellerFullName,
+                          shortDescription: element.shortDescription),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ),
       ],

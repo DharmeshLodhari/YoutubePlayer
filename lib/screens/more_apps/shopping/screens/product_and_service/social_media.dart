@@ -101,10 +101,6 @@ class _SocialMediaState extends State<SocialMedia>
   }
 
   Widget _buildBody() {
-    return _buildTabProduct();
-  }
-
-  Widget _buildTabProduct() {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     return GestureDetector(
       onTap: () {

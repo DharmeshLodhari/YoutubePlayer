@@ -729,7 +729,7 @@ class Product extends PurchasableItem {
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
-    debugPrint("$serverImages");
+    // debugPrint("$serverImages");
     for (var data in pictureMap!) {
       if (data.path == imageUrl) {
         return data.id.toString();
@@ -1169,10 +1169,10 @@ class Variant {
 
     int? cleanObjects(Map<String, dynamic> data, String key) {
       final value = data[key] ?? 0;
-      debugPrint("data: $data");
-      debugPrint("type: ${value.runtimeType}");
+      // debugPrint("data: $data");
+      // debugPrint("type: ${value.runtimeType}");
       if (value is bool) {
-        debugPrint("bool: ${value.runtimeType}");
+        // debugPrint("bool: ${value.runtimeType}");
         return 0;
       }
       return value;
@@ -1281,7 +1281,7 @@ class Variant {
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
-    debugPrint("$serverImages");
+    // debugPrint("$serverImages");
     for (Picture data in pictures ?? []) {
       if (data.path == imageUrl) {
         return data.id.toString();
@@ -1802,6 +1802,10 @@ class Service extends PurchasableItem {
   DateTime? availableFrom;
   String? discountId;
   bool? discountIsActive;
+  int? discountValue;
+  String? discountType;
+  int? discountedPrice;
+  double? pricePercentageChange;
   String? currency;
   List<dynamic>? pictureMap;
   double? rating;
@@ -1828,6 +1832,10 @@ class Service extends PurchasableItem {
     this.availableFrom,
     this.discountId,
     this.discountIsActive,
+    this.discountValue,
+    this.discountType,
+    this.discountedPrice,
+    this.pricePercentageChange,
     this.currency,
     this.pictureMap,
     this.rating = 0.0,
@@ -1910,6 +1918,10 @@ class Service extends PurchasableItem {
       "available_from": availableFrom,
       "discount": discountId,
       "discount_is_active": discountIsActive,
+      "discounted_price": discountedPrice,
+      "discount_value": discountValue,
+      "discount_type": discountType,
+      "price_percentage_change": pricePercentageChange ?? 0.0,
       "provider_avatar": providerAvatar,
       "provider_fullname": providerFullName,
       "search_keywords": searchKeywords,
@@ -1930,6 +1942,10 @@ class Service extends PurchasableItem {
       "is_available": isAvailable,
       "available_from": availableFrom.toString(),
       "discount_is_active": discountIsActive,
+      "discounted_price": discountedPrice,
+      "discount_value": discountValue,
+      "discount_type": discountType,
+      "price_percentage_change": pricePercentageChange ?? 0.0,
       "cover": cover,
       "provider": provider,
       "currency": currency,
@@ -1961,6 +1977,10 @@ class Service extends PurchasableItem {
     isAvailable = object["is_available"] ?? true;
     availableFrom = getServiceDateTime(object["available_from"]);
     discountIsActive = object["discount_is_active"] ?? false;
+    discountValue = object["discoundiscount_valueted_price"];
+    discountType = object["discount_type"];
+    discountedPrice = object["discounted_price"];
+    pricePercentageChange = object["price_percentage_change"] ?? 0.0;
     currency = object["currency"] ?? "";
     pictureMap = object["pictureMap"] ?? [];
     rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));
@@ -1980,6 +2000,22 @@ class Service extends PurchasableItem {
       return true;
     }
     return false;
+  }
+
+  bool checkServiceDiscount() {
+    if (discountIsActive == true && discountedPrice != null) {
+      return true;
+    }
+    return false;
+  }
+
+  String getServiceRealPrice() {
+    if (discountedPrice != null || discountedPrice != 0) {
+      if (checkServiceDiscount()) {
+        return discountedPrice.toString() ?? "0";
+      }
+    }
+    return price ?? "0";
   }
 
   List<String> getServiceImages(List? data) {
