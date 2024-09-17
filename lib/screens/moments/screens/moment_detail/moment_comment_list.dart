@@ -1,7 +1,7 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
 import 'package:Slydo/screens/moments/tiles/moment_comment_tile.dart';
 import 'package:Slydo/screens/moments/widgets/moment_comment_textfield.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -95,7 +95,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
     }
 
     final Map<String, dynamic>? result =
-        await MomentsService().getMomentComments(nextUrl, widget.momentID);
+        await MomentsAuthService().getMomentComments(nextUrl, widget.momentID);
 
     if (result == null) {
       noList = true;
@@ -369,7 +369,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
     //create multipart request for POST or PATCH method
     try {
       final YarnComment? yarnComment =
-          await MomentsService().addCommentToMoment(widget.momentID, data);
+          await MomentsAuthService().addCommentToMoment(widget.momentID, data);
       if (yarnComment != null) {
         //increase count for comment
         count = count + 1;

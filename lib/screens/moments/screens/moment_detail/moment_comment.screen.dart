@@ -1,7 +1,7 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
 import 'package:Slydo/screens/moments/tiles/moment_comment_tile.dart';
 import 'package:Slydo/screens/moments/widgets/moment_comment_textfield.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -240,7 +240,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result =
-            await MomentsService().getAllComments(
+            await MomentsAuthService().getAllComments(
           widget.yarnComment!.id!,
         );
 
@@ -390,7 +390,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
 
     //create multipart request for POST or PATCH method
     try {
-      final YarnComment? yarnComment = await MomentsService()
+      final YarnComment? yarnComment = await MomentsAuthService()
           .addReplyToComment(widget.yarnComment!.id!, data);
       if (yarnComment != null) {
         //update the comment count from previous page

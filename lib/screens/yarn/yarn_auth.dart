@@ -292,14 +292,18 @@ class YarnAuth extends AuthService {
   }
 
   // Get all YARN Topics
-  Future<Map<String, dynamic>?> getAllYarn(String? next, String previous,
-      {String? type,
-      bool isType = false,
-      String? categoryId,
-      String? userName,
-      String? latestTrending,
-      String? isChannel,
-      int pageSize = 21}) async {
+  Future<Map<String, dynamic>?> getAllYarn(
+    String? next,
+    String previous, {
+    String? type,
+    bool isType = false,
+    String? categoryId,
+    String? userName,
+    String? latestTrending,
+    String? isChannel,
+    String? yarnUrl,
+    int pageSize = 21,
+  }) async {
     String url = "";
     if (next == null) {
       return null;
@@ -323,6 +327,10 @@ class YarnAuth extends AuthService {
           url =
               "${AppConfig.baseUrl}/api/v1/social/ask/$type/?username=$userName";
         }
+      }
+
+      if (yarnUrl != null) {
+        url = "${AppConfig.baseUrl}$yarnUrl";
       }
     } else {
       url = getSecureUrl(url: next);

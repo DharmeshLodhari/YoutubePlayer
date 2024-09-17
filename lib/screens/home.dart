@@ -6,7 +6,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/messaging/button/message_nav_btn.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/payment_and_banking/models/virtual_account.dart';
 import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
@@ -262,7 +262,7 @@ class _HomeState extends State<Home> {
             isExploreMomentsLoading = true;
           });
         }
-        final Map<String, dynamic>? result = await MomentsService()
+        final Map<String, dynamic>? result = await MomentsAuthService()
             .getExploreMoments(nextExploreMoments, previousExploreMoments,
                 pageSize: 10);
         if (result == null) {

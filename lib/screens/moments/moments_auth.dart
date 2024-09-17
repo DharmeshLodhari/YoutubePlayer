@@ -11,16 +11,20 @@ import 'package:flutter/foundation.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 
-class MomentsService extends AuthService {
+class MomentsAuthService extends AuthService {
   Future getExploreMoments(String? next, String? previous,
-      {num? pageSize}) async {
+      {num? pageSize, String? momentUrl}) async {
     String url = "";
     if (next == null) {
       return null;
     }
 
     if (next == "") {
-      url = '${AppConfig.baseUrl}/api/v1/social/moments/explore/';
+      if (momentUrl != null) {
+        url = '${AppConfig.baseUrl}$momentUrl';
+      } else {
+        url = '${AppConfig.baseUrl}/api/v1/social/moments/explore/';
+      }
     } else {
       url = getSecureUrl(url: next);
     }
@@ -56,7 +60,7 @@ class MomentsService extends AuthService {
 
       return result;
     } else {
-      return Future.error('Something went wrong');
+      return null;
     }
   }
 

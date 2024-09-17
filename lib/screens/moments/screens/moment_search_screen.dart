@@ -12,8 +12,8 @@ import 'package:shimmer/shimmer.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/util.dart';
 import '../../../widget/customized_textform_field.dart';
+import '../moments_auth.dart';
 import 'moment_detail/moment_detail_page.dart';
-import 'moments_service.dart';
 
 class MomentSearchScreen extends StatefulWidget {
   const MomentSearchScreen({super.key});
@@ -105,7 +105,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
   }
 
   void _getSearchedMoments({String? searchedText}) {
-    MomentsService()
+    MomentsAuthService()
         .searchMoment(nextPage: nextPage, searchText: searchedText)
         .then((value) {
       tempSearchMomentModelList.clear();
@@ -223,7 +223,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
     if (_isLoading == true) return;
     if (mounted) setState(() {});
     _isLoading = true;
-    MomentsService()
+    MomentsAuthService()
         .getSingleMoment(momentId: searchMomentModel.id!)
         .then((momentsModelList) {
       if (mounted) setState(() {});

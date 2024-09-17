@@ -2,11 +2,11 @@ import 'dart:developer';
 
 import 'package:Slydo/constant.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/custom_story_view.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/story_moment.dart';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/utils.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -137,7 +137,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
           });
         }
         final Map<String, dynamic>? result =
-            await MomentsService().getContactMoments(
+            await MomentsAuthService().getContactMoments(
           next: nextContactMoments,
           previous: previousContactMoments,
         );
@@ -174,7 +174,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
           });
         }
         final Map<String, dynamic>? result =
-            await MomentsService().getExploreMoments(
+            await MomentsAuthService().getExploreMoments(
           nextExploreMoments,
           previousExploreMoments,
         );
@@ -584,7 +584,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
   void getCurrentUserMoment() {
     myMomentsLoading = true;
     if (mounted) setState(() {});
-    MomentsService()
+    MomentsAuthService()
         .getMomentsWithOwnerName(
             ownerName: userBloc.user.userName!, channelUsername: '')
         .then((momentsModelList) {
@@ -634,13 +634,13 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
   final List<List<MomentsModel>> listOfMomentsModelList = [];
 
   Future getListOfMomentsModelList(String owner) async {
-    final List<MomentsModel> momentsModelList = await MomentsService()
+    final List<MomentsModel> momentsModelList = await MomentsAuthService()
         .getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
     listOfMomentsModelList.add(momentsModelList);
   }
 
   Future getLengthOfOwnerMoments(String owner) async {
-    final List<MomentsModel> momentsModelList = await MomentsService()
+    final List<MomentsModel> momentsModelList = await MomentsAuthService()
         .getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
     lengthOfOwnerMoments = momentsModelList.length;
   }

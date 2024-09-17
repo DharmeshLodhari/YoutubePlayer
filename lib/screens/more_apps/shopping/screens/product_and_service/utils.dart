@@ -50,7 +50,7 @@ Widget getProductOrServiceSocialMedia(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'See what people are saying about this product',
+                      'See what people are saying about this ${modelName.toLowerCase()}',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: fontDarkGrey,
@@ -60,7 +60,7 @@ Widget getProductOrServiceSocialMedia(
                     ),
                     const SizedBox(height: 4.0),
                     Text(
-                      'Product Moment & Yarn Showcase',
+                      '$modelName Moment & Yarn Showcase',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: fontLightGrey,

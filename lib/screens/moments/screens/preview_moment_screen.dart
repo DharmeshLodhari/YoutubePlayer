@@ -27,7 +27,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
-import 'moments_service.dart';
+import '../moments_auth.dart';
 
 class PreviewMomentScreen extends StatefulWidget {
   final String filePath;
@@ -963,7 +963,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         barrierDismissible: false,
         builder: (dialogLoadingContext) => LoadingIndicator());
 
-    MomentsService()
+    MomentsAuthService()
         .createMoment(
       createMomentModel: CreateMomentModel(
         enableLike: enableLikes,

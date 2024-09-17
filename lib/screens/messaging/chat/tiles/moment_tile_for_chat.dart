@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/messaging/chat/utils.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.dart';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -65,7 +65,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        await MomentsService()
+        await MomentsAuthService()
             .getSingleMoment(momentId: momentForChatModel.id!)
             .then((momentsModelList) {
           isLoading = false;

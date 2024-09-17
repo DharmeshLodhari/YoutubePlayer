@@ -8,10 +8,10 @@ import 'package:Slydo/screens/blog/post_detail_page.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/render_moment_screen.dart';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/utils.dart';
 import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
 import 'package:Slydo/screens/moments/widgets/custom_moment_detail_button.dart';
@@ -73,7 +73,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
 
   Future<bool> addLikeToMoment() async {
     final MomentsModel data =
-        await MomentsService().likeMoment(currentMoment?.id ?? "");
+        await MomentsAuthService().likeMoment(currentMoment?.id ?? "");
     if (data != null) {
       setState(() {
         currentMoment!.likes = data.likes;
@@ -86,7 +86,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
 
   Future<bool> addDisLikeToMoment() async {
     final MomentsModel data =
-        await MomentsService().dislikeMoment(currentMoment?.id ?? "");
+        await MomentsAuthService().dislikeMoment(currentMoment?.id ?? "");
 
     if (data != null) {
       setState(() {
@@ -208,7 +208,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                                       context: context,
                                       builder: (dialogLoadingContext) =>
                                           LoadingIndicator());
-                                  MomentsService()
+                                  MomentsAuthService()
                                       .deleteMoment(currentMoment!.id!, "")
                                       .then(
                                     (value) {
@@ -762,7 +762,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
       iconData: icon,
       onTap: () {
         Navigator.pop(context);
-        MomentsService().updateMoment(
+        MomentsAuthService().updateMoment(
             momentId: momentModel.id!, data: {"is_public": isPublic}).then(
           (value) {
             momentModel = value;
@@ -798,7 +798,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
         ),
         onTap: () {
           Navigator.pop(context);
-          MomentsService().updateMoment(
+          MomentsAuthService().updateMoment(
               momentId: momentModel.id!,
               data: {"enable_payme": isEnabledPayment}).then(
             (value) {
@@ -837,7 +837,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
       iconData: CupertinoIcons.infinite,
       onTap: () {
         Navigator.pop(context);
-        MomentsService().updateMoment(
+        MomentsAuthService().updateMoment(
             momentId: momentModel.id!,
             data: {"is_permanent": !isPermanent}).then(
           (value) {
@@ -875,7 +875,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
       iconData: icon,
       onTap: () {
         Navigator.pop(context);
-        MomentsService().updateMoment(
+        MomentsAuthService().updateMoment(
             momentId: momentModel.id!,
             data: {"enable_commenting": !isCommentingEnable}).then(
           (value) {
@@ -914,7 +914,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
       onTap: () {
         Navigator.pop(context);
 
-        MomentsService().updateMoment(
+        MomentsAuthService().updateMoment(
             momentId: momentModel.id!,
             data: {"enable_like": !isLikeEnabled}).then(
           (value) {

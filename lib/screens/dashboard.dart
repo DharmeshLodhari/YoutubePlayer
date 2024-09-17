@@ -44,8 +44,8 @@ import 'package:uuid/uuid.dart';
 
 import 'connection_module/connections_dashboard.dart';
 import 'home.dart';
+import 'moments/moments_auth.dart';
 import 'moments/screens/moment_detail/moment_detail_page.dart';
-import 'moments/screens/moments_service.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
@@ -351,7 +351,7 @@ class _DashboardState extends State<Dashboard> {
       showDialog(
           context: context,
           builder: (context) => Center(child: CircularLoadingIndicator()));
-      MomentsService()
+      MomentsAuthService()
           .getSingleMoment(
               momentId: notification['type'].toString().split('moment/')[1])
           .then((momentsModelList) {

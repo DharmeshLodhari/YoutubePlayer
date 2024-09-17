@@ -1,8 +1,8 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.dart';
 import 'package:Slydo/screens/moments/screens/moments_screen.dart';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
@@ -53,7 +53,7 @@ class _MomentsTabState extends State<MomentsTab> {
         }
 
         if (widget.searchedUser != null) {
-          await MomentsService()
+          await MomentsAuthService()
               .getMomentsWithOwnerName(
                   ownerName: widget.searchedUser!.userName!,
                   channelUsername: widget.channelUsername ?? '')
@@ -80,7 +80,7 @@ class _MomentsTabState extends State<MomentsTab> {
         }
 
         if (widget.userName != null) {
-          await MomentsService()
+          await MomentsAuthService()
               .getMomentsWithOwnerName(
                   ownerName: widget.userName!,
                   channelUsername: widget.channelUsername ?? '')
@@ -203,7 +203,7 @@ class _MomentsTabState extends State<MomentsTab> {
                   if (momentClicked == true) return;
                   momentClicked = true;
                   if (mounted) setState(() {});
-                  MomentsService()
+                  MomentsAuthService()
                       .getSingleMoment(momentId: myMomentsList[index].id!)
                       .then((momentsModelList) {
                     momentClicked = false;

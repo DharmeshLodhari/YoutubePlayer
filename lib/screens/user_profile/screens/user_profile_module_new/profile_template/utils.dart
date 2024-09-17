@@ -7,7 +7,7 @@ import 'package:Slydo/screens/messaging/chat/models/channel_model.dart';
 import 'package:Slydo/screens/messaging/message_auth.dart';
 import 'package:Slydo/screens/moments/models/comment_model.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
@@ -156,7 +156,7 @@ Future<List> fetchMomentData(
     String? searchedUserName, String? channelUsername) async {
   List<MomentsModel> momentsModel = [];
   try {
-    momentsModel = await MomentsService().getMomentsWithOwnerName(
+    momentsModel = await MomentsAuthService().getMomentsWithOwnerName(
         ownerName: searchedUserName!, channelUsername: channelUsername);
   } catch (error) {}
   if (momentsModel.isNotEmpty) {

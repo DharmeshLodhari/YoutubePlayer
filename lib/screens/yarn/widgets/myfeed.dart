@@ -14,9 +14,14 @@ class MyFeedView extends StatefulWidget {
   final String? selectedCategory;
   final String? userName;
   final String? isChannel;
+  final String? yarnUrl;
 
   const MyFeedView(
-      {super.key, this.selectedCategory, this.userName, this.isChannel});
+      {super.key,
+      this.selectedCategory,
+      this.userName,
+      this.isChannel,
+      this.yarnUrl});
 
   @override
   State<MyFeedView> createState() => MyFeedViewState(key: key);
@@ -57,12 +62,15 @@ class MyFeedViewState extends State<MyFeedView> {
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result = await YarnAuth().getAllYarn(
-            next, previous ?? "",
-            type: type,
-            isType: isType,
-            categoryId: categoryId,
-            userName: widget.userName,
-            isChannel: widget.isChannel);
+          next,
+          previous ?? "",
+          type: type,
+          isType: isType,
+          categoryId: categoryId,
+          userName: widget.userName,
+          isChannel: widget.isChannel,
+          yarnUrl: widget.yarnUrl,
+        );
 
         if (result == null) {
           noList = true;

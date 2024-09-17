@@ -12,8 +12,8 @@ import '../../../../utils/util.dart';
 import '../../../../widget/loading_indicator.dart';
 import '../../../more_apps/shopping/models/store.dart';
 import '../../models/moments_model.dart';
+import '../../moments_auth.dart';
 import '../../moments_bloc.dart';
-import '../moments_service.dart';
 
 class MomentsDetailsScreen extends StatefulWidget {
   String? nextPageUrl;
@@ -145,7 +145,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
   Future<List<String>?> getNextPageListOfConnectionNames(
       {required String nextPageUrl}) async {
     final Map<String, dynamic>? result =
-        await MomentsService().getContactMoments(
+        await MomentsAuthService().getContactMoments(
       next: widget.nextPageUrl,
     );
 
@@ -170,7 +170,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
           getLoopEndingPoint(mList: widget.listOfConnectionNames);
 
       for (int i = startIndex; i <= endIndex; i++) {
-        final List<MomentsModel> momentsModelList = await MomentsService()
+        final List<MomentsModel> momentsModelList = await MomentsAuthService()
             .getMomentsWithOwnerName(
                 ownerName: widget.listOfConnectionNames[i],
                 channelUsername: '');
@@ -227,7 +227,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 
       if (widget.listOfConnectionNames.indices.contains(indexToWorkWith)) {
         try {
-          final List<MomentsModel> momentsModelList = await MomentsService()
+          final List<MomentsModel> momentsModelList = await MomentsAuthService()
               .getMomentsWithOwnerName(
                   ownerName: widget.listOfConnectionNames[indexToWorkWith],
                   channelUsername: '');

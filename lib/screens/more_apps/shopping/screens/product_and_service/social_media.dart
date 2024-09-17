@@ -1,9 +1,7 @@
-import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/user_profile/tiles/moment_tab_tile.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/moments_social_media.dart';
 import 'package:Slydo/screens/yarn/widgets/myfeed.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SocialMedia extends StatefulWidget {
   const SocialMedia({super.key, this.arguments});
@@ -16,6 +14,8 @@ class SocialMedia extends StatefulWidget {
 
 class _SocialMediaState extends State<SocialMedia>
     with SingleTickerProviderStateMixin {
+  String? modelName;
+  String? id;
   String? momentUrl;
   String? yarnUrl;
   int _currentIndex = 0;
@@ -24,12 +24,12 @@ class _SocialMediaState extends State<SocialMedia>
 
   @override
   void initState() {
-    String modelName = widget.arguments["modelName"];
-    modelName = modelName.toLowerCase();
-    final String id = widget.arguments["id"];
+    modelName = widget.arguments["modelName"];
+    modelName = modelName?.toLowerCase();
+    id = widget.arguments["id"];
 
-    yarnUrl = "/api/v1/social/ask/$modelName/$id/";
-    momentUrl = "/api/v1/social/moments/$modelName/$id/";
+    yarnUrl = "/api/v1/social/ask/public-discourse/$modelName/$id/";
+    momentUrl = "/api/v1/social/moments/public-discourse/$modelName/$id/";
     _tabController = TabController(length: 2, vsync: this);
     _pageController = PageController(initialPage: _currentIndex);
 
@@ -101,7 +101,6 @@ class _SocialMediaState extends State<SocialMedia>
   }
 
   Widget _buildBody() {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -124,12 +123,12 @@ class _SocialMediaState extends State<SocialMedia>
                   });
                 },
                 children: <Widget>[
-                  MomentsTab(
-                    userName: userBloc.user.userName,
-                    channelUsername: '',
-                    searchedUser: null,
+                  MomentsSocialMedia(
+                    momentUrl: momentUrl,
                   ),
-                  MyFeedView(userName: userBloc.user.userName, isChannel: ''),
+                  MyFeedView(
+                    yarnUrl: yarnUrl,
+                  ),
                 ],
               ),
             ),
