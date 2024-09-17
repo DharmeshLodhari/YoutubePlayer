@@ -50,46 +50,41 @@ class _SectionProductsState extends State<SectionProducts> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(widget.headers["name"],
-                        style: TextStyle(
-                          color: black,
-                          fontSize: 14,
-                          height: 1,
-                          fontFamily: "Inter",
-                          fontWeight: FontWeight.w600,
-                        )),
-                    _buildViewMore(context)
-                  ],
-                ),
-                const SizedBox(height: 10),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: result
-                        .map(
-                          (element) => Padding(
-                            padding: const EdgeInsets.only(right: 7.0),
-                            child: SuperStoreSingleCard(
-                              product: element,
-                            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(widget.headers["name"],
+                      style: TextStyle(
+                        color: black,
+                        fontSize: 16,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.w600,
+                      )),
+                  _buildViewMore(context)
+                ],
+              ),
+              const SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: result
+                      .map(
+                        (element) => Padding(
+                          padding: const EdgeInsets.only(right: 7.0),
+                          child: SuperStoreSingleCard(
+                            product: element,
                           ),
-                        )
-                        .toList(),
-                  ),
+                        ),
+                      )
+                      .toList(),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           SizedBox(height: widget.isLast ? 56 : 16),
         ],
@@ -169,21 +164,22 @@ class _SectionProductsState extends State<SectionProducts> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            "View more",
-            style: TextStyle(
-              color: navyBlue,
-              fontSize: 12,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(width: 8),
+          // Text(
+          //   "View more",
+          //   style: TextStyle(
+          //     color: navyBlue,
+          //     fontSize: 12,
+          //     fontFamily: "Inter",
+          //     fontWeight: FontWeight.w600,
+          //   ),
+          // ),
+          const SizedBox(width: 10),
           Icon(
-            Icons.arrow_forward_ios_sharp,
+            Icons.keyboard_arrow_right_outlined,
+            size: 24,
             color: navyBlue,
-            size: 12,
           ),
+          const SizedBox(width: 5),
         ],
       ),
     );

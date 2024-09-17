@@ -98,13 +98,13 @@ double getSizeBoxHeight(TileRenderPlace tileRenderPlace, BuildContext context) {
 double getFontSize(TileRenderPlace tileRenderPlace, BuildContext context) {
   switch (tileRenderPlace) {
     case TileRenderPlace.YarnTimeLine:
-      return 14;
+      return 12;
     case TileRenderPlace.YarnComment:
       return 12;
     case TileRenderPlace.YarnProductService:
       return 10;
     case TileRenderPlace.Thiny:
-      return 8;
+      return 12;
   }
 }
 
@@ -112,7 +112,7 @@ double getContainerHeight(
     TileRenderPlace tileRenderPlace, BuildContext context) {
   switch (tileRenderPlace) {
     case TileRenderPlace.YarnTimeLine:
-      return 140;
+      return 120;
     case TileRenderPlace.YarnComment:
       return 120;
     case TileRenderPlace.YarnProductService:

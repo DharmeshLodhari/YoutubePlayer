@@ -128,33 +128,6 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     getNearByBusinessList();
     await fetchParallelData();
     getSuperStoreDealOfTheDay();
-    // final startTime1 = DateTime.now();
-    // await listOfSuperStores();
-    // final endTime1 = DateTime.now();
-    //
-    // debugPrint(
-    //     'Parallel Time111: ${endTime1.difference(startTime1).inSeconds}s');
-    //
-    // final startTime2 = DateTime.now();
-    // await getList();
-    // final endTime2 = DateTime.now();
-    //
-    // debugPrint(
-    //     'Parallel Time222: ${endTime2.difference(startTime2).inSeconds}s');
-    //
-    // final startTime3 = DateTime.now();
-    // await getNearByBusinessList();
-    // final endTime3 = DateTime.now();
-    //
-    // debugPrint(
-    //     'Parallel Time333: ${endTime3.difference(startTime3).inSeconds}s');
-    //
-    // final startTime4 = DateTime.now();
-    // await getTodaysDealProducts();
-    // final endTime4 = DateTime.now();
-    //
-    // debugPrint(
-    //     'Parallel Time444: ${endTime4.difference(startTime4).inSeconds}s');
 
     // await Future.wait([
     //   listOfSuperStores(withSetState: false),
@@ -211,13 +184,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
           //     nearByNext, nearByPrevious, _currentCategory,
           //     nearBy: true),
         ];
-
-        final startTime = DateTime.now();
         final List<Map<String, dynamic>?> results = await Future.wait(apiCalls);
-        final endTime = DateTime.now();
-
-        // debugPrint(
-        //     'Parallel Time: ${endTime.difference(startTime).inSeconds}s');
 
         // Handle each API call result
         for (int i = 0; i < results.length; i++) {
@@ -514,56 +481,53 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     return ScaffoldMessenger(
       key: _productScaffoldMessengerKey,
       child: Scaffold(
-        // appBar: appBar(),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 0.0),
-            child: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: ListView(
-                controller: _productScrollController,
-                children: [
-                  if (itemList.isNotEmpty) specialDeals(),
-                  if (superStoreDealOftheDay.isNotEmpty) _buildDealOfTheDay(),
-                  SizedBox(height: todaysDealsSizeBox),
-                  if (customerProfileListNearBy.isNotEmpty) nearByBuildView(),
-                  sessionProducts(),
-                  const SizedBox(height: 16),
-                  if (isLoading)
-                    Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: greyBorderColor,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                          mainAxisSpacing: 14,
-                          mainAxisExtent: 180,
-                          crossAxisSpacing: 15,
-                          maxCrossAxisExtent: 200,
-                        ),
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          );
-                        },
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              controller: _productScrollController,
+              children: [
+                if (itemList.isNotEmpty) specialDeals(),
+                if (superStoreDealOftheDay.isNotEmpty) _buildDealOfTheDay(),
+                SizedBox(height: todaysDealsSizeBox),
+                if (customerProfileListNearBy.isNotEmpty) nearByBuildView(),
+                sessionProducts(),
+                const SizedBox(height: 16),
+                if (isLoading)
+                  Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: greyBorderColor,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        mainAxisSpacing: 14,
+                        mainAxisExtent: 180,
+                        crossAxisSpacing: 15,
+                        maxCrossAxisExtent: 200,
                       ),
-                    )
-                  else
-                    const SizedBox.shrink(),
-                ],
-              ),
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                else
+                  const SizedBox.shrink(),
+              ],
             ),
           ),
         ),
@@ -572,104 +536,83 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   }
 
   Widget specialDeals() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    return SizedBox(
+      height: 151,
       child: Column(
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 15, bottom: 8),
-            alignment: Alignment.bottomLeft,
-            child: Text(
-              "Special Deal",
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: "Inter",
-                  color: black),
-              textAlign: TextAlign.left,
-            ),
-          ),
-          SizedBox(
-            height: 151,
-            child: Column(
-              children: [
-                Expanded(
-                  child: CarouselSlider(
-                    carouselController: _controller,
-                    options: CarouselOptions(
-                        height: 150,
-                        autoPlay: true,
-                        enlargeCenterPage: true,
-                        viewportFraction: 1,
-                        aspectRatio: 16 / 9,
-                        // onPageChanged: (index, reason) {
-                        //   setState(() {
-                        //     _current = index;
-                        //   });
-                        // }),
-                        // enableInfiniteScroll: false,
-                        // viewportFraction: 1.0,
-                        // enlargeCenterPage: true,
-                        // autoPlay: true,
-                        // aspectRatio: 1.7,
-                        onPageChanged: onPageFunction),
-                    items: itemList
-                        .map(
-                          (e) => InkWell(
-                            onTap: () {
-                              final String url =
-                                  "${AppConfig.baseUrl}/api/v1/products/products-by-discount/${e.id}";
-                              NavigationUtil.push(
-                                context,
-                                screen: SuperStoreIndustry(
-                                  next: url,
-                                  appTitle: e.name!,
-                                  searchQuery: {"discount": e.id!},
-                                  isShowDiscountPage: true,
-                                ),
-                              );
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(right: 8),
-                              width: MediaQuery.of(context).size.width,
-                              height: 150,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10.0),
-                                child: getImage(e),
-                              ),
-                              // decoration: BoxDecoration(
-                              //   borderRadius: BorderRadius.circular(10),
-                              //   image: DecorationImage(
-                              //     fit: BoxFit.fill,
-                              //     image: getImage(e),
-                              //   ),
-                              // ),
-                            ),
+          Expanded(
+            child: CarouselSlider(
+              carouselController: _controller,
+              options: CarouselOptions(
+                  height: 150,
+                  autoPlay: true,
+                  enlargeCenterPage: true,
+                  viewportFraction: 1,
+                  aspectRatio: 16 / 9,
+                  // onPageChanged: (index, reason) {
+                  //   setState(() {
+                  //     _current = index;
+                  //   });
+                  // }),
+                  // enableInfiniteScroll: false,
+                  // viewportFraction: 1.0,
+                  // enlargeCenterPage: true,
+                  // autoPlay: true,
+                  // aspectRatio: 1.7,
+                  onPageChanged: onPageFunction),
+              items: itemList
+                  .map(
+                    (e) => InkWell(
+                      onTap: () {
+                        final String url =
+                            "${AppConfig.baseUrl}/api/v1/products/products-by-discount/${e.id}";
+                        NavigationUtil.push(
+                          context,
+                          screen: SuperStoreIndustry(
+                            next: url,
+                            appTitle: e.name!,
+                            searchQuery: {"discount": e.id!},
+                            isShowDiscountPage: true,
                           ),
-                        )
-                        .toList(),
-                  ),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: itemList.map((url) {
-                    final int index = itemList.indexOf(url);
-                    return Container(
-                      width: 5.0,
-                      height: 5.0,
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 2.0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: currentIndex == index ? navyBlue : navyBlueLight,
+                        );
+                      },
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 150,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: getImage(e),
+                        ),
+                        // decoration: BoxDecoration(
+                        //   borderRadius: BorderRadius.circular(10),
+                        //   image: DecorationImage(
+                        //     fit: BoxFit.fill,
+                        //     image: getImage(e),
+                        //   ),
+                        // ),
                       ),
-                    );
-                  }).toList(),
-                )
-              ],
+                    ),
+                  )
+                  .toList(),
             ),
           ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: itemList.map((url) {
+              final int index = itemList.indexOf(url);
+              return Container(
+                width: 5.0,
+                height: 5.0,
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: currentIndex == index ? navyBlue : navyBlueLight,
+                ),
+              );
+            }).toList(),
+          )
         ],
       ),
     );
@@ -694,7 +637,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 8),
+        const SizedBox(height: 15),
         // if (rowHeaders.isNotEmpty)
         //   ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
 
@@ -724,55 +667,52 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   Widget _buildDealOfTheDay() {
     final bool showViewMoreButton =
         superStoreDealOftheDay.length > productHorizontalLength;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (dealsOfDayEmpty)
-            const SizedBox.shrink()
-          else
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context)?.newArrivals ?? "",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                    fontFamily: "Inter",
-                    color: blackFont,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (dealsOfDayEmpty)
+          const SizedBox.shrink()
+        else
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                AppLocalization.of(context)?.newArrivals ?? "",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  fontFamily: "Inter",
+                  color: blackFont,
                 ),
-                _buildViewMoreStore(context),
-              ],
-            ),
-          const SizedBox(
-            height: 15,
+              ),
+              _buildViewMoreStore(context),
+            ],
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: superStoreDealOftheDay
-                  .take(showViewMoreButton
-                      ? productHorizontalLength
-                      : todaysDealList.length)
-                  .map(
-                    (element) => Padding(
-                      padding: const EdgeInsets.only(right: 7.0),
-                      child: SuperStoreSingleCard(
-                        product: element,
-                        // next: headers['next_url']
-                      ),
+        const SizedBox(
+          height: 15,
+        ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: superStoreDealOftheDay
+                .take(showViewMoreButton
+                    ? productHorizontalLength
+                    : todaysDealList.length)
+                .map(
+                  (element) => Padding(
+                    padding: const EdgeInsets.only(right: 7.0),
+                    child: SuperStoreSingleCard(
+                      product: element,
+                      // next: headers['next_url']
                     ),
-                  )
-                  .toList(),
-            ),
+                  ),
+                )
+                .toList(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -792,122 +732,104 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            "View more",
-            style: TextStyle(
-              color: navyBlue,
-              fontSize: 12,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Icon(
-            Icons.arrow_forward_ios_sharp,
+            Icons.keyboard_arrow_right_outlined,
+            size: 24,
             color: navyBlue,
-            size: 12,
           ),
+          const SizedBox(width: 5),
         ],
       ),
     );
   }
 
   Widget nearByBuildView() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-      margin: const EdgeInsets.only(top: 24),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Nearby Businesses",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  fontFamily: "Inter",
-                  color: black,
-                ),
+    return Column(
+      children: [
+        const SizedBox(height: 15.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              "Nearby Businesses",
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                fontFamily: "Inter",
+                color: black,
               ),
-              GestureDetector(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "View more",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                          fontFamily: "Inter",
-                          color: navyBlue),
+            ),
+            GestureDetector(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 10),
+                  Icon(
+                    Icons.keyboard_arrow_right_outlined,
+                    size: 24,
+                    color: navyBlue,
+                  ),
+                  const SizedBox(width: 5),
+                ],
+              ),
+              onTap: () {
+                Navigator.of(context)
+                    .pushNamed(Routes.NEAR_BY_LIST_SCREEN, arguments: {
+                  "customerProfile": customerProfileListNearBy,
+                  "count": nearByCount,
+                  "next": nearByNext
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 10.0),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var item in customerProfileListNearBy)
+                Container(
+                  width: 250,
+                  // height: 200,
+                  margin: const EdgeInsets.only(right: 16),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, Routes.USER_PROFILE,
+                          arguments: {"searchedUserName": item.userName});
+                    },
+                    child: FindBusiness(
+                      customerProfile: item,
+                      tileRenderPlace: TileRenderPlace.Thiny,
+                      callback: (username, value) {
+                        //create a list to edit
+                        final List<CustomerProfile> customerProfileListEdit =
+                            customerProfileListNearBy;
+
+                        // modify customerProfileList for the username and refresh the list
+                        // set the isFollowing for that particular user
+                        for (var customer in customerProfileListEdit) {
+                          if (customer.userName == username) {
+                            customer.isFollowing =
+                                value; // Modify the isFollowing property
+                          }
+                        }
+
+                        customerProfileListNearBy = [];
+                        customerProfileListNearBy = customerProfileListEdit;
+
+                        if (mounted) setState(() {});
+                      },
                     ),
-                    const SizedBox(width: 8),
-                    Icon(Icons.arrow_forward_ios_sharp,
-                        size: 12, color: navyBlue),
-                  ],
-                ),
-                onTap: () {
-                  Navigator.of(context)
-                      .pushNamed(Routes.NEAR_BY_LIST_SCREEN, arguments: {
-                    "customerProfile": customerProfileListNearBy,
-                    "count": nearByCount,
-                    "next": nearByNext
-                  });
-                },
-              ),
+                  ),
+                )
             ],
           ),
-          const SizedBox(
-            height: 11.0,
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                for (var item in customerProfileListNearBy)
-                  Container(
-                    width: 200,
-                    // height: 200,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, Routes.USER_PROFILE,
-                            arguments: {"searchedUserName": item.userName});
-                      },
-                      child: FindBusiness(
-                        customerProfile: item,
-                        tileRenderPlace: TileRenderPlace.Thiny,
-                        callback: (username, value) {
-                          //create a list to edit
-                          final List<CustomerProfile> customerProfileListEdit =
-                              customerProfileListNearBy;
-
-                          // modify customerProfileList for the username and refresh the list
-                          // set the isFollowing for that particular user
-                          for (var customer in customerProfileListEdit) {
-                            if (customer.userName == username) {
-                              customer.isFollowing =
-                                  value; // Modify the isFollowing property
-                            }
-                          }
-
-                          customerProfileListNearBy = [];
-                          customerProfileListNearBy = customerProfileListEdit;
-
-                          if (mounted) setState(() {});
-                        },
-                      ),
-                    ),
-                  )
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

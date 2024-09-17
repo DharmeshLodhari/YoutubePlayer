@@ -120,7 +120,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
         backgroundColor: Colors.white,
         titleSpacing: 0,
         title: Text(
-          'NearBy Business',
+          'Nearby Business',
           overflow: TextOverflow.fade,
           style: TextStyle(
             fontSize: 21,
@@ -151,7 +151,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
           )
         : ListView.builder(
             physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+            padding: const EdgeInsets.all(16.0),
             controller: _scrollController,
             itemCount: customerProfileList.length + 1,
             itemBuilder: (BuildContext context, int index) {
@@ -160,7 +160,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
               }
 
               return Container(
-                margin: const EdgeInsets.all(10.0),
+                margin: const EdgeInsets.all(5.0),
                 child: FindBusiness(
                   customerProfile: customerProfileList[index],
                   tileRenderPlace: TileRenderPlace.YarnTimeLine,

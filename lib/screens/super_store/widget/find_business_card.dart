@@ -46,13 +46,13 @@ class _FindBusinessState extends State<FindBusiness> {
 
   Widget getNearByBusiness() {
     return Card(
-      color: Colors.white,
+      color: Colors.transparent,
       semanticContainer: true,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       margin: EdgeInsets.zero,
       shadowColor: boxShadow,
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -66,7 +66,9 @@ class _FindBusinessState extends State<FindBusiness> {
                   child: getWallpaper()),
               Positioned(
                 left: 10,
-                top: getContainerHeight(widget.tileRenderPlace, context) - 20,
+                top: widget.tileRenderPlace == TileRenderPlace.Thiny
+                    ? getContainerHeight(widget.tileRenderPlace, context) - 20
+                    : getContainerHeight(widget.tileRenderPlace, context) - 25,
                 child: InkWell(
                   onTap: () {
                     String? image = '';
@@ -84,10 +86,10 @@ class _FindBusinessState extends State<FindBusiness> {
                   },
                   child: SizedBox(
                       width: widget.tileRenderPlace == TileRenderPlace.Thiny
-                          ? 40
+                          ? 35
                           : 50,
                       height: widget.tileRenderPlace == TileRenderPlace.Thiny
-                          ? 40
+                          ? 35
                           : 50,
                       child: CircularUserColorImage(
                           imageUrl: widget.customerProfile.avatar!,
@@ -98,9 +100,8 @@ class _FindBusinessState extends State<FindBusiness> {
           ),
           Container(
             padding: widget.tileRenderPlace == TileRenderPlace.Thiny
-                ? const EdgeInsets.only(left: 15, top: 20, bottom: 5, right: 15)
-                : const EdgeInsets.only(
-                    left: 15, top: 30, bottom: 10, right: 15),
+                ? const EdgeInsets.only(top: 20, bottom: 5)
+                : const EdgeInsets.only(top: 30, bottom: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -127,17 +128,13 @@ class _FindBusinessState extends State<FindBusiness> {
                                               widget.customerProfile.fullName ??
                                                   "") ??
                                           "",
-                                      widget.tileRenderPlace ==
-                                              TileRenderPlace.Thiny
-                                          ? 13
-                                          : 20),
+                                      20),
                                   style: TextStyle(
-                                      fontSize: widget.tileRenderPlace ==
-                                              TileRenderPlace.Thiny
-                                          ? 12
-                                          : 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: yarnBlack),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: yarnBlack,
+                                    fontFamily: "Inter",
+                                  ),
                                 )),
                             Align(
                               alignment: Alignment.centerLeft,
@@ -146,18 +143,13 @@ class _FindBusinessState extends State<FindBusiness> {
                                       messageDecoderWithEmoji(
                                               '@${widget.customerProfile.userName}') ??
                                           "",
-                                      widget.tileRenderPlace ==
-                                              TileRenderPlace.Thiny
-                                          ? 13
-                                          : 20),
+                                      20),
                                   isVerified: widget.customerProfile.isVerified,
                                   textStyle: TextStyle(
-                                    fontSize: widget.tileRenderPlace ==
-                                            TileRenderPlace.Thiny
-                                        ? 11
-                                        : 14,
-                                    color: HexColor("#151515"),
+                                    fontSize: 12,
+                                    color: fontLightGrey,
                                     fontWeight: FontWeight.w500,
+                                    fontFamily: "Inter",
                                   ),
                                   verifiedIconColor: verifyGreen,
                                   verifiedIconSize: widget.tileRenderPlace ==
@@ -169,33 +161,16 @@ class _FindBusinessState extends State<FindBusiness> {
                         ),
                       ),
                     ),
-                    Container(
-                      // padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: getFollowUnFollowBtn(),
-                    ),
+                    getFollowUnFollowBtn(),
                   ],
                 ),
-                SizedBox(
-                  height: widget.tileRenderPlace == TileRenderPlace.Thiny
-                      ? 2.0
-                      : 5.0,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(60),
-                  ),
-                  padding: widget.tileRenderPlace == TileRenderPlace.Thiny
-                      ? const EdgeInsets.symmetric(horizontal: 3, vertical: 1)
-                      : const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                  child: getRating(
-                      numberOfRating: widget.customerProfile.rating.toInt()),
-                ),
+                const SizedBox(height: 5.0),
+                getRating(
+                    numberOfRating: widget.customerProfile.rating.toInt(),
+                    starSize: 14),
                 if (widget.customerProfile.bio!.isNotEmpty ||
                     widget.customerProfile.bio != null) ...[
-                  const SizedBox(
-                    height: 10.0,
-                  ),
+                  const SizedBox(height: 5.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -206,10 +181,14 @@ class _FindBusinessState extends State<FindBusiness> {
                           style: TextStyle(
                             fontSize:
                                 getFontSize(widget.tileRenderPlace, context),
-                            fontWeight: FontWeight.w600,
-                            color: blackFont,
+                            fontWeight: FontWeight.w400,
+                            color: fontLightGrey,
+                            fontFamily: "Inter",
                           ),
-                          maxLines: 1,
+                          maxLines:
+                              widget.tileRenderPlace == TileRenderPlace.Thiny
+                                  ? 2
+                                  : 3,
                           softWrap: true,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -220,10 +199,7 @@ class _FindBusinessState extends State<FindBusiness> {
               ],
             ),
           ),
-          SizedBox(
-            height:
-                widget.tileRenderPlace == TileRenderPlace.Thiny ? 5.0 : 10.0,
-          ),
+          const SizedBox(height: 5.0),
         ],
       ),
     );
@@ -268,14 +244,13 @@ class _FindBusinessState extends State<FindBusiness> {
           });
         },
         child: Container(
-          height: widget.tileRenderPlace == TileRenderPlace.Thiny ? 20 : 30,
-          width: widget.tileRenderPlace == TileRenderPlace.Thiny ? 60 : 80,
-          margin: const EdgeInsets.symmetric(vertical: 6),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          height: widget.tileRenderPlace == TileRenderPlace.Thiny ? 24 : 30,
+          width: widget.tileRenderPlace == TileRenderPlace.Thiny ? 70 : 80,
+          padding: const EdgeInsets.symmetric(horizontal: 6),
           decoration: BoxDecoration(
               color: blackFont,
               borderRadius: BorderRadius.circular(50),
-              border: Border.all(color: HexColor("#292929"), width: 1)),
+              border: Border.all(color: Colors.black, width: 1)),
           child: Center(
             child: Text(
               'Following',
@@ -283,7 +258,8 @@ class _FindBusinessState extends State<FindBusiness> {
                 fontSize:
                     widget.tileRenderPlace == TileRenderPlace.Thiny ? 10 : 12,
                 color: Colors.white,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
               ),
             ),
           ),
@@ -313,21 +289,21 @@ class _FindBusinessState extends State<FindBusiness> {
         });
       },
       child: Container(
-        height: widget.tileRenderPlace == TileRenderPlace.Thiny ? 20 : 30,
+        height: widget.tileRenderPlace == TileRenderPlace.Thiny ? 24 : 30,
         width: widget.tileRenderPlace == TileRenderPlace.Thiny ? 60 : 80,
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: HexColor("#292929"), width: 1)),
+            border: Border.all(color: Colors.black, width: 1)),
         child: Center(
           child: Text(
             'Follow',
             style: TextStyle(
               fontSize:
-                  widget.tileRenderPlace == TileRenderPlace.Thiny ? 11 : 13,
+                  widget.tileRenderPlace == TileRenderPlace.Thiny ? 10 : 12,
               color: Colors.black,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
+              fontFamily: "Inter",
             ),
           ),
         ),
@@ -410,7 +386,7 @@ class CircularUserColorImage extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(
             color: naturalGreen,
-            width: 3.0,
+            width: 2.0,
           ),
         ),
         child: getUserProfilePic(imageUrl, name),

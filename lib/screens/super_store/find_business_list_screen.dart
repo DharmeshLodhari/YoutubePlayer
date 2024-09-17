@@ -262,7 +262,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         backgroundColor: lightGrey,
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: SmartRefresher(
               enablePullDown: true,
               header: WaterDropHeader(
@@ -289,24 +289,21 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
           children: [
             if (customerProfileList.isNotEmpty) ...[
               // const SizedBox(height: 10.0,),
-              Container(
-                margin: const EdgeInsets.only(left: 15.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    // "Found ${findBusinessCount} ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
-                    "Found $findBusinessCount ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                      fontFamily: "Inter",
-                      color: blackFont,
-                    ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  // "Found ${findBusinessCount} ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
+                  "Found $findBusinessCount ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    fontFamily: "Inter",
+                    color: blackFont,
                   ),
                 ),
               ),
               const SizedBox(
-                height: 20.0,
+                height: 15.0,
               ),
               suggestionBuildView(),
             ],
@@ -331,7 +328,6 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       // controller: _scrollController,
       itemCount: customerProfileList.length + 1,
       itemBuilder: (BuildContext context, int index) {
@@ -345,31 +341,28 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
               "searchedUserName": customerProfileList[index].userName
             });
           },
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 10.0),
-            child: FindBusiness(
-              customerProfile: customerProfileList[index],
-              tileRenderPlace: TileRenderPlace.YarnProductService,
-              callback: (username, value) {
-                //create a list to edit
-                final List<CustomerProfile> customerProfileListEdit =
-                    customerProfileList;
+          child: FindBusiness(
+            customerProfile: customerProfileList[index],
+            tileRenderPlace: TileRenderPlace.YarnProductService,
+            callback: (username, value) {
+              //create a list to edit
+              final List<CustomerProfile> customerProfileListEdit =
+                  customerProfileList;
 
-                // modify customerProfileList for the username and refresh the list
-                // set the isFollowing for that particular user
-                for (var customer in customerProfileListEdit) {
-                  if (customer.userName == username) {
-                    customer.isFollowing =
-                        value; // Modify the isFollowing property
-                  }
+              // modify customerProfileList for the username and refresh the list
+              // set the isFollowing for that particular user
+              for (var customer in customerProfileListEdit) {
+                if (customer.userName == username) {
+                  customer.isFollowing =
+                      value; // Modify the isFollowing property
                 }
+              }
 
-                customerProfileList = [];
-                customerProfileList = customerProfileListEdit;
+              customerProfileList = [];
+              customerProfileList = customerProfileListEdit;
 
-                if (mounted) setState(() {});
-              },
-            ),
+              if (mounted) setState(() {});
+            },
           ),
         );
       },
