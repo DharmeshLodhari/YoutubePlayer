@@ -435,9 +435,6 @@ class _HomeState extends State<Home> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox.shrink(
-                    key: tutorialSocialKey,
-                  ),
                   GestureDetector(
                     onTap: () => NavigationUtil.push(context,
                         screen: const MomentsScreen()),
@@ -500,6 +497,9 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
+          SizedBox.shrink(
+            key: tutorialSocialKey,
+          ),
           const SizedBox(height: 25),
 
           InkWell(

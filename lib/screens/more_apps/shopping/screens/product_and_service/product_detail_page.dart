@@ -846,8 +846,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              _buildProductImagesWidgets(),
-              productStockAndDetailTag(),
+              _buildImageAndTag(),
               const SizedBox(height: 5),
               if (displayProductImages!.length > 1)
                 _buildHorizontalProductImageList()
@@ -1035,6 +1034,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
         const SizedBox(height: 16),
       ],
+    );
+  }
+
+  Widget _buildImageAndTag() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+      ),
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      child: Column(
+        children: [
+          _buildProductImagesWidgets(),
+          productStockAndDetailTag(),
+        ],
+      ),
     );
   }
 
@@ -1270,6 +1284,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           selectedVariant: selectedVariant,
           text: AppLocalization.of(context)!.comingSoon,
           color: lightYellow,
+          date: formatDate1(product?.availableFrom),
         ),
       );
     } else if ((product?.variantModels?.isEmpty ?? false) &&
@@ -1306,6 +1321,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             selectedVariant?.discountType ?? "",
             selectedVariant?.discountValue ?? 0,
             selectedVariant?.currency,
+            verticalPadding: 8,
+            fontSize: 14,
           ),
         );
       } else {
@@ -1321,6 +1338,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             product?.discountType ?? "",
             product?.discountValue ?? 0,
             product?.currency,
+            verticalPadding: 8,
+            fontSize: 14,
           ),
         );
       } else {

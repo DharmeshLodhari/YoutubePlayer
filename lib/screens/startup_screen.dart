@@ -210,6 +210,7 @@ class _StartupScreenState extends State<StartupScreen> {
               children: [
                 Image.asset(
                   imagePath,
+                  height: MediaQuery.of(context).size.height * 0.3,
                 ),
                 const SizedBox(height: 25),
                 Text(

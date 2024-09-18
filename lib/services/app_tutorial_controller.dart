@@ -1,6 +1,7 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/scroll_up_arrow_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
@@ -46,6 +47,7 @@ class AppTutorialController {
   final List<TargetFocus> _targets = [];
 
   TutorialCoachMark? tutorial;
+  double? deviceHeight;
 
   void triggerNextTutorial() {
     if (tutorial != null) {
@@ -54,6 +56,7 @@ class AppTutorialController {
   }
 
   void showTutorial(BuildContext context) {
+    deviceHeight = MediaQuery.sizeOf(context).height;
     _fillTargets();
 
     tutorial = TutorialCoachMark(
@@ -65,12 +68,13 @@ class AppTutorialController {
       // focusAnimationDuration: Duration(milliseconds: 500),
       // pulseAnimationDuration: Duration(milliseconds: 500),
       // pulseVariation: Tween(begin: 1.0, end: 0.99),
-      pulseEnable: false,
+      // pulseEnable: false,
+
       onFinish: () {
         debugPrint("finish");
       },
       onClickTarget: (target) {
-        debugPrint("$target");
+        debugPrint("target ===> $target");
       },
       onSkip: () {
         debugPrint("skip");
@@ -919,64 +923,67 @@ class AppTutorialController {
       shape: ShapeLightFocus.RRect,
       radius: 5,
       alignSkip: alignSkip,
-      paddingFocus: type == "social" ? 0 : 10,
-      unFocusAnimationDuration: const Duration(milliseconds: 0),
-      focusAnimationDuration: const Duration(milliseconds: 0),
-      pulseVariation: type == "social"
-          ? Tween<double>(begin: 0, end: 0) // Disable pulse for last item
-          : Tween<double>(begin: 1.0, end: 0.99),
+      paddingFocus: type == "social" ? 0 : 3,
       contents: [
         TargetContent(
           align: align,
-          child: Column(
-            crossAxisAlignment: crossAxisAlignment,
-            mainAxisAlignment: MainAxisAlignment.start,
-            verticalDirection: VerticalDirection.down,
-            children: <Widget>[
-              if (type == "social") ...[
-                Image.asset(
-                  'assets/images/home/arrow_up.png',
-                  height: 150,
-                  width: 50,
-                  fit: BoxFit.fitHeight,
+          child: Padding(
+            padding: getPadding(type),
+            child: Column(
+              crossAxisAlignment: crossAxisAlignment,
+              mainAxisAlignment: MainAxisAlignment.start,
+              verticalDirection: VerticalDirection.down,
+              children: <Widget>[
+                if (type == "social") ...[
+                  const ScrollArrowIndicator(),
+                  const SizedBox(height: 30),
+                ],
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Inter",
+                  ),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 10),
+                Text(
+                  description,
+                  textAlign: textAlign,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "Inter",
+                  ),
+                ),
+                if (type == "social") doneButton() else nextButton(),
+                const SizedBox(height: 10),
+                Text(
+                  "$currentStep/$totalSteps",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: "Inter",
+                  ),
+                ),
               ],
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: "Inter",
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                description,
-                textAlign: textAlign,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: "Inter",
-                ),
-              ),
-              if (type == "social") doneButton() else nextButton(),
-              const SizedBox(height: 10),
-              Text(
-                "$currentStep/$totalSteps",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: "Inter",
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ],
     );
+  }
+
+  EdgeInsetsGeometry getPadding(String? type) {
+    if (type == "social") {
+      if (deviceHeight != null && deviceHeight! > 700) {
+        return const EdgeInsets.only(bottom: 180);
+      }
+      return const EdgeInsets.only(bottom: 370);
+    }
+    return EdgeInsets.zero;
   }
 }

@@ -590,8 +590,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildServiceImagesWidgets(),
-              serviceStockAndDetailTag(),
+              _buildImageAndTag(),
               const SizedBox(height: 5),
               if (displayServiceImage!.length > 1)
                 _buildHorizontalServiceImageList()
@@ -840,6 +839,21 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           );
   }
 
+  Widget _buildImageAndTag() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+      ),
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      child: Column(
+        children: [
+          _buildServiceImagesWidgets(),
+          serviceStockAndDetailTag(),
+        ],
+      ),
+    );
+  }
+
   Widget _buildServiceImagesWidgets() {
     return displayServiceImage?.length == 0
         ? AspectRatio(
@@ -1063,6 +1077,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             service?.discountType ?? "",
             service?.discountValue ?? 0,
             service?.currency,
+            verticalPadding: 8,
+            fontSize: 14,
           ),
         );
       } else {

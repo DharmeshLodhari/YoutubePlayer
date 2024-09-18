@@ -75,7 +75,7 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": widget.product});
       },
       child: SizedBox(
-        width: 170,
+        width: 160,
         child: Card(
           semanticContainer: true,
           color: Colors.transparent,
@@ -549,13 +549,10 @@ class _DisplayServiceState extends State<DisplayService> {
         Navigator.pushNamed(context, '/service-detail',
             arguments: {"service": currentService});
       },
-      child: SizedBox(
-        width: 170,
-        child: Card(
-          semanticContainer: true,
-          color: Colors.transparent,
-          elevation: 0,
-          shadowColor: boxShadow,
+      child: Container(
+        alignment: Alignment.topCenter,
+        child: SizedBox(
+          width: 160,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -610,8 +607,6 @@ class _DisplayServiceState extends State<DisplayService> {
           service: widget.service,
           text: AppLocalization.of(context)!.comingSoon,
           color: lightYellow,
-          fontSize: 12,
-          verticalPadding: 5,
         ),
       );
     } else if (widget.service.isAvailable == false) {
@@ -622,8 +617,6 @@ class _DisplayServiceState extends State<DisplayService> {
           service: widget.service,
           text: AppLocalization.of(context)!.outOfStock,
           color: lightRed,
-          fontSize: 12,
-          verticalPadding: 5,
         ),
       );
     } else if ((widget.service.discountedPrice != null &&

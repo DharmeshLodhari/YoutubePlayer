@@ -298,41 +298,6 @@ String getGroupUsername(String channelUsername) {
   );
 }*/
 
-Widget showDiscountValue(
-    String discountType, num discountValue, String? currency) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-    color: lightGreenBg,
-    child: RichText(
-      text: TextSpan(
-        text:
-            "-${discountType == "percentage" ? "$discountValue% OFF" : worldCurrencies[currency!]! + moneyDisplayNormalizer(discountValue.toInt()).toString()}",
-        style: TextStyle(
-          color: naturalGreen,
-          fontSize: 12,
-          fontFamily: 'Inter',
-          fontWeight: FontWeight.w700,
-        ),
-        children: [
-          const WidgetSpan(child: SizedBox(width: 3)),
-          TextSpan(
-            text: 'Discount Sales',
-            style: TextStyle(
-              fontSize: 12,
-              fontFamily: 'Inter',
-              color: blackFont,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-      textAlign: TextAlign.center,
-      softWrap: true,
-      overflow: TextOverflow.ellipsis,
-    ),
-  );
-}
-
 /*Widget showColoredLabeledWidget({required String text, required Color color}) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -349,22 +314,58 @@ Widget showDiscountValue(
     ),
   );
 }*/
-
-Widget showColoredLabeledWidgetProductDetails(
-    {required String text,
-    required Color color,
-    Product? product,
-    Variant? selectedVariant,
-    String? date}) {
+Widget showDiscountValue(
+    String discountType, num discountValue, String? currency,
+    {double? verticalPadding, double? fontSize}) {
   return Container(
+    padding:
+        EdgeInsets.symmetric(horizontal: 5, vertical: verticalPadding ?? 5),
+    color: lightGreenBg,
+    child: RichText(
+      text: TextSpan(
+        text:
+            "-${discountType == "percentage" ? "$discountValue% OFF" : worldCurrencies[currency!]! + moneyDisplayNormalizer(discountValue.toInt()).toString()}",
+        style: TextStyle(
+          color: naturalGreen,
+          fontSize: fontSize ?? 12,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w700,
+        ),
+        children: [
+          const WidgetSpan(child: SizedBox(width: 3)),
+          TextSpan(
+            text: 'Discount Sales',
+            style: TextStyle(
+              fontSize: fontSize ?? 12,
+              fontFamily: 'Inter',
+              color: blackFont,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+      textAlign: TextAlign.center,
+      softWrap: true,
+      overflow: TextOverflow.ellipsis,
+    ),
+  );
+}
+
+Widget showColoredLabeledWidgetProductStock({
+  required String text,
+  required Color color,
+  required Product product,
+  String? date,
+}) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
     alignment: Alignment.center,
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     color: color,
     child: RichText(
       text: TextSpan(
         text: text,
         style: TextStyle(
-          color: getProductDetailsColors(product!, selectedVariant),
+          color: getProductStockTextColors(product),
           fontSize: 12,
           fontFamily: 'Inter',
           fontWeight: FontWeight.w600,
@@ -375,6 +376,46 @@ Widget showColoredLabeledWidgetProductDetails(
             text: date ?? "",
             style: TextStyle(
               fontSize: 12,
+              fontFamily: 'Inter',
+              color: blackFont,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+      textAlign: TextAlign.center,
+      softWrap: true,
+      overflow: TextOverflow.ellipsis,
+    ),
+  );
+}
+
+Widget showColoredLabeledWidgetProductDetails({
+  required String text,
+  required Color color,
+  Product? product,
+  Variant? selectedVariant,
+  String? date,
+}) {
+  return Container(
+    alignment: Alignment.center,
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    color: color,
+    child: RichText(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: getProductDetailsColors(product!, selectedVariant),
+          fontSize: 14,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w600,
+        ),
+        children: [
+          const WidgetSpan(child: SizedBox(width: 5)),
+          TextSpan(
+            text: date ?? "",
+            style: TextStyle(
+              fontSize: 14,
               fontFamily: 'Inter',
               color: blackFont,
               fontWeight: FontWeight.w500,
@@ -400,7 +441,7 @@ Widget showColoredLabeledWidgetService({
   return Container(
     alignment: Alignment.center,
     padding:
-        EdgeInsets.symmetric(horizontal: 10, vertical: verticalPadding ?? 5),
+        EdgeInsets.symmetric(horizontal: 5, vertical: verticalPadding ?? 5),
     color: color,
     child: RichText(
       text: TextSpan(
@@ -458,44 +499,6 @@ Color getProductDetailsColors(Product product, Variant? selectedVariant) {
   } else {
     return transparent;
   }
-}
-
-Widget showColoredLabeledWidgetProductStock(
-    {required String text,
-    required Color color,
-    required Product product,
-    String? date}) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-    alignment: Alignment.center,
-    color: color,
-    child: RichText(
-      text: TextSpan(
-        text: text,
-        style: TextStyle(
-          color: getProductStockTextColors(product),
-          fontSize: 12,
-          fontFamily: 'Inter',
-          fontWeight: FontWeight.w600,
-        ),
-        children: [
-          const WidgetSpan(child: SizedBox(width: 5)),
-          TextSpan(
-            text: date ?? "",
-            style: TextStyle(
-              fontSize: 12,
-              fontFamily: 'Inter',
-              color: blackFont,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-      textAlign: TextAlign.center,
-      softWrap: true,
-      overflow: TextOverflow.ellipsis,
-    ),
-  );
 }
 
 Color getProductStockTextColors(Product product) {

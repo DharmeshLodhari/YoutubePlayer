@@ -472,34 +472,31 @@ class _ProductViewMoreDetailsState extends State<ProductViewMoreDetails> {
                                     : endIndex,
                               );
 
-                              return IntrinsicHeight(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // First Item
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 10.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // First Item
+                                    Expanded(
+                                      child: SuperStoreSingleCard(
+                                        product: rowItems[0],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    // Second Item
+                                    if (rowItems.length == 2)
                                       Expanded(
                                         child: SuperStoreSingleCard(
-                                          product: rowItems[0],
+                                          product: rowItems[1],
                                         ),
                                       ),
-                                      const SizedBox(width: 10.0),
-                                      // Second Item
-                                      if (rowItems.length == 2)
-                                        Expanded(
-                                          child: SuperStoreSingleCard(
-                                            product: rowItems[1],
-                                          ),
-                                        ),
-                                      // Add an empty widget if there is only one item
-                                      if (rowItems.length == 1)
-                                        const Expanded(
-                                          child: SizedBox.shrink(),
-                                        ),
-                                    ],
-                                  ),
+                                    // Add an empty widget if there is only one item
+                                    if (rowItems.length == 1)
+                                      const Expanded(
+                                        child: SizedBox.shrink(),
+                                      ),
+                                  ],
                                 ),
                               );
                             },

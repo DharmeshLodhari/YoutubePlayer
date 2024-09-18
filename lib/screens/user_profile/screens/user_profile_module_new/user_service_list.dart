@@ -154,35 +154,33 @@ class _UserServiceListState extends State<UserServiceList> {
                           : endIndex,
                     );
 
-                    return IntrinsicHeight(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // First Item
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // First Item
+                          Expanded(
+                            child: DisplayService(
+                              service: rowItems[0],
+                              onServiceRefresh: _onServiceRefresh,
+                            ),
+                          ),
+                          const SizedBox(width: 10.0),
+                          // Second Item
+                          if (rowItems.length == 2)
                             Expanded(
                               child: DisplayService(
-                                service: rowItems[0],
+                                service: rowItems[1],
                                 onServiceRefresh: _onServiceRefresh,
                               ),
                             ),
-                            const SizedBox(width: 10.0),
-                            // Second Item
-                            if (rowItems.length == 2)
-                              Expanded(
-                                child: DisplayService(
-                                  service: rowItems[1],
-                                  onServiceRefresh: _onServiceRefresh,
-                                ),
-                              ),
-                            // Add an empty widget if there is only one item
-                            if (rowItems.length == 1)
-                              const Expanded(
-                                child: SizedBox.shrink(),
-                              ),
-                          ],
-                        ),
+                          // Add an empty widget if there is only one item
+                          if (rowItems.length == 1)
+                            const Expanded(
+                              child: SizedBox.shrink(),
+                            ),
+                        ],
                       ),
                     );
                   },
