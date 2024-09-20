@@ -1,7 +1,7 @@
 import 'package:Slydo/screens/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/rider_registration/models/rider_model.dart';
-import 'package:Slydo/screens/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/models/user_about.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 

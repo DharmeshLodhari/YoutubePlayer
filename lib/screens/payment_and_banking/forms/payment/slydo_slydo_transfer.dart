@@ -274,7 +274,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         height: 34,
         width: 34,
         icon: Icon(
-          SlydoAppIcon.circle_user,
+          SlydoAppIcon.circleUser,
           size: 16,
           color: blackFont,
         ),
@@ -417,7 +417,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                             child: Icon(
                               isBalanceHidden
                                   ? SlydoAppIcon.eye
-                                  : SlydoAppIcon.eye_close,
+                                  : SlydoAppIcon.eyeClose,
                               color: navyBlue,
                               size: 12,
                             ),

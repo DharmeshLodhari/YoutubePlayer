@@ -18,7 +18,7 @@ import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
 import '../../messaging/chat/models/chat_conversation.dart';
-import '../../messaging/chat/share_in_chat/ShareInChat.dart';
+import '../../messaging/chat/share_in_chat/share_in_chat.dart';
 import '../models/Topics/comment_details.dart';
 import '../yarn_auth.dart';
 

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/blog/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';

@@ -442,7 +442,7 @@ class SlydoBlogsList extends StatefulWidget {
   const SlydoBlogsList({super.key, required this.slydoBlogsMenu});
 
   @override
-  _SlydoBlogsListState createState() => _SlydoBlogsListState();
+  State<SlydoBlogsList> createState() => _SlydoBlogsListState();
 }
 
 class _SlydoBlogsListState extends State<SlydoBlogsList> {

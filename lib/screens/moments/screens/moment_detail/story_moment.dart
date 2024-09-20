@@ -6,7 +6,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/blog/post_detail_page.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/moments_auth.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';

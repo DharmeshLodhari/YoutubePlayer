@@ -178,7 +178,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
             ),
             trailing: IconButton(
               icon: Icon(
-                isChange ? SlydoAppIcon.heart_empty : SlydoAppIcon.heart_1,
+                isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
                 color: isChange ? blackFont : navyBlue,
                 size: 20,
               ),
@@ -280,9 +280,9 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
             trailing: IconButton(
               icon: Icon(
                 isDownloaded
-                    ? SlydoAppIcon.video_play
+                    ? SlydoAppIcon.videoPlay
                     : isChange
-                        ? SlydoAppIcon.heart_empty
+                        ? SlydoAppIcon.heartEmpty
                         : SlydoAppIcon.heart_1,
                 color: isDownloaded
                     ? navyBlue

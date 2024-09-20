@@ -3,7 +3,7 @@ import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/messaging/chat/models/participant_model.dart';
 import 'package:Slydo/screens/rider_registration/models/rider_model.dart';
 import 'package:Slydo/screens/shipping_process/models/shared_cart_model.dart';
-import 'package:Slydo/screens/user_profile/models/UserAbout.dart';
+import 'package:Slydo/screens/user_profile/models/user_about.dart';
 import 'package:Slydo/utils/util.dart';
 
 import '../../payment_and_banking/models/financial_institution.dart';
@@ -480,17 +480,17 @@ class ShippingAddress {
   String? shippingNote;
   String? postCode;
   String? stateName;
-  String? created_at;
-  String? updated_at;
+  String? createdAt;
+  String? updatedAt;
   String? email;
-  bool is_residential = false;
-  String? first_name;
-  String? last_name;
+  bool isResidentialAddress = false;
+  String? firstNameAddress;
+  String? lastNameAddress;
   String? line_1;
   String? line_2;
   String? phone;
   String? zip;
-  bool? is_default;
+  bool? isDefault;
   String? name;
   double? latitude;
   double? longitude;
@@ -506,17 +506,17 @@ class ShippingAddress {
     this.country,
     this.shippingNote,
     this.countryIsoCode,
-    this.created_at,
-    this.updated_at,
+    this.createdAt,
+    this.updatedAt,
     this.email,
-    this.is_residential = false,
-    this.first_name,
-    this.last_name,
+    this.isResidentialAddress = false,
+    this.firstNameAddress,
+    this.lastNameAddress,
     this.line_1,
     this.line_2,
     this.phone,
     this.zip,
-    this.is_default,
+    this.isDefault,
     this.name,
     this.latitude,
     this.longitude,
@@ -536,17 +536,17 @@ class ShippingAddress {
     countryIsoCode = object['country_iso_code'] ?? "NG";
     postCode = object['post_code'];
     stateName = object['state'];
-    created_at = object['created_at'];
-    updated_at = object['updated_at'];
+    createdAt = object['created_at'];
+    updatedAt = object['updated_at'];
     email = object['email'];
-    is_residential = object['is_residential'] ?? false;
-    first_name = object['first_name'];
-    last_name = object['last_name'];
+    isResidentialAddress = object['is_residential'] ?? false;
+    firstNameAddress = object['first_name'];
+    lastNameAddress = object['last_name'];
     line_1 = object['line1'];
     line_2 = object['line2'];
     phone = object['phone'];
     zip = object['zip'];
-    is_default = object['is_default'];
+    isDefault = object['is_default'];
     id = object['id'];
     name = object["name"];
     latitude = object["latitude"]?.toDouble();
@@ -596,12 +596,12 @@ class ShippingAddress {
       'country': country,
       'line1': line_1,
       'line2': line_2,
-      "is_residential": is_residential,
+      "is_residential": isResidentialAddress,
       "email": email,
       "phone": phone,
       "zip": zip,
-      "first_name": first_name,
-      "last_name": last_name,
+      "first_name": firstNameAddress,
+      "last_name": lastNameAddress,
       "name": name
     };
   }
@@ -615,14 +615,14 @@ class ShippingAddress {
     String? postCode,
     String? stateName,
     String? email,
-    bool? is_residential,
-    String? first_name,
-    String? last_name,
+    bool? isResidential,
+    String? firstName,
+    String? lastName,
     String? line_1,
     String? line_2,
     String? phone,
     String? zip,
-    bool? is_default,
+    bool? isDefault,
     String? name,
     double? latitude,
     double? longitude,
@@ -636,12 +636,12 @@ class ShippingAddress {
       postCode: postCode ?? this.postCode,
       stateName: stateName ?? this.stateName,
       email: email ?? this.email,
-      first_name: first_name ?? this.first_name,
-      last_name: last_name ?? this.last_name,
+      firstNameAddress: firstName ?? firstNameAddress,
+      lastNameAddress: lastName ?? lastNameAddress,
       phone: phone ?? this.phone,
       zip: zip ?? this.zip,
       name: name ?? this.name,
-      is_residential: is_residential ?? this.is_residential,
+      isResidentialAddress: isResidential ?? isResidentialAddress,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
     );

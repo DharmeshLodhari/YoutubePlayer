@@ -17,7 +17,7 @@ class FollowingAndFollowersList extends StatefulWidget {
       {super.key, required this.userName, this.index = 0});
 
   @override
-  _FollowingAndFollowersListState createState() =>
+  State<FollowingAndFollowersList> createState() =>
       _FollowingAndFollowersListState();
 }
 
@@ -170,7 +170,7 @@ class FollowAndFollowersList extends StatefulWidget {
       {super.key, required this.userName, required this.isFollowing});
 
   @override
-  _FollowAndFollowersListState createState() => _FollowAndFollowersListState();
+  State<FollowAndFollowersList> createState() => _FollowAndFollowersListState();
 }
 
 class _FollowAndFollowersListState extends State<FollowAndFollowersList> {

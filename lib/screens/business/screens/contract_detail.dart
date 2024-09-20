@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/business/models/Contract.dart';
+import 'package:Slydo/screens/business/models/contract_model.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -375,7 +375,7 @@ class _ContractDetailState extends State<ContractDetail> {
           contract.paymentDuration!,
         ),
         detailTile(
-          SlydoAppIcon.note_filled,
+          SlydoAppIcon.noteFilled,
           AppLocalization.of(context)!.note,
           messageDecoderWithEmoji(contract.note) ?? '---',
         ),

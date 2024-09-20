@@ -548,7 +548,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
         borderRadius: BorderRadius.circular(5),
         padding: EdgeInsets.zero,
         backgroundColor: naturalGreen,
-        icon: SlydoAppIcon.true_icon,
+        icon: SlydoAppIcon.trueIcon,
         onPressed: (con) {
           _buildConfirmPaymentDialog(context);
         },

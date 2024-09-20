@@ -611,7 +611,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
     final int totalItemCost = basketBloc.getTotalPrice();
     final int? totalShipping = shippingProcessBloc.getTotalShipping();
     final int? serviceCharge = shippingProcessBloc.getServiceCharge();
-    int totalOrderAmount =
+    final int totalOrderAmount =
         (totalItemCost) + (totalShipping ?? 0) + (serviceCharge ?? 0);
     return totalOrderAmount;
   }

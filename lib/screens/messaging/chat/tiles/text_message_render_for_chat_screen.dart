@@ -765,7 +765,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   top: 16,
                   left: 16,
                   child: Icon(
-                    SlydoAppIcon.music_play_1,
+                    SlydoAppIcon.musicPlay1,
                     color: Colors.white,
                     size: 14,
                   ),

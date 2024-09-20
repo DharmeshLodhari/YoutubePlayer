@@ -1,6 +1,5 @@
-import 'package:Slydo/screens/more_apps/taxi/model/place.dart';
+import 'package:Slydo/screens/more_apps/taxi/model/place_datal.dart';
 import 'package:Slydo/utils/extensions.dart';
-import 'package:intl/intl.dart';
 
 class DiscountModel {
   String? id;

@@ -64,10 +64,10 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
   }
 
   void getList() async {
-    final ConnectionListBloc _connectionListBloc =
+    final ConnectionListBloc connectionListBloc =
         Provider.of<ConnectionListBloc>(context, listen: false);
 
-    connectionsList.addAll(_connectionListBloc.connectionUsers);
+    connectionsList.addAll(connectionListBloc.connectionUsers);
 
     if (mounted) setState(() {});
 

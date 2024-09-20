@@ -14,7 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
-import 'models/user_detail_item/PropertyDetailItem.dart';
+import 'models/user_detail_item/property_detail_item.dart';
 import 'models/user_detail_item/similar_property.dart';
 import 'property_auth.dart';
 import 'property_dashboard_bloc.dart';
@@ -356,7 +356,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
             top: 14,
             child: InkWell(
               child: Icon(
-                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
+                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heartEmpty,
                 color: Colors.white,
                 size: 20,
               ),
@@ -715,7 +715,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                       height: 32,
                       width: 32,
                       icon: Icon(
-                        SlydoAppIcon.free_wifi,
+                        SlydoAppIcon.freeWifi,
                         size: 14,
                         color: blackFont,
                       ),

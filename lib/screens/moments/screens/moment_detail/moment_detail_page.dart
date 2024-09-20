@@ -35,7 +35,7 @@ class MomentsDetailsScreen extends StatefulWidget {
   });
 
   @override
-  _MomentsDetailsScreenState createState() => _MomentsDetailsScreenState();
+  State<MomentsDetailsScreen> createState() => _MomentsDetailsScreenState();
 }
 
 class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
@@ -106,7 +106,9 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
     try {
       clearAllMedia();
       _verticalScrollPageViewCtrl.dispose();
-    } catch (error) {}
+    } catch (error) {
+      debugPrint('Error : $error');
+    }
     super.dispose();
   }
 
@@ -258,12 +260,16 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
     for (var element in _videoPlayerControllers) {
       try {
         element.dispose();
-      } catch (error) {}
+      } catch (error) {
+        debugPrint('Error : $error');
+      }
     }
     for (var element in _photoViewController) {
       try {
         element.dispose();
-      } catch (error) {}
+      } catch (error) {
+        debugPrint('Error : $error');
+      }
     }
   }
 
@@ -418,7 +424,9 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
   void deactivate() {
     try {
       _pageCtrl?.dispose();
-    } catch (error) {}
+    } catch (error) {
+      debugPrint('Error : $error');
+    }
 
     super.deactivate();
   }
@@ -474,6 +482,7 @@ class Range extends Iterable<int> {
   final int start;
   final int end;
 
+  @override
   int get length => end - start + 1;
 
   @override

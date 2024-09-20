@@ -78,7 +78,7 @@ class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
                             children: [
                               InkWell(
                                 child: Text(
-                                  '$tag',
+                                  tag,
                                   // tagData['name'],
                                   style: TextStyle(color: blackFont),
                                 ),

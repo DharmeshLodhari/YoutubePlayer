@@ -135,7 +135,7 @@ class _MixCartItemState extends State<MixCartItem> {
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.qr_code,
+        SlydoAppIcon.qrCode,
         size: 16,
         color: blackFont,
       ),
@@ -657,37 +657,5 @@ class _MixCartItemState extends State<MixCartItem> {
   void dispose() {
     _refreshController.dispose();
     super.dispose();
-  }
-}
-
-// ignore: must_be_immutable
-class VerticalListItem extends StatelessWidget {
-  Widget? child;
-  var item;
-  String? type;
-
-  VerticalListItem(Widget child, var item, {super.key}) {
-    this.child = child;
-    type = item["type"];
-    this.item = item["item"];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (type == "product") {
-          final Product? product = item;
-          Navigator.pushNamed(context, Routes.PRODUCT,
-              arguments: {"product": product});
-        }
-        if (type == "service") {
-          final Service? service = item;
-          Navigator.pushNamed(context, Routes.SERVICE_DETAIL,
-              arguments: {"service": service});
-        }
-      },
-      child: child,
-    );
   }
 }

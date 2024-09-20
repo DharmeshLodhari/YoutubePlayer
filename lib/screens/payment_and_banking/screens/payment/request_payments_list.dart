@@ -655,7 +655,7 @@ class _PaymentRequestListState extends State<PaymentRequestList>
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.true_icon,
+          SlydoAppIcon.trueIcon,
           color: navyBlue,
           size: 16,
         ),
@@ -730,7 +730,7 @@ class _PaymentRequestListState extends State<PaymentRequestList>
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.false_icon,
+          SlydoAppIcon.falseIcon,
           color: mateRed,
           size: 16,
         ),
@@ -777,7 +777,7 @@ class _PaymentRequestListState extends State<PaymentRequestList>
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.false_icon,
+          SlydoAppIcon.falseIcon,
           color: mateRed,
           size: 16,
         ),
@@ -855,10 +855,9 @@ class _PaymentRequestListState extends State<PaymentRequestList>
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.paymentRequest, {this.key});
+  const VerticalListItem(this.paymentRequest, {super.key});
 
   final PaymentRequest paymentRequest;
-  final Key? key;
 
   @override
   State<VerticalListItem> createState() => _VerticalListItemState();

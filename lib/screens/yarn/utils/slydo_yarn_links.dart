@@ -153,19 +153,19 @@ class YarnSmartText extends StatelessWidget {
     StringCallback? onTagClick,
     StringCallback? onAtClick,
   }) {
-    void _onOpen(String url) {
+    void onOpen0(String url) {
       if (onOpen != null) {
         onOpen(url);
       }
     }
 
-    void _onTagClick(String url) {
+    void onTagClick0(String url) {
       if (onTagClick != null) {
         onTagClick(url);
       }
     }
 
-    void _onAtClick(String url) {
+    void onAtClick0(String url) {
       if (onAtClick != null) {
         onAtClick(url);
       }
@@ -185,19 +185,19 @@ class YarnSmartText extends StatelessWidget {
           return LinkTextSpan(
             text: '',
             style: linkStyle,
-            onPressed: () => _onOpen(element.url),
+            onPressed: () => onOpen0(element.url),
           );
         } else if (element is HashTagElement) {
           return LinkTextSpan(
             text: element.tag,
             style: tagStyle,
-            onPressed: () => _onTagClick(element.tag),
+            onPressed: () => onTagClick0(element.tag),
           );
         } else if (element is AtElement) {
           return LinkTextSpan(
             text: element.at,
             style: atStyle,
-            onPressed: () => _onAtClick(element.at),
+            onPressed: () => onAtClick0(element.at),
           );
         }
         final e = element as TextElement;

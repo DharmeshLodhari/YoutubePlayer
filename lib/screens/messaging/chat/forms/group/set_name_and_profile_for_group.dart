@@ -310,7 +310,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                 width: 64,
                 color: chatBackgroundColor,
                 child: Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                   size: 18,
                 ),

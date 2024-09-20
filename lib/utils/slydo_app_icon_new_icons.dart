@@ -26,13 +26,13 @@ class SlydoAppIconNew {
 
   static const IconData vector_1 =
       IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData edit_post =
+  static const IconData editPost =
       IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData delete_post =
+  static const IconData deletePost =
       IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData chat =
       IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData dashboard_yarn =
+  static const IconData dashboardYarn =
       IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData notification =
       IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -44,13 +44,13 @@ class SlydoAppIconNew {
       IconData(0xe80c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData bounty =
       IconData(0xe80d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData save_post =
+  static const IconData savePost =
       IconData(0xe80e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData hide_post =
+  static const IconData hidePost =
       IconData(0xe80f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData super_store =
+  static const IconData superStore =
       IconData(0xe810, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData hide_commenting =
+  static const IconData hideCommenting =
       IconData(0xe811, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData home =
       IconData(0xe812, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -64,6 +64,6 @@ class SlydoAppIconNew {
       IconData(0xe818, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData moment =
       IconData(0xe819, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData add_product =
+  static const IconData addProduct =
       IconData(0xe59a, fontFamily: _mFontFam, fontPackage: _kFontPkg);
 }

@@ -527,7 +527,7 @@ class _OrderPreviewState extends State<OrderPreview> {
       final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm:ss");
       formattedDate = dateFormat.format(dateTime);
     } catch (e) {
-      print("Error parsing date: $e");
+      debugPrint("Error parsing date: $e");
       formattedDate = "-";
     }
     return Column(

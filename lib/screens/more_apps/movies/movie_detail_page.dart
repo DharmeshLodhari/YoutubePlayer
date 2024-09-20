@@ -541,7 +541,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       height: 44,
       width: 44,
       icon: Icon(
-        SlydoAppIcon.add_cart,
+        SlydoAppIcon.addCart,
         color: navyBlue,
         size: 22,
       ),

@@ -6,7 +6,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/user_followers_view.dart';
@@ -1195,7 +1195,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       height: 34,
       width: 34,
       icon: const Icon(
-        SlydoAppIcon.qr_code,
+        SlydoAppIcon.qrCode,
         size: 16,
         color: Colors.white,
       ),
@@ -1320,8 +1320,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         width: 34,
         icon: Icon(
           isInRequestList
-              ? SlydoAppIcon.cancel_connection_request
-              : SlydoAppIcon.send_connection_request,
+              ? SlydoAppIcon.cancelConnectionRequest
+              : SlydoAppIcon.sendConnectionRequest,
           size: 16,
           color: isInRequestList ? mateRed : blackFont,
         ),
@@ -1548,7 +1548,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     list.add(
       bottomSheetItem(
         title: "Share As A Yarn",
-        iconData: SlydoAppIconNew.dashboard_yarn,
+        iconData: SlydoAppIconNew.dashboardYarn,
         iconSize: 18,
         // isLast: searchedUser!.userName == userBloc.user.userName,
         onTap: () async {
@@ -1888,7 +1888,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
   Future shareAsYarn() async {
     NavigationUtil.push(context,
-        screen: ShareAsAyarnScreen(
+        screen: ShareAsYarnScreen(
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             userProfile: searchedUser,

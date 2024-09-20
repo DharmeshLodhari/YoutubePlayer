@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class ExpandableText extends StatefulWidget {
-  ExpandableText(this.text);
+  ExpandableText(this.text, {super.key});
 
   final String text;
   bool isExpanded = false;
 
   @override
-  _ExpandableTextState createState() => _ExpandableTextState();
+  State<ExpandableText> createState() => _ExpandableTextState();
 }
 
 class _ExpandableTextState extends State<ExpandableText>

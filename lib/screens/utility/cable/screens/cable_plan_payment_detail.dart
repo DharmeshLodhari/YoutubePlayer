@@ -218,7 +218,7 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
         height: 32,
         width: 32,
         icon: Icon(
-          SlydoAppIcon.subscription_status,
+          SlydoAppIcon.subscriptionStatus,
           size: 14,
           color: blackFont,
         ),
@@ -285,7 +285,7 @@ class MySeparator extends StatelessWidget {
   final double height;
   final Color color;
 
-  const MySeparator({this.height = 1.5, this.color = Colors.black});
+  const MySeparator({super.key, this.height = 1.5, this.color = Colors.black});
 
   @override
   Widget build(BuildContext context) {

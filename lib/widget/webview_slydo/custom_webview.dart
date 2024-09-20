@@ -6,10 +6,10 @@ class CustomWebView extends StatefulWidget {
 
   final String webUrl;
   @override
-  _CustomWebViewState createState() => _CustomWebViewState();
+  CustomWebViewState createState() => CustomWebViewState();
 }
 
-class _CustomWebViewState extends State<CustomWebView> {
+class CustomWebViewState extends State<CustomWebView> {
   @override
   void initState() {
     super.initState();

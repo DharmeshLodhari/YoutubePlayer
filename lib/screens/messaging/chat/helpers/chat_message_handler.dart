@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/models/models_for_db/ChatMessage.dart';
-import 'package:Slydo/screens/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/chat_message.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/chat_message_pagination.dart';
 
 /// This helper will perform all db operation related to chat message
 class ChatMessageHandler {

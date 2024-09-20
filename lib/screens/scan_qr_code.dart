@@ -282,7 +282,7 @@ class _QRCodeViewState extends State<QRCodeView> {
       try {
         final ShoppingCartModelFromQrCode? shoppingCartModel =
             await ShoppingAuthService()
-                .getShoppingCartDataFromQrCode(url: scanDataCode);
+                .getShoppingCartDataFromQrCode(url: scanDataCode ?? "");
 
         if (shoppingCartModel != null) {
           showDialogBox(

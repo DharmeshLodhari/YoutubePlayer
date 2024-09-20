@@ -33,7 +33,7 @@ class YarnQuotePreview extends StatefulWidget {
   final Color? backGroundColor;
 
   YarnQuotePreview(
-      {required this.yarn,
+      {super.key, required this.yarn,
       this.backGroundColor,
       this.onDeleteYarn,
       this.onUpdateYarn,
@@ -391,7 +391,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
           !data.toString().startsWith('.') &&
           !data.toString().startsWith('http') &&
           !data.toString().endsWith('.')) {
-        final replaceWith = 'http://' + data;
+        final replaceWith = 'http://$data';
 
         newString = '$newString $replaceWith';
       } else {

@@ -20,10 +20,10 @@ import '../../user_auth.dart';
 // ignore: must_be_immutable
 class UserQRCodeScreen extends StatefulWidget {
   CustomerProfile? user;
-  UserQRCodeScreen({required this.user});
+  UserQRCodeScreen({super.key, required this.user});
 
   @override
-  _UserQRCodeScreenState createState() => _UserQRCodeScreenState();
+  State<UserQRCodeScreen> createState() => _UserQRCodeScreenState();
 }
 
 class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
@@ -353,7 +353,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
             height: 28,
             width: 28,
             icon: Icon(
-              SlydoAppIcon.remove_connection,
+              SlydoAppIcon.removeConnection,
               color: mateRed,
               size: 14,
             ),
@@ -380,7 +380,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
             height: 28,
             width: 28,
             icon: Icon(
-              SlydoAppIcon.cancel_connection_request,
+              SlydoAppIcon.cancelConnectionRequest,
               color: mateRed,
               size: 14,
             ),
@@ -408,7 +408,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
           height: 28,
           width: 28,
           icon: Icon(
-            SlydoAppIcon.send_connection_request,
+            SlydoAppIcon.sendConnectionRequest,
             color: naturalGreen,
             size: 14,
           ),

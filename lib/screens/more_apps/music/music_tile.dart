@@ -169,7 +169,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
             ),
             trailing: IconButton(
               icon: Icon(
-                isChange ? SlydoAppIcon.heart_empty : SlydoAppIcon.heart_1,
+                isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
                 color: isChange ? blackFont : navyBlue,
                 size: 20,
               ),
@@ -247,9 +247,9 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
             trailing: IconButton(
               icon: Icon(
                 isDownloaded
-                    ? SlydoAppIcon.music_play
+                    ? SlydoAppIcon.musicPlay
                     : isChange
-                        ? SlydoAppIcon.heart_empty
+                        ? SlydoAppIcon.heartEmpty
                         : SlydoAppIcon.heart_1,
                 color: isDownloaded
                     ? navyBlue
@@ -431,9 +431,9 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
               InkWell(
                 child: Icon(
                   isDownloaded
-                      ? SlydoAppIcon.music_play
+                      ? SlydoAppIcon.musicPlay
                       : isChange
-                          ? SlydoAppIcon.heart_empty
+                          ? SlydoAppIcon.heartEmpty
                           : SlydoAppIcon.heart_1,
                   color: isDownloaded
                       ? navyBlue

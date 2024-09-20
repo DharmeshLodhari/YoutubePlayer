@@ -3,7 +3,7 @@ import 'package:Slydo/services/auth.dart';
 import 'models/city_data.dart';
 import 'models/partial_property_item.dart';
 import 'models/property_item.dart';
-import 'models/user_detail_item/PropertyDetailItem.dart';
+import 'models/user_detail_item/property_detail_item.dart';
 
 class PropertyAuthService extends AuthService {
   Future<List<String>> getLocation() async {

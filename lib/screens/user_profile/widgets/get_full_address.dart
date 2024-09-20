@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/user_profile/models/UserAbout.dart';
+import 'package:Slydo/screens/user_profile/models/user_about.dart';
 import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';

@@ -237,7 +237,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
       height: 34,
       width: 34,
       icon: Icon(
-        isLineGraph ? SlydoAppIcon.graph : SlydoAppIcon.line_graph,
+        isLineGraph ? SlydoAppIcon.graph : SlydoAppIcon.lineGraph,
         size: 16,
         color: blackFont,
       ),
@@ -555,43 +555,43 @@ class _TransactionGraphState extends State<TransactionGraph> {
   IconData getCategoryIcon(String? category) {
     switch (category) {
       case "Bills":
-        return SlydoAppIcon.bills_category;
+        return SlydoAppIcon.billsCategory;
 
       case "Charity":
-        return SlydoAppIcon.charity_category;
+        return SlydoAppIcon.charityCategory;
 
       case "Eat out":
-        return SlydoAppIcon.eatingout_category;
+        return SlydoAppIcon.eatingoutCategory;
 
       case "Entertainment":
-        return SlydoAppIcon.entertainment_category;
+        return SlydoAppIcon.entertainmentCategory;
 
       case "Family":
-        return SlydoAppIcon.family_category;
+        return SlydoAppIcon.familyCategory;
 
       case "Finance":
-        return SlydoAppIcon.finances_category;
+        return SlydoAppIcon.financesCategory;
 
       case "General":
-        return SlydoAppIcon.general_category;
+        return SlydoAppIcon.generalCategory;
 
       case "Groceries":
-        return SlydoAppIcon.gorceries_category;
+        return SlydoAppIcon.gorceriesCategory;
 
       case "Holidays":
-        return SlydoAppIcon.holidays_category;
+        return SlydoAppIcon.holidaysCategory;
 
       case "Personal Care":
-        return SlydoAppIcon.personalcare_category;
+        return SlydoAppIcon.personalCareCategory;
 
       case "Shopping":
-        return SlydoAppIcon.shopping_category;
+        return SlydoAppIcon.shoppingCategory;
 
       case "Transportation":
-        return SlydoAppIcon.transport_category;
+        return SlydoAppIcon.transportCategory;
 
       default:
-        return SlydoAppIcon.shopping_category;
+        return SlydoAppIcon.shoppingCategory;
     }
   }
 

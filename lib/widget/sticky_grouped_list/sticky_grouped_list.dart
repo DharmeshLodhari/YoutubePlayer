@@ -9,8 +9,6 @@ import 'scrollable_positioned_list.dart';
 ///
 /// See [ScrollablePositionedList]
 class StickyGroupedListView<T, E> extends StatefulWidget {
-  final Key? key;
-
   /// Items of which [itemBuilder] or [indexedItemBuilder] produce the list.
   final List<T> elements;
 
@@ -123,7 +121,8 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
   final double initialAlignment;
 
   /// Creates a [StickyGroupedListView].
-  StickyGroupedListView({
+  const StickyGroupedListView({
+    super.key,
     required this.elements,
     required this.groupBy,
     required this.groupSeparatorBuilder,
@@ -135,7 +134,6 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
     this.separator = const SizedBox.shrink(),
     this.floatingHeader = false,
     this.stickyHeaderBackgroundColor = const Color(0xffF7F7F7),
-    this.key,
     this.scrollDirection = Axis.vertical,
     this.itemScrollController,
     this.itemPositionsListener,
@@ -264,7 +262,7 @@ class _StickyGroupedListViewState<T, E>
             context, _sortedElements[actualIndex], actualIndex);
   }
 
-  _positionListener() {
+  void _positionListener() {
     _headerBox ??=
         _groupHeaderKey?.currentContext?.findRenderObject() as RenderBox?;
     final double headerHeight = _headerBox?.size.height ?? 0;

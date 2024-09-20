@@ -7,7 +7,7 @@ import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
@@ -347,7 +347,7 @@ class _ProductViewMoreDetailsState extends State<ProductViewMoreDetails> {
     list.add(
       bottomSheetItem(
         title: "Share in Chat",
-        iconData: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.textMessage,
         onTap: () async {
           Navigator.pop(context);
           sendItemToUsersInChat();
@@ -359,7 +359,7 @@ class _ProductViewMoreDetailsState extends State<ProductViewMoreDetails> {
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: SlydoAppIconNew.dashboard_yarn,
+        iconData: SlydoAppIconNew.dashboardYarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();
@@ -411,7 +411,7 @@ class _ProductViewMoreDetailsState extends State<ProductViewMoreDetails> {
   Future shareAsYarn() async {
     NavigationUtil.push(
       context,
-      screen: ShareAsAyarnScreen(
+      screen: ShareAsYarnScreen(
         askCategories: yarnDashboardBloc.yarnCategories,
         shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
         productModel: product,

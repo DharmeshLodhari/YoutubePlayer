@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../data/state_notifier.dart';
 import '../../../../utils/colors.dart';
-import '../models/UserAbout.dart';
+import '../models/user_about.dart';
 import '../user_auth.dart';
 
 class PickStateWidget extends StatefulWidget {

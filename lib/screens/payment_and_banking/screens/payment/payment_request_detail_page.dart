@@ -296,7 +296,7 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.false_icon,
+          SlydoAppIcon.falseIcon,
           color: mateRed,
           size: 16,
         ),
@@ -342,7 +342,7 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.false_icon,
+          SlydoAppIcon.falseIcon,
           color: mateRed,
           size: 16,
         ),
@@ -415,7 +415,7 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.true_icon,
+          SlydoAppIcon.trueIcon,
           color: navyBlue,
           size: 16,
         ),

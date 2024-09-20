@@ -156,7 +156,7 @@ class _SharedCartMembersState extends State<SharedCartMembers>
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : cartDetails.members?.length == 0 || cartDetails.members == null
+        : cartDetails.members == null || cartDetails.members!.isEmpty
             ? NoItemInList(
                 title: AppLocalization.of(context)!.noMembersYet,
                 msg: AppLocalization.of(context)!.noMembersYet,

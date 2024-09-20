@@ -211,7 +211,7 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
           right: 10,
           child: IconButton(
             icon: Icon(
-              isChange ? SlydoAppIcon.heart_empty : SlydoAppIcon.heart_1,
+              isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
               color: Colors.white,
               size: 20,
             ),
@@ -842,7 +842,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
             right: 10,
             child: IconButton(
               icon: Icon(
-                isChange ? SlydoAppIcon.heart_empty : SlydoAppIcon.heart_1,
+                isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
                 color: Colors.white,
                 size: 20,
               ),

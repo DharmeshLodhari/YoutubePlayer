@@ -6,7 +6,7 @@ import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/Topics/Notifications.dart';
+import 'models/Topics/notification_model.dart';
 
 class YarnNotification extends StatefulWidget {
   final Function(bool)? onDeleteNotification;
@@ -20,7 +20,7 @@ class YarnNotification extends StatefulWidget {
 class _YarnNotificationState extends State<YarnNotification> {
   bool isLoading = false;
   String? next = "", previous = "";
-  List<Notifications> notificationList = [];
+  List<NotificationModel> notificationList = [];
   int count = 0;
   bool noList = false;
   RefreshController refreshController =
@@ -144,7 +144,7 @@ class _YarnNotificationState extends State<YarnNotification> {
           }
           return AskNotificationView(
             notification: notificationList[index],
-            onDeleteNotification: (Notifications notifications) {
+            onDeleteNotification: (NotificationModel notifications) {
               final int index = notificationList
                   .indexWhere((element) => element.id == notifications.id);
               if (index != -1) {

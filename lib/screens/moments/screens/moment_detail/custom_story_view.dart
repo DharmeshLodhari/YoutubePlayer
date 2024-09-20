@@ -28,6 +28,7 @@ class Shiddo extends StoryItem {
   /// last unshown page will have their `shown` attribute altered to false. This
   /// is because the next item to be displayed is taken by the last unshown
   /// story item.
+  @override
   bool shown;
 
   MomentsModel momentsModel;
@@ -589,11 +590,11 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
       _animationController!.stop();
 
       // get last showing
-      final _last = _currentStory;
+      final last = _currentStory;
 
-      if (_last != null) {
-        _last.shown = true;
-        if (_last != widget.storyItems.last) {
+      if (last != null) {
+        last.shown = true;
+        if (last != widget.storyItems.last) {
           _beginPlay();
         }
       }

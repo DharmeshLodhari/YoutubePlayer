@@ -88,8 +88,8 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Timer startTime() {
-    const _duration = Duration(milliseconds: 1500);
-    return Timer.periodic(_duration, (timer) {
+    const duration = Duration(milliseconds: 1500);
+    return Timer.periodic(duration, (timer) {
       navigationPage();
     });
   }

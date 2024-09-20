@@ -237,7 +237,7 @@ class _BarState extends State<Bar> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8), color: blackFont),
               child: Text(
-                moneyConverter(widget.amountSpent),
+                moneyConverter(widget.amountSpent.toString()),
                 style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,

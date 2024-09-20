@@ -1,5 +1,5 @@
-import 'Location.dart';
-import 'Viewport.dart';
+import 'location_model.dart';
+import 'viewport_model.dart';
 
 class Geometry {
   Location? location;

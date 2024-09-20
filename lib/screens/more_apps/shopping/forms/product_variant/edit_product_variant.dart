@@ -527,7 +527,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
                 const SizedBox(
@@ -1036,7 +1036,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
                     isDense: true,
-                    contentPadding: EdgeInsets.all(5),
+                    contentPadding: const EdgeInsets.all(5),
                     border: const OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(

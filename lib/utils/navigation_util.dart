@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class NavigationUtil {
   static Future push(BuildContext context, {required Widget screen}) async {
-    var result = await Navigator.of(context).push(
+    final result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => screen,
       ),

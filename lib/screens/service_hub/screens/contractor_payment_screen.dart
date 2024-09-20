@@ -56,7 +56,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
   bool? isLoading;
   final _auth = PaymentAndBankingAuth();
   String errorMessage = "";
-  var userLocation;
+  UserLocation? userLocation;
   late http.Response response;
 
   final _sendPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
@@ -392,8 +392,8 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       "description": _refNumberController.text.isEmpty
           ? description
           : _refNumberController.text.trim(),
-      "latitude": Platform.isIOS ? userLocation.latitude : "",
-      "longitude": Platform.isIOS ? userLocation.longitude : "",
+      "latitude": Platform.isIOS ? userLocation?.latitude : "",
+      "longitude": Platform.isIOS ? userLocation?.longitude : "",
       "is_anonymous": false,
       "made_from_chat": false,
     };

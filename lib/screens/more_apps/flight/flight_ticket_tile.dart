@@ -1,7 +1,7 @@
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
-import 'models/Transport.dart';
+import 'models/transport_model.dart';
 
 class FlightTicketTile extends StatelessWidget {
   final Transport? transport;

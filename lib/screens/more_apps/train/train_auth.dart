@@ -1,7 +1,7 @@
 import 'package:Slydo/services/auth.dart';
 
-import 'models/Ticket.dart';
-import 'models/Transport.dart';
+import 'models/ticket_model.dart';
+import 'models/transport_model.dart';
 
 class TrainAuthService extends AuthService {
   Future<List<Transport>> getAvailableTransports() async {

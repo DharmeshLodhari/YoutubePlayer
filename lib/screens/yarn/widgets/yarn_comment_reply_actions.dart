@@ -5,7 +5,7 @@ import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/yarn/models/Topics/comment_details.dart';
 import 'package:Slydo/screens/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/yarn/yarn_auth.dart';

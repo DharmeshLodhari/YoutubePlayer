@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/shopping_product_model.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -110,7 +110,7 @@ class ShoppingTileWithHeart extends StatefulWidget {
 
   const ShoppingTileWithHeart({super.key, this.product});
   @override
-  _ShoppingTileWithHeartState createState() => _ShoppingTileWithHeartState();
+  State<ShoppingTileWithHeart> createState() => _ShoppingTileWithHeartState();
 }
 
 class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
@@ -454,9 +454,9 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
             trailing: IconButton(
               icon: Icon(
                 isDownloaded
-                    ? SlydoAppIcon.video_play
+                    ? SlydoAppIcon.videoPlay
                     : isChange
-                        ? SlydoAppIcon.heart_empty
+                        ? SlydoAppIcon.heartEmpty
                         : SlydoAppIcon.heart_1,
                 color: isDownloaded
                     ? navyBlue
@@ -480,7 +480,7 @@ class ShoppingTileWithHeartWithService extends StatefulWidget {
 
   const ShoppingTileWithHeartWithService({super.key, this.service});
   @override
-  _ShoppingTileWithHeartWithServiceState createState() =>
+  State<ShoppingTileWithHeartWithService> createState() =>
       _ShoppingTileWithHeartWithServiceState();
 }
 

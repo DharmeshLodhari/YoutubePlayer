@@ -3,7 +3,7 @@ import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_auth.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
-import 'package:Slydo/screens/more_apps/events/models/EventDetailItem.dart';
+import 'package:Slydo/screens/more_apps/events/models/event_detail_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -243,7 +243,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
             top: 12,
             child: InkWell(
               child: Icon(
-                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
+                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heartEmpty,
                 color: Colors.white,
                 size: 22,
               ),
@@ -409,7 +409,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                               height: 32,
                               width: 32,
                               icon: Icon(
-                                SlydoAppIcon.price_tag,
+                                SlydoAppIcon.priceTag,
                                 size: 14,
                                 color: blackFont,
                               ),
@@ -453,7 +453,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
               height: 32,
               width: 32,
               icon: Icon(
-                SlydoAppIcon.location_circle,
+                SlydoAppIcon.locationCircle,
                 size: 14,
                 color: navyBlue,
               ),
@@ -661,7 +661,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
       height: 44,
       width: 44,
       icon: Icon(
-        SlydoAppIcon.add_cart,
+        SlydoAppIcon.addCart,
         color: navyBlue,
         size: 22,
       ),

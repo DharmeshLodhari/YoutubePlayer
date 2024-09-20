@@ -31,7 +31,7 @@ class DisplayProduct extends StatefulWidget {
   final Function()? onProductRefresh;
   final bool isProductShowIcon;
 
-  DisplayProduct(
+  const DisplayProduct(
       {super.key,
       required this.product,
       this.giveRightPadding = false,
@@ -355,7 +355,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   Widget displayShoppingAddingToCartControl() {
-    IconData iconValue = SlydoAppIcon.add_cart;
+    IconData iconValue = SlydoAppIcon.addCart;
     Color iconBackgroundColor = greyBorderColor;
     Color iconColor = blackFont;
 
@@ -364,7 +364,7 @@ class _DisplayProductState extends State<DisplayProduct> {
       iconBackgroundColor = navyBlue;
       iconColor = white;
     } else {
-      iconValue = SlydoAppIcon.add_cart;
+      iconValue = SlydoAppIcon.addCart;
       iconBackgroundColor = greyBorderColor;
       iconColor = blackFont;
     }
@@ -722,7 +722,7 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   Widget displayShoppingAddingToCartControl() {
-    IconData iconValue = SlydoAppIcon.add_cart;
+    IconData iconValue = SlydoAppIcon.addCart;
     Color iconBackgroundColor = greyBorderColor;
     Color iconColor = blackFont;
 
@@ -731,7 +731,7 @@ class _DisplayServiceState extends State<DisplayService> {
       iconBackgroundColor = navyBlue;
       iconColor = white;
     } else {
-      iconValue = SlydoAppIcon.add_cart;
+      iconValue = SlydoAppIcon.addCart;
       iconBackgroundColor = greyBorderColor;
       iconColor = blackFont;
     }
@@ -838,7 +838,7 @@ class _DisplayServiceState extends State<DisplayService> {
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: SlydoAppIconNew.dashboard_yarn,
+        iconData: SlydoAppIconNew.dashboardYarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();
@@ -903,7 +903,7 @@ class _DisplayServiceState extends State<DisplayService> {
   void shareAsYarn() {
     NavigationUtil.push(
       context,
-      screen: ShareAsAyarnScreen(
+      screen: ShareAsYarnScreen(
         askCategories: yarnDashboardBloc.yarnCategories,
         shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
         callback: (params) async {

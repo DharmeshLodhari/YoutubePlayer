@@ -4,7 +4,7 @@ import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/business/bloc/invoice_bloc.dart';
 import 'package:Slydo/screens/business/business_auth.dart';
-import 'package:Slydo/screens/business/models/Invoice.dart';
+import 'package:Slydo/screens/business/models/invoice_model.dart';
 import 'package:Slydo/screens/business/tiles/contract_and_invoice_tile.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/enums.dart';

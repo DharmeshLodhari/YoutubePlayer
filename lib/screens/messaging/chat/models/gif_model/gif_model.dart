@@ -1,5 +1,5 @@
-import 'package:Slydo/screens/messaging/chat/models/gif_model/Analytics.dart';
-import 'package:Slydo/screens/messaging/chat/models/gif_model/Images.dart';
+import 'package:Slydo/screens/messaging/chat/models/gif_model/analytics_model.dart';
+import 'package:Slydo/screens/messaging/chat/models/gif_model/images_model.dart';
 
 class GIFModel {
   Analytics? analytics;

@@ -232,7 +232,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   top: 16,
                   left: 16,
                   child: Icon(
-                    SlydoAppIcon.music_play_1,
+                    SlydoAppIcon.musicPlay1,
                     color: Colors.white,
                     size: 14,
                   ),

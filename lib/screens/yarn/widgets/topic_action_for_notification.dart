@@ -10,7 +10,7 @@ import "package:uuid/uuid.dart";
 import '../../../../data/state_notifier.dart';
 import '../../../../utils/util.dart';
 import '../../messaging/chat/models/chat_conversation.dart';
-import '../../messaging/chat/share_in_chat/ShareInChat.dart';
+import '../../messaging/chat/share_in_chat/share_in_chat.dart';
 
 class TopicActionsForNotification extends StatefulWidget {
   const TopicActionsForNotification({super.key});

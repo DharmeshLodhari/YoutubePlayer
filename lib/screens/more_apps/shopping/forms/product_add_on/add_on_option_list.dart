@@ -375,7 +375,7 @@ class _AddOnOptionListState extends State<AddOnOptionList>
     );
   }
 
-  DateTime getProductDateTime(var date) {
+  DateTime getProductDateTime(String? date) {
     if (date != null) {
       final DateTime dateTime = DateTime.parse(date);
       return dateTime;

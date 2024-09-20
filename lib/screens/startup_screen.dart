@@ -159,7 +159,7 @@ class _StartupScreenState extends State<StartupScreen> {
                   child: Row(
                     children: [
                       Icon(
-                        SlydoAppIcon.qr_code,
+                        SlydoAppIcon.qrCode,
                         size: 16,
                         color: navyBlue,
                       ),

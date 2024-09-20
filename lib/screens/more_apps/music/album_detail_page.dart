@@ -297,7 +297,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
             top: 12,
             child: InkWell(
               child: Icon(
-                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
+                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heartEmpty,
                 color: Colors.white,
                 size: 22,
               ),

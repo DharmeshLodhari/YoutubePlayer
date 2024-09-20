@@ -403,7 +403,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
           borderRadius: BorderRadius.circular(5),
           padding: EdgeInsets.zero,
           backgroundColor: lightGrey,
-          icon: SlydoAppIcon.remove_admin,
+          icon: SlydoAppIcon.removeAdmin,
           iconColor: blackFont,
           onPressed: (con) {
             removeParticipantFromAdmin(index!);
@@ -483,7 +483,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
           borderRadius: BorderRadius.circular(5),
           padding: EdgeInsets.zero,
           backgroundColor: naturalGreen,
-          icon: SlydoAppIcon.make_admin,
+          icon: SlydoAppIcon.makeAdmin,
           onPressed: (con) {
             makeParticipantAdmin(index!);
           },
@@ -669,7 +669,7 @@ class VerticalListItem extends StatefulWidget {
   final GroupDetailModel? groupDetail;
 
   @override
-  _VerticalListItemState createState() => _VerticalListItemState();
+  State<VerticalListItem> createState() => _VerticalListItemState();
 }
 
 class _VerticalListItemState extends State<VerticalListItem> {

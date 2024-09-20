@@ -46,7 +46,7 @@ import 'models/Topics/yarn_model.dart';
 import 'models/ask_categories_model.dart';
 import 'models/share_as_yarn_model.dart';
 
-class ShareAsAyarnScreen extends StatefulWidget {
+class ShareAsYarnScreen extends StatefulWidget {
   String? appTitle;
   List<YarnCategories>? askCategories;
   List<ShareAsYarnModel>? shareAsYarnModel;
@@ -63,8 +63,9 @@ class ShareAsAyarnScreen extends StatefulWidget {
   UserPost? blogPost;
 
   Function(Yarn params) callback;
-  ShareAsAyarnScreen(
-      {this.askCategories,
+  ShareAsYarnScreen(
+      {super.key,
+      this.askCategories,
       this.shareAsYarnModel,
       this.appTitle,
       this.isYarn,
@@ -80,10 +81,10 @@ class ShareAsAyarnScreen extends StatefulWidget {
       this.productModel});
 
   @override
-  State<ShareAsAyarnScreen> createState() => _ShareAsAyarnScreenState();
+  State<ShareAsYarnScreen> createState() => _ShareAsYarnScreenState();
 }
 
-class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
+class _ShareAsYarnScreenState extends State<ShareAsYarnScreen> {
   final yarnController = TextEditingController();
 
   final textController = TextEditingController();
@@ -776,7 +777,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         ],
       );
     } catch (e, s) {
-      print("$e===========> $s");
+      debugPrint("$e===========> $s");
     }
 
     return Container();

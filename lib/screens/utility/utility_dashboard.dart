@@ -76,7 +76,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.utility_history,
+        SlydoAppIcon.utilityHistory,
         size: 16,
         color: blackFont,
       ),
@@ -93,7 +93,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
       children: [
         Expanded(
             child: UtilityDashboardItemTile(
-          icon: SlydoAppIcon.utility_airtime,
+          icon: SlydoAppIcon.utilityAirtime,
           title: "Airtime",
           providersEnum: UtilitiesProvidersEnum.Airtime,
           iconColor: HexColor("#3F61DB"),
@@ -102,7 +102,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
         const SizedBox(width: 12),
         Expanded(
           child: UtilityDashboardItemTile(
-            icon: SlydoAppIcon.utility_svg,
+            icon: SlydoAppIcon.utilitySvg,
             title: "Cable",
             providersEnum: UtilitiesProvidersEnum.TV,
             iconColor: HexColor("#F07097"),
@@ -112,7 +112,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
         const SizedBox(width: 12),
         Expanded(
           child: UtilityDashboardItemTile(
-            icon: SlydoAppIcon.utility_electricity,
+            icon: SlydoAppIcon.utilityElectricity,
             title: "Electricity",
             providersEnum: UtilitiesProvidersEnum.Electricity,
             iconColor: HexColor("#FFAB00"),
@@ -139,7 +139,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
       children: [
         Expanded(
             child: UtilityDashboardItemTile(
-          icon: SlydoAppIcon.utility_tax,
+          icon: SlydoAppIcon.utilityTax,
           title: "Tax",
           providersEnum: UtilitiesProvidersEnum.tax,
           iconColor: HexColor("#46CECE"),
@@ -148,7 +148,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
         const SizedBox(width: 12),
         Expanded(
           child: UtilityDashboardItemTile(
-            icon: SlydoAppIcon.utility_betting,
+            icon: SlydoAppIcon.utilityBetting,
             title: "Betting",
             providersEnum: UtilitiesProvidersEnum.betting,
             iconColor: HexColor("#46CE7C"),
@@ -158,7 +158,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
         const SizedBox(width: 12),
         Expanded(
           child: UtilityDashboardItemTile(
-            icon: SlydoAppIcon.utility_toll,
+            icon: SlydoAppIcon.utilityToll,
             title: "Toll",
             providersEnum: UtilitiesProvidersEnum.toll,
             iconColor: HexColor("#F35B46"),

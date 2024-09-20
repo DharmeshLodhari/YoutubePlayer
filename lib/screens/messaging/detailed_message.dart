@@ -28,8 +28,6 @@ class _DetailedMessageState extends State<DetailedMessage> {
   late Message message;
   late UserBloc userBloc;
 
-  _DetailedMessageState({this.id});
-
   final _messageAuth = MessageAuth();
 
   @override

@@ -1,5 +1,5 @@
-import 'package:Slydo/screens/more_apps/events/models/EventDetailItem.dart';
-import 'package:Slydo/screens/more_apps/events/models/EventPoster.dart';
+import 'package:Slydo/screens/more_apps/events/models/event_detail_item.dart';
+import 'package:Slydo/screens/more_apps/events/models/event_poster.dart';
 import 'package:Slydo/screens/more_apps/events/models/partial_event_item.dart';
 import 'package:Slydo/services/auth.dart';
 

@@ -1,5 +1,5 @@
-import 'Northeast.dart';
-import 'Southwest.dart';
+import 'northeast_model.dart';
+import 'southwest_model.dart';
 
 class Viewport {
   Northeast? northeast;

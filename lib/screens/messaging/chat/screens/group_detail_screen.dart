@@ -328,7 +328,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.send_connection_request,
+        SlydoAppIcon.sendConnectionRequest,
         size: 16,
         color: blackFont,
       ),
@@ -763,7 +763,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           borderRadius: BorderRadius.circular(5),
           padding: EdgeInsets.zero,
           backgroundColor: lightGrey,
-          icon: SlydoAppIcon.remove_admin,
+          icon: SlydoAppIcon.removeAdmin,
           iconColor: blackFont,
           onPressed: (con) {
             removeParticipantFromAdmin(index!);
@@ -843,7 +843,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           borderRadius: BorderRadius.circular(5),
           padding: EdgeInsets.zero,
           backgroundColor: naturalGreen,
-          icon: SlydoAppIcon.make_admin,
+          icon: SlydoAppIcon.makeAdmin,
           onPressed: (con) {
             makeParticipantAdmin(index!);
           },

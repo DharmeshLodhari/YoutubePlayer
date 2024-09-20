@@ -1098,7 +1098,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     }
   }
 
-  pickAttachmentItemWidget() async {
+  void pickAttachmentItemWidget() async {
     final AttachmentItemModel? pickedItemAttachment =
         await showDialog<AttachmentItemModel>(
       context: context,

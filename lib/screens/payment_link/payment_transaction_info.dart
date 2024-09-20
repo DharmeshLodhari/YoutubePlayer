@@ -576,7 +576,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                 : IconButton(
                     alignment: Alignment.center,
                     icon: Icon(
-                      SlydoAppIcon.eye_close,
+                      SlydoAppIcon.eyeClose,
                       color: black,
                       size: 12,
                     ),

@@ -24,7 +24,7 @@ class MyFeedView extends StatefulWidget {
       this.yarnUrl});
 
   @override
-  State<MyFeedView> createState() => MyFeedViewState(key: key);
+  State<MyFeedView> createState() => MyFeedViewState();
 }
 
 class MyFeedViewState extends State<MyFeedView> {

@@ -1,9 +1,9 @@
-import 'Amenity.dart';
-import 'Bathroom.dart';
-import 'Bedroom.dart';
-import 'PetPolicy.dart';
-import 'PropertyType.dart';
-import 'RentDuration.dart';
+import 'amenity_model.dart';
+import 'bathroom_model.dart';
+import 'bedroom_model.dart';
+import 'pet_policy.dart';
+import 'property_type.dart';
+import 'rent_duration.dart';
 
 class FilterProperty {
   Amenity? amenity;

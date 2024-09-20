@@ -1,8 +1,8 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/business/models/Contract.dart';
-import 'package:Slydo/screens/business/models/Invoice.dart';
+import 'package:Slydo/screens/business/models/contract_model.dart';
+import 'package:Slydo/screens/business/models/invoice_model.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';

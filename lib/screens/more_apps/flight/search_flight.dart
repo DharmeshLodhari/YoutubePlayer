@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/Transport.dart';
+import 'models/transport_model.dart';
 
 class SearchFlight extends StatefulWidget {
   const SearchFlight({super.key});

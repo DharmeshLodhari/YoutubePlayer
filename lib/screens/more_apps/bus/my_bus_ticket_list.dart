@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'bus_auth.dart';
-import 'models/Transport.dart';
+import 'models/transport_model.dart';
 
 class MyBusTicketList extends StatefulWidget {
   const MyBusTicketList({super.key});

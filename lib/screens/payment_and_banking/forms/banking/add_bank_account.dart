@@ -764,7 +764,7 @@ class _AddAccountState extends State<AddAccount> {
       child: IconButton(
         // key: _key,
         icon: const Icon(
-          SlydoAppIcon.payout_list,
+          SlydoAppIcon.payoutList,
           color: Colors.white,
           size: 16,
         ),

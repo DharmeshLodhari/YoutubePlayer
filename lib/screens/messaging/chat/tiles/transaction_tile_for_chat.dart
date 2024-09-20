@@ -139,7 +139,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                   Row(
                     children: [
                       Icon(
-                        SlydoAppIcon.true_icon,
+                        SlydoAppIcon.trueIcon,
                         size: 12,
                         color: naturalGreen,
                       ),
@@ -580,7 +580,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                     Row(
                       children: [
                         Icon(
-                          SlydoAppIcon.true_icon,
+                          SlydoAppIcon.trueIcon,
                           size: 12,
                           color: getStatusOfPaymentColor(),
                         ),

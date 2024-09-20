@@ -345,7 +345,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
       height: 38,
       width: 38,
       icon: Icon(
-        SlydoAppIcon.add_cart,
+        SlydoAppIcon.addCart,
         color: navyBlue,
         size: 20,
       ),
@@ -698,7 +698,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
       height: 38,
       width: 38,
       icon: Icon(
-        SlydoAppIcon.add_cart,
+        SlydoAppIcon.addCart,
         color: navyBlue,
         size: 20,
       ),

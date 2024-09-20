@@ -45,7 +45,8 @@ class GifController extends AnimationController {
 }
 
 class GifImage extends StatefulWidget {
-  GifImage({
+  const GifImage({
+    super.key,
     required this.image,
     required this.controller,
     this.semanticLabel,

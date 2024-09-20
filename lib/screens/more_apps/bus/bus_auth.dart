@@ -1,7 +1,7 @@
-import 'package:Slydo/screens/more_apps/bus/models/Transport.dart';
+import 'package:Slydo/screens/more_apps/bus/models/transport_model.dart';
 import 'package:Slydo/services/auth.dart';
 
-import 'models/Ticket.dart';
+import 'models/ticket_model.dart';
 
 class BusAuthService extends AuthService {
   Future<List<Transport>> getAvailableTransports() async {

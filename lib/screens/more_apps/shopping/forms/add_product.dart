@@ -276,7 +276,7 @@ class _AddProductState extends State<AddProduct> {
       setState(() {
         isLoading = false;
         isEmpty = tempList.isEmpty;
-        defaultAddress = tempList.firstWhere((element) => element.is_default!);
+        defaultAddress = tempList.firstWhere((element) => element.isDefault!);
       });
     }
   }
@@ -317,7 +317,7 @@ class _AddProductState extends State<AddProduct> {
     if (mounted) setState(() {});
   }
 
-  void getSubCategories(id) async {
+  void getSubCategories(dynamic id) async {
     if (mounted) setState(() {});
 
     try {
@@ -611,7 +611,7 @@ class _AddProductState extends State<AddProduct> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
                 const SizedBox(

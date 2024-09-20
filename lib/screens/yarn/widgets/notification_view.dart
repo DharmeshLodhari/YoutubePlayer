@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../models/Topics/Notifications.dart';
+import '../models/Topics/notification_model.dart';
 import '../utils/utils.dart';
 
 class AskNotificationView extends StatelessWidget {
-  final Notifications? notification;
-  final Function(Notifications)? onDeleteNotification;
+  final NotificationModel? notification;
+  final Function(NotificationModel)? onDeleteNotification;
 
   const AskNotificationView(
       {super.key, this.notification, this.onDeleteNotification});

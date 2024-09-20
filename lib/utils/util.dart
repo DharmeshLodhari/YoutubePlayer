@@ -876,10 +876,8 @@ bool isTimeAfter(DateTime startTime, DateTime endTime) {
   final TimeOfDay end = TimeOfDay.fromDateTime(endTime);
 
   if (start.hour < end.hour) {
-    print("startTime = $startTime endTIME $endTime");
     return true;
   } else if (start.hour == end.hour && start.minute < end.minute) {
-    print("startTime == $startTime endTIME == $endTime");
     return true;
   }
   return false;
@@ -2840,7 +2838,7 @@ Map<String, String> getFormattedDateTime(String? dateTimeString) {
       'time': formattedTime,
     };
   } catch (e) {
-    print("Error parsing date: $e");
+    debugPrint("Error parsing date: $e");
     return {
       'date': '-',
       'time': '-',
@@ -2866,7 +2864,7 @@ String formatPickupDateTime(String? pickupDateTimeString) {
 
     return '$formattedDate, $formattedTime';
   } catch (e) {
-    print("Error parsing date: $e");
+    debugPrint("Error parsing date: $e");
     return "";
   }
 }
@@ -2901,7 +2899,7 @@ Widget qrCodeIcon(BuildContext context, Map<String, dynamic> navigationData,
       child: Row(
         children: [
           Icon(
-            SlydoAppIcon.qr_code,
+            SlydoAppIcon.qrCode,
             size: 15,
             color: blackFont,
           ),

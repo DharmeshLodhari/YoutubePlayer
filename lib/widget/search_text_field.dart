@@ -21,7 +21,7 @@ class SearchTextField extends StatefulWidget {
       this.isDisabled = false});
 
   @override
-  _SearchTextFieldState createState() => _SearchTextFieldState();
+  State<SearchTextField> createState() => _SearchTextFieldState();
 }
 
 class _SearchTextFieldState extends State<SearchTextField> {

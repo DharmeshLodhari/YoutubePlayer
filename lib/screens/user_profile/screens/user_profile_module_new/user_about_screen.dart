@@ -1,6 +1,6 @@
 import 'package:Slydo/screens/user_profile/models/OpeningHour.dart';
-import 'package:Slydo/screens/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/models/user_about.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';

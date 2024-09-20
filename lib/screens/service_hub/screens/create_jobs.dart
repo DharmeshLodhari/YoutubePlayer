@@ -119,7 +119,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   TextEditingController? searchItemTextController;
   GlobalKey searchItemTextFormField = GlobalKey();
 
-  List searchedCategoryList = [];
+  List<CategoryListData> searchedCategoryList = [];
 
   final List<String> items = [
     'Item1',
@@ -649,7 +649,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
                 const SizedBox(
@@ -1962,7 +1962,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
                       FocusScope.of(context).requestFocus();
                     },
-                    child: getResultTile(searchedCategoryList[index]));
+                    child: categoryViewCard(searchedCategoryList[index]));
               }
             },
             controller: _scrollController,
@@ -2076,13 +2076,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         },
       ),
     );
-  }
-
-  Widget getResultTile(var result) {
-    if (result is CategoryListData) {
-      return categoryViewCard(result);
-    }
-    return Container();
   }
 
   Widget categoryViewCard(CategoryListData category) {

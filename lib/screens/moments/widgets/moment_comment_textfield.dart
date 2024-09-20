@@ -65,7 +65,7 @@ class MomentCommentTextField extends StatefulWidget {
   ScrollController? scrollController;
   bool? enableAdult;
   bool? viewerAdvice;
-  var ageRating;
+  String? ageRating;
   List<ShareAsYarnModel>? shareAsYarnModel;
   final Function(bool?) onTapEnableComment;
   final Function(int?) onTapAgeRestriction;
@@ -117,8 +117,7 @@ class MomentCommentTextField extends StatefulWidget {
   });
 
   @override
-  State<MomentCommentTextField> createState() =>
-      MomentCommentTextFieldState(key: key);
+  State<MomentCommentTextField> createState() => MomentCommentTextFieldState();
 }
 
 class MomentCommentTextFieldState extends State<MomentCommentTextField> {
@@ -132,7 +131,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   List<ShareAsYarnModel>? shareAsYarnModelCopy;
   ShareAsYarnModel? _shareAsYarnModel;
 
-  var ageRating;
+  String? ageRating;
   bool isShowExtension = false;
   bool onFocus = true;
 
@@ -234,7 +233,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
         hasIcon: true,
         childList: [
           CustomizedPopUpMenuItemWithIcon(
-              title: "Blog", value: "Blog", icon: SlydoAppIcon.payout_list),
+              title: "Blog", value: "Blog", icon: SlydoAppIcon.payoutList),
           CustomizedPopUpMenuItemWithIcon(
               title: "Product", value: "Products", icon: SlydoAppIcon.product),
           CustomizedPopUpMenuItemWithIcon(
@@ -646,7 +645,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
 
   IconData getSearchTypeIcon() {
     if (selectedMenuItemIndex == 0) {
-      return SlydoAppIcon.payout_list;
+      return SlydoAppIcon.payoutList;
     } else if (selectedMenuItemIndex == 1) {
       return SlydoAppIcon.product;
     } else if (selectedMenuItemIndex == 2) {
@@ -654,7 +653,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     } else if (selectedMenuItemIndex == 3) {
       return SlydoAppIcon.user;
     }
-    return SlydoAppIcon.payout_list;
+    return SlydoAppIcon.payoutList;
   }
 
   Widget searchIcon() {
@@ -1211,7 +1210,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                           _shareAsYarnModel = category;
                           ageRating = _shareAsYarnModel?.name?.substring(9);
                           logger.d('message $ageRating');
-                          widget.onTapAgeRestriction(int.parse(ageRating));
+                          widget
+                              .onTapAgeRestriction(int.parse(ageRating ?? ""));
                           setState(() {});
                           Navigator.pop(context);
                         },

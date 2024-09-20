@@ -21,9 +21,9 @@ import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_message_action.dart';
 import 'package:Slydo/screens/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/messaging/chat/models/group_detail_model.dart';
-import 'package:Slydo/screens/messaging/chat/models/models_for_db/ChatMessage.dart';
-import 'package:Slydo/screens/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
-import 'package:Slydo/screens/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/chat_message.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/chat_message_pagination.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/socket_queue_chat_message.dart';
 import 'package:Slydo/screens/messaging/chat/models/participant_model.dart';
 import 'package:Slydo/screens/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/messaging/chat/tiles/audio_tile_for_chat.dart';
@@ -1544,7 +1544,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     list.add(
       bottomSheetItem(
         title: "Add Product",
-        iconData: SlydoAppIconNew.add_product,
+        iconData: SlydoAppIconNew.addProduct,
         onTap: () async {
           Navigator.pop(context);
           Navigator.pushNamed(
@@ -1561,7 +1561,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     list.add(
       bottomSheetItem(
         title: "Create Yarn",
-        iconData: SlydoAppIconNew.dashboard_yarn,
+        iconData: SlydoAppIconNew.dashboardYarn,
         onTap: () async {
           Navigator.pop(context);
 
@@ -1581,7 +1581,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     list.add(
       bottomSheetItem(
         title: "Create Blog",
-        iconData: SlydoAppIcon.add_channel,
+        iconData: SlydoAppIcon.addChannel,
         onTap: () async {
           Navigator.pop(context);
 
@@ -1838,7 +1838,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.circle_user,
+        SlydoAppIcon.circleUser,
         size: 16,
         color: blackFont,
       ),
@@ -2666,17 +2666,17 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     arguments['isEmptyEnvelope'] = isEmpty;
 
-    final ChatConversation _chatConversation =
+    final ChatConversation conversation =
         ChatConversation.fromChatConversation(chatConversation!);
 
     if (chatConversation!.isGroupConversation!) {
-      _chatConversation.userName = recipient!.userName;
-      _chatConversation.fullName = recipient.fullName;
-      _chatConversation.avatar = recipient.avatar;
-      _chatConversation.qrCode = recipient.qrCode;
+      conversation.userName = recipient!.userName;
+      conversation.fullName = recipient.fullName;
+      conversation.avatar = recipient.avatar;
+      conversation.qrCode = recipient.qrCode;
     }
 
-    arguments['chatConversation'] = _chatConversation;
+    arguments['chatConversation'] = conversation;
 
     stopShakeDetector();
     final result = await Navigator.of(context)
@@ -2857,14 +2857,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       results = await MessageAuth()
           .searchGIF(isRandom: true, isSticker: _isMessageIsSticker)
           .catchError((error) {
-        // debugPrint("ERROR:- $error");
+        debugPrint("ERROR:- $error");
       });
     } else {
       results = await MessageAuth()
           .searchGIF(
               query: _gifController.text.trim(), isSticker: _isMessageIsSticker)
           .catchError((error) {
-        // debugPrint("ERROR:- $error");
+        debugPrint("ERROR:- $error");
       });
     }
 
@@ -4132,7 +4132,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       height: 38,
       width: 38,
       icon: Icon(
-        SlydoAppIcon.add_cart,
+        SlydoAppIcon.addCart,
         color: navyBlue,
         size: 20,
       ),

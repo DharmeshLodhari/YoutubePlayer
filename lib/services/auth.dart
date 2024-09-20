@@ -229,7 +229,7 @@ class AuthService {
       // log("User=> $jsonData");
       jsonData["password"] = encryptPassword(password ?? "");
       jsonData["url"] =
-          "${AppConfig.baseUrl}/api/v1/user/customer/" + jsonData["username"];
+          "${AppConfig.baseUrl}/api/v1/user/customer/${jsonData["username"]}";
       final User user = await createUser(jsonData,
           staff: jsonResponse["staff"],
           permissions: jsonResponse["permissions"]);

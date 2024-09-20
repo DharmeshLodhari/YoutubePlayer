@@ -281,7 +281,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
           right: 10,
           child: IconButton(
             icon: Icon(
-              isChange ? SlydoAppIcon.heart_empty : SlydoAppIcon.heart_1,
+              isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
               color: Colors.white,
               size: 20,
             ),

@@ -9,7 +9,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_tile.dart';
@@ -404,7 +404,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     list.add(
       bottomSheetItem(
         title: "Share in Chat",
-        iconData: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.textMessage,
         onTap: () async {
           Navigator.pop(context);
           sendItemToUsersInChat();
@@ -416,7 +416,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: SlydoAppIconNew.dashboard_yarn,
+        iconData: SlydoAppIconNew.dashboardYarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();
@@ -430,7 +430,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future shareAsYarn() async {
     NavigationUtil.push(
       context,
-      screen: ShareAsAyarnScreen(
+      screen: ShareAsYarnScreen(
         askCategories: yarnDashboardBloc.yarnCategories,
         shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
         productModel: product,
@@ -658,7 +658,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         height: 44,
         width: 44,
         icon: Icon(
-          SlydoAppIcon.add_cart,
+          SlydoAppIcon.addCart,
           color: product?.isProductAvailableNow() ?? false
               ? navyBlue
               : greyBorderColor,
@@ -1055,7 +1055,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         initialData: 0,
         stream: sliderIndex.stream,
         builder: (context, snapshot) {
-          return displayProductImages?.length == 0
+          return displayProductImages?.isEmpty ?? false
               ? AspectRatio(
                   aspectRatio: 1.5,
                   child: Center(

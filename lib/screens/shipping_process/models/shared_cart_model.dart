@@ -24,7 +24,7 @@ class SharedCartModel {
   // bool? splitBill;
   bool? splitBillEvenly = false;
 
-  List<BasketItem> _basketItems = [];
+  final List<BasketItem> _basketItems = [];
 
   List<BasketItem> get basketItems => _basketItems;
 
@@ -688,7 +688,7 @@ class SharedCartModel {
 
     for (var item in _basketItems) {
       int variantTotal = 0;
-      int AddOnOptionTotal = 0;
+      int addOnOptionTotal = 0;
       int AddOnTotal = 0;
       int normalTotal = 0;
       if (item.item?.isProduct ?? false) {
@@ -702,13 +702,13 @@ class SharedCartModel {
         } else if (item.hasAddOns) {
           for (AddOns itemAddOn in item.addOns ?? []) {
             for (var option in itemAddOn.options!) {
-              AddOnOptionTotal +=
+              addOnOptionTotal +=
                   int.parse(option.price.toString()) * option.quantity;
             }
           }
           normalTotal = product.getProductRealPrice() *
               int.parse(product.quantity.toString());
-          AddOnTotal = AddOnOptionTotal + normalTotal;
+          AddOnTotal = addOnOptionTotal + normalTotal;
           totalPrice += AddOnTotal;
         } else {
           normalTotal = product.getProductRealPrice() *

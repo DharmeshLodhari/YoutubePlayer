@@ -42,7 +42,7 @@ class YarnBlogPostTile extends StatefulWidget {
       this.isNavigable = true});
 
   @override
-  _YarnBlogPostTileState createState() => _YarnBlogPostTileState();
+  State<YarnBlogPostTile> createState() => _YarnBlogPostTileState();
 }
 
 class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
@@ -404,7 +404,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
     list.add(
       bottomSheetItem(
         title: "Share in Chat",
-        iconData: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.textMessage,
         onTap: () async {
           Navigator.pop(context);
           UserPostUtils.sendPostToUserInChat(

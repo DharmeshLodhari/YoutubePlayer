@@ -293,7 +293,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                     height: 32,
                     width: 32,
                     icon: Icon(
-                      SlydoAppIcon.price_tag,
+                      SlydoAppIcon.priceTag,
                       size: 14,
                       color: blackFont,
                     ),

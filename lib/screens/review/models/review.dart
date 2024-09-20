@@ -7,6 +7,7 @@
 /// dislikes : 0
 /// created_at : "2022-01-04T16:17:12.540540+01:00"
 /// model_object : "496c7f0e-1593-4970-a620-add66f0eaf40"
+library;
 
 class Review {
   Review({

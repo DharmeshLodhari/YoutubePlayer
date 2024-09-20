@@ -95,7 +95,7 @@ class _SendPaymentState extends State<SendPayment> {
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.qr_code,
+        SlydoAppIcon.qrCode,
         size: 16,
         color: blackFont,
       ),

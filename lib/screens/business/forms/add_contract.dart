@@ -4,7 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/business/business_auth.dart';
-import 'package:Slydo/screens/business/models/Contract.dart';
+import 'package:Slydo/screens/business/models/contract_model.dart';
 import 'package:Slydo/screens/search_user.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/screens/user_profile/user_auth.dart';
@@ -134,7 +134,7 @@ class _AddContractState extends State<AddContract> {
         height: 34,
         width: 34,
         icon: Icon(
-          SlydoAppIcon.circle_user,
+          SlydoAppIcon.circleUser,
           size: 16,
           color: blackFont,
         ),

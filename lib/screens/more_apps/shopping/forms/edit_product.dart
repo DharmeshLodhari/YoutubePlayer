@@ -454,7 +454,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
       setState(() {
         isLoading = false;
         isEmpty = tempList.isEmpty;
-        defaultAddress = tempList.firstWhere((element) => element.is_default!);
+        defaultAddress = tempList.firstWhere((element) => element.isDefault!);
       });
     }
   }
@@ -489,7 +489,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     if (mounted) setState(() {});
   }
 
-  void getSubCategories(id) async {
+  void getSubCategories(dynamic id) async {
     if (mounted) setState(() {});
 
     try {
@@ -807,7 +807,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
                 const SizedBox(
@@ -2492,7 +2492,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
 
   Future<void> editProduct() async {
     if (_formKey.currentState!.validate() || validateDropdown()) {
-      if (productLocalImages.length >= 0) {
+      if (productLocalImages.isNotEmpty) {
         if (containsWeight() && selectedWeight.isEmpty && weight != 0.0) {
           showToast(message: AppLocalization.of(context)!.pleaseFillWeight);
           return;

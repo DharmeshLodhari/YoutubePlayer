@@ -9,7 +9,7 @@ class TrimmerView extends StatefulWidget {
   const TrimmerView({super.key, required this.file});
 
   @override
-  _TrimmerViewState createState() => _TrimmerViewState();
+  State<TrimmerView> createState() => _TrimmerViewState();
 }
 
 class _TrimmerViewState extends State<TrimmerView> {

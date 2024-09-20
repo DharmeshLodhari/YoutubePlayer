@@ -10,8 +10,8 @@ import 'package:Slydo/utils/util.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 
-import 'models/Topics/Notifications.dart';
 import 'models/Topics/comment_details.dart';
+import 'models/Topics/notification_model.dart';
 import 'models/Topics/yarn_model.dart';
 import 'models/ask_categories_model.dart';
 
@@ -1559,10 +1559,10 @@ class YarnAuth extends AuthService {
     // debugPrint(
     //     "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final List<Notifications> notifications = [];
+      final List<NotificationModel> notifications = [];
       final jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        final Notifications notification = Notifications.fromJson(item);
+        final NotificationModel notification = NotificationModel.fromJson(item);
         notifications.add(notification);
       }
 

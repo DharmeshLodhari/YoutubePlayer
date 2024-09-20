@@ -392,7 +392,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           }
         },
         child: const Icon(
-          SlydoAppIconNew.dashboard_yarn,
+          SlydoAppIconNew.dashboardYarn,
           color: Colors.white,
         ),
       ),

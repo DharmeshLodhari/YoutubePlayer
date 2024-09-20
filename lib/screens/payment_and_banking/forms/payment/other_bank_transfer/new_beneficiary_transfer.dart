@@ -245,7 +245,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                             child: Icon(
                               isBalanceHidden
                                   ? SlydoAppIcon.eye
-                                  : SlydoAppIcon.eye_close,
+                                  : SlydoAppIcon.eyeClose,
                               color: navyBlue,
                               size: 12,
                             ),
@@ -1055,7 +1055,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       child: IconButton(
         // key: _key,
         icon: const Icon(
-          SlydoAppIcon.payout_list,
+          SlydoAppIcon.payoutList,
           color: Colors.white,
           size: 16,
         ),

@@ -335,7 +335,7 @@ class _AddServiceState extends State<AddService> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
                 const SizedBox(

@@ -26,7 +26,7 @@ class _SectionProductsState extends State<SectionProducts> {
   bool todaysDealsEmpty = false;
   double todaysDealsSizeBox = 0;
 
-  void getRowTitle(headers) async {
+  void getRowTitle(Map<String, dynamic> headers) async {
     isLoading = true;
     if (mounted) setState(() {});
     for (var item in headers['results']) {

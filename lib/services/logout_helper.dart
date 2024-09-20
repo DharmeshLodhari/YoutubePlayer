@@ -22,7 +22,7 @@ class LogoutHelper {
     backgroundFetchBloc.isAllowed = false;
 
     emptyBasketCart();
-    SharedPreferences _sharedPreferences;
+    SharedPreferences sharedPreferences;
 
     MainSocketMessageHandler().dispose();
 
@@ -51,12 +51,12 @@ class LogoutHelper {
 
     bankAccountBlocPart.bankAccount = BankAccount();
     // dashboardBloc.index = 0;
-    _sharedPreferences = await SharedPreferences.getInstance();
-    _sharedPreferences.setBool('isLoggedOut', true);
-    _sharedPreferences.setBool('isAppTutorialDone', true);
+    sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setBool('isLoggedOut', true);
+    sharedPreferences.setBool('isAppTutorialDone', true);
 
     /// clearing all data when user is logout
-    if (!_sharedPreferences.getBool("isChecked")!) {
+    if (!sharedPreferences.getBool("isChecked")!) {
       // debugPrint("WorkManager cancel");
       // Workmanager().cancelAll();
       await SecureStorage().clear();

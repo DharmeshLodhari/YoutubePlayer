@@ -6,7 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'bus_auth.dart';
-import 'models/Ticket.dart';
+import 'models/ticket_model.dart';
 
 class TicketDetail extends StatefulWidget {
   const TicketDetail({super.key});

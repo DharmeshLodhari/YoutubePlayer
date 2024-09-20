@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
@@ -409,7 +410,7 @@ class CustomPdfPrintOrder {
       final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm:ss");
       formattedDate = dateFormat.format(dateTime);
     } catch (e) {
-      print("Error parsing date: $e");
+      debugPrint("Error parsing date: $e");
       formattedDate = "-";
     }
     return pw.Column(

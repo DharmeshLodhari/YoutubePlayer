@@ -19,7 +19,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../data/state_notifier.dart';
 import '../../utils/util.dart';
 import '../../widget/item_display_card.dart';
-import '../more_apps/shopping/models/ShoppingProduct.dart';
+import '../more_apps/shopping/models/shopping_product_model.dart';
 import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 
@@ -71,7 +71,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  final ScrollController _todayDealScrollController = ScrollController();
+  // final ScrollController _todayDealScrollController = ScrollController();
   final ScrollController _productScrollController = ScrollController();
   // final CarouselController _controller = CarouselController();
   String _currentCategory = '';
@@ -655,7 +655,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     );
   }
 
-  Future<List<Product>> getRowTitle(headers) async {
+  Future<List<Product>> getRowTitle(Map<String, dynamic> headers) async {
     final List<Product> result = [];
     for (var item in headers['results']) {
       final Product product = ShoppingAuthService().createProduct(item);
@@ -831,7 +831,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     );
   }
 
-  Widget rowTitle(headers, {bool isLast = false}) {
+  Widget rowTitle(Map<String, dynamic> headers, {bool isLast = false}) {
     return SectionProducts(headers: headers, isLast: isLast);
   }
 

@@ -273,7 +273,7 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
       height: 38,
       width: 38,
       icon: Icon(
-        SlydoAppIcon.add_cart,
+        SlydoAppIcon.addCart,
         color: navyBlue,
         size: 20,
       ),

@@ -1,7 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/chat_message.dart';
 import 'package:Slydo/screens/messaging/message_auth.dart';
 import 'package:Slydo/screens/payment_and_banking/models/envelope_model.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';

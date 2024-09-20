@@ -483,7 +483,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Icon(
-                          SlydoAppIcon.add_image,
+                          SlydoAppIcon.addImage,
                           color: darkGrey,
                           size: 55,
                         ),
@@ -567,7 +567,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Icon(SlydoAppIcon.add_image, color: darkGrey, size: 55),
+                        Icon(SlydoAppIcon.addImage, color: darkGrey, size: 55),
                         const SizedBox(height: 16),
                         Text(
                           "Upload license",

@@ -277,7 +277,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
                 const SizedBox(
@@ -762,7 +762,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 5,
         ),
         Text(

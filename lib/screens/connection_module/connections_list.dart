@@ -451,7 +451,7 @@ class _ConnectionListState extends State<ConnectionList>
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
           backgroundColor: mateRed,
-          icon: SlydoAppIcon.remove_connection,
+          icon: SlydoAppIcon.removeConnection,
           onPressed: (con) {
             removeFromConnectionUserAlert(customerProfile, index);
           },

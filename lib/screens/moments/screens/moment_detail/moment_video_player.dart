@@ -91,7 +91,9 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
     // }
     try {
       _controller.dispose();
-    } catch (error) {}
+    } catch (error) {
+      debugPrint('Error : $error');
+    }
 
     super.dispose();
   }

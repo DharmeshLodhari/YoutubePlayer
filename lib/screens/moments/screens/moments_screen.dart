@@ -31,7 +31,7 @@ import '../../user_profile/models/user.dart';
 import 'moment_search_screen.dart';
 
 class MomentsScreen extends StatefulWidget {
-  const MomentsScreen({Key? key});
+  const MomentsScreen({super.key});
 
   @override
   State<MomentsScreen> createState() => _MomentsScreenState();

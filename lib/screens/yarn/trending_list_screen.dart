@@ -18,7 +18,7 @@ class TrendingListScreen extends StatefulWidget {
      ;
 
   @override
-  State<TrendingListScreen> createState() => TrendingListScreenState(key: key);
+  State<TrendingListScreen> createState() => TrendingListScreenState();
 }
 
 class TrendingListScreenState extends State<TrendingListScreen> {

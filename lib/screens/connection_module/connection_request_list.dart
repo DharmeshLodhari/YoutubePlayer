@@ -193,7 +193,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
         borderRadius: BorderRadius.circular(5),
         padding: EdgeInsets.zero,
         backgroundColor: navyBlue,
-        icon: SlydoAppIcon.send_connection_request,
+        icon: SlydoAppIcon.sendConnectionRequest,
         onPressed: (con) {
           acceptFriendRequestAlert(isRequestSent ? toUser : fromUser, index);
         },
@@ -214,7 +214,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
         borderRadius: BorderRadius.circular(5),
         padding: EdgeInsets.zero,
         backgroundColor: mateRed,
-        icon: SlydoAppIcon.cancel_connection_request,
+        icon: SlydoAppIcon.cancelConnectionRequest,
         onPressed: (con) {
           rejectRequestAlert(isRequestSent ? toUser : fromUser, index,
               isRequestSent: isRequestSent);
@@ -236,7 +236,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.false_icon,
+          SlydoAppIcon.falseIcon,
           color: mateRed,
           size: 16,
         ),
@@ -283,7 +283,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.true_icon,
+          SlydoAppIcon.trueIcon,
           color: navyBlue,
           size: 16,
         ),

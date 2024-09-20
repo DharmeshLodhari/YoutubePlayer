@@ -983,7 +983,9 @@ class _SearchUsersProductAndServiceState
           final int minAmount =
               int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           filterModel.minAmount = minAmount;
-        } catch (e) {}
+        } catch (e) {
+          debugPrint("Error : $e");
+        }
       },
       validator: (val) {
         if (val.toString().isEmpty) {
@@ -1022,7 +1024,9 @@ class _SearchUsersProductAndServiceState
           final int maxAmount =
               int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           filterModel.maxAmount = maxAmount;
-        } catch (e) {}
+        } catch (e) {
+          debugPrint("Error : $e");
+        }
       },
       validator: (val) {
         if (val.toString().isEmpty) {
@@ -1632,7 +1636,9 @@ class _SearchUsersProductAndServiceState
             tempList?.forEach((result) {
               results.add(getResultTile(result));
             });
-          } catch (e) {}
+          } catch (e) {
+            debugPrint("Error : $e");
+          }
           setState(() {});
         }
       }
@@ -1984,7 +1990,7 @@ class _SearchUsersProductAndServiceState
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
         padding: EdgeInsets.zero,
-        icon: SlydoAppIcon.text_message,
+        icon: SlydoAppIcon.textMessage,
         onPressed: (con) async {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
             'recipient': product.seller,
@@ -2040,7 +2046,7 @@ class _SearchUsersProductAndServiceState
         padding: EdgeInsets.zero,
         label: AppLocalization.of(context)!.message,
         backgroundColor: navyBlue,
-        icon: SlydoAppIcon.text_message,
+        icon: SlydoAppIcon.textMessage,
         onPressed: (con) async {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
             'recipient': service.provider,

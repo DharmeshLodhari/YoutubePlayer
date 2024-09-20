@@ -999,7 +999,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     if (isEdit) {
       return Row(
         children: [
-          if (!widget.shippingAddress!.is_default!) ...[
+          if (!widget.shippingAddress!.isDefault!) ...[
             Expanded(
               child: CurvedButton(
                 onPressed: isDeleteLoading
@@ -1098,9 +1098,11 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       shippingAddress.country = "NG";
       shippingAddress.email = "${userBloc.user.userName!}@slydo.co";
       shippingAddress.phone = userBloc.user.phoneNumber;
-      shippingAddress.first_name = userBloc.user.fullName!.split(" ").first;
-      shippingAddress.last_name = userBloc.user.fullName!.split(" ").last;
-      shippingAddress.is_residential = shippingAddress.is_residential;
+      shippingAddress.firstNameAddress =
+          userBloc.user.fullName!.split(" ").first;
+      shippingAddress.lastNameAddress = userBloc.user.fullName!.split(" ").last;
+      shippingAddress.isResidentialAddress =
+          shippingAddress.isResidentialAddress;
       shippingAddress.latitude = currentLocation?.latitude;
       shippingAddress.longitude = currentLocation?.longitude;
 
@@ -1143,10 +1145,11 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   Widget toggleActiveTag() {
     return CustomizedCheckBoxField(
       onTap: () {
-        shippingAddress.is_residential = !shippingAddress.is_residential;
+        shippingAddress.isResidentialAddress =
+            !shippingAddress.isResidentialAddress;
         setState(() {});
       },
-      isChecked: shippingAddress.is_residential,
+      isChecked: shippingAddress.isResidentialAddress,
       title: "This is a residential address",
     );
   }

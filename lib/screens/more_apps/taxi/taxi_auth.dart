@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/directions_modal.dart';
+import 'package:Slydo/screens/more_apps/taxi/model/place_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';

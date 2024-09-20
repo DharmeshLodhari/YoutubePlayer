@@ -17,8 +17,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 
-import 'models/UserAbout.dart';
 import 'models/states_model.dart';
+import 'models/user_about.dart';
 
 class UserAuth extends AuthService {
   // Fetch user profile

@@ -13,8 +13,8 @@ import 'package:Slydo/screens/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/messaging/chat/models/main_socket_message_model.dart';
-import 'package:Slydo/screens/messaging/chat/models/models_for_db/ChatMessage.dart';
-import 'package:Slydo/screens/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/chat_message.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/socket_queue_chat_message.dart';
 import 'package:Slydo/screens/messaging/message_auth.dart';
 import 'package:Slydo/screens/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
@@ -424,7 +424,7 @@ class MainSocketMessageHandler {
             description: "${chatConversation.userName} is nudging you",
             image: chatConversation.avatar,
             actionOneIcon: SlydoAppIcon.remove,
-            actionTwoIcon: SlydoAppIcon.text_message,
+            actionTwoIcon: SlydoAppIcon.textMessage,
           );
 
           _nudgingUsers.remove(messageData["author"]);

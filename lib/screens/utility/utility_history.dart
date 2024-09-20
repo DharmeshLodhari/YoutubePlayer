@@ -300,7 +300,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.utility_history,
+        SlydoAppIcon.utilityHistory,
         size: 16,
         color: blackFont,
       ),

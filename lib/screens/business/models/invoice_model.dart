@@ -1,4 +1,4 @@
-import 'Item.dart';
+import 'item_model.dart';
 
 class InvoiceModel {
   int? amount;

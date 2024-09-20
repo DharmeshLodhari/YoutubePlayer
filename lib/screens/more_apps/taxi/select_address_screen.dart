@@ -1,6 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/taxi/map_ui.dart';
-import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
+import 'package:Slydo/screens/more_apps/taxi/model/place_model.dart';
 import 'package:Slydo/screens/more_apps/taxi/taxi_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';

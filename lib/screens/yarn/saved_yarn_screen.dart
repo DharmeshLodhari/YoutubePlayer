@@ -15,10 +15,10 @@ import 'yarn_detail_screen.dart';
 class SavedYarn extends StatefulWidget {
   final String? selectedCategory;
 
-  SavedYarn({super.key, this.selectedCategory});
+  const SavedYarn({super.key, this.selectedCategory});
 
   @override
-  State<SavedYarn> createState() => SavedYarnState(key: key);
+  State<SavedYarn> createState() => SavedYarnState();
 }
 
 class SavedYarnState extends State<SavedYarn> {
@@ -260,7 +260,7 @@ class SavedYarnState extends State<SavedYarn> {
             ),
           );
         },
-        separatorBuilder: (context, int) {
+        separatorBuilder: (context, int i) {
           return Column(
             children: [
               const SizedBox(

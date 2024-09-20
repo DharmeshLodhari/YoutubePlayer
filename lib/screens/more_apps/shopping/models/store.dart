@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifiers/basket_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/picture_model.dart';
 import 'package:Slydo/screens/payment_and_banking/models/financial_institution.dart';
 import 'package:Slydo/screens/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
@@ -853,8 +853,6 @@ class Product extends PurchasableItem {
     }
     final double highestPrice = variantPrices.reduce((a, b) => a > b ? a : b);
     final double lowestPrice = variantPrices.reduce((a, b) => a < b ? a : b);
-    print('Highest Price: \$$highestPrice');
-    print('Lowest Price: \$$lowestPrice');
     if (type == "high") {
       return highestPrice;
     }
@@ -2440,7 +2438,6 @@ class Order {
       subTotal += totalPrice;
     }
 
-    print("=========>$subTotal");
     return subTotal;
   }
 
@@ -2462,7 +2459,6 @@ class Order {
     final int taxAmount = int.tryParse(getTaxAmount()) ?? 0;
 
     final int totalAmount = subTotal + (shippingPrice ?? 0) + taxAmount;
-    print("Total Amount: $totalAmount");
     return totalAmount;
   }
 

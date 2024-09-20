@@ -118,7 +118,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
           });
         },
         child: const Icon(
-          SlydoAppIconNew.dashboard_yarn,
+          SlydoAppIconNew.dashboardYarn,
           color: Colors.white,
         ),
       ),

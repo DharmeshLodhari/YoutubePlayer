@@ -1290,7 +1290,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           width: 55,
           height: 55,
           icon: Icon(
-            SlydoAppIcon.false_icon,
+            SlydoAppIcon.falseIcon,
             color: navyBlue,
             size: 18,
           ),
@@ -1321,7 +1321,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.true_icon,
+          SlydoAppIcon.trueIcon,
           color: navyBlue,
           size: 16,
         ),
@@ -1725,7 +1725,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           width: 55,
           height: 55,
           icon: Icon(
-            SlydoAppIcon.true_icon,
+            SlydoAppIcon.trueIcon,
             color: navyBlue,
             size: 18,
           ),
@@ -1996,7 +1996,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         "$currency${moneyDisplayNormalizer(productActualPrice)}";
 
     // Append discount details if available
-    String discountText = _getPricePercentageChangesString(currency);
+    final String discountText = _getPricePercentageChangesString(currency);
 
     if (discountText.isNotEmpty) {
       amountText += " $discountText";

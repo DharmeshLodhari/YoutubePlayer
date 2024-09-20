@@ -322,7 +322,7 @@ class RiderDeliveryAuthService extends AuthService {
 
   // Send Delivery Evidence
   Future<bool> sendDeliveryEvidence(
-      String? journeyId, argument, BuildContext context) async {
+      String? journeyId, String argument, BuildContext context) async {
     if (journeyId == null) {
       return false;
     }

@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/shopping_product_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';

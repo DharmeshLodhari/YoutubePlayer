@@ -21,7 +21,7 @@ class _ExploreProductsState extends State<ExploreProducts> {
   List<Product> result = [];
   bool isLoading = false;
   CustomerProfile? user;
-  Future<void> getRowTitle(headers) async {
+  Future<void> getRowTitle(Map<String, dynamic> headers) async {
     isLoading = true;
     if (mounted) setState(() {});
     for (var item in headers['results']) {

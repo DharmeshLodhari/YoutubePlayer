@@ -56,13 +56,13 @@ class _AddTagsState extends State<AddTags> {
       }
     });
 
-    if (widget.arguments["tagList"] != null)
+    if (widget.arguments["tagList"] != null) {
       for (Tags tags in tagList) {
         if (widget.arguments["tagList"].any((e) => e.id == tags.id)) {
           tags.isSelected = true;
         }
       }
-    // },
+    }
     // );
     super.initState();
   }

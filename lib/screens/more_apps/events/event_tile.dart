@@ -182,9 +182,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                 child: Center(
                   child: IconButton(
                     icon: Icon(
-                      isChange
-                          ? SlydoAppIcon.heart_empty
-                          : SlydoAppIcon.heart_1,
+                      isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
                       color: isChange ? blackFont : navyBlue,
                       size: 20,
                     ),

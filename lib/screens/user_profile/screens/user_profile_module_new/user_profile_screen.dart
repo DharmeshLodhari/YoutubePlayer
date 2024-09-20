@@ -114,10 +114,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   void checkCurrentUserIsInRequestList() async {
-    final UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     // debugPrint("is In Request List -");
 
-    if (_userBloc.user.userName != searchedUser?.userName) {
+    if (userBloc.user.userName != searchedUser?.userName) {
       UserAuth().checkInRequest(searchedUser?.userName).then((value) {
         if (mounted) {
           setState(() {

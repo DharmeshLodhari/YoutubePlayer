@@ -6,9 +6,9 @@ import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/util.dart';
 
-import 'models/Contract.dart';
-import 'models/Invoice.dart';
-import 'models/Item.dart';
+import 'models/contract_model.dart';
+import 'models/invoice_model.dart';
+import 'models/item_model.dart';
 
 class BusinessAuth extends AuthService {
   /// Contract and Invoice

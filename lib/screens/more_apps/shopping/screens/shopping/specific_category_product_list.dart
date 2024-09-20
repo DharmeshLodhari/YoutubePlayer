@@ -3,7 +3,7 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../models/ShoppingProduct.dart';
+import '../../models/shopping_product_model.dart';
 import '../../shopping_auth.dart';
 import 'shopping_tile.dart';
 

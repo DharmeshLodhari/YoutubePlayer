@@ -229,7 +229,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       children: [
         IconButton(
             icon: Icon(
-              SlydoAppIcon.music_suffle,
+              SlydoAppIcon.musicSuffle,
               size: 16,
               color: musicPlayer!.audioPlayer.shuffle ? navyBlue : blackFont,
             ),
@@ -241,7 +241,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         flexibleSpace(),
         IconButton(
             icon: Icon(
-              SlydoAppIcon.music_back,
+              SlydoAppIcon.musicBack,
               size: 16,
               color: blackFont,
             ),
@@ -274,9 +274,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
                     stream: musicPlayer!.audioPlayer.isPlaying,
                     builder: (context, snapshot) {
                       return Icon(
-                        snapshot.data!
-                            ? Icons.pause
-                            : SlydoAppIcon.music_play_1,
+                        snapshot.data! ? Icons.pause : SlydoAppIcon.musicPlay1,
                         size: snapshot.data! ? 28 : 20,
                         color: blackFont,
                       );
@@ -288,7 +286,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         flexibleSpace(),
         IconButton(
             icon: Icon(
-              SlydoAppIcon.music_next,
+              SlydoAppIcon.musicNext,
               size: 16,
               color: blackFont,
             ),
@@ -298,7 +296,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         flexibleSpace(),
         IconButton(
             icon: Icon(
-              SlydoAppIcon.music_repeat,
+              SlydoAppIcon.musicRepeat,
               size: 16,
               color: musicLoopMode == LoopMode.single ? navyBlue : blackFont,
             ),

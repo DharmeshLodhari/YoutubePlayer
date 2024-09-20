@@ -1,5 +1,5 @@
 import 'package:Slydo/screens/business/business_auth.dart';
-import 'package:Slydo/screens/business/models/Invoice.dart';
+import 'package:Slydo/screens/business/models/invoice_model.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:flutter/material.dart';
 

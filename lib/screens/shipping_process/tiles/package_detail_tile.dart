@@ -777,7 +777,7 @@ class PackageDetailTile extends StatelessWidget {
       if (item.variantModels != null && item.variantModels!.isNotEmpty) {
         for (var variant in item.variantModels!) {
           // Create a new Product instance with the variant
-          Product newProduct = Product(
+          final Product newProduct = Product(
             id: item.id,
             name: item.name,
             seller: item.seller,

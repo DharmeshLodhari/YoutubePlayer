@@ -150,7 +150,7 @@ class _EditJobState extends State<EditJob> {
   TextEditingController? searchItemTextController;
   GlobalKey searchItemTextFormField = GlobalKey();
 
-  List searchedCategoryList = [];
+  List<CategoryListData> searchedCategoryList = [];
 
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
@@ -330,7 +330,7 @@ class _EditJobState extends State<EditJob> {
 
                       FocusScope.of(context).requestFocus();
                     },
-                    child: getResultTile(searchedCategoryList[index]));
+                    child: categoryViewCard(searchedCategoryList[index]));
               }
             },
             controller: _scrollController,
@@ -444,13 +444,6 @@ class _EditJobState extends State<EditJob> {
         },
       ),
     );
-  }
-
-  Widget getResultTile(var result) {
-    if (result is CategoryListData) {
-      return categoryViewCard(result);
-    }
-    return Container();
   }
 
   Widget categoryViewCard(CategoryListData category) {
@@ -1319,7 +1312,7 @@ class _EditJobState extends State<EditJob> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
                 const SizedBox(

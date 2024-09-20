@@ -1,4 +1,4 @@
-import 'Picture.dart';
+import 'picture_model.dart';
 
 class ShoppingProduct {
   String? availableFrom;

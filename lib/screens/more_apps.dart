@@ -27,7 +27,7 @@ class _MoreAppsState extends State<MoreApps> {
   void initializeDashBoardItem() {
     dashboardItems.addAll([
       UserDashboardItemTile(
-        icon: SlydoAppIcon.movies_moreapps,
+        icon: SlydoAppIcon.moviesMoreApps,
         title: "Movies",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.MOVIES);
@@ -36,7 +36,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.music_moreapps,
+        icon: SlydoAppIcon.musicMoreApps,
         title: "Music",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.MUSICS);
@@ -45,7 +45,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.events_moreapps,
+        icon: SlydoAppIcon.eventsMoreApps,
         title: "Events",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.EVENTS);
@@ -54,7 +54,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.hotels_moreapps,
+        icon: SlydoAppIcon.hotelsMoreApps,
         title: "Hotels",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.HOTELS);
@@ -63,7 +63,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.property_moreapps,
+        icon: SlydoAppIcon.propertyMoreApps,
         title: "Property",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.PROPERTY);
@@ -72,7 +72,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.transport_category,
+        icon: SlydoAppIcon.transportCategory,
         title: "Bus",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.BUS);
@@ -81,7 +81,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.train_moreapps,
+        icon: SlydoAppIcon.trainMoreApps,
         title: "Train",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.TRAIN);
@@ -90,7 +90,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.flight_moreapps,
+        icon: SlydoAppIcon.flightMoreApps,
         title: "Flight",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.FLIGHT);
@@ -108,14 +108,14 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.eatingout_category,
+        icon: SlydoAppIcon.eatingoutCategory,
         title: "Eat out",
         onTap: () {},
         iconColor: HexColor("#F35B46"),
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.shopping_category,
+        icon: SlydoAppIcon.shoppingCategory,
         title: "Shopping",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.SUPER_STORE);
@@ -124,7 +124,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.news_moreapps,
+        icon: SlydoAppIcon.newsMoreApps,
         title: "News",
         onTap: () {
           showDialog(
@@ -139,7 +139,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.wealth_moreapps,
+        icon: SlydoAppIcon.wealthMoreApps,
         title: "Wealth",
         onTap: () {},
         iconColor: HexColor("#FFC42E"),

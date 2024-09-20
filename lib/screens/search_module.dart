@@ -830,7 +830,9 @@ class _SearchModuleState extends State<SearchModule>
 
     try {
       imageUrl = object["cover"];
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error : $e');
+    }
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
@@ -984,7 +986,9 @@ class _SearchModuleState extends State<SearchModule>
     var imageUrl;
     try {
       imageUrl = object["cover"];
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error : $e');
+    }
 
     return GestureDetector(
       onTap: () {
@@ -1290,7 +1294,7 @@ class _SearchModuleState extends State<SearchModule>
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
         padding: EdgeInsets.zero,
-        icon: SlydoAppIcon.text_message,
+        icon: SlydoAppIcon.textMessage,
         onPressed: (con) async {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': product.seller,
@@ -1344,7 +1348,7 @@ class _SearchModuleState extends State<SearchModule>
         padding: EdgeInsets.zero,
         label: AppLocalization.of(context)!.message,
         backgroundColor: navyBlue,
-        icon: SlydoAppIcon.text_message,
+        icon: SlydoAppIcon.textMessage,
         onPressed: (con) async {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': service.provider,

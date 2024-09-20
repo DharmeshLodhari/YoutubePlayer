@@ -553,7 +553,7 @@ class _PaymentLinkState extends State<PaymentLink>
     super.initState();
   }
 
-  void rejectRequestAlert(data, index) async {
+  void rejectRequestAlert(Map data, int index) async {
     final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
@@ -562,7 +562,7 @@ class _PaymentLinkState extends State<PaymentLink>
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.false_icon,
+          SlydoAppIcon.falseIcon,
           color: mateRed,
           size: 16,
         ),
@@ -596,7 +596,7 @@ class _PaymentLinkState extends State<PaymentLink>
         borderRadius: BorderRadius.circular(5),
         padding: EdgeInsets.zero,
         backgroundColor: mateRed,
-        icon: SlydoAppIcon.cancel_connection_request,
+        icon: SlydoAppIcon.cancelConnectionRequest,
         onPressed: (con) {
           rejectRequestAlert(data, index);
         },

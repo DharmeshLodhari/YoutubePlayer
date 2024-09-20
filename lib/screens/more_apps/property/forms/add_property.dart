@@ -397,7 +397,7 @@ class _AddPropertyState extends State<AddProperty> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
                 const SizedBox(
@@ -548,7 +548,7 @@ class _AddPropertyState extends State<AddProperty> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.movies_moreapps,
+                  SlydoAppIcon.moviesMoreApps,
                   color: darkGrey,
                 ),
                 const SizedBox(

@@ -16,7 +16,7 @@ import '../../data/currency.dart';
 import '../../data/state_notifier.dart';
 import '../../utils/util.dart';
 import '../../widget/item_display_card.dart';
-import '../more_apps/shopping/models/ShoppingProduct.dart';
+import '../more_apps/shopping/models/shopping_product_model.dart';
 import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 

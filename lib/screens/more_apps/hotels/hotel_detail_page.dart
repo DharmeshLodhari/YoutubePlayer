@@ -283,7 +283,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             top: 12,
             child: InkWell(
               child: Icon(
-                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
+                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heartEmpty,
                 color: Colors.white,
                 size: 22,
               ),
@@ -641,7 +641,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                       height: 32,
                       width: 32,
                       icon: Icon(
-                        SlydoAppIcon.free_wifi,
+                        SlydoAppIcon.freeWifi,
                         size: 14,
                         color: blackFont,
                       ),
@@ -1004,7 +1004,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
       height: 44,
       width: 44,
       icon: Icon(
-        SlydoAppIcon.add_cart,
+        SlydoAppIcon.addCart,
         color: navyBlue,
         size: 22,
       ),

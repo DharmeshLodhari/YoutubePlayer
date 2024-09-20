@@ -161,7 +161,7 @@ class _MessageListState extends State<MessageList>
                 50.0), // Set the border radius to create a circle
           ),
           child: const Icon(
-            SlydoAppIcon.text_message,
+            SlydoAppIcon.textMessage,
             color: Colors.white,
             size: 20,
           ),

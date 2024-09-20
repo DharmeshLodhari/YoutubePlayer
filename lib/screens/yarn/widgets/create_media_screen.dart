@@ -515,13 +515,13 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     // get current lens direction (front / rear)
     final lensDirection = cameraController?.description.lensDirection ??
         CameraLensDirection.front;
-    final List<CameraDescription> _availableCameras = await availableCameras();
+    final List<CameraDescription> availableCamera = await availableCameras();
     CameraDescription? newDescription;
     if (lensDirection == CameraLensDirection.front) {
-      newDescription = _availableCameras.firstWhere((description) =>
+      newDescription = availableCamera.firstWhere((description) =>
           description.lensDirection == CameraLensDirection.back);
     } else {
-      newDescription = _availableCameras.firstWhere((description) =>
+      newDescription = availableCamera.firstWhere((description) =>
           description.lensDirection == CameraLensDirection.front);
     }
 
@@ -531,7 +531,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     _initCameraController(newCameraDescription: newDescription);
   }
 
-  goBack() async {
+  void goBack() async {
     if (videoPath != null) {
       // debugPrint('VIDEO SIZE -> ::: ${File(videoPath!).lengthSync()}');
 

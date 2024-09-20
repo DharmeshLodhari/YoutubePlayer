@@ -119,7 +119,7 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
           });
         },
         child: const Icon(
-          SlydoAppIconNew.dashboard_yarn,
+          SlydoAppIconNew.dashboardYarn,
           color: Colors.white,
         ),
       ),

@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/picture_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/product_details.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/shopping_product_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
@@ -390,7 +390,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   Future<ShoppingCartModelFromQrCode?> getShoppingCartDataFromQrCode(
-      {required url}) async {
+      {required String url}) async {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -1831,7 +1831,6 @@ class ShoppingAuthService extends AuthService {
         "instore_datetime": dateTime,
       });
     }
-    print(data);
     final data0 = jsonEncode(data);
     final String url = "${AppConfig.baseUrl}/api/v1/order/$orderId/";
     final headers = await getAuthHeaders();
@@ -2506,7 +2505,7 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
-  Future<List<ProductCategory>> obtainProductCategories(id) async {
+  Future<List<ProductCategory>> obtainProductCategories(String id) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/products/categories/?industry=$id";
     final headers = await getAuthHeaders();
@@ -2615,7 +2614,7 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
-  Future<List<ProductCategory>> obtainCustomCategory(name) async {
+  Future<List<ProductCategory>> obtainCustomCategory(String? name) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/products/merchant-custom-categories/merchant/$name/";
     // debugPrint("_________________________________________$url");

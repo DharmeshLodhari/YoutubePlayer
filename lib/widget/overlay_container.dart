@@ -23,7 +23,7 @@ class OverlayContainer extends StatefulWidget {
   /// `color` attribute for the `Material` component that wraps `child`.
   final Color materialColor;
 
-  OverlayContainer({
+  const OverlayContainer({
     super.key,
     required this.show,
     required this.child,
@@ -33,7 +33,7 @@ class OverlayContainer extends StatefulWidget {
   });
 
   @override
-  _OverlayContainerState createState() => _OverlayContainerState();
+  State<OverlayContainer> createState() => _OverlayContainerState();
 }
 
 class _OverlayContainerState extends State<OverlayContainer>

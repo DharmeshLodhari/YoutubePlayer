@@ -43,7 +43,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
 
   final ScrollController _scrollController = ScrollController();
 
-  Future<void> getPaymenttLinks({searchLink}) async {
+  Future<void> getPaymentLinks({String? searchLink}) async {
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
@@ -83,12 +83,12 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
       {String? name,
       String? date,
       String? id,
-      amount,
-      currency,
-      status,
-      passcode,
-      link,
-      category}) {
+      int? amount,
+      String? currency,
+      String? status,
+      int? passcode,
+      String? link,
+      String? category}) {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: GestureDetector(
@@ -200,7 +200,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
 
   @override
   void initState() {
-    getPaymenttLinks();
+    getPaymentLinks();
     super.initState();
   }
 
@@ -213,7 +213,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
     );
   }
 
-  void rejectRequestAlert(data, index) async {
+  void rejectRequestAlert(Map data, int index) async {
     final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
@@ -222,7 +222,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.false_icon,
+          SlydoAppIcon.falseIcon,
           color: mateRed,
           size: 16,
         ),
@@ -255,7 +255,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
         borderRadius: BorderRadius.circular(5),
         padding: EdgeInsets.zero,
         backgroundColor: mateRed,
-        icon: SlydoAppIcon.cancel_connection_request,
+        icon: SlydoAppIcon.cancelConnectionRequest,
         onPressed: (con) {
           rejectRequestAlert(data, index);
         },
@@ -381,7 +381,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
                   previous = "";
                   paymentLinkList.clear();
                   noItemInList = false;
-                  getPaymenttLinks(searchLink: searchController.text);
+                  getPaymentLinks(searchLink: searchController.text);
                 });
               });
             }

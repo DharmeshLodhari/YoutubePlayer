@@ -1354,10 +1354,10 @@ class _SignUpState extends State<SignUp> {
       subscriptionsModelList = null;
     });
     if (accountType != null) {
-      final List<SubscriptionsModel> _subscriptionsModelList =
+      final List<SubscriptionsModel> subscriptionsList =
           await SubscriptionsAuth()
               .getSubscriptionList(accountType: accountType ?? "");
-      subscriptionsModelList = _subscriptionsModelList;
+      subscriptionsModelList = subscriptionsList;
 
       setState(() {});
     }

@@ -1,11 +1,11 @@
-class Pack {
+class PackModel {
   String? image;
   String? name;
 
-  Pack({this.image, this.name});
+  PackModel({this.image, this.name});
 
-  factory Pack.fromJson(Map<String, dynamic> json) {
-    return Pack(
+  factory PackModel.fromJson(Map<String, dynamic> json) {
+    return PackModel(
       image: json['image'],
       name: json['name'],
     );

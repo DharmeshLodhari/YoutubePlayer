@@ -71,7 +71,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
 
-  List searchedCategoryList = [];
+  List<CategoryListData> searchedCategoryList = [];
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
 
@@ -775,7 +775,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
 
                       FocusScope.of(context).requestFocus();
                     },
-                    child: getResultTile(searchedCategoryList[index]));
+                    child: categoryViewCard(searchedCategoryList[index]));
               }
             },
             controller: _scrollController,
@@ -792,13 +792,6 @@ class _JobsDashboardState extends State<JobsDashboard> {
             )
           : Container(),
     );
-  }
-
-  Widget getResultTile(var result) {
-    if (result is CategoryListData) {
-      return categoryViewCard(result);
-    }
-    return Container();
   }
 
   Widget categoryViewCard(CategoryListData category) {

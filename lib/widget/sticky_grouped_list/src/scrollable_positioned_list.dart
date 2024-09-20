@@ -376,7 +376,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
         ),
       )
     ];
-    if (_isTransitioning)
+    if (_isTransitioning) {
       items.add(PostMountCallback(
         key: secondary.key,
         callback: startAnimationCallback,
@@ -405,6 +405,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
           ),
         ),
       ));
+    }
 
     return items;
   }

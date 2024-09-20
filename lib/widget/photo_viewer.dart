@@ -7,10 +7,10 @@ import 'package:photo_view/photo_view.dart';
 class PhotoViewer extends StatefulWidget {
   final String? imageUrl;
 
-  PhotoViewer({super.key, required this.imageUrl});
+  const PhotoViewer({super.key, required this.imageUrl});
 
   @override
-  _PhotoViewerState createState() => _PhotoViewerState();
+  State<PhotoViewer> createState() => _PhotoViewerState();
 }
 
 class _PhotoViewerState extends State<PhotoViewer> {

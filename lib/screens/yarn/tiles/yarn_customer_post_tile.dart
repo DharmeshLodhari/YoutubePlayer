@@ -340,8 +340,8 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
         width: 34,
         icon: Icon(
           isInRequestList
-              ? SlydoAppIcon.cancel_connection_request
-              : SlydoAppIcon.send_connection_request,
+              ? SlydoAppIcon.cancelConnectionRequest
+              : SlydoAppIcon.sendConnectionRequest,
           size: 16,
           color: isInRequestList ? mateRed : blackFont,
         ),
@@ -553,7 +553,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
     list.add(
       bottomSheetItem(
         title: "Share in Chat",
-        iconData: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.textMessage,
         onTap: () async {
           Navigator.pop(context);
           /*   UserPostUtils.sendPostToUserInChat(

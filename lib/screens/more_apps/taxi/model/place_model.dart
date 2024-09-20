@@ -1,7 +1,7 @@
-import 'Geometry.dart';
-import 'OpeningHours.dart';
-import 'Photo.dart';
-import 'PlusCode.dart';
+import 'geometry_model.dart';
+import 'opening_hours_model.dart';
+import 'photo_model.dart';
+import 'plus_code_model.dart';
 
 class PlaceModal {
   String? businessStatus;

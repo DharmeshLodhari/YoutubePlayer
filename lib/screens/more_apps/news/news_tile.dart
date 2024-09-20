@@ -51,7 +51,7 @@ class _NewsTileState extends State<NewsTile> {
                       icon: Icon(
                         isSelected
                             ? SlydoAppIcon.heart_1
-                            : SlydoAppIcon.heart_empty,
+                            : SlydoAppIcon.heartEmpty,
                         color: Colors.white,
                         size: 20,
                       ),

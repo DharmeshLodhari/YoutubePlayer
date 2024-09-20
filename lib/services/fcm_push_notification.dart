@@ -12,7 +12,7 @@ import 'package:Slydo/screens/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/chat_message.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';

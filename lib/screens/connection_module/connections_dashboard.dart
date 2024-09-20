@@ -292,7 +292,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
     list.add(bottomSheetItem(
       title: "Create Group",
-      iconData: SlydoAppIcon.add_group,
+      iconData: SlydoAppIcon.addGroup,
       onTap: () async {
         Navigator.pop(context);
         if (appConfigurationModel != null &&
@@ -306,7 +306,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
     list.add(
       bottomSheetItem(
         title: "Create Channel",
-        iconData: SlydoAppIcon.add_channel,
+        iconData: SlydoAppIcon.addChannel,
         onTap: () async {
           Navigator.pop(context);
           if (appConfigurationModel != null &&

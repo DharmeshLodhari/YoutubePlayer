@@ -1255,7 +1255,7 @@ class _HomeState extends State<Home> {
       showNoAddressFoundDialog(context);
     }
     defaultAddress =
-        tempList.firstWhere((element) => element.is_default ?? false);
+        tempList.firstWhere((element) => element.isDefault ?? false);
     if (defaultAddress != null) {
       userBloc.user.defaultAddress = defaultAddress;
     }
@@ -1377,7 +1377,7 @@ class _HomeState extends State<Home> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Icon(
-                    isBalanceHidden ? SlydoAppIcon.eye : SlydoAppIcon.eye_close,
+                    isBalanceHidden ? SlydoAppIcon.eye : SlydoAppIcon.eyeClose,
                     color: white,
                     size: 12,
                   ),
@@ -1593,7 +1593,7 @@ class _HomeState extends State<Home> {
         child: const Row(
           children: [
             Icon(
-              SlydoAppIcon.qr_code,
+              SlydoAppIcon.qrCode,
               size: 15,
               color: Colors.white,
             ),
@@ -1674,7 +1674,7 @@ class _HomeState extends State<Home> {
               Expanded(
                 key: tutorialBlogsKey,
                 child: UserDashboardItemTile(
-                  icon: SlydoAppIcon.news_moreapps,
+                  icon: SlydoAppIcon.newsMoreApps,
                   title: AppLocalization.of(context)!.blogs,
                   onTap: () {
                     if (appConfigurationModel?.enableSuperBlog == true) {
@@ -1793,7 +1793,7 @@ class _HomeState extends State<Home> {
               Expanded(
                 key: tutorialBlogsKey,
                 child: UserDashboardItemTile(
-                  icon: SlydoAppIcon.news_moreapps,
+                  icon: SlydoAppIcon.newsMoreApps,
                   title: AppLocalization.of(context)!.blogs,
                   onTap: () {
                     if (appConfigurationModel?.enableSuperBlog == true) {
@@ -2035,7 +2035,7 @@ class _HomeState extends State<Home> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final User? _user = await DatabaseHelper().getUser();
+        final User? user = await DatabaseHelper().getUser();
 
         final SharedPreferences sharedPreferences =
             await SharedPreferences.getInstance();
@@ -2056,9 +2056,9 @@ class _HomeState extends State<Home> {
         }
 
         if (phoneNumber == "" || password == "") {
-          phoneNumber = _user?.phoneNumber ?? "";
-          password = decryptPassword(_user?.password ?? "");
-          company = _user?.staff?.employerUsername ?? "";
+          phoneNumber = user?.phoneNumber ?? "";
+          password = decryptPassword(user?.password ?? "");
+          company = user?.staff?.employerUsername ?? "";
           if (company.isNotEmpty) {
             isStaffLogin = true;
           }

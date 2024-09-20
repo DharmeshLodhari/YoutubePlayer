@@ -2,7 +2,7 @@ import 'package:Slydo/screens/business/business_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../../utils/enums.dart';
-import '../models/Contract.dart';
+import '../models/contract_model.dart';
 
 class ContractBloc extends ChangeNotifier {
   bool endOfList = false;

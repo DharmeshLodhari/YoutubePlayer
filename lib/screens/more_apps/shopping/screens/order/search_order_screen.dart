@@ -20,7 +20,7 @@ class SearchOrderScreen extends StatefulWidget {
   const SearchOrderScreen({super.key, this.arguments});
 
   @override
-  _SearchOrderScreenState createState() => _SearchOrderScreenState();
+  State<SearchOrderScreen> createState() => _SearchOrderScreenState();
 }
 
 class _SearchOrderScreenState extends State<SearchOrderScreen> {

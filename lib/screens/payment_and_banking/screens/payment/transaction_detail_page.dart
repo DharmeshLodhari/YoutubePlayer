@@ -555,7 +555,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
       await Share.shareXFiles([XFile(pdfFile.path)],
           text: "Here is your receipt.");
     } catch (e) {
-      print('Error sharing PDF: $e');
+      debugPrint('Error sharing PDF: $e');
     }
   }
 
@@ -598,7 +598,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
       final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm:ss");
       dateTime != null ? formattedDate = dateFormat.format(dateTime) : "";
     } catch (e) {
-      print("Error parsing date: $e");
+      debugPrint("Error parsing date: $e");
       formattedDate = "";
     }
     return pw.Text(

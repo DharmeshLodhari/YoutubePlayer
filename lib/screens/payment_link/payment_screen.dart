@@ -218,7 +218,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     }
   }
 
-  void showDataAlert(link) {
+  void showDataAlert(String? link) {
     showDialog(
         context: context,
         builder: (context) {

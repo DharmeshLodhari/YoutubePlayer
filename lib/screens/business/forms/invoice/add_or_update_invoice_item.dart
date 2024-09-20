@@ -4,7 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/business/bloc/invoice_bloc.dart';
 import 'package:Slydo/screens/business/business_auth.dart';
-import 'package:Slydo/screens/business/models/Item.dart';
+import 'package:Slydo/screens/business/models/item_model.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';

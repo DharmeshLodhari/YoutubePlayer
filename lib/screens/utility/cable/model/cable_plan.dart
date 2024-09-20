@@ -1,9 +1,9 @@
-import 'package:Slydo/screens/utility/cable/model/Pack.dart';
+import 'package:Slydo/screens/utility/cable/model/pack_model.dart';
 
 class CablePlan {
   List<String>? features;
   String? name;
-  List<Pack>? packs;
+  List<PackModel>? packs;
   String? price;
 
   CablePlan({this.features, this.name, this.packs, this.price});
@@ -14,7 +14,7 @@ class CablePlan {
           json['features'] != null ? List<String>.from(json['features']) : null,
       name: json['name'],
       packs: json['packs'] != null
-          ? (json['packs'] as List).map((i) => Pack.fromJson(i)).toList()
+          ? (json['packs'] as List).map((i) => PackModel.fromJson(i)).toList()
           : null,
       price: json['price'],
     );

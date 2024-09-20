@@ -147,7 +147,9 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
       _quillBodyTextController = QuillController(
           document: Document.fromJson(blogBodyTextJson),
           selection: const TextSelection.collapsed(offset: 0));
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error : $e');
+    }
   }
 
   @override

@@ -244,7 +244,6 @@ class _UserProductsDiscountState extends State<UserProductDiscount> {
         isLoader = true;
         setState(() {});
         await Future.delayed(const Duration(seconds: 2));
-        print("$isLoader===============>");
         final List<Product> selectedProducts =
             productList.where((e) => e.isChecked).toList();
 
@@ -255,7 +254,6 @@ class _UserProductsDiscountState extends State<UserProductDiscount> {
         };
         setState(() {
           isLoader = false;
-          print("$isLoader===============>");
         });
         Navigator.pop(context, items);
       },

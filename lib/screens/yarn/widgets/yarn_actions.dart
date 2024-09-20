@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/yarn/yarn_detail_screen.dart';
@@ -216,7 +216,7 @@ class _YarnActionsState extends State<YarnActions> {
             showToast(message: "Reyarn added already");
           } else {
             NavigationUtil.push(context,
-                screen: ShareAsAyarnScreen(
+                screen: ShareAsYarnScreen(
                     appTitle: "Reyarn",
                     enableText: true,
                     isShare: false,

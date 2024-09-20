@@ -281,7 +281,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         hasIcon: true,
         childList: [
           CustomizedPopUpMenuItemWithIcon(
-              title: "Blog", value: "Blog", icon: SlydoAppIcon.payout_list),
+              title: "Blog", value: "Blog", icon: SlydoAppIcon.payoutList),
           CustomizedPopUpMenuItemWithIcon(
               title: "Product", value: "Products", icon: SlydoAppIcon.product),
           CustomizedPopUpMenuItemWithIcon(
@@ -1966,7 +1966,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   IconData getSearchTypeIcon() {
     if (selectedMenuItemIndex == 0) {
-      return SlydoAppIcon.payout_list;
+      return SlydoAppIcon.payoutList;
     } else if (selectedMenuItemIndex == 1) {
       return SlydoAppIcon.product;
     } else if (selectedMenuItemIndex == 2) {
@@ -1974,7 +1974,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     } else if (selectedMenuItemIndex == 3) {
       return SlydoAppIcon.user;
     }
-    return SlydoAppIcon.payout_list;
+    return SlydoAppIcon.payoutList;
   }
 
   Widget searchIcon() {

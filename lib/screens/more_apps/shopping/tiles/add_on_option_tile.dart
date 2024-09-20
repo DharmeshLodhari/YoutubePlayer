@@ -85,7 +85,7 @@ class AddOnOptionTile extends StatelessWidget {
     );
   }
 
-  DateTime getProductDateTime(var date) {
+  DateTime getProductDateTime(String date) {
     if (date != null) {
       final DateTime dateTime = DateTime.parse(date);
       return dateTime;

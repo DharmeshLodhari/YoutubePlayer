@@ -5,7 +5,7 @@ import 'package:Slydo/screens/blog/user_post/tile/user_post_tile.dart';
 import 'package:Slydo/screens/blog/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/blog/user_post/user_post_utils.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/more_apps/news/models/news_detail_item.dart';
 import 'package:Slydo/screens/more_apps/news/news_auth.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
@@ -441,7 +441,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       list.add(
         bottomSheetItem(
           title: "Share in Chat",
-          iconData: SlydoAppIcon.text_message,
+          iconData: SlydoAppIcon.textMessage,
           onTap: () async {
             Navigator.pop(context);
             sendPostToUserInChat();
@@ -512,7 +512,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: SlydoAppIconNew.dashboard_yarn,
+        iconData: SlydoAppIconNew.dashboardYarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();
@@ -525,7 +525,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
   Future shareAsYarn() async {
     NavigationUtil.push(context,
-        screen: ShareAsAyarnScreen(
+        screen: ShareAsYarnScreen(
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             blogPost: userPost,

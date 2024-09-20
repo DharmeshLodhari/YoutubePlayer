@@ -27,7 +27,7 @@ class LoadingIndicator extends StatelessWidget {
 class CircularLoadingIndicator extends StatefulWidget {
   Color? color;
 
-  CircularLoadingIndicator({this.color});
+  CircularLoadingIndicator({super.key, this.color});
 
   @override
   State<CircularLoadingIndicator> createState() =>
@@ -51,7 +51,8 @@ class CircularLoadingIndicatorWithPercentage extends StatefulWidget {
   final double? value;
   final Color? color;
 
-  CircularLoadingIndicatorWithPercentage({this.value, this.color});
+  const CircularLoadingIndicatorWithPercentage(
+      {super.key, this.value, this.color});
 
   @override
   State<CircularLoadingIndicatorWithPercentage> createState() =>

@@ -8,7 +8,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/utils.dart';
@@ -164,9 +164,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       canRate = value['can_rate'];
 
       reviewList = [];
-      tempList.forEach((element) {
+      for (var element in tempList) {
         reviewList.add(Review.fromJson(element));
-      });
+      }
 
       isReviewLoading = false;
       if (mounted) setState(() {});
@@ -375,7 +375,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       bottomSheetItem(
         isLast: true,
         title: "Share in Chat",
-        iconData: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.textMessage,
         onTap: () async {
           Navigator.pop(context);
           sendItemToUsersInChat();
@@ -387,7 +387,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: SlydoAppIconNew.dashboard_yarn,
+        iconData: SlydoAppIconNew.dashboardYarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();
@@ -410,7 +410,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     } */
 
     NavigationUtil.push(context,
-        screen: ShareAsAyarnScreen(
+        screen: ShareAsYarnScreen(
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             serviceModel: service,
@@ -519,7 +519,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       height: 44,
       width: 44,
       icon: Icon(
-        SlydoAppIcon.add_cart,
+        SlydoAppIcon.addCart,
         color: service!.isAvailable! ? navyBlue : greyBorderColor,
         size: 22,
       ),
@@ -855,7 +855,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildServiceImagesWidgets() {
-    return displayServiceImage?.length == 0
+    return displayServiceImage?.isEmpty ?? false
         ? AspectRatio(
             aspectRatio: 1.5,
             child: Center(

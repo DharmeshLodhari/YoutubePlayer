@@ -11,9 +11,8 @@ import 'package:intl/intl.dart';
 
 class PayoutTile extends StatelessWidget {
   final Payout? payout;
-  final Key? key;
 
-  const PayoutTile({this.payout, this.key});
+  const PayoutTile({super.key, this.payout});
 
   @override
   Widget build(BuildContext context) {

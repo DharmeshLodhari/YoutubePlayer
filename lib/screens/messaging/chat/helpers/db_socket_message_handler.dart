@@ -1,6 +1,6 @@
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
-import 'package:Slydo/screens/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/socket_queue_chat_message.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:provider/provider.dart';
 

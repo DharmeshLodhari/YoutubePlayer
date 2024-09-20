@@ -8,7 +8,8 @@ class NoItemInList extends StatelessWidget {
   String? title = "";
   bool isResult;
 
-  NoItemInList({required this.msg, this.isResult = true, this.title});
+  NoItemInList(
+      {super.key, required this.msg, this.isResult = true, this.title});
 
   @override
   Widget build(BuildContext context) {

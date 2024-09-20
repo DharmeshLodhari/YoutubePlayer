@@ -536,7 +536,7 @@ class _PostTileState extends State<PostTile> {
     list.add(
       bottomSheetItem(
         title: "Share in Chat",
-        iconData: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.textMessage,
         onTap: () async {
           Navigator.pop(context);
           UserPostUtils.sendPostToUserInChat(
@@ -551,7 +551,7 @@ class _PostTileState extends State<PostTile> {
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: SlydoAppIconNew.dashboard_yarn,
+        iconData: SlydoAppIconNew.dashboardYarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();
@@ -615,7 +615,7 @@ class _PostTileState extends State<PostTile> {
   void shareAsYarn() {
     try {
       NavigationUtil.push(context,
-          screen: ShareAsAyarnScreen(
+          screen: ShareAsYarnScreen(
               blogPost: widget.post,
               askCategories: yarnDashboardBloc.yarnCategories,
               shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,

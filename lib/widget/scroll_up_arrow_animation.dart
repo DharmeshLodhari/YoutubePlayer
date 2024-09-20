@@ -4,7 +4,7 @@ class ScrollArrowIndicator extends StatefulWidget {
   const ScrollArrowIndicator({super.key});
 
   @override
-  _ScrollArrowIndicatorState createState() => _ScrollArrowIndicatorState();
+  State<ScrollArrowIndicator> createState() => _ScrollArrowIndicatorState();
 }
 
 class _ScrollArrowIndicatorState extends State<ScrollArrowIndicator>

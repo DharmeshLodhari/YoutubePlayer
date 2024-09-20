@@ -402,7 +402,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
     );
   }
 
-  void onPageFunction(index, reason) {
+  void onPageFunction(int index, CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }

@@ -129,7 +129,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
 
         /// to getDefault selected address
         for (ShippingAddress address in itemList) {
-          if (address.is_default == true && isForSelection == false) {
+          if (address.isDefault == true && isForSelection == false) {
             selectedShippingAddress = address;
             break;
           }
@@ -183,7 +183,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
 
     /// to getDefault selected address
     for (ShippingAddress address in itemList) {
-      if (address.is_default == true && isForSelection == false) {
+      if (address.isDefault == true && isForSelection == false) {
         selectedShippingAddress = address;
         await _sharedPreferences.setBool("isCurrentLocation", false);
         setState(() {});
@@ -479,13 +479,13 @@ class _DispatchAddressState extends State<DispatchAddress> {
                   children: [
                     if (!isForSelection)
                       InkWell(
-                        onTap: itemList[index].is_default!
+                        onTap: itemList[index].isDefault!
                             ? null
                             : () {
                                 setDefaultAddress(itemList[index].id);
                               },
                         child: Text(
-                          itemList[index].is_default!
+                          itemList[index].isDefault!
                               ? "Default"
                               : "Set as Default",
                           maxLines: 1,
@@ -493,7 +493,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                               fontFamily: "Inter",
-                              color: itemList[index].is_default!
+                              color: itemList[index].isDefault!
                                   ? blackFont
                                   : navyBlue),
                           softWrap: false,

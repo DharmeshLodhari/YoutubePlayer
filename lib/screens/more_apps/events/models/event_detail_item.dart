@@ -1,6 +1,6 @@
 import 'package:Slydo/screens/more_apps/events/models/partial_event_item.dart';
 
-import 'Location.dart';
+import 'location_model.dart';
 
 class EventDetailItem {
   String? about;

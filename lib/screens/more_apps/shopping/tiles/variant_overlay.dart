@@ -60,7 +60,7 @@ class _VariantOverlayState extends State<VariantOverlay> {
                     final item = widget.variant![index];
 
                     return Padding(
-                      padding: widget.variant?.length == 0
+                      padding: widget.variant?.isEmpty ?? false
                           ? const EdgeInsets.all(8.0)
                           : const EdgeInsets.only(left: 20.0),
                       child: Card(

@@ -74,7 +74,9 @@ Widget getMembersWidget(
 }
 
 Widget buildFollowersCountWidget(List<UserFollowers> userFollowers,
-    {userImages, double radiusHeight = 32, double radiusWidth = 32}) {
+    {List<UserFollowers>? userImages,
+    double radiusHeight = 32,
+    double radiusWidth = 32}) {
   final int count = userFollowers.length - 4;
   return Container(
     height: radiusHeight,

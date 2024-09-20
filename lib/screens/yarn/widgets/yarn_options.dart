@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_comment.screen.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
@@ -42,7 +42,8 @@ class YarnOptions extends StatefulWidget {
   final Function(bool)? callbackUpdateCommentCount;
 
   YarnOptions(
-      {this.yarnTopic,
+      {super.key,
+      this.yarnTopic,
       this.commentDetail,
       this.isComment = false,
       this.isShareOption = false,

@@ -2,7 +2,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
-import 'models/Transport.dart';
+import 'models/transport_model.dart';
 
 class TrainTicketTile extends StatelessWidget {
   final Transport? transport;

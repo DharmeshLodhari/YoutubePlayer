@@ -298,7 +298,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
                             child: Icon(
                               isBalanceHidden
                                   ? SlydoAppIcon.eye
-                                  : SlydoAppIcon.eye_close,
+                                  : SlydoAppIcon.eyeClose,
                               color: navyBlue,
                               size: 12,
                             ),
@@ -520,7 +520,9 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
           try {
             double.parse(val.replaceAll(',', ''));
             return null;
-          } catch (e) {}
+          } catch (e) {
+            debugPrint('Error : $e');
+          }
         }
         return AppLocalization.of(context)!.invalidAmount;
       },

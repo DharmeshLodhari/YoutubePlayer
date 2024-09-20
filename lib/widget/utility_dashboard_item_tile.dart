@@ -16,7 +16,8 @@ class UtilityDashboardItemTile extends StatelessWidget {
   UtilitiesProvidersEnum providersEnum;
 
   UtilityDashboardItemTile(
-      {required this.title,
+      {super.key,
+      required this.title,
       this.titleFontSize = 14,
       required this.providersEnum,
       required this.icon,

@@ -268,7 +268,7 @@ class _MaterialControlsState extends State<MaterialControls> {
                   child: Icon(
                     chewieController!.isFullScreen
                         ? Icons.fullscreen_exit
-                        : SlydoAppIcon.full_screen,
+                        : SlydoAppIcon.fullScreen,
                     color: Colors.white,
                     size: 18,
                   ),

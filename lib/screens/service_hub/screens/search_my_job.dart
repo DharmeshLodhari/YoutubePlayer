@@ -16,7 +16,7 @@ class SearchMyJobs extends StatefulWidget {
   });
 
   @override
-  _SearchMyJobsState createState() => _SearchMyJobsState();
+  State<SearchMyJobs> createState() => _SearchMyJobsState();
 }
 
 class _SearchMyJobsState extends State<SearchMyJobs> {

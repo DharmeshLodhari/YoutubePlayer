@@ -1,5 +1,5 @@
-class Notifications {
-  Notifications({
+class NotificationModel {
+  NotificationModel({
     this.id,
     this.authorUserName,
     this.authorName,
@@ -10,7 +10,7 @@ class Notifications {
     this.createdAt,
     this.yarn,});
 
-  Notifications.fromJson(dynamic json) {
+  NotificationModel.fromJson(dynamic json) {
     id = json['id'];
     authorUserName = json['author_username'];
     authorName = json['author_name'];

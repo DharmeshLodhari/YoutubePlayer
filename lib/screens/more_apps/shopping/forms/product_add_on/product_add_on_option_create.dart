@@ -184,7 +184,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
                 const SizedBox(

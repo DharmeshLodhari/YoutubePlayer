@@ -191,7 +191,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
           //   arguments: imageUrl,
           // );
 
-          List<Widget> imageList = [];
+          final List<Widget> imageList = [];
 
           for (var item in widget.yarnTopic.media) {
             if (item.mediaType == 'image') {

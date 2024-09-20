@@ -34,21 +34,21 @@ class SlydoAppIcon {
 
   static const IconData naira =
       IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData eye_close =
+  static const IconData eyeClose =
       IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData qr_code =
+  static const IconData qrCode =
       IconData(0xf00cc, fontFamily: _mFontFam, fontPackage: _kFontPkg);
   static const IconData payout =
       IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData payout_list =
+  static const IconData payoutList =
       IconData(0xe804, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData circle_user =
+  static const IconData circleUser =
       IconData(0xe805, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData location =
       IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData connections =
       IconData(0xe807, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData add_image =
+  static const IconData addImage =
       IconData(0xe808, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData date =
       IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -80,7 +80,7 @@ class SlydoAppIcon {
       IconData(0xe816, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData product =
       IconData(0xe817, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData add_cart =
+  static const IconData addCart =
       IconData(0xe818, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData store =
       IconData(0xe819, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -98,7 +98,7 @@ class SlydoAppIcon {
       IconData(0xe81f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData remove =
       IconData(0xe820, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData text_message =
+  static const IconData textMessage =
       IconData(0xe821, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData block =
       IconData(0xe822, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -114,9 +114,9 @@ class SlydoAppIcon {
       IconData(0xe827, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData category =
       IconData(0xe828, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData note_filled =
+  static const IconData noteFilled =
       IconData(0xe829, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData true_icon =
+  static const IconData trueIcon =
       IconData(0xe82a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData unarchive =
       IconData(0xe82b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -124,79 +124,79 @@ class SlydoAppIcon {
       IconData(0xe82c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData archive =
       IconData(0xe82d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData remove_connection =
+  static const IconData removeConnection =
       IconData(0xe82e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData false_icon =
+  static const IconData falseIcon =
       IconData(0xe82f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData send_connection_request =
+  static const IconData sendConnectionRequest =
       IconData(0xe830, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData cancel_connection_request =
+  static const IconData cancelConnectionRequest =
       IconData(0xe831, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData unblock =
       IconData(0xe832, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData delete =
       IconData(0xe833, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData line_graph =
+  static const IconData lineGraph =
       IconData(0xe834, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData general_category =
+  static const IconData generalCategory =
       IconData(0xe835, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData gorceries_category =
+  static const IconData gorceriesCategory =
       IconData(0xe836, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData finances_category =
+  static const IconData financesCategory =
       IconData(0xe837, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData personalcare_category =
+  static const IconData personalCareCategory =
       IconData(0xe838, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData holidays_category =
+  static const IconData holidaysCategory =
       IconData(0xe839, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData family_category =
+  static const IconData familyCategory =
       IconData(0xe83a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData expenses_category =
+  static const IconData expensesCategory =
       IconData(0xe83b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData gifts_category =
+  static const IconData giftsCategory =
       IconData(0xe83c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData entertainment_category =
+  static const IconData entertainmentCategory =
       IconData(0xe83d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData eatingout_category =
+  static const IconData eatingoutCategory =
       IconData(0xe83e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData charity_category =
+  static const IconData charityCategory =
       IconData(0xe83f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData bills_category =
+  static const IconData billsCategory =
       IconData(0xe840, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData transport_category =
+  static const IconData transportCategory =
       IconData(0xe841, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData shopping_category =
+  static const IconData shoppingCategory =
       IconData(0xe842, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData train_moreapps =
+  static const IconData trainMoreApps =
       IconData(0xe843, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData wealth_moreapps =
+  static const IconData wealthMoreApps =
       IconData(0xe844, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData flight_moreapps =
+  static const IconData flightMoreApps =
       IconData(0xe845, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData more =
       IconData(0xe846, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData property_moreapps =
+  static const IconData propertyMoreApps =
       IconData(0xe847, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData events_moreapps =
+  static const IconData eventsMoreApps =
       IconData(0xe848, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData news_moreapps =
+  static const IconData newsMoreApps =
       IconData(0xe849, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData hotels_moreapps =
+  static const IconData hotelsMoreApps =
       IconData(0xe84a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData music_moreapps =
+  static const IconData musicMoreApps =
       IconData(0xe84b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData movies_moreapps =
+  static const IconData moviesMoreApps =
       IconData(0xe84c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData filter =
       IconData(0xe84d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData video_play =
+  static const IconData videoPlay =
       IconData(0xe84e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData heart_empty =
+  static const IconData heartEmpty =
       IconData(0xe84f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData heart_1 =
       IconData(0xe850, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData forward_10 =
       IconData(0xe851, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData full_screen =
+  static const IconData fullScreen =
       IconData(0xe852, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData rewind_10 =
       IconData(0xe853, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -204,9 +204,9 @@ class SlydoAppIcon {
       IconData(0xe854, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData cw =
       IconData(0xe855, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData location_circle =
+  static const IconData locationCircle =
       IconData(0xe856, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData price_tag =
+  static const IconData priceTag =
       IconData(0xe857, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData seat =
       IconData(0xe858, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -214,7 +214,7 @@ class SlydoAppIcon {
       IconData(0xe859, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData swap =
       IconData(0xe85a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData free_wifi =
+  static const IconData freeWifi =
       IconData(0xe85b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData washer =
       IconData(0xe85c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -232,17 +232,17 @@ class SlydoAppIcon {
       IconData(0xe862, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData partner =
       IconData(0xe863, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData music_play =
+  static const IconData musicPlay =
       IconData(0xe864, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData music_play_1 =
+  static const IconData musicPlay1 =
       IconData(0xe865, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData music_back =
+  static const IconData musicBack =
       IconData(0xe866, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData music_next =
+  static const IconData musicNext =
       IconData(0xe867, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData music_repeat =
+  static const IconData musicRepeat =
       IconData(0xe868, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData music_suffle =
+  static const IconData musicSuffle =
       IconData(0xe869, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData bedroom =
       IconData(0xe86a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -262,9 +262,9 @@ class SlydoAppIcon {
       IconData(0xe871, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData copy =
       IconData(0xe872, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData make_admin =
+  static const IconData makeAdmin =
       IconData(0xe873, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData remove_admin =
+  static const IconData removeAdmin =
       IconData(0xe874, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData mute =
       IconData(0xe875, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -272,38 +272,38 @@ class SlydoAppIcon {
       IconData(0xe876, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData clock =
       IconData(0xe877, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData subscription_status =
+  static const IconData subscriptionStatus =
       IconData(0xe878, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData utility_airtime =
+  static const IconData utilityAirtime =
       IconData(0xe879, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData utility_betting =
+  static const IconData utilityBetting =
       IconData(0xe87a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData utility_electricity =
+  static const IconData utilityElectricity =
       IconData(0xe87b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData utility_history =
+  static const IconData utilityHistory =
       IconData(0xe87c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData utility_svg =
+  static const IconData utilitySvg =
       IconData(0xe87d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData utility_tax =
+  static const IconData utilityTax =
       IconData(0xe87e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData utility_toll =
+  static const IconData utilityToll =
       IconData(0xe87f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData utility =
       IconData(0xe880, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData my_location =
+  static const IconData myLocation =
       IconData(0xe881, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData taxi_call =
+  static const IconData taxiCall =
       IconData(0xe882, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData location_pin =
+  static const IconData locationPin =
       IconData(0xe883, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData taxi_msg =
+  static const IconData taxiMsg =
       IconData(0xe884, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData services =
       IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData delivery_dining =
+  static const IconData deliveryDining =
       IconData(0xe1bd, fontFamily: _mFontFam, fontPackage: _kFontPkg);
-  static const IconData add_group =
+  static const IconData addGroup =
       IconData(0xe2ec, fontFamily: _mFontFam, fontPackage: _kFontPkg);
-  static const IconData add_channel =
+  static const IconData addChannel =
       IconData(0xebc9, fontFamily: _mFontFam, fontPackage: _kFontPkg);
 }

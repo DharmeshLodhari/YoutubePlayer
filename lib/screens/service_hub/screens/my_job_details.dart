@@ -9,7 +9,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/screens/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/service_hub/models/jobs.dart';
 import 'package:Slydo/screens/service_hub/models/user_review.dart';
@@ -1987,7 +1987,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
 
   Future shareAsYarn() async {
     NavigationUtil.push(context,
-        screen: ShareAsAyarnScreen(
+        screen: ShareAsYarnScreen(
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             jobModel: job,
@@ -2097,7 +2097,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  void onPageFunction(index, reason) {
+  void onPageFunction(int index, CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }

@@ -488,7 +488,6 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
                       final customCategory = itemList[index];
                       data.addAll({"${customCategory.id}": index + 1});
                     }
-                    print("==============Custom Category==============>$data");
                     ShoppingAuthService()
                         .reOrderCustomCategory(data, userBloc?.user.userName);
                   });

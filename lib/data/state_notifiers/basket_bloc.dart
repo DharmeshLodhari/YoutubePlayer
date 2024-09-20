@@ -144,7 +144,7 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addMerchantName(var item) {
+  void addMerchantName(dynamic item) {
     final merchantUserName = item is Product ? item.seller : item.provider;
     final merchantFullName =
         item is Product ? item.sellerFullName : item.providerFullName;
@@ -156,7 +156,7 @@ class BasketBloc extends ChangeNotifier {
     // debugPrint('MERCHANT NAME COPY ::: $merchantNameMapCopy');
   }
 
-  void removeMerchantName(var item) {
+  void removeMerchantName(dynamic item) {
     final merchantFullName =
         item is Product ? item.sellerFullName : item.providerFullName;
 
@@ -608,7 +608,7 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void addItemInBasketWithQtyService(
-      var item, String type, SharedCartMemberModel? currentUser,
+      dynamic item, String type, SharedCartMemberModel? currentUser,
       {bool withApiCall = true, bool replaceUpdatedBy = false}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
@@ -784,13 +784,13 @@ class BasketBloc extends ChangeNotifier {
   }
 
   // this will remove the product or service from the cart;
-  void removeItemFromCart(item) {
+  void removeItemFromCart(dynamic item) {
     removeItemInBasketWithQty(item);
 
     notifyListeners();
   }
 
-  void removeItemInBasketWithQty(var item) {
+  void removeItemInBasketWithQty(dynamic item) {
     var foundItem;
     try {
       for (int i = 0; i < _items.length; i++) {

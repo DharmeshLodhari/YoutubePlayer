@@ -6,8 +6,8 @@ import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/user_profile/models/OpeningHour.dart';
-import 'package:Slydo/screens/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/models/user_about.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -227,8 +227,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       if (mounted) {
         setState(() {
           isLoading = false;
-          defaultAddress =
-              tempList.firstWhere((element) => element.is_default!);
+          defaultAddress = tempList.firstWhere((element) => element.isDefault!);
         });
       }
     }
