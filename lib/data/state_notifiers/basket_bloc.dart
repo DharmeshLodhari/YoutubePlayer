@@ -36,7 +36,7 @@ class BasketBloc extends ChangeNotifier {
   }
 
   /// New Model implemented
-  List<BasketItem> _basketItems = [];
+  final List<BasketItem> _basketItems = [];
 
   List<BasketItem> get basketItems => _basketItems;
 

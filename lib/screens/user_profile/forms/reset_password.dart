@@ -2,6 +2,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pinput/pinput.dart';
 
 import '../../../../routes/route_constants.dart';
@@ -112,7 +113,9 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   Widget newPasswordWidget() {
     return CustomizedTextFormField(
-      maxLength: 6,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(6),
+      ],
       obscureText: true,
       keyboardType: TextInputType.number,
       labelText: "New password",
@@ -128,7 +131,9 @@ class _ResetPasswordState extends State<ResetPassword> {
   Widget confirmPasswordWidget() {
     return CustomizedTextFormField(
       obscureText: true,
-      maxLength: 6,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(6),
+      ],
       labelText: "Confirm password",
       isPassword: true,
       controller: _confirmPasswordController,

@@ -39,8 +39,6 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
 
   // Controller
   TextEditingController searchController = TextEditingController();
-  final GlobalKey<ScaffoldState> _scaffoldSearchKey =
-      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
       GlobalKey<ScaffoldMessengerState>();
   final ScrollController _scrollController = ScrollController();

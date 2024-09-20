@@ -8,6 +8,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -90,10 +91,18 @@ class _ChangePasswordState extends State<ChangePassword> {
   Widget appBar() {
     return AppBar(
       surfaceTintColor: Colors.transparent,
-      elevation: 0,
       backgroundColor: Colors.white,
-      titleSpacing: 0,
-      automaticallyImplyLeading: false,
+      title: Text(
+        "Change password",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: yarnBlack,
+          height: 1.3,
+        ),
+      ),
+      centerTitle: false,
+      titleSpacing: 16,
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,
@@ -104,17 +113,16 @@ class _ChangePasswordState extends State<ChangePassword> {
           Navigator.pop(context);
         },
       ),
-      title: Text(
-        "Change password",
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-      ),
+      shadowColor: greySecondaryYarn,
+      elevation: 0.5,
     );
   }
 
   Widget oldPasswordWidget() {
     return CustomizedTextFormField(
-      maxLength: 6,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(6),
+      ],
       obscureText: true,
       keyboardType: TextInputType.number,
       labelText: "Current password",
@@ -129,7 +137,9 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   Widget newPasswordWidget() {
     return CustomizedTextFormField(
-      maxLength: 6,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(6),
+      ],
       obscureText: true,
       keyboardType: TextInputType.number,
       labelText: "New password",
@@ -145,7 +155,9 @@ class _ChangePasswordState extends State<ChangePassword> {
   Widget confirmPasswordWidget() {
     return CustomizedTextFormField(
       obscureText: true,
-      maxLength: 6,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(6),
+      ],
       labelText: "Confirm password",
       isPassword: true,
       controller: _confirmPasswordController,

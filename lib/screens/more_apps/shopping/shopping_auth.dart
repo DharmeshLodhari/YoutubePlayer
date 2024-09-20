@@ -3233,7 +3233,6 @@ class ShoppingAuthService extends AuthService {
     if (next == null) {
       return null;
     }
-    final startTime = DateTime.now();
     if (next == "") {
       url = "${AppConfig.baseUrl}/api/v1/business/discounts/";
     } else if (activeDiscount!) {
@@ -3273,9 +3272,6 @@ class ShoppingAuthService extends AuthService {
         "results": discountList
       };
 
-      final endTime = DateTime.now();
-      // debugPrint(
-      //     'discount List: ${endTime.difference(startTime).inMilliseconds}ms');
       // debugPrint('CALLING OTHER check ---> ${result}');
       return result;
     } else if (response.statusCode == 500) {

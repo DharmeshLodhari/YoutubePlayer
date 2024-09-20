@@ -11,13 +11,14 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ReviewTile extends StatefulWidget {
-  late final Review? review;
+  final Review? review;
   final CustomerProfile? reviewedUser;
   final Product? product;
   final Service? service;
   final bool? isNavigable;
 
-  ReviewTile({
+  const ReviewTile({
+    super.key,
     this.review,
     this.reviewedUser,
     this.isNavigable = true,

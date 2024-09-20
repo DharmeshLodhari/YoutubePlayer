@@ -767,8 +767,10 @@ class _SignUpState extends State<SignUp> {
       labelText: "Password",
       keyboardType: TextInputType.number,
       obscureText: true,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      maxLength: 6,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(6),
+        FilteringTextInputFormatter.digitsOnly
+      ],
       isPassword: true,
       validator: validateEnteredPassword,
     );
@@ -780,9 +782,11 @@ class _SignUpState extends State<SignUp> {
       labelColor: darkGrey,
       labelText: "Confirm password",
       keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       obscureText: true,
-      maxLength: 6,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(6),
+        FilteringTextInputFormatter.digitsOnly
+      ],
       isPassword: true,
       validator: validateEnteredConfirmPassword,
     );

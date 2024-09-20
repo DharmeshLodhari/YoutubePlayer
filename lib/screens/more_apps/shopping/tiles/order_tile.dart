@@ -60,7 +60,6 @@ class _OrderTileState extends State<OrderTile> {
   String? status = "";
   String? dateText;
   DateTime? selectDateTime;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool isLoading = false;
 

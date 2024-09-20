@@ -39,7 +39,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
@@ -114,7 +113,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Variant? availableVariant;
   int selectedIndex = 0;
   bool isSelected = true;
-  late flutterQuill.QuillController _quillController;
   dynamic descriptionBodyTextJson;
 
   @override

@@ -7,6 +7,7 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/payment_and_banking/screens/banking/user_kyc.dart';
+import 'package:Slydo/screens/settings/set_currency.dart';
 import 'package:Slydo/screens/user_profile/models/device.dart';
 import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/screens/yarn/yarn_setting_screen.dart';
@@ -103,101 +104,34 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
     return Column(
       children: [
         Expanded(
-            child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                getReferralCodeTile(),
-                getIncomingSoundTile(),
-                getOutGoingSoundTile(),
-                getAccountBalanceVisibilityTile(),
-                getCurrencyTile(),
-                getLanguageTile(),
-                getSettingsTile(
-                    title: "Yarn Settings",
-                    onTap: () {
-                      NavigationUtil.push(
-                        context,
-                        screen: const YarnSettingsScreen(),
-                      );
-                    }),
-                getSettingsTile(
-                  title: "Upgrade Account Tier/KYC",
-                  onTap: () async {
-                    showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) =>
-                            Center(child: LoadingIndicator()));
-                    PaymentAndBankingAuth()
-                        .checkIfKycIsVerified(userName: userBloc.user.userName!)
-                        .then(
-                      (kycModel) {
-                        Navigator.pop(context);
-
-                        if (kycModel != null) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => UserKyc(kycModel: kycModel),
-                            ),
-                          );
-                        } else {
-                          Navigator.pushNamed(context, '/upgrade-account');
-                        }
-                      },
-                    ).catchError(
-                      (e) {
-                        Navigator.pop(context);
-                        showToast(message: e.toString());
-                      },
-                    );
-                  },
-                ),
-                getSettingsTile(
-                    title: "Change Password",
-                    onTap: () async {
-                      Navigator.of(context).pushNamed(Routes.CHANGE_PASSWORD);
-                    }),
-                getSettingsTile(
-                    title: "Deactivate Account",
-                    onTap: () async {
-                      deactivateAccountDialogue();
-                    }),
-                getSettingsTile(
-                    title: "Terms of Service",
-                    onTap: () async {
-                      try {
-                        if (!await launchUrl(
-                            Uri.parse(AppConfig.termsAndCondition ?? ""))) {
-                          throw 'Could not launch ${AppConfig.termsAndCondition!}';
-                        }
-                      } catch (error) {
-                        debugPrint("Error:- $error");
-                      }
-                    }),
-                getSettingsTile(
-                    title: "Privacy Policy",
-                    onTap: () async {
-                      try {
-                        if (!await launchUrl(
-                            Uri.parse(AppConfig.privacyPolicy ?? ""))) {
-                          throw 'Could not launch ${AppConfig.privacyPolicy!}';
-                        }
-                      } catch (error) {
-                        debugPrint("Error:- $error");
-                      }
-                    }),
-                Center(child: _infoTile()),
-                const SizedBox(
-                  height: 120,
-                ),
-                // getLogoutTile(),
-              ],
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  getReferralCodeTile(),
+                  getIncomingSoundTile(),
+                  getOutGoingSoundTile(),
+                  getAccountBalanceVisibilityTile(),
+                  getCurrencyTile(),
+                  getLanguageTile(),
+                  getYarnSettingTile(),
+                  getUpgradeKycTile(),
+                  getChangePassword(),
+                  getDeactivateAccount(),
+                  getTermsOfService(),
+                  getPrivacyPolicy(),
+                  Center(child: _infoTile()),
+                  const SizedBox(
+                    height: 120,
+                  ),
+                  // getLogoutTile(),
+                ],
+              ),
             ),
           ),
-        )),
+        ),
       ],
     );
   }
@@ -411,21 +345,202 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             overflow: TextOverflow.fade,
             softWrap: false,
           ),
-          trailing: Text(
-            worldCurrencies[userBloc.user.currency!]!,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                worldCurrencies[userBloc.user.currency!]!,
+                maxLines: 1,
+                style: TextStyle(
+                  color: darkGrey,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                ),
+                overflow: TextOverflow.fade,
+                softWrap: false,
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.chevron_right_outlined,
+                color: navyBlue,
+              ),
+            ],
+          ),
+          onTap: () {
+            NavigationUtil.push(
+              context,
+              screen: const SetCurrency(),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget getYarnSettingTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "Yarn Settings",
             maxLines: 1,
             style: TextStyle(
-              color: darkGrey,
-              fontWeight: FontWeight.w400,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
               fontSize: 14,
               fontFamily: "Inter",
             ),
             overflow: TextOverflow.fade,
             softWrap: false,
           ),
-          onTap: () {},
+          trailing: Icon(
+            Icons.chevron_right_outlined,
+            color: navyBlue,
+          ),
+          onTap: () {
+            NavigationUtil.push(
+              context,
+              screen: const YarnSettingsScreen(),
+            );
+          },
         ),
       ),
+    );
+  }
+
+  Widget getUpgradeKycTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "Upgrade Account Tier/KYC",
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              fontFamily: "Inter",
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          trailing: Icon(
+            Icons.chevron_right_outlined,
+            color: navyBlue,
+          ),
+          onTap: () async {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => Center(child: LoadingIndicator()));
+            PaymentAndBankingAuth()
+                .checkIfKycIsVerified(userName: userBloc.user.userName!)
+                .then(
+              (kycModel) {
+                Navigator.pop(context);
+
+                if (kycModel != null) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => UserKyc(kycModel: kycModel),
+                    ),
+                  );
+                } else {
+                  Navigator.pushNamed(context, '/upgrade-account');
+                }
+              },
+            ).catchError(
+              (e) {
+                Navigator.pop(context);
+                showToast(message: e.toString());
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget getChangePassword() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "Change Password",
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              fontFamily: "Inter",
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          trailing: Icon(
+            Icons.chevron_right_outlined,
+            color: navyBlue,
+          ),
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.CHANGE_PASSWORD);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget getDeactivateAccount() {
+    return getSettingsTile(
+      title: "Deactivate Account",
+      onTap: () async {
+        deactivateAccountDialogue();
+      },
+    );
+  }
+
+  Widget getTermsOfService() {
+    return getSettingsTile(
+      title: "Terms of Service",
+      onTap: () async {
+        try {
+          if (!await launchUrl(Uri.parse(AppConfig.termsAndCondition ?? ""))) {
+            throw 'Could not launch ${AppConfig.termsAndCondition!}';
+          }
+        } catch (error) {
+          debugPrint("Error:- $error");
+        }
+      },
+    );
+  }
+
+  Widget getPrivacyPolicy() {
+    return getSettingsTile(
+      title: "Privacy Policy",
+      onTap: () async {
+        try {
+          if (!await launchUrl(Uri.parse(AppConfig.privacyPolicy ?? ""))) {
+            throw 'Could not launch ${AppConfig.privacyPolicy!}';
+          }
+        } catch (error) {
+          debugPrint("Error:- $error");
+        }
+      },
     );
   }
 

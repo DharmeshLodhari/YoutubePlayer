@@ -114,20 +114,20 @@ class _TrackOrderState extends State<TrackOrder> {
             fontFamily: "Inter",
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
+        const Padding(
+          padding: EdgeInsets.all(10.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const OrderStep(
+              OrderStep(
                 icon: "assets/images/package.svg",
               ),
               DottedLine(),
-              const OrderStep(
+              OrderStep(
                 icon: "assets/images/rider_image.png",
               ),
               DottedLine(),
-              const OrderStep(
+              OrderStep(
                 icon: "assets/images/flat_house.svg",
               ),
             ],
@@ -458,10 +458,11 @@ class _TrackOrderState extends State<TrackOrder> {
 
   String formatDate(String inputString) {
     // Parse the input string to a DateTime object
-    DateTime dateTime = DateTime.parse(inputString);
+    final DateTime dateTime = DateTime.parse(inputString);
 
     // Format the DateTime object to the desired format
-    String formattedDate = DateFormat('EEEE MMMM d HH:mm:ss').format(dateTime);
+    final String formattedDate =
+        DateFormat('EEEE MMMM d HH:mm:ss').format(dateTime);
 
     return formattedDate;
   }

@@ -1764,7 +1764,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           profileIcon: 'profile_page/currency_icon',
           onTap: () async {
             Navigator.pop(context);
-            showToast(message: 'Coming soon');
+            Navigator.of(context).pushNamed(Routes.CURRENCY_LIST);
           },
         ),
       );

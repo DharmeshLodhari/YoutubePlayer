@@ -266,7 +266,7 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
       final List<FileSystemEntity> fileList = downloadDirectory.listSync();
 
       // Iterate through each file and delete if it starts with "extracted_"
-      for (FileSystemEntity file in fileList ?? []) {
+      for (FileSystemEntity file in fileList) {
         if (file is File && file.path.startsWith('$downloadPath/extracted_')) {
           if (await file.exists()) {
             file.delete();

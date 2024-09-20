@@ -168,9 +168,11 @@ import 'package:Slydo/screens/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/user_profile/forms/verify_registration_otp.dart';
 import 'package:Slydo/screens/user_profile/forms/verify_reset_device_otp.dart';
 import 'package:Slydo/screens/user_profile/forms/verify_reset_password_otp.dart';
-import 'package:Slydo/screens/user_profile/screens/DispatchAddress/dispatch_address.dart';
+import 'package:Slydo/screens/user_profile/screens/currency/add_edit_currency.dart';
+import 'package:Slydo/screens/user_profile/screens/currency/currency_list.dart';
 import 'package:Slydo/screens/user_profile/screens/custom_category/custom_category_list.dart';
 import 'package:Slydo/screens/user_profile/screens/discount/discount_list.dart';
+import 'package:Slydo/screens/user_profile/screens/dispatch_address/dispatch_address.dart';
 import 'package:Slydo/screens/user_profile/screens/flash_tags/flash_tag_list.dart';
 import 'package:Slydo/screens/user_profile/screens/shipping_options/add_shipping_options.dart';
 import 'package:Slydo/screens/user_profile/screens/shipping_options/edit_shipping_options.dart';
@@ -232,7 +234,7 @@ import '../screens/service_hub/service_hub_dashboard.dart';
 import '../screens/super_store/near_by_list_screen.dart';
 import '../screens/super_store/search_nearby_business.dart';
 import '../screens/super_store/super_store.dart';
-import '../screens/user_profile/screens/customize_profile.dart';
+import '../screens/user_profile/screens/customize_profile/customize_profile.dart';
 import '../screens/user_profile/screens/subscriptions/pre_account_upgrade.dart';
 
 class RouteGenerator {
@@ -2214,6 +2216,22 @@ class RouteGenerator {
       case Routes.PRODUCT_AND_SERVICE_SOCIAL_MEDIA:
         return PageTransition(
           child: SocialMedia(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.CURRENCY_LIST:
+        return PageTransition(
+          child: const CurrencyList(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.ADD_EDIT_CURRENCY:
+        return PageTransition(
+          child: AddEditCurrency(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

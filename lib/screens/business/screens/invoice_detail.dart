@@ -828,7 +828,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     });
   }
 
-  _downloadInvoice() async {
+  void _downloadInvoice() async {
     final String fileName = 'Invoice_${invoice.id}.pdf';
     final PermissionStatus status = await Permission.storage.request();
 

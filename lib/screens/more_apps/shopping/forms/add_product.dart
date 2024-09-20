@@ -49,10 +49,6 @@ class _AddProductState extends State<AddProduct> {
 
   UserBloc? userBloc;
 
-  ProductCategory? pressedCategory;
-  ProductCategory? pressedSubCategory;
-  ProductCategory? selectedProductCategory;
-  ProductCategory? selectedSubCategory;
   ProductCondition? selectedProductCondition;
   ProductCondition? selectedDeliveryTimeCondition;
   int imageCount = 5;
@@ -67,6 +63,7 @@ class _AddProductState extends State<AddProduct> {
   String searchKeyword = "";
   String productCategory = "";
   String productSubCategory = "";
+  String currencyName = "";
   String productCondition = "";
   String deliveryTimeCondition = "";
   String productPrice = "";
@@ -87,8 +84,47 @@ class _AddProductState extends State<AddProduct> {
   List<ProductCategory>? subCategories;
   List<ProductCategory>?
       productCategoriesCopy; //To hold the full product category at all times.
-  List<ProductCategory>?
-      subCategoriesCopy; //To hold the full product category at all times.
+  List<ProductCategory>? subCategoriesCopy;
+  ProductCategory? pressedCategory;
+  ProductCategory? pressedSubCategory;
+  ProductCategory? selectedProductCategory;
+  ProductCategory? selectedSubCategory;
+  List<String>? currencyList = [
+    "MVR (Rf)",
+    "MWK (MK)",
+    "MXN (Mex\$)",
+    "MYR (RM)",
+    "MZN (MT)",
+    "NAD (N\$)",
+    "NGN (₦)",
+    "NIO (C\$)",
+    "NOK (Nkr)",
+    "NPR (₨)",
+    "NZD (NZ\$)",
+    "TRY (TL)",
+    "TTD (TT\$)",
+    "TVD (\$T)",
+    "TWD (NT\$)",
+    "UAH (₴)",
+    "UGX (USh)",
+    "UYU (\$U)",
+    "VEF (Bs)",
+    "VND (₫)",
+    "VUV (VT)",
+    "WST (WS\$)",
+    "XAF (FCFA)",
+    "XCD (EC\$)",
+    "XDR (SDR)",
+    "XOF (CFA)",
+    "ZAR (R)",
+    "ZMK (ZK)",
+    "ZWL (Z\$)",
+    "ZWD (Z\$)",
+    "USD (\$)"
+  ];
+  String? selectedCurrency;
+  String? pressedCurrency;
+
   bool isLoading = false;
   bool isDiscountLoading = false;
   bool isAPILoading = false;
@@ -365,7 +401,13 @@ class _AddProductState extends State<AddProduct> {
                             const SizedBox(height: 10),
                             getManufacturerField(),
                             const SizedBox(height: 10),
+                            getCurrencyModeField(),
+                            const SizedBox(height: 10),
                             getAmountField(),
+                            if (selectedCurrency != "NGN (₦)") ...[
+                              const SizedBox(height: 10),
+                              getConversionInNairaField(),
+                            ],
                             const SizedBox(height: 10),
                             getCategoryField(),
                             const SizedBox(height: 10),
@@ -797,6 +839,32 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
+  Widget getCurrencyModeField() {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.currencyMode,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedCurrency != null ? selectedCurrency ?? "" : "",
+          style: TextStyle(
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          currencyAndroidSheet();
+        },
+      ),
+    );
+  }
+
   Widget getCategoryField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context)!.category,
@@ -997,6 +1065,113 @@ class _AddProductState extends State<AddProduct> {
                                       pressedCustomCategory;
                                   productCustomCategory =
                                       selectedCustomCategory!.name;
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : const Center(
+                          child: Text(
+                            "No Data",
+                          ),
+                        ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void currencyAndroidSheet() {
+    // currencyList = productCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search currency',
+                  onChanged: (value) {
+                    // if (value.toString().isNotEmpty) {
+                    //   productCategories = productCategoriesCopy!
+                    //       .where((element) => element.name
+                    //           .toLowerCase()
+                    //           .startsWith(value.toString().toLowerCase()))
+                    //       .toList();
+                    //   changeState(
+                    //       () {}); // To upgrade the product categories in the bottom sheet.
+                    // } else {
+                    //   productCategories = productCategoriesCopy;
+                    //   changeState(() {});
+                    // }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: currencyList?.isNotEmpty ?? false
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: currencyList?.length,
+                          itemBuilder: (context, index) {
+                            final String currency = currencyList![index];
+                            if (selectedProductCategory == currency) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    currency,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontFamily: "Inter",
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedCurrency = currency;
+                                    Navigator.pop(context);
+                                    if (pressedCurrency != null) {
+                                      selectedCurrency = pressedCurrency;
+                                      currencyName = selectedCurrency!;
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                currency,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedCurrency = currency;
+                                Navigator.pop(context);
+                                if (pressedCurrency != null) {
+                                  selectedCurrency = pressedCurrency;
+                                  currencyName = selectedCurrency!;
+                                  productSubCategory = "";
+                                  selectedSubCategory = null;
                                   setState(() {});
                                 }
                               },
@@ -1218,7 +1393,8 @@ class _AddProductState extends State<AddProduct> {
                                   Navigator.pop(context);
                                   if (pressedCategory != null) {
                                     selectedSubCategory = pressedCategory;
-                                    productCategory = selectedSubCategory!.name;
+                                    productSubCategory =
+                                        selectedSubCategory!.name;
                                     setState(() {});
                                   }
                                 },
@@ -1237,87 +1413,6 @@ class _AddProductState extends State<AddProduct> {
         },
       ),
     );
-  }
-
-  void selectItemCategory() async {
-    final pressedCategory = await showDialog<ProductCategory>(
-        context: context,
-        builder: (context) => AlertDialog(
-              backgroundColor: Colors.white,
-              insetPadding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: productCategories?.map<Widget>((category) {
-                              if (selectedProductCategory == category) {
-                                return Container(
-                                  color: selectedListItemBackgroundBlue,
-                                  child: ListTile(
-                                    dense: true,
-                                    title: Text(
-                                      category.name,
-                                      overflow: TextOverflow.fade,
-                                      softWrap: false,
-                                      style: TextStyle(
-                                          color: navyBlue,
-                                          fontSize: 16,
-                                          fontFamily: "Inter",
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    trailing: Icon(
-                                      SlydoAppIcon.checked,
-                                      color: navyBlue,
-                                      size: 12,
-                                    ),
-                                    onTap: () {
-                                      Navigator.pop(context, category);
-                                    },
-                                  ),
-                                );
-                              }
-                              return ListTile(
-                                title: Text(
-                                  category.name,
-                                  softWrap: false,
-                                  overflow: TextOverflow.fade,
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 16,
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                dense: true,
-                                onTap: () {
-                                  Navigator.pop(context, category);
-                                },
-                              );
-                            }).toList() ??
-                            [],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ));
-    if (pressedCategory != null) {
-      selectedProductCategory = pressedCategory;
-      productCategory = selectedProductCategory!.name;
-      setState(() {});
-    }
   }
 
   bool showDeliveryTime() {
@@ -1695,6 +1790,36 @@ class _AddProductState extends State<AddProduct> {
   Widget getAmountField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.price,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            productPrice = double.parse(val.replaceAll(',', '')).toString();
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+
+  Widget getConversionInNairaField() {
+    return CustomizedTextFormField(
+      labelText: 'Price (Conversion in Naira)',
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,

@@ -4,11 +4,11 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../locale/app_localization.dart';
-import '../../../../widget/curved_btn.dart';
-import '../../../../widget/customized_textform_field.dart';
-import '../models/custom_profile_model.dart';
-import '../user_auth.dart';
+import '../../../../../locale/app_localization.dart';
+import '../../../../../widget/curved_btn.dart';
+import '../../../../../widget/customized_textform_field.dart';
+import '../../models/custom_profile_model.dart';
+import '../../user_auth.dart';
 
 class CustomizeProfileScreen extends StatefulWidget {
   final dynamic arguments;

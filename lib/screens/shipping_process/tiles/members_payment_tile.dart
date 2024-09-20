@@ -294,7 +294,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
             ),
           );
         }),
-        ButtonOnPressed: () async {
+        buttonOnPressed: () async {
           if (_formKey.currentState!.validate()) {
             if (percentageValue <= 100) {
               errorMessage =

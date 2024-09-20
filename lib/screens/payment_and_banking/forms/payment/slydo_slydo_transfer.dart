@@ -133,7 +133,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       amount = double.parse(_amountController.text.replaceAll(',', ''));
       selectedCategory = transaction?.category ?? "";
       _referenceController.text = transaction?.note ?? "";
-      reference = _referenceController.text ?? "";
+      reference = _referenceController.text;
       sendMoneyAnonymous = transaction?.isAnonymous ?? false;
     }
     if (product != null) {
@@ -1043,16 +1043,25 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
             fontFamily: "Inter",
           ),
         ),
-        Switch(
-          value: sendMoneyAnonymous,
-          onChanged: (value) {
-            sendMoneyAnonymous = value;
-            setState(() {});
-            if (value) sendMoneyAnonymousAlert();
-          },
-          activeTrackColor: navyBlueLight,
-          activeColor: navyBlue,
-          inactiveTrackColor: navyBlueLight,
+        SizedBox(
+          width: 50,
+          height: 35,
+          child: FittedBox(
+            fit: BoxFit.fill,
+            child: Switch(
+              value: sendMoneyAnonymous,
+              onChanged: (value) {
+                sendMoneyAnonymous = value;
+                setState(() {});
+                if (value) sendMoneyAnonymousAlert();
+              },
+              thumbIcon: MaterialStateProperty.all(const Icon(null)),
+              activeTrackColor: navyBlue,
+              activeColor: Colors.white,
+              inactiveTrackColor: darkGreyYarn,
+              inactiveThumbColor: Colors.white,
+            ),
+          ),
         ),
       ],
     );
@@ -1239,17 +1248,17 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                     // Center(child: CircularLoadingIndicator()));
 
                     try {
-                      if (Platform.isIOS) {
-                        try {
-                          userLocation =
-                              await locationService.getLocationEndless();
-                        } catch (e) {
-                          Navigator.pop(context);
-                          debugPrint(e.toString());
-                          showToast(message: e.toString());
-                          return;
-                        }
-                      }
+                      // if (Platform.isIOS) {
+                      //   try {
+                      //     userLocation =
+                      //         await locationService.getLocationEndless();
+                      //   } catch (e) {
+                      //     Navigator.pop(context);
+                      //     debugPrint(e.toString());
+                      //     showToast(message: e.toString());
+                      //     return;
+                      //   }
+                      // }
 
                       // double currentBalance = await getAccountBalance();
                       // double transactionalAmount = double.parse(amount.toString());
@@ -1278,9 +1287,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                             reference.isEmpty ? description : reference.trim(),
                         "description":
                             reference.isEmpty ? description : reference.trim(),
-                        "latitude": Platform.isIOS ? userLocation.latitude : "",
-                        "longitude":
-                            Platform.isIOS ? userLocation.longitude : "",
+                        "latitude": "",
+                        "longitude": "",
                         "deviceData": deviceData,
                         "is_anonymous": sendMoneyAnonymous,
                         "made_from_chat": isFromChat,

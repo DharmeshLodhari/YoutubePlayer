@@ -2325,6 +2325,20 @@ class AppLocalization {
     );
   }
 
+  String get currency {
+    return Intl.message(
+      "Currency",
+      name: "currency",
+    );
+  }
+
+  String get currencyMode {
+    return Intl.message(
+      "Currency Mode",
+      name: "currencyMode",
+    );
+  }
+
   String get category {
     return Intl.message(
       "Category",

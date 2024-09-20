@@ -35,7 +35,7 @@ class RenderMoment extends StatefulWidget {
       required this.momentsModelList});
 
   @override
-  RenderMomentState createState() => RenderMomentState(key: key);
+  RenderMomentState createState() => RenderMomentState();
 }
 
 class RenderMomentState extends State<RenderMoment>

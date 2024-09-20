@@ -663,7 +663,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.user, this.groupDetail);
+  const VerticalListItem(this.user, this.groupDetail, {super.key});
 
   final CustomerProfile user;
   final GroupDetailModel? groupDetail;

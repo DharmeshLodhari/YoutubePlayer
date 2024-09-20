@@ -16,18 +16,19 @@ class CustomizedAlert {
   final List<DialogButton>? buttons;
   final Function? closeFunction;
   final RoundedBackgroundIcon? roundedBackgroundIcon;
+  final double? descriptionPadding;
 
-  CustomizedAlert({
-    required this.context,
-    this.style = const AlertStyle(),
-    this.image,
-    required this.title,
-    this.roundedBackgroundIcon,
-    this.desc,
-    this.content,
-    this.buttons,
-    this.closeFunction,
-  });
+  CustomizedAlert(
+      {required this.context,
+      this.style = const AlertStyle(),
+      this.image,
+      required this.title,
+      this.roundedBackgroundIcon,
+      this.desc,
+      this.content,
+      this.buttons,
+      this.closeFunction,
+      this.descriptionPadding});
 
   /// Displays defined alert window
   Future<bool?> show() async {
@@ -84,10 +85,11 @@ class CustomizedAlert {
                                 Text(
                                   title ?? "",
                                   style: TextStyle(
-                                      color: blackFont,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: "Inter",
-                                      fontSize: 16.0),
+                                    color: blackFont,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: "Inter",
+                                    fontSize: 16.0,
+                                  ),
                                   textAlign: TextAlign.center,
                                 ),
                                 SizedBox(
@@ -97,15 +99,16 @@ class CustomizedAlert {
                                   Container()
                                 else
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 40),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: descriptionPadding ?? 40),
                                     child: Text(
                                       desc ?? "",
                                       style: TextStyle(
-                                          color: lightBlackFont,
-                                          fontSize: 14.0,
-                                          fontWeight: FontWeight.w400,
-                                          fontFamily: "Inter"),
+                                        color: lightBlackFont,
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: "Inter",
+                                      ),
                                       textAlign: TextAlign.center,
                                     ),
                                   ),

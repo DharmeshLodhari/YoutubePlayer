@@ -155,21 +155,28 @@ class SavedYarnState extends State<SavedYarn> {
     return PreferredSize(
       preferredSize: const Size.fromHeight(50.0),
       child: AppBar(
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.white,
-        titleSpacing: 0,
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Saved Yarn',
-              overflow: TextOverflow.fade,
-              style: TextStyle(
-                fontSize: 21,
-                fontWeight: FontWeight.w700,
-                color: yarnBlack,
-              ),
-            ),
-          ],
+        title: Text(
+          'Saved Yarn',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: yarnBlack,
+            height: 1.3,
+          ),
+        ),
+        centerTitle: false,
+        titleSpacing: 16,
+        leading: IconButton(
+          icon: Icon(
+            Icons.keyboard_arrow_left,
+            color: navyBlue,
+            size: 24,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         actions: [
           Row(
@@ -191,17 +198,8 @@ class SavedYarnState extends State<SavedYarn> {
             ],
           ),
         ],
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_arrow_left,
-            color: yarnBlack,
-            size: 26,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        shadowColor: greySecondaryYarn,
+        elevation: 0.5,
       ),
     );
   }

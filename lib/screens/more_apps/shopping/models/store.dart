@@ -2012,7 +2012,7 @@ class Service extends PurchasableItem {
   String getServiceRealPrice() {
     if (discountedPrice != null || discountedPrice != 0) {
       if (checkServiceDiscount()) {
-        return discountedPrice.toString() ?? "0";
+        return discountedPrice.toString();
       }
     }
     return price ?? "0";

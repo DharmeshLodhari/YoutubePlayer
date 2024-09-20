@@ -44,37 +44,44 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
     return AppBar(
       surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
-      elevation: 0,
-      leading: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: const Icon(
-          Icons.keyboard_arrow_left,
-          color: Colors.black,
-          size: 26,
+      title: Text(
+        'Yarn Settings',
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: yarnBlack,
+          height: 1.3,
         ),
       ),
-      titleSpacing: 0,
-      title: Text(
-        "Yarn Settings",
-        style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-            color: HexColor("#030F36")),
+      centerTitle: false,
+      titleSpacing: 16,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
       ),
+      shadowColor: greySecondaryYarn,
+      elevation: 0.5,
     );
   }
 
   Widget _buildBody(BuildContext context) {
-    return ListView(
-      children: [
-        _buildCategoryTile(context),
-        _buildNotificationTile(),
-        _buildSensitiveContentTile(),
-        _buildAdultContentTile(),
-        _buildSavedYarn(context),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: ListView(
+        children: [
+          _buildCategoryTile(context),
+          _buildNotificationTile(),
+          _buildSensitiveContentTile(),
+          _buildAdultContentTile(),
+          _buildSavedYarn(context),
+        ],
+      ),
     );
   }
 

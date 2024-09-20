@@ -734,8 +734,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         children: [
           const SizedBox(width: 10),
           Icon(
-            Icons.keyboard_arrow_right_outlined,
-            size: 24,
+            Icons.chevron_right_outlined,
             color: navyBlue,
           ),
           const SizedBox(width: 5),
@@ -767,8 +766,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                 children: [
                   const SizedBox(width: 10),
                   Icon(
-                    Icons.keyboard_arrow_right_outlined,
-                    size: 24,
+                    Icons.chevron_right_outlined,
                     color: navyBlue,
                   ),
                   const SizedBox(width: 5),

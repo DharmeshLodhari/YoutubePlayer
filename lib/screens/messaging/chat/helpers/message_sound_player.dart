@@ -28,11 +28,11 @@ class MessageSoundPlayer {
           respectSilentMode: true,
         );
       } else if (messageData["type"] == "nudge_user") {
-        final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer.withId(
+        final AssetsAudioPlayer audioPlayer = AssetsAudioPlayer.withId(
           messageData["author"],
         );
 
-        _audioPlayer.open(Audio(sound),
+        audioPlayer.open(Audio(sound),
             autoStart: true,
             respectSilentMode: true,
             loopMode: LoopMode.single);

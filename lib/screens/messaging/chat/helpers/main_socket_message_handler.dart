@@ -624,7 +624,7 @@ class MainSocketMessageHandler {
     backgroundFetchBloc.isAllowed = false;
 
     emptyBasketCart();
-    SharedPreferences _sharedPreferences;
+    SharedPreferences sharedPreferences;
 
     MainSocketMessageHandler().dispose();
 
@@ -651,8 +651,8 @@ class MainSocketMessageHandler {
     } catch (e) {
       debugPrint("===>$e");
     }
-    _sharedPreferences = await SharedPreferences.getInstance();
-    _sharedPreferences.setBool('isLoggedOut', true);
+    sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setBool('isLoggedOut', true);
     // await _sharedPreferences.clear();
 
     /// clearing all data when user is logout
