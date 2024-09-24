@@ -3,9 +3,9 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/user_profile/utils.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
@@ -14,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class CustomCategoryList extends StatefulWidget {
@@ -322,73 +321,11 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
                       // msg: AppLocalization.of(context)!.noProducts,
                       )
                   : isLoading
-                      ? _buildShimmerEffect()
+                      ? buildShimmerEffect()
                       : _buildItemList(),
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerEffect() {
-    return Shimmer.fromColors(
-      baseColor: Colors.white,
-      highlightColor: greyBorderColor,
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return Container(
-            height: 90,
-            margin: const EdgeInsets.symmetric(vertical: 16.0),
-            child: CustomBoxShadow(
-              child: Card(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                    side: BorderSide(color: selectedListItemBackgroundBlue),
-                    borderRadius: BorderRadius.circular(10)),
-                margin: EdgeInsets.zero,
-                shadowColor: boxShadowTwo,
-                color: white,
-                child: Container(
-                  padding: const EdgeInsets.only(top: 23, left: 16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 10,
-                              width: 50,
-                              color: Colors.blueGrey,
-                            ),
-                            const SizedBox(
-                              height: 12,
-                            ),
-                            Container(
-                              height: 8,
-                              width: 50,
-                              color: Colors.blueGrey,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 10,
-                        width: 50,
-                        color: Colors.blueGrey,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }

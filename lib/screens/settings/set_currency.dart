@@ -10,11 +10,12 @@ class SetCurrency extends StatefulWidget {
 }
 
 class _SetCurrencyState extends State<SetCurrency> {
-  List<String> currencyList = [
-    "Nigerian NGN (₦)",
-    "US Dollar (\$)",
-    "Europe Pound (£)",
-    "UK Pound (£)",
+  final List<Map<String, String>> currencyList = [
+    {'name': 'USD', 'flag': 'assets/images/flags/us.png'},
+    {'name': 'GBP', 'flag': 'assets/images/flags/sh.png'},
+    {'name': 'EUR', 'flag': 'assets/images/flags/eu.png'},
+    {'name': 'KHR', 'flag': 'assets/images/flags/kh.png'},
+    {'name': 'CAD', 'flag': 'assets/images/flags/ca.png'},
   ];
   int selectedCurrencyIndex = 0;
 
@@ -77,14 +78,14 @@ class _SetCurrencyState extends State<SetCurrency> {
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(25),
                   child: Image.asset(
-                    'assets/images/flags/ng.png',
+                    currencyList[index]['flag']!,
                     height: 40.0,
                     width: 40.0,
                     fit: BoxFit.fill,
                   ),
                 ),
                 title: Text(
-                  currencyList[index],
+                  currencyNameAndSymbol(currencyList[index]['name']),
                   maxLines: 1,
                   style: TextStyle(
                     color: blackFont,

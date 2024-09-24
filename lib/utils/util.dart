@@ -2985,3 +2985,10 @@ Widget getUserCurrencySymbol(BuildContext context,
     ),
   );
 }
+
+String currencyNameAndSymbol(String? currencyCode) {
+  if (currencyCode != null && (currencyCode.isNotEmpty)) {
+    return '$currencyCode (${worldCurrencies[currencyCode]})';
+  }
+  return '';
+}

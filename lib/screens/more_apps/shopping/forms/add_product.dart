@@ -9,8 +9,10 @@ import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/screens/user_profile/forms/add_edit_shipping_address.dart';
+import 'package:Slydo/screens/user_profile/models/currency_model.dart';
 import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -21,6 +23,7 @@ import 'package:Slydo/widget/custom_textfield_tag.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/customized_textform_field_for_foreign_currency.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -63,10 +66,10 @@ class _AddProductState extends State<AddProduct> {
   String searchKeyword = "";
   String productCategory = "";
   String productSubCategory = "";
-  String currencyName = "";
   String productCondition = "";
   String deliveryTimeCondition = "";
   String productPrice = "";
+  String foreignPrice = "";
   String productManufacturer = "";
   String productCustomCategory = "";
   bool productIsAvailable = false;
@@ -89,41 +92,18 @@ class _AddProductState extends State<AddProduct> {
   ProductCategory? pressedSubCategory;
   ProductCategory? selectedProductCategory;
   ProductCategory? selectedSubCategory;
-  List<String>? currencyList = [
-    "MVR (Rf)",
-    "MWK (MK)",
-    "MXN (Mex\$)",
-    "MYR (RM)",
-    "MZN (MT)",
-    "NAD (N\$)",
-    "NGN (₦)",
-    "NIO (C\$)",
-    "NOK (Nkr)",
-    "NPR (₨)",
-    "NZD (NZ\$)",
-    "TRY (TL)",
-    "TTD (TT\$)",
-    "TVD (\$T)",
-    "TWD (NT\$)",
-    "UAH (₴)",
-    "UGX (USh)",
-    "UYU (\$U)",
-    "VEF (Bs)",
-    "VND (₫)",
-    "VUV (VT)",
-    "WST (WS\$)",
-    "XAF (FCFA)",
-    "XCD (EC\$)",
-    "XDR (SDR)",
-    "XOF (CFA)",
-    "ZAR (R)",
-    "ZMK (ZK)",
-    "ZWL (Z\$)",
-    "ZWD (Z\$)",
-    "USD (\$)"
-  ];
+  final TextEditingController amountController = TextEditingController();
+  final TextEditingController foreignController = TextEditingController();
   String? selectedCurrency;
+  String? selectedCurrencyId;
+  int? selectedCurrencyRate;
   String? pressedCurrency;
+  ForeignPrice? foreignPriceModel;
+
+  List<CurrencyModel>? currencyList;
+  int? currencyItemCount = 0;
+  String? currencyNext = "";
+  String? currencyPrevious = "";
 
   bool isLoading = false;
   bool isDiscountLoading = false;
@@ -147,6 +127,7 @@ class _AddProductState extends State<AddProduct> {
 
   // bool trackInventoryView = false;
   bool measurementView = false;
+  bool currencyView = false;
   bool isDiscountAvailable = false;
   List<Tags> userTags = [];
   ShippingAddress? defaultAddress;
@@ -181,6 +162,7 @@ class _AddProductState extends State<AddProduct> {
     isLoading = true;
     if (mounted) setState(() {});
     Future.delayed(const Duration(seconds: 2), () {
+      getCurrencyList();
       getDiscountList();
       getCategories();
       obtainCustomCategory();
@@ -278,6 +260,51 @@ class _AddProductState extends State<AddProduct> {
         isEmpty = tempList.isEmpty;
         defaultAddress = tempList.firstWhere((element) => element.isDefault!);
       });
+    }
+  }
+
+  Future<void> getCurrencyList() async {
+    final Map<String, dynamic> result =
+        await UserAuth().getCurrency(currencyNext, currencyPrevious);
+    if (result == null) {
+      isLoading = false;
+      noItemInList = true;
+      return;
+    }
+
+    currencyList = [];
+    currencyItemCount = result['count'];
+    currencyNext = result['next'];
+    currencyPrevious = result['previous'];
+    final tempList = result['results'];
+
+    currencyList?.addAll(tempList);
+    if (currencyList?.isNotEmpty ?? false) {
+      selectedCurrency = currencyList?[0].currency;
+      selectedCurrencyId = currencyList?[0].id;
+      selectedCurrencyRate = currencyList?[0].rate;
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        noItemInList = false;
+      });
+    }
+
+    if (currencyList?.isEmpty ?? false) {
+      if (mounted) {
+        setState(() {
+          noItemInList = true;
+          currencyList = [];
+        });
+      }
+    } else if (currencyNext == null && currencyList!.length > 6) {
+      _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+        content:
+            Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        duration: const Duration(milliseconds: 500),
+      ));
     }
   }
 
@@ -401,12 +428,12 @@ class _AddProductState extends State<AddProduct> {
                             const SizedBox(height: 10),
                             getManufacturerField(),
                             const SizedBox(height: 10),
-                            getCurrencyModeField(),
-                            const SizedBox(height: 10),
                             getAmountField(),
-                            if (selectedCurrency != "NGN (₦)") ...[
+                            const SizedBox(height: 10),
+                            getForeignCurrencyField(),
+                            if (currencyView) ...[
                               const SizedBox(height: 10),
-                              getConversionInNairaField(),
+                              getForeignCurrencyPriceField(),
                             ],
                             const SizedBox(height: 10),
                             getCategoryField(),
@@ -430,7 +457,7 @@ class _AddProductState extends State<AddProduct> {
                             getProductDescription(),
                             const SizedBox(height: 10),
                             getSearchEngineKeyword(),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 16),
                             getIsAvailableField(),
                             const SizedBox(height: 16),
                             if (productIsAvailable == true) ...[
@@ -839,32 +866,6 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  Widget getCurrencyModeField() {
-    return CustomizedDropDownField(
-      title: AppLocalization.of(context)!.currencyMode,
-      child: ListTile(
-        dense: true,
-        title: Text(
-          selectedCurrency != null ? selectedCurrency ?? "" : "",
-          style: TextStyle(
-            color: blackFont,
-            fontSize: 16,
-            fontFamily: "Inter",
-            fontWeight: FontWeight.w600,
-          ),
-          maxLines: 1,
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          currencyAndroidSheet();
-        },
-      ),
-    );
-  }
-
   Widget getCategoryField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context)!.category,
@@ -1065,113 +1066,6 @@ class _AddProductState extends State<AddProduct> {
                                       pressedCustomCategory;
                                   productCustomCategory =
                                       selectedCustomCategory!.name;
-                                  setState(() {});
-                                }
-                              },
-                            );
-                          },
-                        )
-                      : const Center(
-                          child: Text(
-                            "No Data",
-                          ),
-                        ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void currencyAndroidSheet() {
-    // currencyList = productCategoriesCopy;
-    androidBottomSheet(
-      context: context,
-      child: StatefulBuilder(
-        builder: (context, changeState) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.75,
-            child: Column(
-              children: [
-                CustomizedTextFormField(
-                  hintText: 'Search currency',
-                  onChanged: (value) {
-                    // if (value.toString().isNotEmpty) {
-                    //   productCategories = productCategoriesCopy!
-                    //       .where((element) => element.name
-                    //           .toLowerCase()
-                    //           .startsWith(value.toString().toLowerCase()))
-                    //       .toList();
-                    //   changeState(
-                    //       () {}); // To upgrade the product categories in the bottom sheet.
-                    // } else {
-                    //   productCategories = productCategoriesCopy;
-                    //   changeState(() {});
-                    // }
-                  },
-                ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: currencyList?.isNotEmpty ?? false
-                      ? ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: currencyList?.length,
-                          itemBuilder: (context, index) {
-                            final String currency = currencyList![index];
-                            if (selectedProductCategory == currency) {
-                              return Container(
-                                color: selectedListItemBackgroundBlue,
-                                child: ListTile(
-                                  dense: true,
-                                  title: Text(
-                                    currency,
-                                    overflow: TextOverflow.fade,
-                                    softWrap: false,
-                                    style: TextStyle(
-                                        color: navyBlue,
-                                        fontSize: 16,
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  trailing: Icon(
-                                    SlydoAppIcon.checked,
-                                    color: navyBlue,
-                                    size: 12,
-                                  ),
-                                  onTap: () {
-                                    pressedCurrency = currency;
-                                    Navigator.pop(context);
-                                    if (pressedCurrency != null) {
-                                      selectedCurrency = pressedCurrency;
-                                      currencyName = selectedCurrency!;
-                                      setState(() {});
-                                    }
-                                  },
-                                ),
-                              );
-                            }
-                            return ListTile(
-                              title: Text(
-                                currency,
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontSize: 16,
-                                    fontFamily: "Inter",
-                                    fontWeight: FontWeight.w400),
-                              ),
-                              dense: true,
-                              onTap: () {
-                                pressedCurrency = currency;
-                                Navigator.pop(context);
-                                if (pressedCurrency != null) {
-                                  selectedCurrency = pressedCurrency;
-                                  currencyName = selectedCurrency!;
-                                  productSubCategory = "";
-                                  selectedSubCategory = null;
                                   setState(() {});
                                 }
                               },
@@ -1789,11 +1683,13 @@ class _AddProductState extends State<AddProduct> {
 
   Widget getAmountField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.price,
+      controller: amountController,
+      labelText: AppLocalization.of(context)!.priceLocalCurrency,
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
+      isReadOnly: currencyView ? true : false,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -1817,20 +1713,34 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  Widget getConversionInNairaField() {
-    return CustomizedTextFormField(
-      labelText: 'Price (Conversion in Naira)',
+  Widget getForeignCurrencyPriceField() {
+    return CustomizedTextFormFieldForForeignCurrency(
+      hasLabel: false,
+      controller: foreignController,
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
+      selectedCurrencySymbol:
+          selectedCurrency != null ? worldCurrencies[selectedCurrency] : "",
+      onTapCurrency: () {
+        selectCurrency();
+      },
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            productPrice = double.parse(val.replaceAll(',', '')).toString();
+            foreignPrice = double.parse(val.replaceAll(',', '')).toString();
+
+            final price = getForeignPrice(double.parse(val.replaceAll(',', '')),
+                    selectedCurrencyRate) ??
+                "";
+            productPrice = price.replaceAll(',', '');
+            amountController.text = productPrice;
           } catch (e) {
             showToast(message: e.toString());
           }
+        } else {
+          amountController.clear();
         }
       },
       validator: (val) {
@@ -1844,6 +1754,103 @@ class _AddProductState extends State<AddProduct> {
         }
         return AppLocalization.of(context)!.pleaseEnterValidAmout;
       },
+    );
+  }
+
+  void selectCurrency() async {
+    await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        contentPadding: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width - 40,
+          child: Card(
+            elevation: 2,
+            shadowColor: Colors.transparent,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: currencyList!.map((CurrencyModel model) {
+                    if (selectedCurrency == model.currency) {
+                      return Container(
+                        color: selectedListItemBackgroundBlue,
+                        child: ListTile(
+                          dense: true,
+                          title: Text(
+                            currencyNameAndSymbol(model.currency),
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: TextStyle(
+                              fontFamily: "Inter",
+                              color: navyBlue,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          trailing: Icon(
+                            SlydoAppIcon.checked,
+                            color: navyBlue,
+                            size: 12,
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            pressedCurrency = model.currency;
+                            if (pressedCurrency != null) {
+                              amountController.clear();
+                              foreignController.clear();
+                              productPrice = "";
+                              foreignPrice = "";
+                              selectedCurrency = pressedCurrency;
+                              selectedCurrencyId = model.id;
+                              selectedCurrencyRate = model.rate;
+                              setState(() {});
+                            }
+                          },
+                        ),
+                      );
+                    }
+                    return ListTile(
+                      title: Text(
+                        currencyNameAndSymbol(model.currency),
+                        softWrap: false,
+                        overflow: TextOverflow.fade,
+                        style: TextStyle(
+                            fontFamily: "Inter",
+                            color: blackFont,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      dense: true,
+                      onTap: () {
+                        Navigator.pop(context);
+                        pressedCurrency = model.currency;
+                        if (pressedCurrency != null) {
+                          amountController.clear();
+                          foreignController.clear();
+                          productPrice = "";
+                          foreignPrice = "";
+                          selectedCurrency = pressedCurrency;
+                          selectedCurrencyId = model.id;
+                          selectedCurrencyRate = model.rate;
+                          setState(() {});
+                        }
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -2326,6 +2333,13 @@ class _AddProductState extends State<AddProduct> {
           }
           product.condition = productCondition;
           product.price = moneyInputNormalizer(productPrice);
+          if (currencyView) {
+            foreignPriceModel ??= ForeignPrice();
+            foreignPriceModel?.price = moneyInputNormalizer(foreignPrice);
+            foreignPriceModel?.userCurrencyRate = selectedCurrencyId;
+
+            product.foreignPrice = foreignPriceModel;
+          }
           product.isAvailable = productIsAvailable;
           product.manufacturer = productManufacturer;
           product.availableFrom = productAvailableFrom;
@@ -2479,6 +2493,18 @@ class _AddProductState extends State<AddProduct> {
       },
       isChecked: productEnableInSuperStore,
       title: AppLocalization.of(context)!.enableInSuperStore,
+    );
+  }
+
+  Widget getForeignCurrencyField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        currencyView = !currencyView;
+        removeQuillFocus();
+        setState(() {});
+      },
+      isChecked: currencyView,
+      title: AppLocalization.of(context)!.setPriceWithForeignCurrency,
     );
   }
 

@@ -2706,6 +2706,13 @@ class AppLocalization {
     );
   }
 
+  String get priceLocalCurrency {
+    return Intl.message(
+      "Price (Local Currency)",
+      name: "priceLocalCurrency",
+    );
+  }
+
   String get weight {
     return Intl.message(
       "Weight",
@@ -3012,6 +3019,13 @@ class AppLocalization {
     return Intl.message(
       "Description must not empty",
       name: "descriptionMustNotEmpty",
+    );
+  }
+
+  String get setPriceWithForeignCurrency {
+    return Intl.message(
+      'Set Price with foreign currency',
+      name: "'setPriceWithForeignCurrency'",
     );
   }
 

@@ -7,6 +7,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/moments/models/comment_model.dart';
+import 'package:Slydo/screens/user_profile/models/currency_model.dart';
 import 'package:Slydo/screens/user_profile/models/jwt.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
@@ -1244,5 +1245,105 @@ class UserAuth extends AuthService {
       return true;
     }
     return false;
+  }
+
+  // Currency List
+  Future<Map<String, dynamic>> getCurrency(
+      String? next, String? previous) async {
+    final String url = "${AppConfig.baseUrl}/api/v1/currency/";
+
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+
+      final List<CurrencyModel> items = [];
+      final data = jsonData["results"];
+
+      for (int i = 0; i < data.length; i++) {
+        final currency = CurrencyModel.fromJson(data[i]);
+        items.add(currency);
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": items
+      };
+
+      return result;
+    } else {
+      final jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // Fetch Currency
+  Future<CurrencyModel> fetchCurrency(String currencyId) async {
+    final String url = "${AppConfig.baseUrl}/api/v1/currency/$currencyId/";
+
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = jsonDecode(response.body);
+      // debugPrint("STATUS CODE:- ${response.statusCode}");
+      // debugPrint("response from fetchCustomer = $jsonData");
+      final CurrencyModel currencyModel = CurrencyModel.fromJson(jsonData);
+      return currencyModel;
+    } else {
+      // debugPrint(
+      //     "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${response.body}");
+      return Future.error(
+          "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${response.body}");
+    }
+  }
+
+  //add update currency
+  Future<CurrencyModel?> addUpdateCurrency(CurrencyModel currencyData,
+      {bool isEdit = false}) async {
+    String url = "${AppConfig.baseUrl}/api/v1/currency/";
+
+    if (isEdit == false) {
+      url = "${AppConfig.baseUrl}/api/v1/currency/";
+    } else {
+      url = "${AppConfig.baseUrl}/api/v1/currency/${currencyData.id}/";
+    }
+
+    final data = jsonEncode(currencyData.toAddUpdate());
+
+    final headers = await getAuthHeaders();
+    Response? response;
+
+    if (isEdit == false) {
+      response = await httpPost(url, headers: headers, body: data);
+    } else {
+      response = await httpPatch(url, headers: headers, body: data);
+    }
+    final CurrencyModel flashTagAlertModel =
+        CurrencyModel.fromJson(jsonDecode(response.body));
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return flashTagAlertModel;
+    }
+    return null;
+  }
+
+  // delete currency
+  Future<bool> deleteCurrency(String id) async {
+    final String url = "${AppConfig.baseUrl}/api/v1/currency/$id/";
+    final headers = await getAuthHeaders();
+    final response = await httpDelete(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      final jsonData = json.decode(response.body);
+      throw jsonData;
+    }
   }
 }

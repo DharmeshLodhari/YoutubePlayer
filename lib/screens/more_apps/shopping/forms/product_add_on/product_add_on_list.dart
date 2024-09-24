@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/user_profile/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -258,10 +259,9 @@ class _ProductAddOnListState extends State<ProductAddOnList>
           )
         else
           isLoading && productAddOnList.isEmpty
-              ? buildLoadingIndicator(isLoading: isLoading)
+              ? buildShimmerEffect()
               : ListView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
                   //+1 for progressbar
                   itemCount: productAddOnList.length + 1,
                   itemBuilder: (BuildContext context, int index) {
@@ -340,7 +340,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
   Widget productAddOnTile({required AddOns addOns, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(

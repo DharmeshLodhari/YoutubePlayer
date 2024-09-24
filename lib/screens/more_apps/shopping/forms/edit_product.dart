@@ -11,8 +11,10 @@ import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/screens/user_profile/forms/add_edit_shipping_address.dart';
+import 'package:Slydo/screens/user_profile/models/currency_model.dart';
 import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -23,6 +25,7 @@ import 'package:Slydo/widget/custom_textfield_tag.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/customized_textform_field_for_foreign_currency.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
@@ -71,6 +74,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   String? productCondition = "";
   String? preparationCondition = "";
   String? productPrice = "";
+  String foreignPrice = "";
   ProductCategory? selectedProductCategory;
   ProductCategory? selectedSubCategory;
   ProductCategory? selectedCustomCategory;
@@ -78,6 +82,17 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   List<ProductCategory>? productCategoriesCopy;
   List<ProductCategory>? productCustomCategoriesCopy;
   String productCustomCategory = "";
+
+  List<CurrencyModel>? currencyList;
+  int? currencyItemCount = 0;
+  String? currencyNext = "";
+  String? currencyPrevious = "";
+  bool currencyView = false;
+  String? selectedCurrency;
+  String? selectedCurrencyId;
+  int? selectedCurrencyRate;
+  String? pressedCurrency;
+  ForeignPrice? foreignPriceModel;
 
   ProductCondition? selectedProductCondition;
   ProductCondition? selectedPreparationCondition;
@@ -102,6 +117,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   TextEditingController productManufacturerController = TextEditingController();
   TextEditingController customProductController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
+  TextEditingController foreignController = TextEditingController();
 
   TextEditingController weightController = TextEditingController();
   TextEditingController heightController = TextEditingController();
@@ -165,6 +181,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     productId = widget.arguments['productId'];
     getCategories();
     Future.delayed(const Duration(seconds: 2), () {
+      getCurrencyList();
       obtainCategories();
       obtainCustomCategory();
       getAddressList();
@@ -188,6 +205,51 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     setState(() {
       _isKeyboardVisible = (bottomInset ?? 0) > 0;
     });
+  }
+
+  Future<void> getCurrencyList() async {
+    final Map<String, dynamic> result =
+        await UserAuth().getCurrency(currencyNext, currencyPrevious);
+    if (result == null) {
+      isLoading = false;
+      noItemInList = true;
+      return;
+    }
+
+    currencyList = [];
+    currencyItemCount = result['count'];
+    currencyNext = result['next'];
+    currencyPrevious = result['previous'];
+    final tempList = result['results'];
+
+    currencyList?.addAll(tempList);
+    if (currencyList?.isNotEmpty ?? false) {
+      selectedCurrency = currencyList?[0].currency;
+      selectedCurrencyId = currencyList?[0].id;
+      selectedCurrencyRate = currencyList?[0].rate;
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        noItemInList = false;
+      });
+    }
+
+    if (currencyList?.isEmpty ?? false) {
+      if (mounted) {
+        setState(() {
+          noItemInList = true;
+          currencyList = [];
+        });
+      }
+    } else if (currencyNext == null && currencyList!.length > 6) {
+      _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+        content:
+            Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        duration: const Duration(milliseconds: 500),
+      ));
+    }
   }
 
   @override
@@ -215,7 +277,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     //fetchProductFrom id to edit
     await _auth.getProduct(productId!).then((value) {
       if (mounted) {
-        setState(() {
+        setState(() async {
           currentProduct = value;
 
           // assigning to our edit controllers
@@ -273,6 +335,18 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
           productCategory = currentProduct.category!.name;
           productCondition = currentProduct.condition;
           productPrice = moneyNormalizer(currentProduct.price!);
+
+          if (currentProduct.foreignPrice != null) {
+            currencyView = true;
+            foreignController.text =
+                moneyNormalizer(currentProduct.foreignPrice?.price ?? 0);
+            selectedCurrencyId = currentProduct.foreignPrice?.userCurrencyRate;
+
+            final CurrencyModel result =
+                await UserAuth().fetchCurrency(selectedCurrencyId ?? "");
+            selectedCurrency = result.currency;
+            selectedCurrencyRate = result.rate;
+          }
           // productDescription =
           //     messageDecoderWithEmoji(currentProduct.description);
           productManufacturer = currentProduct.manufacturer;
@@ -352,7 +426,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
               }
             }
           } else {
-            // selectedProductCondition = condition[3];
+            selectedProductCondition = conditions[3];
           }
           for (var preparation in deliverTimeCondition) {
             if (preparation.name == currentProduct.preparationTime.toString()) {
@@ -582,18 +656,18 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
                               addLocalImages()
                             else
                               Container(),
-                            const SizedBox(
-                              height: 10,
-                            ),
+                            const SizedBox(height: 10),
                             addTitleField(),
-                            const SizedBox(
-                              height: 10,
-                            ),
+                            const SizedBox(height: 10),
                             getManufacturerField(),
-                            const SizedBox(
-                              height: 10,
-                            ),
+                            const SizedBox(height: 10),
                             getAmountField(),
+                            const SizedBox(height: 10),
+                            getForeignCurrencyField(),
+                            if (currencyView) ...[
+                              const SizedBox(height: 10),
+                              getForeignCurrencyPriceField(),
+                            ],
                             const SizedBox(height: 10),
                             getCategoryField(),
                             const SizedBox(height: 10),
@@ -1681,6 +1755,147 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
     );
   }
 
+  Widget getForeignCurrencyPriceField() {
+    return CustomizedTextFormFieldForForeignCurrency(
+      hasLabel: false,
+      controller: foreignController,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      selectedCurrencySymbol:
+          selectedCurrency != null ? worldCurrencies[selectedCurrency] : "",
+      onTapCurrency: () {
+        selectCurrency();
+      },
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            foreignPrice = double.parse(val.replaceAll(',', '')).toString();
+
+            final price = getForeignPrice(double.parse(val.replaceAll(',', '')),
+                    selectedCurrencyRate) ??
+                "";
+            productPrice = price.replaceAll(',', '');
+            productPriceController.text = productPrice!;
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        } else {
+          productPriceController.clear();
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+
+  void selectCurrency() async {
+    await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        contentPadding: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width - 40,
+          child: Card(
+            elevation: 2,
+            shadowColor: Colors.transparent,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: currencyList!.map((CurrencyModel model) {
+                    if (selectedCurrency == model.currency) {
+                      return Container(
+                        color: selectedListItemBackgroundBlue,
+                        child: ListTile(
+                          dense: true,
+                          title: Text(
+                            currencyNameAndSymbol(model.currency),
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: TextStyle(
+                              fontFamily: "Inter",
+                              color: navyBlue,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          trailing: Icon(
+                            SlydoAppIcon.checked,
+                            color: navyBlue,
+                            size: 12,
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            pressedCurrency = model.currency;
+                            if (pressedCurrency != null) {
+                              productPriceController.clear();
+                              foreignController.clear();
+                              productPrice = "";
+                              foreignPrice = "";
+                              selectedCurrency = pressedCurrency;
+                              selectedCurrencyId = model.id;
+                              selectedCurrencyRate = model.rate;
+                              setState(() {});
+                            }
+                          },
+                        ),
+                      );
+                    }
+                    return ListTile(
+                      title: Text(
+                        currencyNameAndSymbol(model.currency),
+                        softWrap: false,
+                        overflow: TextOverflow.fade,
+                        style: TextStyle(
+                            fontFamily: "Inter",
+                            color: blackFont,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      dense: true,
+                      onTap: () {
+                        Navigator.pop(context);
+                        pressedCurrency = model.currency;
+                        if (pressedCurrency != null) {
+                          productPriceController.clear();
+                          foreignController.clear();
+                          productPrice = "";
+                          foreignPrice = "";
+                          selectedCurrency = pressedCurrency;
+                          selectedCurrencyId = model.id;
+                          selectedCurrencyRate = model.rate;
+                          setState(() {});
+                        }
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void selectDeliveryTimeCondition() async {
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
@@ -1820,7 +2035,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
           height: 6,
         ),
         CustomTextFieldTag(
-          // initialTags: (userTags).map((e) => e.name!).toList(),
+          initialTags: (userTags).map((e) => e.name!).toList(),
           textFieldTagsController: _myController,
           onTap: (String tag) {
             setState(() {
@@ -2398,12 +2613,13 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
 
   Widget getAmountField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.price,
+      labelText: AppLocalization.of(context)!.priceLocalCurrency,
       controller: productPriceController,
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
+      isReadOnly: currencyView ? true : false,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -2492,7 +2708,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
 
   Future<void> editProduct() async {
     if (_formKey.currentState!.validate() || validateDropdown()) {
-      if (productLocalImages.isNotEmpty) {
+      if (productLocalImages.isNotEmpty || productImagesFromServer.isNotEmpty) {
         if (containsWeight() && selectedWeight.isEmpty && weight != 0.0) {
           showToast(message: AppLocalization.of(context)!.pleaseFillWeight);
           return;
@@ -2523,6 +2739,13 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
           }
           currentProduct.condition = productCondition;
           currentProduct.price = moneyInputNormalizer(productPrice!);
+          if (currencyView) {
+            foreignPriceModel ??= ForeignPrice();
+            foreignPriceModel?.price = moneyInputNormalizer(foreignPrice);
+            foreignPriceModel?.userCurrencyRate = selectedCurrencyId;
+
+            currentProduct.foreignPrice = foreignPriceModel;
+          }
           currentProduct.localImages =
               productLocalImages.map((file) => File(file.path)).toList();
           currentProduct.serverImages = productImagesFromServer;
@@ -2774,6 +2997,18 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
         inventoryController.text = inventoryCount.toString();
       });
     }
+  }
+
+  Widget getForeignCurrencyField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        currencyView = !currencyView;
+        removeQuillFocus();
+        setState(() {});
+      },
+      isChecked: currencyView,
+      title: AppLocalization.of(context)!.setPriceWithForeignCurrency,
+    );
   }
 
   Widget getMeasurementField() {

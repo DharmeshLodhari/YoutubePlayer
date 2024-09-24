@@ -247,5 +247,4 @@ class Routes {
   static const String PRODUCT_AND_SERVICE_SOCIAL_MEDIA =
       "/product-and-service-social-media";
   static const String CURRENCY_LIST = "/currency-list";
-  static const String ADD_EDIT_CURRENCY = "/add-edit-currency";
 }

@@ -168,7 +168,6 @@ import 'package:Slydo/screens/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/user_profile/forms/verify_registration_otp.dart';
 import 'package:Slydo/screens/user_profile/forms/verify_reset_device_otp.dart';
 import 'package:Slydo/screens/user_profile/forms/verify_reset_password_otp.dart';
-import 'package:Slydo/screens/user_profile/screens/currency/add_edit_currency.dart';
 import 'package:Slydo/screens/user_profile/screens/currency/currency_list.dart';
 import 'package:Slydo/screens/user_profile/screens/custom_category/custom_category_list.dart';
 import 'package:Slydo/screens/user_profile/screens/discount/discount_list.dart';
@@ -2225,15 +2224,6 @@ class RouteGenerator {
       case Routes.CURRENCY_LIST:
         return PageTransition(
           child: const CurrencyList(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-      case Routes.ADD_EDIT_CURRENCY:
-        return PageTransition(
-          child: AddEditCurrency(
-            arguments: settings.arguments,
-          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

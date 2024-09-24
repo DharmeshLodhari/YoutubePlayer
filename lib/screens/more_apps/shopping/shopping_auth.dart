@@ -487,6 +487,9 @@ class ShoppingAuthService extends AuthService {
     product.sellerFullName = item['seller_fullname'] ?? "";
     product.sellerAvatar = item["seller_avatar"];
     product.price = item['price'];
+    product.foreignPrice = item["foreign_price"] is Map<String, dynamic>
+        ? ForeignPrice.fromJson(item["foreign_price"])
+        : null;
     product.currency = item["currency"];
     product.rating = formatRating(item['rating'] ?? 0.0);
     product.canRate = item["can_rate"] ?? false;
@@ -1116,7 +1119,7 @@ class ShoppingAuthService extends AuthService {
       data['width'] = 0.0;
       data['width_si_unit'] = '';
     }
-    // debugPrint('DATA from ---> $data');
+    debugPrint('DATA from ---> $data');
 
     if (productAddOnsList.isNotEmpty) {
       final List ids = productAddOnsList
@@ -1359,6 +1362,7 @@ class ShoppingAuthService extends AuthService {
     final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
     final Map<dynamic, dynamic> data = product.toMap();
+    debugPrint("data $data");
     data["available_from"] = dateToString(product.availableFrom!);
     data["image_count"] = product.localImages!.length;
 
@@ -1384,7 +1388,7 @@ class ShoppingAuthService extends AuthService {
     }
 
     data.forEach((k, v) {
-      if (k == "search_keywords") {
+      if (k == "search_keywords" || k == "foreign_price") {
         request.fields[k] = jsonEncode(v);
       } else {
         request.fields[k] = v.toString();
@@ -1406,7 +1410,7 @@ class ShoppingAuthService extends AuthService {
 
     // Add multipart to request
     request.files.addAll(newList);
-    // debugPrint('UPDATE PRODUCT FIELDS -> $data');
+    debugPrint('UPDATE PRODUCT FIELDS -> $data');
     headers.forEach((k, v) => request.headers[k] = v);
 
     final response = await request.send();

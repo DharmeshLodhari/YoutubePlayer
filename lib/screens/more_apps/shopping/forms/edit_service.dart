@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/utils.dart';
+import 'package:Slydo/screens/user_profile/models/currency_model.dart';
 import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -14,6 +17,7 @@ import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/customized_textform_field_for_foreign_currency.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
@@ -58,6 +62,7 @@ class _EditServiceState extends State<EditService> {
   String? serviceShortDescription = "";
   String? searchKeyword = "";
   String? servicePrice = "";
+  String foreignPrice = "";
   ServiceCategory? selectedServiceCategory;
   bool? serviceIsAvailable = false;
   DateTime? serviceAvailableFrom = DateTime.now();
@@ -69,9 +74,21 @@ class _EditServiceState extends State<EditService> {
       TextEditingController();
   TextEditingController servicePriceController = TextEditingController();
   TextEditingController searchKeywordController = TextEditingController();
+  TextEditingController foreignController = TextEditingController();
   List<ServiceCategory>? serviceCategories;
   bool isLoading = false;
   bool isAPILoading = false;
+
+  List<CurrencyModel>? currencyList;
+  int? currencyItemCount = 0;
+  String? currencyNext = "";
+  String? currencyPrevious = "";
+  bool currencyView = false;
+  String? selectedCurrency;
+  String? selectedCurrencyId;
+  int? selectedCurrencyRate;
+  String? pressedCurrency;
+  ForeignPrice? foreignPriceModel;
 
   bool isDiscountLoading = false;
   bool isDiscountAvailable = false;
@@ -105,6 +122,7 @@ class _EditServiceState extends State<EditService> {
   @override
   void initState() {
     serviceId = widget.arguments['serviceId'];
+    getCurrencyList();
     getCategories();
     _focusNodeDescription.addListener(_handleFocusChange);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -125,6 +143,51 @@ class _EditServiceState extends State<EditService> {
     setState(() {
       _isKeyboardVisible = (bottomInset ?? 0) > 0;
     });
+  }
+
+  Future<void> getCurrencyList() async {
+    final Map<String, dynamic> result =
+        await UserAuth().getCurrency(currencyNext, currencyPrevious);
+    if (result == null) {
+      isLoading = false;
+      noItemInList = true;
+      return;
+    }
+
+    currencyList = [];
+    currencyItemCount = result['count'];
+    currencyNext = result['next'];
+    currencyPrevious = result['previous'];
+    final tempList = result['results'];
+
+    currencyList?.addAll(tempList);
+    if (currencyList?.isNotEmpty ?? false) {
+      selectedCurrency = currencyList?[0].currency;
+      selectedCurrencyId = currencyList?[0].id;
+      selectedCurrencyRate = currencyList?[0].rate;
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        noItemInList = false;
+      });
+    }
+
+    if (currencyList?.isEmpty ?? false) {
+      if (mounted) {
+        setState(() {
+          noItemInList = true;
+          currencyList = [];
+        });
+      }
+    } else if (currencyNext == null && currencyList!.length > 6) {
+      _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+        content:
+            Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        duration: const Duration(milliseconds: 500),
+      ));
+    }
   }
 
   void getDiscountList(String? discountId) async {
@@ -208,7 +271,7 @@ class _EditServiceState extends State<EditService> {
     });
 
     //fetchProductFrom id to edit
-    await _auth.getService(serviceId!).then((value) {
+    await _auth.getService(serviceId!).then((value) async {
       currentService = value;
       // assigning to our edit controllers
 
@@ -255,6 +318,19 @@ class _EditServiceState extends State<EditService> {
       serviceName = currentService.name;
       serviceCategory = messageDecoderWithEmoji(currentService.category);
       servicePrice = moneyNormalizer(int.parse(currentService.price!));
+
+      if (currentService.foreignPrice != null) {
+        currencyView = true;
+        foreignController.text =
+            moneyNormalizer(currentService.foreignPrice?.price ?? 0);
+        selectedCurrencyId = currentService.foreignPrice?.userCurrencyRate;
+
+        final CurrencyModel result =
+            await UserAuth().fetchCurrency(selectedCurrencyId ?? "");
+        selectedCurrency = result.currency;
+        selectedCurrencyRate = result.rate;
+      }
+
       serviceDescription = currentService.description;
       serviceIsAvailable = currentService.isAvailable;
       serviceAvailableFrom = currentService.availableFrom;
@@ -357,14 +433,16 @@ class _EditServiceState extends State<EditService> {
                               addLocalImages()
                             else
                               Container(),
-                            const SizedBox(
-                              height: 10,
-                            ),
+                            const SizedBox(height: 10),
                             addTitleField(),
-                            const SizedBox(
-                              height: 10,
-                            ),
+                            const SizedBox(height: 10),
                             getAmountField(),
+                            const SizedBox(height: 10),
+                            getForeignCurrencyField(),
+                            if (currencyView) ...[
+                              const SizedBox(height: 10),
+                              getForeignCurrencyPriceField(),
+                            ],
                             const SizedBox(height: 10),
                             getCategoryField(),
                             const SizedBox(height: 16),
@@ -899,7 +977,8 @@ class _EditServiceState extends State<EditService> {
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
-      labelText: "Price of service",
+      isReadOnly: currencyView ? true : false,
+      labelText: AppLocalization.of(context)!.priceLocalCurrency,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -988,7 +1067,7 @@ class _EditServiceState extends State<EditService> {
 
   Future<void> editService() async {
     if (_formKey.currentState!.validate()) {
-      if (serviceLocalImages.length >= 0) {
+      if (serviceLocalImages.isNotEmpty || serviceImagesFromServer.isNotEmpty) {
         if (validateDropdown()) {
           // setting updated value
           currentService.name = serviceName;
@@ -999,6 +1078,13 @@ class _EditServiceState extends State<EditService> {
           currentService.category = messageDecoderWithEmoji(serviceCategory);
           currentService.shortDescription = serviceShortDescription;
           currentService.price = moneyInputNormalizer(servicePrice!).toString();
+          if (currencyView) {
+            foreignPriceModel ??= ForeignPrice();
+            foreignPriceModel?.price = moneyInputNormalizer(foreignPrice);
+            foreignPriceModel?.userCurrencyRate = selectedCurrencyId;
+
+            currentService.foreignPrice = foreignPriceModel;
+          }
           currentService.isAvailable = serviceIsAvailable;
           currentService.availableFrom = serviceAvailableFrom;
           if (isDiscountAvailable) {
@@ -1041,6 +1127,159 @@ class _EditServiceState extends State<EditService> {
       },
       isChecked: serviceIsAvailable,
       title: "Available",
+    );
+  }
+
+  Widget getForeignCurrencyField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        currencyView = !currencyView;
+        removeQuillFocus();
+        setState(() {});
+      },
+      isChecked: currencyView,
+      title: AppLocalization.of(context)!.setPriceWithForeignCurrency,
+    );
+  }
+
+  Widget getForeignCurrencyPriceField() {
+    return CustomizedTextFormFieldForForeignCurrency(
+      hasLabel: false,
+      controller: foreignController,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      selectedCurrencySymbol:
+          selectedCurrency != null ? worldCurrencies[selectedCurrency] : "",
+      onTapCurrency: () {
+        selectCurrency();
+      },
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            foreignPrice = double.parse(val.replaceAll(',', '')).toString();
+
+            final price = getForeignPrice(double.parse(val.replaceAll(',', '')),
+                    selectedCurrencyRate) ??
+                "";
+            servicePrice = price.replaceAll(',', '');
+            servicePriceController.text = servicePrice!;
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        } else {
+          servicePriceController.clear();
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+
+  void selectCurrency() async {
+    await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        contentPadding: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width - 40,
+          child: Card(
+            elevation: 2,
+            shadowColor: Colors.transparent,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: currencyList!.map((CurrencyModel model) {
+                    if (selectedCurrency == model.currency) {
+                      return Container(
+                        color: selectedListItemBackgroundBlue,
+                        child: ListTile(
+                          dense: true,
+                          title: Text(
+                            currencyNameAndSymbol(model.currency),
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: TextStyle(
+                              fontFamily: "Inter",
+                              color: navyBlue,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          trailing: Icon(
+                            SlydoAppIcon.checked,
+                            color: navyBlue,
+                            size: 12,
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            pressedCurrency = model.currency;
+                            if (pressedCurrency != null) {
+                              servicePriceController.clear();
+                              foreignController.clear();
+                              servicePrice = "";
+                              foreignPrice = "";
+                              selectedCurrency = pressedCurrency;
+                              selectedCurrencyId = model.id;
+                              selectedCurrencyRate = model.rate;
+                              setState(() {});
+                            }
+                          },
+                        ),
+                      );
+                    }
+                    return ListTile(
+                      title: Text(
+                        currencyNameAndSymbol(model.currency),
+                        softWrap: false,
+                        overflow: TextOverflow.fade,
+                        style: TextStyle(
+                            fontFamily: "Inter",
+                            color: blackFont,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      dense: true,
+                      onTap: () {
+                        Navigator.pop(context);
+                        pressedCurrency = model.currency;
+                        if (pressedCurrency != null) {
+                          servicePriceController.clear();
+                          foreignController.clear();
+                          servicePrice = "";
+                          foreignPrice = "";
+                          selectedCurrency = pressedCurrency;
+                          selectedCurrencyId = model.id;
+                          selectedCurrencyRate = model.rate;
+                          setState(() {});
+                        }
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

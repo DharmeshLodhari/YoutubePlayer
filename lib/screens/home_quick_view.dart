@@ -656,7 +656,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         // }
         break;
       case ProtectionPermission.currency:
-        showToast(message: 'Coming soon');
+        Navigator.of(context).pushNamed(Routes.CURRENCY_LIST);
         break;
       case ProtectionPermission.discount:
         Navigator.of(context).pushNamed(Routes.DISCOUNT_LIST);

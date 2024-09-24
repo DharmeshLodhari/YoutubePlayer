@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/user_profile/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
@@ -163,7 +164,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
                 .youDontHaveAnyShippingOptionPleaseAddOne,
           )
         : isLoading && shippingOptionsList.isEmpty
-            ? buildLoadingIndicator(isLoading: isLoading)
+            ? buildShimmerEffect()
             : ListView.builder(
                 padding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
@@ -237,8 +238,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
         child: GestureDetector(
           child: ListTile(
             dense: true,
-            contentPadding: const EdgeInsets.only(
-                top: 15.0, bottom: 15.0, left: 10.0, right: 10.0),
+            contentPadding: const EdgeInsets.all(10.0),
             trailing: getAmount(shippingModel: shippingModel),
             leading: getShippingOptionName(shippingModel: shippingModel),
           ),

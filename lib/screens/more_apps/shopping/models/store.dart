@@ -252,6 +252,8 @@ class Product extends PurchasableItem {
   String? description;
   String? shortDescription;
   int? price;
+  ForeignPrice? foreignPrice;
+
   List<File>? localImages;
   List<String?>? serverImages;
   String? cover;
@@ -335,6 +337,7 @@ class Product extends PurchasableItem {
     this.description,
     this.shortDescription,
     this.price,
+    this.foreignPrice,
     this.localImages,
     this.serverImages,
     this.seller,
@@ -393,6 +396,7 @@ class Product extends PurchasableItem {
       "short_description":
           getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
+      "foreign_price": foreignPrice?.toJson(),
       "condition": condition,
       "category": category?.id,
       "sub_category": subCategory?.id,
@@ -443,6 +447,7 @@ class Product extends PurchasableItem {
       "short_description":
           getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
+      "foreign_price": foreignPrice?.toJson(),
       "condition": condition,
       "category": category,
       "sub_category": subCategory,
@@ -620,6 +625,9 @@ class Product extends PurchasableItem {
       description: object["description"] ?? "",
       shortDescription: object["short_description"] ?? "",
       price: object["price"],
+      foreignPrice: object["foreign_price"] is Map<String, dynamic>
+          ? ForeignPrice.fromJson(object["foreign_price"])
+          : null,
       enableInSuperStore: object["enable_in_superstore"] ?? false,
       localImages: object["localImages"] ?? [],
       serverImages: getProductImages(object["pictures"]),
@@ -758,6 +766,7 @@ class Product extends PurchasableItem {
       description: description ?? "",
       shortDescription: shortDescription ?? "",
       price: price,
+      foreignPrice: foreignPrice,
       enableInSuperStore: enableInSuperStore ?? false,
       localImages: localImages ?? [],
       serverImages: serverImages,
@@ -1070,6 +1079,7 @@ class Variant {
   bool? discountIsActive;
   int? discountedPrice;
   int? originalPrice;
+  ForeignPrice? foreignPrice;
 
   Variant({
     this.id,
@@ -1094,6 +1104,7 @@ class Variant {
     this.discountIsActive,
     this.discountedPrice,
     this.originalPrice,
+    this.foreignPrice,
   });
 
   Map toMap() {
@@ -1116,6 +1127,7 @@ class Variant {
       "currency": currency,
       "added_by": "blackstriker",
       "pictures": pictures,
+      "foreign_price": foreignPrice?.toJson(),
     });
     return data;
   }
@@ -1140,6 +1152,7 @@ class Variant {
       "discount_is_active": discountIsActive,
       "discounted_price": discountedPrice,
       "original_price": originalPrice,
+      "foreign_price": foreignPrice?.toJson(),
     };
   }
 
@@ -1204,6 +1217,9 @@ class Variant {
       discountIsActive: object['discount_is_active'],
       discountedPrice: cleanObjects(object, "discounted_price"),
       originalPrice: cleanObjects(object, "original_price"),
+      foreignPrice: object["foreign_price"] is Map<String, dynamic>
+          ? ForeignPrice.fromJson(object["foreign_price"])
+          : null,
     );
   }
 
@@ -1336,26 +1352,28 @@ class Variant {
     return null;
   }
 
-  Variant copyWith(
-      {String? id,
-      String? title,
-      String? size,
-      String? colour,
-      VariantTypes? type,
-      String? price,
-      String? value,
-      List<File>? localImages,
-      List<String?>? serverImages,
-      int? quantity,
-      bool? isAvailable,
-      DateTime? availableFrom,
-      String? currency,
-      List<AddedBy>? addedBy,
-      bool? trackInventory,
-      int? discountValue,
-      String? discountType,
-      bool? discountIsActive,
-      int? discountedPrice}) {
+  Variant copyWith({
+    String? id,
+    String? title,
+    String? size,
+    String? colour,
+    VariantTypes? type,
+    String? price,
+    String? value,
+    List<File>? localImages,
+    List<String?>? serverImages,
+    int? quantity,
+    bool? isAvailable,
+    DateTime? availableFrom,
+    String? currency,
+    List<AddedBy>? addedBy,
+    bool? trackInventory,
+    int? discountValue,
+    String? discountType,
+    bool? discountIsActive,
+    int? discountedPrice,
+    ForeignPrice? foreignPrice,
+  }) {
     return Variant(
       id: id ?? this.id,
       title: title ?? this.title,
@@ -1375,6 +1393,7 @@ class Variant {
       discountIsActive: discountIsActive ?? this.discountIsActive,
       discountType: discountType ?? this.discountType,
       discountValue: discountValue ?? this.discountValue,
+      foreignPrice: foreignPrice ?? this.foreignPrice,
     );
   }
 
@@ -1401,6 +1420,7 @@ class AddOnOption {
   int quantity = 0;
   bool isChecked = false;
   List<AddedBy>? addedBy;
+  ForeignPrice? foreignPrice;
 
   AddOnOption({
     this.id,
@@ -1417,6 +1437,7 @@ class AddOnOption {
     this.quantity = 0,
     this.isChecked = false,
     this.addedBy,
+    this.foreignPrice,
   });
 
   AddOnOption.fromJson(Map<String, dynamic> json) {
@@ -1437,6 +1458,10 @@ class AddOnOption {
     addedBy = json['added_by'] == null
         ? []
         : List<AddedBy>.from(json['added_by'].map((x) => AddedBy.fromJson(x)));
+    foreignPrice:
+    json["foreign_price"] is Map<String, dynamic>
+        ? ForeignPrice.fromJson(json["foreign_price"])
+        : null;
   }
 
   AddOnOption copyWith({
@@ -1454,6 +1479,7 @@ class AddOnOption {
     int? quantity,
     bool? isChecked,
     List<AddedBy>? addedBy,
+    ForeignPrice? foreignPrice,
   }) {
     return AddOnOption(
       id: id ?? this.id,
@@ -1470,6 +1496,7 @@ class AddOnOption {
       quantity: quantity ?? this.quantity,
       isChecked: isChecked ?? this.isChecked,
       addedBy: addedBy ?? this.addedBy,
+      foreignPrice: foreignPrice ?? this.foreignPrice,
     );
   }
 
@@ -1495,6 +1522,7 @@ class AddOnOption {
     data['created_at'] = createdAt;
     data['quantity'] = quantity;
     data['added_by'] = addedBy;
+    data['foreign_price'] = foreignPrice?.toJson();
     return data;
   }
 
@@ -1811,6 +1839,7 @@ class Service extends PurchasableItem {
   List<String>? searchKeywords;
   bool isChecked = false;
   int? reviewScore;
+  ForeignPrice? foreignPrice;
 
   Service({
     super.id,
@@ -1841,6 +1870,7 @@ class Service extends PurchasableItem {
     this.searchKeywords,
     this.isChecked = false,
     this.reviewScore,
+    this.foreignPrice,
   });
 
   String getUrl() {
@@ -1925,6 +1955,7 @@ class Service extends PurchasableItem {
       "search_keywords": searchKeywords,
       "is_checked": isChecked,
       "review_score": reviewScore,
+      "foreign_price": foreignPrice?.toJson(),
     };
   }
 
@@ -1955,6 +1986,7 @@ class Service extends PurchasableItem {
           : List<String>.from(searchKeywords!.map((x) => x)),
       "is_checked": isChecked,
       "review_score": reviewScore,
+      "foreign_price": foreignPrice?.toJson(),
     };
   }
 
@@ -1989,6 +2021,9 @@ class Service extends PurchasableItem {
         : List<String>.from(object["search_keywords"].map((x) => x));
     isChecked = object["is_checked"] ?? false;
     reviewScore = object["review_score"] ?? 0;
+    foreignPrice = object["foreign_price"] is Map<String, dynamic>
+        ? ForeignPrice.fromJson(object["foreign_price"])
+        : null;
   }
 
   bool isServiceAvailableNow() {
@@ -2508,3 +2543,26 @@ class OrderItem {
     );
   }
 }
+
+class ForeignPrice {
+  int? price;
+  String? userCurrencyRate;
+
+  ForeignPrice({
+    this.price,
+    this.userCurrencyRate,
+  });
+
+  factory ForeignPrice.fromJson(Map<String, dynamic> json) => ForeignPrice(
+        price: json["price"],
+        userCurrencyRate: json["user_currency_rate"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "price": price,
+        "user_currency_rate": userCurrencyRate,
+      };
+}
+
+// Exchange rate -> {currency: "USD", rate: 1000}
+// Product -> foreignPrice {price: 100, user_currency_rate: {currency: "USD", rate: 1000}}

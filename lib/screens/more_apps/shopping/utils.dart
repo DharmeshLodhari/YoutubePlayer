@@ -31,6 +31,14 @@ Future<bool> checkAccountBalance(int? amount, BuildContext context) async {
   }
 }
 
+String? getForeignPrice(double dynamicCurrencyPrice, int? currencyRate) {
+  if (dynamicCurrencyPrice != null) {
+    return moneyDisplayNormalizer(
+        (dynamicCurrencyPrice * (currencyRate ?? 0)).toInt());
+  }
+  return "0";
+}
+
 Widget getEditor(QuillController quillController) {
   final Widget editorWidget = Container(
     width: double.infinity,

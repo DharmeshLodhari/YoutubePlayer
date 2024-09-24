@@ -1,5 +1,5 @@
-#echo BUILDING ANDROID SLYDO
-#cd .. &&  rm -rf pubspec.lock && fvm flutter clean && fvm flutter pub get
+echo BUILDING ANDROID SLYDO
+cd .. &&  rm -rf pubspec.lock && fvm flutter clean && fvm flutter pub get
 fvm flutter build apk --release
 #fvm flutter build appbundle --release
 #open /Users/macminisrashtasoft/Hemali/slydo/build/app/outputs/bundle/release/

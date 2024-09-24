@@ -47,20 +47,20 @@ class _ExploreProductsState extends State<ExploreProducts> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(widget.headers["name"],
-                  style: TextStyle(
-                    color: black,
-                    fontSize: 16,
-                    height: 1,
-                    fontFamily: "Inter",
-                    fontWeight: FontWeight.w600,
-                  )),
-              _buildViewMore(context)
+              Text(
+                widget.headers["name"],
+                style: TextStyle(
+                  color: black,
+                  fontSize: 16,
+                  height: 1,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              _buildViewMore(context),
             ],
           ),
-          const SizedBox(
-            height: 15,
-          ),
+          const SizedBox(height: 15),
           ListView.builder(
             shrinkWrap: true,
             padding: const EdgeInsets.all(0.0),

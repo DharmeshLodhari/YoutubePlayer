@@ -1,16 +1,22 @@
+import 'dart:io';
+
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/user_profile/models/currency_model.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 class AddEditCurrency extends StatefulWidget {
-  AddEditCurrency({super.key, this.arguments});
+  AddEditCurrency({super.key, this.currencyModel, this.currencyList});
 
-  dynamic arguments;
+  final CurrencyModel? currencyModel;
+  final List<CurrencyModel>? currencyList;
 
   @override
   State<AddEditCurrency> createState() => _AddEditCurrencyState();
@@ -18,51 +24,27 @@ class AddEditCurrency extends StatefulWidget {
 
 class _AddEditCurrencyState extends State<AddEditCurrency> {
   final _formKey = GlobalKey<FormState>();
-  bool slydoRate = false;
   bool isEdit = false;
   bool isDeleteLoading = false;
   bool isAPILoading = false;
   String? selectedCurrency;
+  late CurrencyModel currencyModel;
 
-  List<String> currencyList = [
-    "MVR (Rf)",
-    "MWK (MK)",
-    "MXN (Mex\$)",
-    "MYR (RM)",
-    "MZN (MT)",
-    "NAD (N\$)",
-    "NGN (₦)",
-    "NIO (C\$)",
-    "NOK (Nkr)",
-    "NPR (₨)",
-    "NZD (NZ\$)",
-    "TRY (TL)",
-    "TTD (TT\$)",
-    "TVD (\$T)",
-    "TWD (NT\$)",
-    "UAH (₴)",
-    "UGX (USh)",
-    "UYU (\$U)",
-    "VEF (Bs)",
-    "VND (₫)",
-    "VUV (VT)",
-    "WST (WS\$)",
-    "XAF (FCFA)",
-    "XCD (EC\$)",
-    "XDR (SDR)",
-    "XOF (CFA)",
-    "ZAR (R)",
-    "ZMK (ZK)",
-    "ZWL (Z\$)",
-    "ZWD (Z\$)",
-    "USD (\$)"
+  List<String> currencyListData = [
+    "USD",
+    "GBP",
+    "EUR",
+    "KHR",
+    "CAD",
   ];
 
   @override
   void initState() {
-    if (widget.arguments != null) {
-      isEdit = widget.arguments['isEdit'];
+    if (widget.currencyModel != null) {
+      isEdit = true;
     }
+    currencyModel = widget.currencyModel?.copyWith() ?? CurrencyModel();
+    selectedCurrency = currencyNameAndSymbol(currencyModel.currency);
     super.initState();
   }
 
@@ -88,14 +70,15 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
       titleSpacing: 0,
       backgroundColor: Colors.white,
       leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_arrow_left,
-            color: navyBlue,
-            size: 24,
-          ),
-          onPressed: () async {
-            await getExitDialog(context);
-          }),
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () async {
+          await getExitDialog(context);
+        },
+      ),
       centerTitle: false,
       title: Text(
         AppLocalization.of(context)!.currency,
@@ -120,15 +103,16 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
                     currencyField(),
                     const SizedBox(height: 10),
                     exchangeRateField(),
-                    const SizedBox(height: 10),
-                    slydoRateSwitch(),
+                    // const SizedBox(height: 10),
+                    // slydoRateSwitch(),
+                    const SizedBox(height: 20),
+                    getSubmitButton(),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
           ),
-          getSubmitButton(),
-          const SizedBox(height: 20),
         ],
       ),
     );
@@ -154,102 +138,126 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
           color: darkGrey,
         ),
         onTap: () {
-          selectCurrency();
+          if (!isEdit) {
+            selectCurrency();
+          }
         },
       ),
     );
   }
 
   void selectCurrency() async {
-    final pressedCurrency = await showDialog<String>(
-        context: context,
-        builder: (context) => AlertDialog(
-              backgroundColor: Colors.white,
-              insetPadding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: currencyList.map<Widget>((currency) {
-                          if (selectedCurrency == currency.toString()) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
-                                title: Text(
-                                  currency.toString(),
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                      color: navyBlue,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                trailing: Icon(
-                                  SlydoAppIcon.checked,
-                                  color: navyBlue,
-                                  size: 12,
-                                ),
-                                onTap: () {
-                                  Navigator.pop(context, currency);
-                                },
-                              ),
-                            );
-                          }
-                          return ListTile(
-                            title: Text(
-                              currency.toString(),
-                              softWrap: false,
-                              overflow: TextOverflow.fade,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
+    await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        contentPadding: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width - 40,
+          child: Card(
+            elevation: 2,
+            shadowColor: Colors.transparent,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: currencyListData
+                      .where((String currency) => !widget.currencyList!.any(
+                          (CurrencyModel model) => model.currency == currency))
+                      .map<Widget>((String currency) {
+                    if (currencyModel.currency == currency) {
+                      return Container(
+                        color: selectedListItemBackgroundBlue,
+                        child: ListTile(
+                          dense: true,
+                          title: Text(
+                            currencyNameAndSymbol(currency),
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: TextStyle(
+                              fontFamily: "Inter",
+                              color: navyBlue,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                             ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, currency);
-                            },
-                          );
-                        }).toList(),
+                          ),
+                          trailing: Icon(
+                            SlydoAppIcon.checked,
+                            color: navyBlue,
+                            size: 12,
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            currencyModel.currency = currency;
+                            selectedCurrency = currencyNameAndSymbol(currency);
+                            setState(() {});
+                          },
+                        ),
+                      );
+                    }
+                    return ListTile(
+                      title: Text(
+                        currencyNameAndSymbol(currency),
+                        softWrap: false,
+                        overflow: TextOverflow.fade,
+                        style: TextStyle(
+                            fontFamily: "Inter",
+                            color: blackFont,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
                       ),
-                    ),
-                  ),
+                      dense: true,
+                      onTap: () {
+                        Navigator.pop(context);
+                        currencyModel.currency = currency;
+                        selectedCurrency = currencyNameAndSymbol(currency);
+                        setState(() {});
+                      },
+                    );
+                  }).toList(),
                 ),
               ),
-            ));
-    if (pressedCurrency != null) {
-      selectedCurrency = pressedCurrency;
-      setState(() {});
-    }
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget exchangeRateField() {
     return CustomizedTextFormField(
       labelText: "Exchange Rate (₦)",
-      // initialValue: messageDecoderWithEmoji(flashTagAlertModel.title ?? ""),
-      keyboardType: TextInputType.number,
+      initialValue: currencyModel.rate != null
+          ? moneyDisplayNormalizer(currencyModel.rate)
+          : "",
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       validator: (val) {
         if (val.isNotEmpty) {
-          return null;
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
         }
-        return "This field should not be empty";
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
       },
-      onChanged: (val) {
-        // flashTagAlertModel.title = val;
+      onChanged: (String val) {
+        if (val.isNotEmpty) {
+          try {
+            currencyModel.rate = moneyInputNormalizer(val);
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
       },
     );
   }
@@ -263,9 +271,9 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
           child: FittedBox(
             fit: BoxFit.fill,
             child: Switch(
-              value: slydoRate,
+              value: currencyModel.isAutoUpdatedBySlydo ?? false,
               onChanged: (value) {
-                slydoRate = value;
+                currencyModel.isAutoUpdatedBySlydo = value;
                 setState(() {});
               },
               thumbIcon: MaterialStateProperty.all(const Icon(null)),
@@ -299,7 +307,7 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
                   ? () {}
                   : () {
                       FocusScope.of(context).unfocus();
-                      // deleteFlashTagDialog();
+                      deleteCurrencyDialog();
                     },
               backgroundColor: red,
               textColor: Colors.white,
@@ -319,7 +327,7 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
                       isAPILoading = true;
                       if (mounted) setState(() {});
 
-                      // await addEditItem();
+                      await addEditCurrency();
 
                       isAPILoading = false;
                       if (mounted) setState(() {});
@@ -342,7 +350,7 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
               isAPILoading = true;
               if (mounted) setState(() {});
 
-              // await addEditItem();
+              await addEditCurrency();
 
               isAPILoading = false;
               if (mounted) setState(() {});
@@ -354,6 +362,67 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
     );
   }
 
+  void deleteCurrencyDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Currency',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this Currency ?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        isDeleteLoading = true;
+        if (mounted) setState(() {});
+
+        await deleteCurrency();
+
+        isDeleteLoading = false;
+        if (mounted) setState(() {});
+      },
+    );
+  }
+
+  Future<void> addEditCurrency() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      await UserAuth()
+          .addUpdateCurrency(currencyModel, isEdit: isEdit)
+          .then((value) async {
+        Navigator.pop(context, true);
+        showToast(
+          message: isEdit
+              ? "Currency updated successfully"
+              : "Currency added successfully",
+        );
+      }).catchError((error) {
+        debugPrint("Currency check::: ${error.toString()}");
+        showToast(message: error.toString());
+      });
+    } else {
+      showToast(message: "Please fill all the details");
+    }
+  }
+
+  Future<void> deleteCurrency() async {
+    await UserAuth().deleteCurrency(currencyModel.id ?? "").then((value) async {
+      Navigator.pop(context, true);
+      showToast(
+        message: "Currency deleted successfully",
+      );
+    }).catchError((error) {
+      debugPrint("Currency::: ${error.toString()}");
+      showToast(message: error.toString());
+    });
+  }
+
   dynamic getExitDialog(BuildContext context) async {
     await showExitDialogBackButton(
       context: context,
@@ -362,7 +431,7 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
       },
       rightButtonOnPressed: () async {
         FocusScope.of(context).unfocus();
-        // await addEditItem();
+        await addEditCurrency();
       },
     );
   }
