@@ -305,8 +305,9 @@ class _ProductViewMoreDetailsState extends State<ProductViewMoreDetails> {
           onTap: () async {
             if (hasPermission == PermissionType.WRITE) {
               Navigator.pop(context);
-              final result = await Navigator.of(context).pushNamed(
-                '/edit-product',
+              final result = await Navigator.pushNamed(
+                context,
+                Routes.EDIT_PRODUCT,
                 arguments: {
                   "productId": productId,
                 },

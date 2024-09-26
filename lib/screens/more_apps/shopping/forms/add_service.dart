@@ -8,8 +8,10 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/screens/user_profile/models/currency_model.dart';
 import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/screens/currency/add_edit_currency.dart';
 import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/utils/cache_manager.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -18,12 +20,12 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/customized_textform_field_for_foreign_currency.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/src/models/config/editor/editor_configurations.dart';
-import 'package:flutter_quill/src/widgets/editor/editor.dart';
-import 'package:flutter_quill/src/widgets/quill/quill_controller.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -67,6 +69,7 @@ class _AddServiceState extends State<AddService> {
   bool isAPILoading = false;
 
   List<CurrencyModel>? currencyList;
+  List<CurrencyModel>? currencyListCopy;
   int? currencyItemCount = 0;
   String? currencyNext = "";
   String? currencyPrevious = "";
@@ -147,6 +150,7 @@ class _AddServiceState extends State<AddService> {
     final tempList = result['results'];
 
     currencyList?.addAll(tempList);
+    currencyListCopy = currencyList;
     if (currencyList?.isNotEmpty ?? false) {
       selectedCurrency = currencyList?[0].currency;
       selectedCurrencyId = currencyList?[0].id;
@@ -165,6 +169,7 @@ class _AddServiceState extends State<AddService> {
         setState(() {
           noItemInList = true;
           currencyList = [];
+          currencyListCopy = [];
         });
       }
     } else if (currencyNext == null && currencyList!.length > 6) {
@@ -266,6 +271,7 @@ class _AddServiceState extends State<AddService> {
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
+      centerTitle: false,
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,
@@ -315,10 +321,12 @@ class _AddServiceState extends State<AddService> {
                             ),
                             getAmountField(),
                             const SizedBox(height: 10),
-                            getForeignCurrencyField(),
+                            getForeignCurrencyFieldAndInfo(),
                             if (currencyView) ...[
                               const SizedBox(height: 10),
                               getForeignCurrencyPriceField(),
+                              const SizedBox(height: 5),
+                              addNewCurrencyRate(),
                             ],
                             const SizedBox(height: 10),
                             getCategoryField(),
@@ -388,10 +396,45 @@ class _AddServiceState extends State<AddService> {
     );
   }
 
+  Widget addNewCurrencyRate() {
+    return GestureDetector(
+      onTap: () async {
+        final result = await NavigationUtil.push(
+          context,
+          screen: AddEditCurrency(
+            currencyList: currencyList,
+          ),
+        );
+        if (result != null && result == true) {
+          await getCurrencyList();
+        }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add New Currency Rate',
+            style: TextStyle(
+              fontSize: 12,
+              color: navyBlue,
+              fontWeight: FontWeight.w500,
+              fontFamily: "Inter",
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget addImageButton() {
     return CustomBoxShadow(
       child: Card(
-        elevation: 3,
+        elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
         margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
@@ -599,7 +642,7 @@ class _AddServiceState extends State<AddService> {
                 color: _focusNodeDescription.hasFocus
                     ? navyBlue
                     : greyBorderColor),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5),
           ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(
@@ -660,16 +703,16 @@ class _AddServiceState extends State<AddService> {
 
   Widget getForeignCurrencyPriceField() {
     return CustomizedTextFormFieldForForeignCurrency(
-      hasLabel: false,
+      labelText: AppLocalization.of(context)!.priceForeignCurrency,
       controller: foreignController,
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       selectedCurrencySymbol:
-          selectedCurrency != null ? worldCurrencies[selectedCurrency] : "",
+          selectedCurrency != null ? worldCurrencies[selectedCurrency] : "-",
       onTapCurrency: () {
-        selectCurrency();
+        currencyAndroidSheet();
       },
       onChanged: (val) {
         if (val.isNotEmpty) {
@@ -702,103 +745,6 @@ class _AddServiceState extends State<AddService> {
     );
   }
 
-  void selectCurrency() async {
-    await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-        contentPadding: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        content: SizedBox(
-          width: MediaQuery.of(context).size.width - 40,
-          child: Card(
-            elevation: 2,
-            shadowColor: Colors.transparent,
-            margin: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: currencyList!.map((CurrencyModel model) {
-                    if (selectedCurrency == model.currency) {
-                      return Container(
-                        color: selectedListItemBackgroundBlue,
-                        child: ListTile(
-                          dense: true,
-                          title: Text(
-                            currencyNameAndSymbol(model.currency),
-                            overflow: TextOverflow.fade,
-                            softWrap: false,
-                            style: TextStyle(
-                              fontFamily: "Inter",
-                              color: navyBlue,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          trailing: Icon(
-                            SlydoAppIcon.checked,
-                            color: navyBlue,
-                            size: 12,
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                            pressedCurrency = model.currency;
-                            if (pressedCurrency != null) {
-                              amountController.clear();
-                              foreignController.clear();
-                              servicePrice = "";
-                              foreignPrice = "";
-                              selectedCurrency = pressedCurrency;
-                              selectedCurrencyId = model.id;
-                              selectedCurrencyRate = model.rate;
-                              setState(() {});
-                            }
-                          },
-                        ),
-                      );
-                    }
-                    return ListTile(
-                      title: Text(
-                        currencyNameAndSymbol(model.currency),
-                        softWrap: false,
-                        overflow: TextOverflow.fade,
-                        style: TextStyle(
-                            fontFamily: "Inter",
-                            color: blackFont,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      dense: true,
-                      onTap: () {
-                        Navigator.pop(context);
-                        pressedCurrency = model.currency;
-                        if (pressedCurrency != null) {
-                          amountController.clear();
-                          foreignController.clear();
-                          servicePrice = "";
-                          foreignPrice = "";
-                          selectedCurrency = pressedCurrency;
-                          selectedCurrencyId = model.id;
-                          selectedCurrencyRate = model.rate;
-                          setState(() {});
-                        }
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget getCategoryField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context)!.category,
@@ -821,6 +767,138 @@ class _AddServiceState extends State<AddService> {
         onTap: () {
           // selectItemCategory();
           categoryAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  void currencyAndroidSheet() {
+    currencyList = currencyListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search currency',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      currencyList = currencyListCopy!
+                          .where((element) =>
+                              element.currency?.startsWith(value.toString()) ??
+                              false)
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      currencyList = currencyListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                if (currencyList?.isNotEmpty ?? false)
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: currencyList?.length,
+                      itemBuilder: (context, index) {
+                        final String currency =
+                            currencyList?[index].currency ?? "-";
+                        if (selectedCurrency == currency) {
+                          return Container(
+                            color: selectedListItemBackgroundBlue,
+                            child: ListTile(
+                              dense: true,
+                              title: Text(
+                                currencyNameAndSymbol(currency),
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                    color: navyBlue,
+                                    fontSize: 16,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              trailing: Icon(
+                                SlydoAppIcon.checked,
+                                color: navyBlue,
+                                size: 12,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                pressedCurrency = currency;
+                                if (pressedCurrency != null) {
+                                  amountController.clear();
+                                  foreignController.clear();
+                                  servicePrice = "";
+                                  foreignPrice = "";
+                                  selectedCurrency = pressedCurrency;
+                                  selectedCurrencyId = currencyList?[index].id;
+                                  selectedCurrencyRate =
+                                      currencyList?[index].rate;
+                                  setState(() {});
+                                }
+                              },
+                            ),
+                          );
+                        }
+                        return ListTile(
+                          title: Text(
+                            currencyNameAndSymbol(currency),
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400),
+                          ),
+                          dense: true,
+                          onTap: () {
+                            Navigator.pop(context);
+                            pressedCurrency = currency;
+                            if (pressedCurrency != null) {
+                              amountController.clear();
+                              foreignController.clear();
+                              servicePrice = "";
+                              foreignPrice = "";
+                              selectedCurrency = pressedCurrency;
+                              selectedCurrencyId = currencyList?[index].id;
+                              selectedCurrencyRate = currencyList?[index].rate;
+                              setState(() {});
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: NoItemInList(
+                      msg: 'No Rate Found',
+                      isButtonShow: true,
+                      buttonTitle: 'Add New Currency Rate',
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        final result = await NavigationUtil.push(
+                          context,
+                          screen: AddEditCurrency(
+                            currencyList: currencyList,
+                          ),
+                        );
+                        if (result != null && result == true) {
+                          await getCurrencyList();
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          );
         },
       ),
     );
@@ -1114,6 +1192,36 @@ class _AddServiceState extends State<AddService> {
       },
       isChecked: serviceIsAvailable,
       title: "Available",
+    );
+  }
+
+  Widget getForeignCurrencyFieldAndInfo() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: getForeignCurrencyField(),
+        ),
+        getCurrencyInfo(),
+      ],
+    );
+  }
+
+  Widget getCurrencyInfo() {
+    return GestureDetector(
+      onTap: () async {
+        await showInfoDialog(
+          context: context,
+          title: 'Why set currency rate ?',
+          description:
+              'Setting a currency rate allows you to offer products in different currencies while ensuring accurate and up-to-date pricing.',
+        );
+      },
+      child: Icon(
+        Icons.info_outline_rounded,
+        color: blackFont,
+        size: 20,
+      ),
     );
   }
 

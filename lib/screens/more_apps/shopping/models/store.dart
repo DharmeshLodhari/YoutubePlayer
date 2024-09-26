@@ -409,10 +409,6 @@ class Product extends PurchasableItem {
       "enable_in_superstore": enableInSuperStore,
       "seller_fullname": sellerFullName,
       "seller_avatar": sellerAvatar,
-      // "variants": variant,
-      "variants": variantModels,
-      // "add_ons": addOns,
-      "add_ons": addOnsModels,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,
@@ -427,7 +423,6 @@ class Product extends PurchasableItem {
       'is_shippable': isShippable,
       'address_id': addressId,
       'added_by': itemAddedBy,
-      'search_keywords': searchKeywords,
       'is_checked': isChecked,
       'review_score': reviewScore ?? 0,
       // 'item_updated_by': itemUpdatedBy,
@@ -435,6 +430,17 @@ class Product extends PurchasableItem {
     };
     if (preparationTime != null && preparationTime! != 0) {
       data["preparation_time"] = preparationTime;
+    }
+    if (variantModels != null && (variantModels?.isNotEmpty ?? false)) {
+      data["variants"] = variantModels;
+    }
+    if (addOnsModels != null && (addOnsModels?.isNotEmpty ?? false)) {
+      data["add_ons"] = addOnsModels;
+    }
+    if (searchKeywords != null &&
+        (searchKeywords?.isNotEmpty ?? false) &&
+        searchKeywords?[0] != "") {
+      data["search_keywords"] = searchKeywords;
     }
     return data;
   }
@@ -1935,7 +1941,7 @@ class Service extends PurchasableItem {
   }
 
   Map toMap() {
-    return {
+    final data = {
       "name": name,
       "description": description,
       "short_description":
@@ -1952,11 +1958,16 @@ class Service extends PurchasableItem {
       "price_percentage_change": pricePercentageChange ?? 0.0,
       "provider_avatar": providerAvatar,
       "provider_fullname": providerFullName,
-      "search_keywords": searchKeywords,
       "is_checked": isChecked,
       "review_score": reviewScore,
       "foreign_price": foreignPrice?.toJson(),
     };
+    if (searchKeywords != null &&
+        (searchKeywords?.isNotEmpty ?? false) &&
+        searchKeywords?[0] != "") {
+      data["search_keywords"] = searchKeywords;
+    }
+    return data;
   }
 
   Map<String, dynamic> toJson() {

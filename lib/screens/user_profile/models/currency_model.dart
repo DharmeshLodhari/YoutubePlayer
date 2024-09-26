@@ -27,10 +27,10 @@ class CurrencyModel {
 
   Map<String, dynamic> toAddUpdate() {
     final map = <String, dynamic>{};
-    map['id'] = id;
+    // map['id'] = id;
     map['currency'] = currency;
     map['rate'] = rate;
-    map['is_auto_updated_by_slydo'] = isAutoUpdatedBySlydo;
+    // map['is_auto_updated_by_slydo'] = isAutoUpdatedBySlydo ?? false;
     return map;
   }
 

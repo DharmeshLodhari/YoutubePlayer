@@ -1130,7 +1130,7 @@ class ShoppingAuthService extends AuthService {
     }
 
     data.forEach((k, v) {
-      if (k == "search_keywords") {
+      if (k == "search_keywords" || k == "foreign_price") {
         request.fields[k] = jsonEncode(v);
       } else {
         request.fields[k] = v.toString();
@@ -1205,7 +1205,11 @@ class ShoppingAuthService extends AuthService {
     data["image_count"] = item.localImages!.length;
 
     data.forEach((k, v) {
-      request.fields[k] = v.toString();
+      if (k == "foreign_price") {
+        request.fields[k] = jsonEncode(v);
+      } else {
+        request.fields[k] = v.toString();
+      }
     });
 
     final List<MultipartFile> newList = [];
@@ -1311,7 +1315,11 @@ class ShoppingAuthService extends AuthService {
     data["image_count"] = item.localImages!.length;
 
     data.forEach((k, v) {
-      request.fields[k] = v.toString();
+      if (k == "foreign_price") {
+        request.fields[k] = jsonEncode(v);
+      } else {
+        request.fields[k] = v.toString();
+      }
     });
 
     final List<MultipartFile> newList = [];
@@ -1362,7 +1370,7 @@ class ShoppingAuthService extends AuthService {
     final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
     final Map<dynamic, dynamic> data = product.toMap();
-    debugPrint("data $data");
+
     data["available_from"] = dateToString(product.availableFrom!);
     data["image_count"] = product.localImages!.length;
 
@@ -1389,6 +1397,7 @@ class ShoppingAuthService extends AuthService {
 
     data.forEach((k, v) {
       if (k == "search_keywords" || k == "foreign_price") {
+        debugPrint("$k ==> ${jsonEncode(v)}");
         request.fields[k] = jsonEncode(v);
       } else {
         request.fields[k] = v.toString();
@@ -1678,7 +1687,7 @@ class ShoppingAuthService extends AuthService {
     data["image_count"] = service.localImages!.length;
 
     data.forEach((k, v) {
-      if (k == "search_keywords") {
+      if (k == "search_keywords" || k == "foreign_price") {
         request.fields[k] = jsonEncode(v);
       } else {
         request.fields[k] = v.toString();
@@ -1731,7 +1740,7 @@ class ShoppingAuthService extends AuthService {
     data["image_count"] = service.localImages!.length;
 
     data.forEach((k, v) {
-      if (k == "search_keywords") {
+      if (k == "search_keywords" || k == "foreign_price") {
         request.fields[k] = jsonEncode(v);
       } else {
         request.fields[k] = v.toString();
@@ -2500,7 +2509,6 @@ class ShoppingAuthService extends AuthService {
       for (int i = 0; i < results.length; i++) {
         categories.add(ProductCategory(messageDecoderWithEmoji(results[i])!));
       }
-
       return categories;
     } else {
       debugPrint(
@@ -2658,8 +2666,9 @@ class ShoppingAuthService extends AuthService {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
+    } else {
+      throw json.decode(response.body);
     }
-    return false;
   }
 
   Future<bool> editCustomCategory(String name, dynamic id) async {
@@ -2676,9 +2685,9 @@ class ShoppingAuthService extends AuthService {
     // debugPrint("__________________________________ $id");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
+    } else {
+      throw json.decode(response.body);
     }
-
-    return false;
   }
 
   //re-order custom category
@@ -2712,9 +2721,8 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 204) {
       return true;
     } else {
-      final jsonData = json.decode(response.body);
       // debugPrint("_________________________________$response");
-      throw jsonData;
+      throw json.decode(response.body);
     }
   }
 
@@ -3547,6 +3555,7 @@ class ShoppingAuthService extends AuthService {
     request.fields["name"] = addOnOption.name!;
     request.fields["description"] = addOnOption.description!;
     request.fields["is_available"] = jsonEncode(addOnOption.isAvailable);
+    request.fields["foreign_price"] = jsonEncode(addOnOption.foreignPrice);
     request.fields["price"] = addOnOption.price!;
 
     if (addOnOption.picture != null) {
@@ -3779,6 +3788,7 @@ class ShoppingAuthService extends AuthService {
     request.fields["name"] = addOnOption.name ?? "";
     request.fields["description"] = addOnOption.description ?? "";
     request.fields["is_available"] = jsonEncode(addOnOption.isAvailable);
+    request.fields["foreign_price"] = jsonEncode(addOnOption.foreignPrice);
     request.fields["price"] = addOnOption.price ?? "";
 
     if (addOnOption.picture != null && !addOnOption.picture!.contains("http")) {

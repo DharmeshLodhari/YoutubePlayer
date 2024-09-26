@@ -40,21 +40,19 @@ class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
             decoration: InputDecoration(
               isDense: true,
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(5),
                 borderSide: BorderSide(
                   color: greyBorderColor,
                   width: 1.0,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(5),
                 borderSide: BorderSide(
                   color: navyBlue,
                   width: 1.0,
                 ),
               ),
-              helperText: '',
-              hintText: '',
               errorText: error,
               prefixIcon: tags.isNotEmpty
                   ? SingleChildScrollView(

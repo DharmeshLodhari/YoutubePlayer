@@ -4,9 +4,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
-import '../data/state_notifier.dart';
 import '../utils/util.dart';
 import 'loading_indicator.dart';
 
@@ -117,7 +115,6 @@ class _CustomizedTextFormFieldForForeignCurrencyState
 
   @override
   Widget build(BuildContext context) {
-    final UserBloc userBloc = Provider.of<UserBloc>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -206,8 +203,9 @@ class _CustomizedTextFormFieldForForeignCurrencyState
                           alignedDropdown: true,
                           child: GestureDetector(
                             onTap: () {
-                              if (widget.onTapCurrency != null)
+                              if (widget.onTapCurrency != null) {
                                 widget.onTapCurrency!();
+                              }
                               setState(() {});
                             },
                             child: Row(
@@ -237,7 +235,7 @@ class _CustomizedTextFormFieldForForeignCurrencyState
             contentPadding: widget.contentPadding,
             enabledBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null
@@ -248,7 +246,7 @@ class _CustomizedTextFormFieldForForeignCurrencyState
                 : null,
             disabledBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null
@@ -259,7 +257,7 @@ class _CustomizedTextFormFieldForForeignCurrencyState
                 : null,
             focusedBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: navyBlue,
                       width: widget.borderWidth != null
@@ -270,7 +268,7 @@ class _CustomizedTextFormFieldForForeignCurrencyState
                 : null,
             errorBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null
@@ -281,7 +279,7 @@ class _CustomizedTextFormFieldForForeignCurrencyState
                 : null,
             focusedErrorBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null

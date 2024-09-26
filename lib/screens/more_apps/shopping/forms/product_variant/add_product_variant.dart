@@ -7,8 +7,10 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/screens/user_profile/models/currency_model.dart';
 import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/screens/currency/add_edit_currency.dart';
 import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/utils/cache_manager.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -17,8 +19,10 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/customized_textform_field_for_foreign_currency.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -82,6 +86,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
   String? optionOnWhatToDo;
 
   List<CurrencyModel>? currencyList;
+  List<CurrencyModel>? currencyListCopy;
   int? currencyItemCount = 0;
   String? currencyNext = "";
   String? currencyPrevious = "";
@@ -130,6 +135,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
     final tempList = result['results'];
 
     currencyList?.addAll(tempList);
+    currencyListCopy = currencyList;
     if (currencyList?.isNotEmpty ?? false) {
       selectedCurrency = currencyList?[0].currency;
       selectedCurrencyId = currencyList?[0].id;
@@ -148,6 +154,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
         setState(() {
           noItemInList = true;
           currencyList = [];
+          currencyListCopy = [];
         });
       }
     } else if (currencyNext == null && currencyList!.length > 6) {
@@ -288,10 +295,12 @@ class _AddProductVariantState extends State<AddProductVariant> {
                       ),
                       getAmountField(),
                       const SizedBox(height: 10),
-                      getForeignCurrencyField(),
+                      getForeignCurrencyFieldAndInfo(),
                       if (currencyView) ...[
                         const SizedBox(height: 10),
                         getForeignCurrencyPriceField(),
+                        const SizedBox(height: 5),
+                        addNewCurrencyRate(),
                       ],
                       const SizedBox(height: 16),
                       getDiscountField(),
@@ -348,6 +357,71 @@ class _AddProductVariantState extends State<AddProductVariant> {
         onTap: () {
           discountAndroidSheet();
         },
+      ),
+    );
+  }
+
+  Widget getForeignCurrencyFieldAndInfo() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: getForeignCurrencyField(),
+        ),
+        getCurrencyInfo(),
+      ],
+    );
+  }
+
+  Widget getCurrencyInfo() {
+    return GestureDetector(
+      onTap: () async {
+        await showInfoDialog(
+          context: context,
+          title: 'Why set currency rate ?',
+          description:
+              'Setting a currency rate allows you to offer products in different currencies while ensuring accurate and up-to-date pricing.',
+        );
+      },
+      child: Icon(
+        Icons.info_outline_rounded,
+        color: blackFont,
+        size: 20,
+      ),
+    );
+  }
+
+  Widget addNewCurrencyRate() {
+    return GestureDetector(
+      onTap: () async {
+        final result = await NavigationUtil.push(
+          context,
+          screen: AddEditCurrency(
+            currencyList: currencyList,
+          ),
+        );
+        if (result != null && result == true) {
+          await getCurrencyList();
+        }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add New Currency Rate',
+            style: TextStyle(
+              fontSize: 12,
+              color: navyBlue,
+              fontWeight: FontWeight.w500,
+              fontFamily: "Inter",
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
       ),
     );
   }
@@ -481,16 +555,16 @@ class _AddProductVariantState extends State<AddProductVariant> {
 
   Widget getForeignCurrencyPriceField() {
     return CustomizedTextFormFieldForForeignCurrency(
-      hasLabel: false,
+      labelText: AppLocalization.of(context)!.priceForeignCurrency,
       controller: foreignController,
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       selectedCurrencySymbol:
-          selectedCurrency != null ? worldCurrencies[selectedCurrency] : "",
+          selectedCurrency != null ? worldCurrencies[selectedCurrency] : "-",
       onTapCurrency: () {
-        selectCurrency();
+        currencyAndroidSheet();
       },
       onChanged: (val) {
         if (val.isNotEmpty) {
@@ -523,99 +597,134 @@ class _AddProductVariantState extends State<AddProductVariant> {
     );
   }
 
-  void selectCurrency() async {
-    await showDialog<String>(
+  void currencyAndroidSheet() {
+    currencyList = currencyListCopy;
+    androidBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-        contentPadding: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        content: SizedBox(
-          width: MediaQuery.of(context).size.width - 40,
-          child: Card(
-            elevation: 2,
-            shadowColor: Colors.transparent,
-            margin: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: currencyList!.map((CurrencyModel model) {
-                    if (selectedCurrency == model.currency) {
-                      return Container(
-                        color: selectedListItemBackgroundBlue,
-                        child: ListTile(
-                          dense: true,
-                          title: Text(
-                            currencyNameAndSymbol(model.currency),
-                            overflow: TextOverflow.fade,
-                            softWrap: false,
-                            style: TextStyle(
-                              fontFamily: "Inter",
-                              color: navyBlue,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search currency',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      currencyList = currencyListCopy!
+                          .where((element) =>
+                              element.currency?.startsWith(value.toString()) ??
+                              false)
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      currencyList = currencyListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                if (currencyList?.isNotEmpty ?? false)
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: currencyList?.length,
+                      itemBuilder: (context, index) {
+                        final String currency =
+                            currencyList?[index].currency ?? "-";
+                        if (selectedCurrency == currency) {
+                          return Container(
+                            color: selectedListItemBackgroundBlue,
+                            child: ListTile(
+                              dense: true,
+                              title: Text(
+                                currencyNameAndSymbol(currency),
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                    color: navyBlue,
+                                    fontSize: 16,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              trailing: Icon(
+                                SlydoAppIcon.checked,
+                                color: navyBlue,
+                                size: 12,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                pressedCurrency = currency;
+                                if (pressedCurrency != null) {
+                                  amountController.clear();
+                                  foreignController.clear();
+                                  variantPrice = "";
+                                  foreignPrice = "";
+                                  selectedCurrency = pressedCurrency;
+                                  selectedCurrencyId = currencyList?[index].id;
+                                  selectedCurrencyRate =
+                                      currencyList?[index].rate;
+                                  setState(() {});
+                                }
+                              },
                             ),
+                          );
+                        }
+                        return ListTile(
+                          title: Text(
+                            currencyNameAndSymbol(currency),
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400),
                           ),
-                          trailing: Icon(
-                            SlydoAppIcon.checked,
-                            color: navyBlue,
-                            size: 12,
-                          ),
+                          dense: true,
                           onTap: () {
                             Navigator.pop(context);
-                            pressedCurrency = model.currency;
+                            pressedCurrency = currency;
                             if (pressedCurrency != null) {
                               amountController.clear();
                               foreignController.clear();
                               variantPrice = "";
                               foreignPrice = "";
                               selectedCurrency = pressedCurrency;
-                              selectedCurrencyId = model.id;
-                              selectedCurrencyRate = model.rate;
+                              selectedCurrencyId = currencyList?[index].id;
+                              selectedCurrencyRate = currencyList?[index].rate;
                               setState(() {});
                             }
                           },
-                        ),
-                      );
-                    }
-                    return ListTile(
-                      title: Text(
-                        currencyNameAndSymbol(model.currency),
-                        softWrap: false,
-                        overflow: TextOverflow.fade,
-                        style: TextStyle(
-                            fontFamily: "Inter",
-                            color: blackFont,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      dense: true,
-                      onTap: () {
-                        Navigator.pop(context);
-                        pressedCurrency = model.currency;
-                        if (pressedCurrency != null) {
-                          amountController.clear();
-                          foreignController.clear();
-                          variantPrice = "";
-                          foreignPrice = "";
-                          selectedCurrency = pressedCurrency;
-                          selectedCurrencyId = model.id;
-                          selectedCurrencyRate = model.rate;
-                          setState(() {});
+                        );
+                      },
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: NoItemInList(
+                      msg: 'No Rate Found',
+                      isButtonShow: true,
+                      buttonTitle: 'Add New Currency Rate',
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        final result = await NavigationUtil.push(
+                          context,
+                          screen: AddEditCurrency(
+                            currencyList: currencyList,
+                          ),
+                        );
+                        if (result != null && result == true) {
+                          await getCurrencyList();
                         }
                       },
-                    );
-                  }).toList(),
-                ),
-              ),
+                    ),
+                  ),
+              ],
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

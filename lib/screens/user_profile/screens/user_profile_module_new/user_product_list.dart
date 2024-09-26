@@ -278,11 +278,13 @@ class _UserProductListState extends State<UserProductList> {
           !_isSnackBarShowing) {
         _isSnackBarShowing = true;
         _productMessengerScaffoldKey.currentState
-            ?.showSnackBar(SnackBar(
-              content: Text(
-                  AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-              duration: const Duration(milliseconds: 500),
-            ))
+            ?.showSnackBar(
+              SnackBar(
+                content: Text(
+                    AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+                duration: const Duration(milliseconds: 500),
+              ),
+            )
             .closed
             .then((_) {
           _isSnackBarShowing = false;

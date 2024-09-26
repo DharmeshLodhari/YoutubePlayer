@@ -543,6 +543,47 @@ Future<T?> showPickItemDialog<T>({
   );
 }
 
+Future<bool?> showInfoDialog({
+  required BuildContext context,
+  String? title,
+  String? description,
+}) {
+  return showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: Colors.white,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCloseIcon(ctx),
+          const SizedBox(height: 10),
+          Text(
+            title ?? "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w700,
+              fontFamily: "Inter",
+              fontSize: 16.0,
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
+      content: Text(
+        description ?? "",
+        style: TextStyle(
+          color: lightBlackFont,
+          fontSize: 12.0,
+          fontWeight: FontWeight.w400,
+          fontFamily: "Inter",
+        ),
+        textAlign: TextAlign.left,
+      ),
+    ),
+  );
+}
+
 Future<bool?> showExitDialogBackButton(
     {required BuildContext context,
     Function()? leftButtonOnPressed,

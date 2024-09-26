@@ -2713,6 +2713,13 @@ class AppLocalization {
     );
   }
 
+  String get priceForeignCurrency {
+    return Intl.message(
+      "Price (Foreign Currency)",
+      name: "priceLocalCurrency",
+    );
+  }
+
   String get weight {
     return Intl.message(
       "Weight",

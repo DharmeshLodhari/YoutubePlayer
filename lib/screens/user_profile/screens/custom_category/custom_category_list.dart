@@ -185,8 +185,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       ),
       leftButtonOnPressed: () async {
         if (_controller.text.isNotEmpty) {
-          final bool result = await ShoppingAuthService()
-              .createCustomCategory(_controller.text);
+          await ShoppingAuthService().createCustomCategory(_controller.text);
           _onProductRefresh();
           _controller.clear();
           Navigator.pop(context);
@@ -252,7 +251,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           deleteCategoryDialog(prod.id);
         },
         rightButtonOnPressed: () async {
-          final bool result = await ShoppingAuthService()
+          await ShoppingAuthService()
               .editCustomCategory(_controller.text, prod.id);
           _onProductRefresh();
           _controller.clear();
@@ -278,8 +277,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         image: Image.asset('assets/images/delete_dialog_icon.png'),
       ),
       rightButtonOnPressed: () async {
-        final bool result =
-            await ShoppingAuthService().deleteCustomCategory(id);
+        await ShoppingAuthService().deleteCustomCategory(id);
         _onProductRefresh();
         _controller.clear();
         Navigator.pop(context);

@@ -239,6 +239,17 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
+      isAmountField: true,
+      isforeignCurrency: true,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            currencyModel.rate = moneyInputNormalizer(val);
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
@@ -249,15 +260,6 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
           }
         }
         return AppLocalization.of(context)!.pleaseEnterValidAmout;
-      },
-      onChanged: (String val) {
-        if (val.isNotEmpty) {
-          try {
-            currencyModel.rate = moneyInputNormalizer(val);
-          } catch (e) {
-            showToast(message: e.toString());
-          }
-        }
       },
     );
   }

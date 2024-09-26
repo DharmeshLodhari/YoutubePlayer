@@ -1,4 +1,5 @@
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -6,10 +7,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 class NoItemInList extends StatelessWidget {
   String msg = "";
   String? title = "";
+  String? buttonTitle = "";
   bool isResult;
+  bool isButtonShow;
+  Function()? onTap;
 
   NoItemInList(
-      {super.key, required this.msg, this.isResult = true, this.title});
+      {super.key,
+      required this.msg,
+      this.isResult = true,
+      this.title,
+      this.buttonTitle,
+      this.isButtonShow = false,
+      this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +28,7 @@ class NoItemInList extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           const Expanded(
-            child: SizedBox(height: 1),
+            child: SizedBox(height: 2),
           ),
           Expanded(
             flex: 2,
@@ -43,7 +53,7 @@ class NoItemInList extends StatelessWidget {
               ),
             ),
           ],
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
@@ -64,6 +74,14 @@ class NoItemInList extends StatelessWidget {
               child: SizedBox(
             height: 2,
           )),
+          if (isButtonShow)
+            CurvedButton(
+              onPressed: onTap,
+              backgroundColor: navyBlue,
+              textColor: Colors.white,
+              text: buttonTitle,
+            ),
+          const SizedBox(height: 30),
         ],
       ),
     );

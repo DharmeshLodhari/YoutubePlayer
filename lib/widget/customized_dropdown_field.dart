@@ -17,8 +17,8 @@ class CustomizedDropDownField extends StatefulWidget {
       required this.title,
       this.titleColor,
       this.borderWidth,
-      this.fontSize = 16,
-      this.height = 10,
+      this.fontSize = 14,
+      this.height = 7,
       this.fontWeight});
 
   @override
@@ -30,7 +30,7 @@ class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
   @override
   Widget build(BuildContext context) {
     widget.titleColor ??= darkGrey;
-    widget.fontWeight ??= FontWeight.normal;
+    widget.fontWeight ??= FontWeight.w500;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -51,9 +51,9 @@ class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
         ),
         Card(
           elevation: 0,
-          color: Colors.white,
+          color: Colors.transparent,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
               side: BorderSide(
                   color: greyBorderColor,
                   width:
