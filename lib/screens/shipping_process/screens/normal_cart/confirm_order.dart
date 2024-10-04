@@ -208,7 +208,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       actionOneText: "I'll choose",
       actionTwoText: "Repeat last",
       leftButtonOnPressed: () {
-        Navigator.pushNamed(context, Routes.PRODUCT, arguments: {
+        Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE, arguments: {
           "product": data.item as Product,
           "type": "changeAddons"
         });

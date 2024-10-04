@@ -76,7 +76,8 @@ class UniLinksService {
         } else if (parts[3] == "store") {
           if (parts.length >= 5) {
             if (parts[5] == "products") {
-              Navigator.pushNamed(myGlobals.context!, Routes.PRODUCT,
+              Navigator.pushNamed(
+                  myGlobals.context!, Routes.PRODUCT_DETAIL_PAGE,
                   arguments: {
                     "productId": parts[6],
                   });

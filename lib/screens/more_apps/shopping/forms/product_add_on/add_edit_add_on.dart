@@ -1,6 +1,8 @@
-import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_option_tile.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -9,30 +11,28 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../routes/route_constants.dart';
-import '../../shopping_auth.dart';
-
-class CreateAddOn extends StatefulWidget {
+class AddEditAddOn extends StatefulWidget {
   final dynamic arguments;
 
-  const CreateAddOn({this.arguments, super.key});
+  const AddEditAddOn({this.arguments, super.key});
 
   @override
-  State<CreateAddOn> createState() => _CreateAddOnState();
+  State<AddEditAddOn> createState() => _AddEditAddOnState();
 }
 
-class _CreateAddOnState extends State<CreateAddOn> {
+class _AddEditAddOnState extends State<AddEditAddOn> {
   final _auth = ShoppingAuthService();
   final _formKey = GlobalKey<FormState>();
 
   UserBloc? userBloc;
 
+  bool isEdit = false;
   final ScrollController _scrollController = ScrollController();
-
   bool isRequired = false;
   bool isLoading = false;
   bool isAPILoading = false;
@@ -41,10 +41,15 @@ class _CreateAddOnState extends State<CreateAddOn> {
   String name = "";
   String description = "";
   String value = "";
-  TextEditingController? groupDescriptionController;
+  int id = 0;
   List<AddOnOption> productAddOnOptionList = [];
   ScrollController scrollControllerAddOnOption = ScrollController();
-  AddOns addOns = AddOns();
+  AddOns? addOns;
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+  final TextEditingController comparePriceController = TextEditingController();
+  final TextEditingController isAvailableController = TextEditingController();
 
   @override
   void deactivate() {
@@ -53,11 +58,39 @@ class _CreateAddOnState extends State<CreateAddOn> {
   }
 
   @override
+  void initState() {
+    //get value if its form edit or add product
+    addOns = widget.arguments["addOns"];
+
+    if (addOns != null) {
+      isEdit = true;
+    }
+
+    if (isEdit) {
+      id = addOns?.id ?? 0;
+      nameController.text = addOns?.name ?? "";
+      descriptionController.text = addOns?.description ?? "";
+      isRequired = addOns?.isRequired ?? false;
+
+      productAddOnOptionList = addOns?.options ?? [];
+
+      name = addOns?.name ?? "";
+      description = addOns?.description ?? "";
+      selectedType = capitalizeFirstLetter(addOns?.selectType ?? "");
+    }
+    super.initState();
+  }
+
+  String capitalizeFirstLetter(String input) {
+    return input.substring(0, 1).toUpperCase() + input.substring(1);
+  }
+
+  @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        return await getExitDialog(context);
       },
       child: Scaffold(
         backgroundColor: lightGrey,
@@ -82,15 +115,34 @@ class _CreateAddOnState extends State<CreateAddOn> {
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
-          Navigator.pop(context);
+        onPressed: () async {
+          if (isEdit) {
+            await getExitDialog(context);
+          } else {
+            Navigator.pop(context);
+          }
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.newAddOns,
+        isEdit
+            ? AppLocalization.of(context)!.updateAddOns
+            : AppLocalization.of(context)!.newAddOns,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
+    );
+  }
+
+  dynamic getExitDialog(BuildContext context) async {
+    await showExitDialogBackButton(
+      context: context,
+      leftButtonOnPressed: () {
+        Navigator.pop(context);
+      },
+      rightButtonOnPressed: () async {
+        FocusScope.of(context).unfocus();
+        await addNewAddOns();
+      },
     );
   }
 
@@ -101,7 +153,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(16),
               child: Center(
                 child: Form(
                   key: _formKey,
@@ -128,10 +180,12 @@ class _CreateAddOnState extends State<CreateAddOn> {
                       const SizedBox(height: 30),
                       if (productAddOnOptionList.isEmpty) ...[
                         getAddOns(),
+                        const SizedBox(height: 30),
+                        selectFromAddOns(),
                       ] else ...[
                         displaySelectedAddOnOption(),
                       ],
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 40),
                       getSubmitButton(),
                       const SizedBox(height: 40),
                     ],
@@ -142,36 +196,83 @@ class _CreateAddOnState extends State<CreateAddOn> {
           );
   }
 
-  Widget showBackArrow() {
-    return IconButton(
-      icon: const Icon(Icons.arrow_back_ios),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-  }
+  Widget displaySelectedAddOnOption() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Options',
+              maxLines: 1,
+              style: TextStyle(
+                color: darkGrey,
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                fontFamily: "Inter",
+              ),
+            ),
+            GestureDetector(
+              onTap: () async {
+                //disable click if add-on option is not empty
+                final result = await Navigator.of(context)
+                    .pushNamed(Routes.ADD_EDIT_ADD_ON_OPTION, arguments: {
+                  'productId': widget.arguments['productId'],
+                });
 
-  Widget getDescription() {
-    return CustomizedTextFormField(
-      maxLines: 3,
-      labelText: "Description",
-      textCapitalization: TextCapitalization.sentences,
-      // controller: groupDescriptionController,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.descriptionMustNotEmpty;
-      },
-      onChanged: (val) {
-        description = val;
-      },
+                // Handle the result (map) received from Product Add-on Option
+                if (result != null && result is AddOnOption) {
+                  //save the add-on option details for later use
+                  productAddOnOptionList.add(result);
+                  if (mounted) setState(() {});
+                }
+              },
+              child: Icon(
+                SlydoAppIcon.add,
+                size: 16,
+                color: blackFont,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5.0),
+        _buildAddOnOptionList(),
+        const SizedBox(height: 5.0),
+        GestureDetector(
+          onTap: () async {
+            //disable click if add-on option is not empty
+            final result = await Navigator.of(context)
+                .pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
+              'options': productAddOnOptionList,
+              'productId': widget.arguments['productId'],
+            });
+
+            // Handle the result (map) received from Product Add-on Option
+            if (result != null && result is List<AddOnOption>) {
+              //save the add-on option details for later use
+              // productAddOnOptionList.add(result);
+              productAddOnOptionList = result;
+              if (mounted) setState(() {});
+            }
+          },
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              'See all',
+              maxLines: 1,
+              style: TextStyle(
+                  color: navyBlue, fontWeight: FontWeight.w400, fontSize: 14),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget addNameField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.name,
+      controller: nameController,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -184,23 +285,21 @@ class _CreateAddOnState extends State<CreateAddOn> {
     );
   }
 
-  bool validateDropdown() {
-    if (selectedType.isNotEmpty && selectedType != '') {
-      return true;
-    } else {
-      showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
-      return false;
-    }
-  }
-
-  Widget getIsRequiredField() {
-    return CustomizedCheckBoxField(
-      onTap: () {
-        isRequired = !isRequired;
-        setState(() {});
+  Widget getDescription() {
+    return CustomizedTextFormField(
+      maxLines: 3,
+      labelText: "Description",
+      textCapitalization: TextCapitalization.sentences,
+      controller: descriptionController,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.descriptionMustNotEmpty;
       },
-      isChecked: isRequired,
-      title: "Required",
+      onChanged: (val) {
+        description = val;
+      },
     );
   }
 
@@ -303,6 +402,17 @@ class _CreateAddOnState extends State<CreateAddOn> {
     );
   }
 
+  Widget getIsRequiredField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        isRequired = !isRequired;
+        setState(() {});
+      },
+      isChecked: isRequired,
+      title: "Required",
+    );
+  }
+
   Widget getAddOns() {
     return GestureDetector(
       onTap: () async {
@@ -341,30 +451,138 @@ class _CreateAddOnState extends State<CreateAddOn> {
     );
   }
 
-  Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: isAPILoading
-          ? () {}
-          : () async {
-              FocusScope.of(context).unfocus();
-              isAPILoading = true;
-              if (mounted) setState(() {});
+  Widget selectFromAddOns() {
+    return GestureDetector(
+      onTap: () async {
+        //disable click if add-on option is not empty
+        final result = await Navigator.of(context)
+            .pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
+          'productId': widget.arguments['productId'],
+        });
 
-              await addNewAddOns();
-
-              isAPILoading = false;
-              if (mounted) setState(() {});
-            },
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "Save",
-      isLoading: isAPILoading,
+        // Handle the result (map) received from Product Add-on Option
+        if (result != null && result is List<AddOnOption>) {
+          //save the add-on option details for later use
+          productAddOnOptionList = result;
+          if (mounted) setState(() {});
+        }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Select from available options',
+            maxLines: 1,
+            style: TextStyle(
+                color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget _buildAddOnOptionList() {
+    return isLoading && productAddOnOptionList.isEmpty
+        ? buildLoadingIndicator(isLoading: isLoading)
+        : SizedBox(
+            height: 100 * productAddOnOptionList.length.toDouble(),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              physics: const NeverScrollableScrollPhysics(),
+              //+1 for progressbar
+              itemCount: productAddOnOptionList.length + 1,
+              controller: scrollControllerAddOnOption,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == productAddOnOptionList.length) {
+                  return buildJumpingLoadingIndicator(isLoading: isLoading);
+                } else {
+                  return AddOnOptionTile(
+                    addOnOption: productAddOnOptionList[index],
+                  );
+                }
+              },
+            ),
+          );
+  }
+
+  Widget getSubmitButton() {
+    if (isEdit) {
+      return Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: CurvedButton(
+          onPressed: isAPILoading
+              ? () {}
+              : () async {
+                  FocusScope.of(context).unfocus();
+                  isAPILoading = true;
+                  if (mounted) setState(() {});
+
+                  await updateAddOns();
+
+                  isAPILoading = false;
+                  if (mounted) setState(() {});
+                },
+          backgroundColor: navyBlue,
+          textColor: Colors.white,
+          text: "Save",
+          isLoading: isAPILoading,
+        ),
+      );
+    } else {
+      return CurvedButton(
+        onPressed: isAPILoading
+            ? () {}
+            : () async {
+                FocusScope.of(context).unfocus();
+                isAPILoading = true;
+                if (mounted) setState(() {});
+
+                await addNewAddOns();
+
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              },
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Save",
+        isLoading: isAPILoading,
+      );
+    }
+  }
+
+  Future<void> updateAddOns() async {
+    if (_formKey.currentState!.validate()) {
+      if (validateDropdown()) {
+        final AddOns addOns = AddOns();
+        addOns.name = name;
+        addOns.description = description;
+        addOns.isRequired = isRequired;
+        addOns.selectType = selectedType;
+        addOns.options = productAddOnOptionList.cast<AddOnOption>();
+
+        await _auth
+            .updateAddOn(addOns, widget.arguments["productId"])
+            .then((value) async {
+          Navigator.pop(context, value);
+        }).catchError((error) {
+          debugPrint("ERROR While createAddOnOption :- $error");
+          isAPILoading = false;
+          if (mounted) setState(() {});
+          showToast(message: "$error");
+        });
+      }
+    }
   }
 
   Future<void> addNewAddOns() async {
     if (_formKey.currentState!.validate()) {
       if (validateDropdown()) {
+        final AddOns addOns = AddOns();
         addOns.name = name;
         addOns.description = description;
         addOns.isRequired = isRequired;
@@ -385,100 +603,18 @@ class _CreateAddOnState extends State<CreateAddOn> {
     }
   }
 
-  Widget displaySelectedAddOnOption() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Options',
-              maxLines: 1,
-              style: TextStyle(
-                  color: darkGrey, fontWeight: FontWeight.w500, fontSize: 16),
-            ),
-            GestureDetector(
-              onTap: () async {
-                //disable click if add-on option is not empty
-                final result = await Navigator.of(context)
-                    .pushNamed(Routes.ADD_EDIT_ADD_ON_OPTION, arguments: {
-                  'productId': widget.arguments['productId'],
-                });
-
-                // Handle the result (map) received from Product Add-on Option
-                if (result != null && result is AddOnOption) {
-                  //save the add-on option details for later use
-                  productAddOnOptionList.add(result);
-                  if (mounted) setState(() {});
-                }
-              },
-              child: Icon(
-                SlydoAppIcon.add,
-                size: 16,
-                color: blackFont,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 5.0),
-        _buildAddOnOptionList(),
-        const SizedBox(height: 5.0),
-        GestureDetector(
-          onTap: () async {
-            //disable click if add-on option is not empty
-            final result = await Navigator.of(context)
-                .pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
-              'productId': widget.arguments['productId'],
-            });
-
-            // Handle the result (map) received from Product Add-on Option
-            if (result != null && result is AddOnOption) {
-              //save the add-on option details for later use
-              productAddOnOptionList.add(result);
-              if (mounted) setState(() {});
-            }
-          },
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              'See all',
-              maxLines: 1,
-              style: TextStyle(
-                  color: navyBlue, fontWeight: FontWeight.w400, fontSize: 14),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAddOnOptionList() {
-    return isLoading && productAddOnOptionList.isEmpty
-        ? buildLoadingIndicator(isLoading: isLoading)
-        : SizedBox(
-            height: 80 * productAddOnOptionList.length.toDouble(),
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              //+1 for progressbar
-              itemCount: productAddOnOptionList.length + 1,
-              controller: scrollControllerAddOnOption,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == productAddOnOptionList.length) {
-                  return buildJumpingLoadingIndicator(isLoading: isLoading);
-                } else {
-                  return AddOnOptionTile(
-                    addOnOption: productAddOnOptionList[index],
-                  );
-                }
-              },
-            ),
-          );
-  }
-
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  bool validateDropdown() {
+    if (selectedType.isNotEmpty && selectedType != '') {
+      return true;
+    } else {
+      showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
+      return false;
+    }
   }
 }

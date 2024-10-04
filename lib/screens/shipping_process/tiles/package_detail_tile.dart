@@ -102,7 +102,7 @@ class PackageDetailTile extends StatelessWidget {
                 title: getTitle(index),
                 subtitle: getSubtitle(context, index),
                 onTap: () {
-                  Navigator.pushNamed(context, Routes.PRODUCT,
+                  Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
                       arguments: {"product": productList[index]});
                 },
               ),

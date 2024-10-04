@@ -1549,7 +1549,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           Navigator.pop(context);
           Navigator.pushNamed(
             context,
-            Routes.ADD_PRODUCT,
+            Routes.ADD_EDIT_PRODUCT,
             arguments: {
               'channelUsername': chatConversation!.userName,
             },

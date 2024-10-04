@@ -1905,7 +1905,7 @@ class _HomeState extends State<Home> {
                       iconData: SlydoAppIcon.product,
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.pushNamed(context, Routes.ADD_PRODUCT);
+                        Navigator.pushNamed(context, Routes.ADD_EDIT_PRODUCT);
                       },
                     ),
                     bottomSheetItem(
@@ -1914,7 +1914,7 @@ class _HomeState extends State<Home> {
                       isLast: true,
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.pushNamed(context, Routes.ADD_SERVICE);
+                        Navigator.pushNamed(context, Routes.ADD_EDIT_SERVICE);
                       },
                     ),
                   ],

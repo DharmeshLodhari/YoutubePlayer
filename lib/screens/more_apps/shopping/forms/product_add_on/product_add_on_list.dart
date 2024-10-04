@@ -231,7 +231,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
       ),
       onTap: () async {
         final result = await Navigator.of(context)
-            .pushNamed(Routes.NEW_ADD_ON, arguments: {
+            .pushNamed(Routes.ADD_EDIT_ADD_ON, arguments: {
           'option': 'edit',
           'productId': productId,
         });
@@ -275,7 +275,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
                             // if (isForCheckboxSelection == true)
                             //   toggleAddOnCheckedState(index);
                             final data = await Navigator.of(context)
-                                .pushNamed(Routes.UPDATE_ADD_ON, arguments: {
+                                .pushNamed(Routes.ADD_EDIT_ADD_ON, arguments: {
                               'addOns': productAddOnList[index],
                               'productId': productId,
                             }).whenComplete(() => getAddOnList());
@@ -415,7 +415,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
         icon: Icons.edit,
         onPressed: (con) async {
           final data = await Navigator.of(context)
-              .pushNamed(Routes.UPDATE_ADD_ON, arguments: {
+              .pushNamed(Routes.ADD_EDIT_ADD_ON, arguments: {
             'addOns': addOns,
             'productId': productId,
           });

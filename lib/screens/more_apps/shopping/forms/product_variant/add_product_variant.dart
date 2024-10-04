@@ -249,7 +249,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.newOption,
+        AppLocalization.of(context)!.newVariant,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),

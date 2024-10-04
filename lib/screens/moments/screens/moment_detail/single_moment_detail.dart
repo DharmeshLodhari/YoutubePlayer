@@ -1137,7 +1137,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         onTap: () {
           Navigator.pushNamed(
             context,
-            Routes.PRODUCT,
+            Routes.PRODUCT_DETAIL_PAGE,
             // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
             arguments: {"productId": attachment['product']},
           );

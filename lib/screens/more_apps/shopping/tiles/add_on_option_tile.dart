@@ -14,42 +14,38 @@ class AddOnOptionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: decorateBox(),
         child: ListTile(
-          dense: true,
+          // dense: true,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "",
+                appendStringDot(addOnOption.name ?? "", 14),
                 maxLines: 1,
                 style: TextStyle(
-                    color: darkGrey, fontWeight: FontWeight.w400, fontSize: 12),
+                  color: blackFont,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                ),
               ),
+              const SizedBox(height: 3.0),
               Text(
-                appendStringDot(addOnOption.name ?? "", 10),
+                'Created: ${getProductDateTime(addOnOption.createdAt)}',
                 maxLines: 1,
                 style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14),
-              ),
-              const SizedBox(height: 5.0),
-              Text(
-                'Created: ${getProductDateTime(addOnOption.createdAt.toString())}',
-                maxLines: 1,
-                style: TextStyle(
-                    color: darkGrey, fontWeight: FontWeight.w400, fontSize: 12),
-              ),
-              Text(
-                "",
-                maxLines: 1,
-                style: TextStyle(
-                    color: darkGrey, fontWeight: FontWeight.w400, fontSize: 12),
+                  color: darkGrey,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  fontFamily: "Inter",
+                ),
               ),
             ],
           ),
@@ -59,17 +55,20 @@ class AddOnOptionTile extends StatelessWidget {
               Text(
                 worldCurrencies[addOnOption.currency ?? 'NGN'] ?? '',
                 style: TextStyle(
-                    fontFamily: "Inter",
-                    fontSize: 14.0,
-                    color: darkGrey,
-                    fontWeight: FontWeight.w700),
+                  fontFamily: "Inter",
+                  fontSize: 14.0,
+                  color: darkGrey,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               Text(
                 moneyDisplayNormalizer(int.parse(addOnOption.price.toString())),
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: darkGrey,
-                    fontWeight: FontWeight.w700),
+                  fontSize: 14.0,
+                  color: darkGrey,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: "Inter",
+                ),
               ),
             ],
           ),
@@ -85,7 +84,7 @@ class AddOnOptionTile extends StatelessWidget {
     );
   }
 
-  DateTime getProductDateTime(String date) {
+  DateTime getProductDateTime(String? date) {
     if (date != null) {
       final DateTime dateTime = DateTime.parse(date);
       return dateTime;
@@ -106,13 +105,18 @@ class AddOnOptionTile extends StatelessWidget {
         radius: 25,
         child: Text(
           getInitials(addOnOption.name!).toUpperCase(),
-          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+          style: TextStyle(
+            color: white,
+            fontWeight: FontWeight.w700,
+            fontFamily: "Inter",
+          ),
         ),
       );
     } else {
       return CustomBoxShadow(
         child: Container(
-          width: 60,
+          width: 50,
+          height: 50,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: imageUrl != null ? white : darkGrey.withOpacity(0.50),

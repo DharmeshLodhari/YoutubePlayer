@@ -107,7 +107,7 @@ class _MyServicesState extends State<MyServices> {
           final PermissionType? hasPermission =
               userBloc.user.hasWritePermission(ProtectionPermission.services);
           if (hasPermission == PermissionType.WRITE) {
-            Navigator.pushNamed(context, Routes.ADD_SERVICE);
+            Navigator.pushNamed(context, Routes.ADD_EDIT_SERVICE);
           } else {
             showSnackbar(context,
                 message: AppLocalization.of(context)?.doNotPermission ?? "");

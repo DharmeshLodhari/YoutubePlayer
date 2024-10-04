@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
-import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/screens/user_profile/models/currency_model.dart';
 import 'package:Slydo/screens/user_profile/screens/currency/add_edit_currency.dart';
@@ -25,39 +26,39 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../../shopping_auth.dart';
-
-class ProductAddOnOptionCreate extends StatefulWidget {
+class AddEditAddOnOption extends StatefulWidget {
   final dynamic arguments;
 
-  const ProductAddOnOptionCreate({this.arguments, super.key});
+  const AddEditAddOnOption({this.arguments, super.key});
 
   @override
-  State<ProductAddOnOptionCreate> createState() =>
-      _ProductAddOnOptionCreateState();
+  State<AddEditAddOnOption> createState() => _AddEditAddOnOptionState();
 }
 
-class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
+class _AddEditAddOnOptionState extends State<AddEditAddOnOption> {
   final _auth = ShoppingAuthService();
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
 
   UserBloc? userBloc;
-
   int imageCount = 1;
   final ScrollController _scrollController = ScrollController();
-  List<PickedFile> productImages = [];
-  List<String> croppedImageList = [];
+  List<PickedFile> productLocalImages = [];
+  List<String?> productImagesFromServer = [];
   String price = "";
   String foreignPrice = "";
-  bool isAvailable = false;
+  bool productIsAvailable = false;
   bool isLoading = false;
   bool isAPILoading = false;
   String name = "";
+  int id = 0;
   String description = "";
-  // String optionOnWhatToDo = "";
-  AddOnOption addOnOption = AddOnOption();
+  String picture = "";
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+  final TextEditingController foreignController = TextEditingController();
 
   List<CurrencyModel>? currencyList;
   List<CurrencyModel>? currencyListCopy;
@@ -65,14 +66,14 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
   String? currencyNext = "";
   String? currencyPrevious = "";
   bool noItemInList = false;
-  final TextEditingController amountController = TextEditingController();
-  final TextEditingController foreignController = TextEditingController();
+  bool currencyView = false;
   String? selectedCurrency;
   String? selectedCurrencyId;
   int? selectedCurrencyRate;
   String? pressedCurrency;
   ForeignPrice? foreignPriceModel;
-  bool currencyView = false;
+  AddOnOption? addOnOption;
+  bool isEdit = false;
 
   @override
   void deactivate() {
@@ -82,9 +83,39 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
 
   @override
   void initState() {
-    //get value if its form edit or add product
-    // optionOnWhatToDo = widget.arguments["option"];
+    addOnOption = widget.arguments["addOnOption"];
+
+    // debugPrint('Fola varaint::: ${variant!.toJson()}');
+
+    if (addOnOption != null) {
+      isEdit = true;
+    }
+
     getCurrencyList();
+
+    if (isEdit) {
+      id = addOnOption?.id ?? 0;
+      nameController.text = addOnOption?.name ?? "";
+      descriptionController.text = addOnOption?.description ?? "";
+      priceController.text =
+          moneyNormalizer(int.parse(addOnOption?.price ?? "0"));
+      productIsAvailable = addOnOption?.isAvailable ?? false;
+
+      picture = addOnOption?.picture ?? "";
+      name = addOnOption?.name ?? "";
+      description = addOnOption?.description ?? "";
+      price = moneyNormalizer(int.parse(addOnOption?.price ?? "0"));
+
+      if (addOnOption?.foreignPrice != null) {
+        currencyView = true;
+        foreignController.text =
+            moneyNormalizer(addOnOption?.foreignPrice?.price ?? 0);
+        selectedCurrencyId = addOnOption?.foreignPrice?.userCurrencyRate;
+
+        getCurrencyData();
+      }
+    }
+
     super.initState();
   }
 
@@ -105,10 +136,12 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
 
     currencyList?.addAll(tempList);
     currencyListCopy = currencyList;
-    if (currencyList?.isNotEmpty ?? false) {
-      selectedCurrency = currencyList?[0].currency;
-      selectedCurrencyId = currencyList?[0].id;
-      selectedCurrencyRate = currencyList?[0].rate;
+    if ((currencyList?.isNotEmpty ?? false)) {
+      if (selectedCurrency == null || (selectedCurrency?.isEmpty ?? false)) {
+        selectedCurrency = currencyList?[0].currency;
+        selectedCurrencyId = currencyList?[0].id;
+        selectedCurrencyRate = currencyList?[0].rate;
+      }
     }
 
     if (mounted) {
@@ -135,6 +168,13 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     }
   }
 
+  void getCurrencyData() async {
+    final CurrencyModel result =
+        await UserAuth().fetchCurrency(selectedCurrencyId ?? "");
+    selectedCurrency = result.currency;
+    selectedCurrencyRate = result.rate;
+  }
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -156,9 +196,9 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
-      titleSpacing: 0,
-      centerTitle: false,
+      titleSpacing: 20,
       automaticallyImplyLeading: false,
+      centerTitle: false,
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,
@@ -170,7 +210,9 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.newOption,
+        isEdit
+            ? AppLocalization.of(context)!.updateOption
+            : AppLocalization.of(context)!.newOption,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -184,15 +226,14 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(16),
               child: Center(
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const SizedBox(height: 10),
-                      addImages(),
+                      if (isEdit) editImages() else addLocalImages(),
                       const SizedBox(height: 10),
                       addTitleField(),
                       const SizedBox(height: 10),
@@ -231,21 +272,144 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     );
   }
 
-  Widget addImages() {
+  Widget editImages() {
+    return Column(
+      children: [
+        if (picture.isNotEmpty) showServerImage() else Container(),
+        if (picture.isEmpty) ...[
+          const SizedBox(height: 10),
+          addLocalImages(),
+        ],
+      ],
+    );
+  }
+
+  Widget showServerImage() {
+    return SizedBox(
+      height: 100,
+      child: Stack(
+        children: <Widget>[
+          CustomBoxShadow(
+            child: Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              shadowColor: boxShadowTwo,
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              child: Container(
+                width: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                      image: NetworkImage(
+                        picture,
+                      ),
+                      fit: BoxFit.fill),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              padding: const EdgeInsets.only(right: 6, top: 6),
+              alignment: Alignment.topRight,
+              icon: Container(
+                padding: const EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  color: iconBtnGrey,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(
+                  SlydoAppIcon.remove,
+                  color: blackFont,
+                  size: 15,
+                ),
+              ),
+              onPressed: () {
+                picture = "";
+                if (mounted) setState(() {});
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget addLocalImages() {
     return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: productImages.length + 1,
+        itemCount: productLocalImages.length + 1,
         itemBuilder: (context, index) => Container(
           padding: const EdgeInsets.only(right: 6),
-          child: index != productImages.length
+          child: index != productLocalImages.length
               ? showImage(index)
-              : productImages.length != imageCount
+              : productLocalImages.length != imageCount
                   ? addImageButton()
                   : null,
         ),
+      ),
+    );
+  }
+
+  Widget showImage(int index) {
+    return SizedBox(
+      height: 100,
+      child: Stack(
+        children: <Widget>[
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            shadowColor: dividerColor,
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: Container(
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                    image: FileImage(
+                      File(productLocalImages[index].path),
+                    ),
+                    fit: BoxFit.fill),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              padding: const EdgeInsets.only(right: 6, top: 6),
+              alignment: Alignment.topRight,
+              icon: Container(
+                padding: const EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  color: iconBtnGrey,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(
+                  SlydoAppIcon.remove,
+                  color: blackFont,
+                  size: 15,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  productLocalImages.removeAt(index);
+                  addOnOption?.picture = "";
+                });
+              },
+            ),
+          )
+        ],
       ),
     );
   }
@@ -288,71 +452,6 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     );
   }
 
-  Widget getForeignCurrencyFieldAndInfo() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          child: getForeignCurrencyField(),
-        ),
-        getCurrencyInfo(),
-      ],
-    );
-  }
-
-  Widget getCurrencyInfo() {
-    return GestureDetector(
-      onTap: () async {
-        await showInfoDialog(
-          context: context,
-          title: 'Why set currency rate ?',
-          description:
-              'Setting a currency rate allows you to offer products in different currencies while ensuring accurate and up-to-date pricing.',
-        );
-      },
-      child: Icon(
-        Icons.info_outline_rounded,
-        color: blackFont,
-        size: 20,
-      ),
-    );
-  }
-
-  Widget addNewCurrencyRate() {
-    return GestureDetector(
-      onTap: () async {
-        final result = await NavigationUtil.push(
-          context,
-          screen: AddEditCurrency(
-            currencyList: currencyList,
-          ),
-        );
-        if (result != null && result == true) {
-          await getCurrencyList();
-        }
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Add New Currency Rate',
-            style: TextStyle(
-              fontSize: 12,
-              color: navyBlue,
-              fontWeight: FontWeight.w500,
-              fontFamily: "Inter",
-            ),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: blackFont,
-          ),
-        ],
-      ),
-    );
-  }
-
   void pickImage() async {
     final imageSource = await showDialog<ImageSource>(
         context: context,
@@ -380,67 +479,89 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
             return;
           }
 
-          productImages.add(PickedFile(croppedImage));
-          // croppedImageList.add(croppedImage);
-          addOnOption.picture = croppedImage;
+          productLocalImages.add(PickedFile(croppedImage));
+          addOnOption?.picture = croppedImage;
           if (mounted) setState(() {});
         }
       });
     }
   }
 
-  Widget showImage(int index) {
-    return SizedBox(
-      height: 100,
-      child: Stack(
-        children: <Widget>[
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            shadowColor: dividerColor,
-            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: FileImage(
-                      File(productImages[index].path),
-                    ),
-                    fit: BoxFit.fill),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            child: IconButton(
-              padding: const EdgeInsets.only(right: 6, top: 6),
-              alignment: Alignment.topRight,
-              icon: Container(
-                padding: const EdgeInsets.all(2.0),
-                decoration: BoxDecoration(
-                  color: iconBtnGrey,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Icon(
-                  SlydoAppIcon.remove,
-                  color: blackFont,
-                  size: 15,
-                ),
-              ),
-              onPressed: () {
-                setState(() {
-                  productImages.removeAt(index);
-                  addOnOption.picture = "";
-                });
-              },
-            ),
-          )
-        ],
-      ),
+  Widget addTitleField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.title,
+      controller: nameController,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.pleaseEnterTitle;
+      },
+      onChanged: (val) {
+        name = val;
+      },
+    );
+  }
+
+  Widget getDescription() {
+    return CustomizedTextFormField(
+      maxLines: 3,
+      labelText: "Description",
+      textCapitalization: TextCapitalization.sentences,
+      controller: descriptionController,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.descriptionMustNotEmpty;
+      },
+      onChanged: (val) {
+        description = val;
+      },
+    );
+  }
+
+  Widget getAmountField() {
+    return CustomizedTextFormField(
+      isReadOnly: currencyView ? true : false,
+      labelText: AppLocalization.of(context)!.priceLocalCurrency,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      controller: priceController,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            price = double.parse(val.replaceAll(',', '')).toString();
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+
+  Widget getForeignCurrencyFieldAndInfo() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: getForeignCurrencyField(),
+        ),
+        getCurrencyInfo(),
+      ],
     );
   }
 
@@ -452,6 +573,24 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
       },
       isChecked: currencyView,
       title: AppLocalization.of(context)!.setPriceWithForeignCurrency,
+    );
+  }
+
+  Widget getCurrencyInfo() {
+    return GestureDetector(
+      onTap: () async {
+        await showInfoDialog(
+          context: context,
+          title: 'Why set currency rate ?',
+          description:
+              'Setting a currency rate allows you to offer products in different currencies while ensuring accurate and up-to-date pricing.',
+        );
+      },
+      child: Icon(
+        Icons.info_outline_rounded,
+        color: blackFont,
+        size: 20,
+      ),
     );
   }
 
@@ -478,12 +617,12 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
                     selectedCurrencyRate) ??
                 "";
             price = amount.replaceAll(',', '');
-            amountController.text = price;
+            priceController.text = price;
           } catch (e) {
             showToast(message: e.toString());
           }
         } else {
-          amountController.clear();
+          priceController.clear();
         }
       },
       validator: (val) {
@@ -560,7 +699,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
                                 Navigator.pop(context);
                                 pressedCurrency = currency;
                                 if (pressedCurrency != null) {
-                                  amountController.clear();
+                                  priceController.clear();
                                   foreignController.clear();
                                   price = "";
                                   foreignPrice = "";
@@ -590,7 +729,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
                             Navigator.pop(context);
                             pressedCurrency = currency;
                             if (pressedCurrency != null) {
-                              amountController.clear();
+                              priceController.clear();
                               foreignController.clear();
                               price = "";
                               foreignPrice = "";
@@ -632,108 +771,142 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     );
   }
 
-  Widget addTitleField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.title,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.pleaseEnterTitle;
-      },
-      onChanged: (val) {
-        name = val;
-      },
-    );
-  }
-
-  Widget getDescription() {
-    return CustomizedTextFormField(
-      maxLines: 3,
-      labelText: "Description",
-      textCapitalization: TextCapitalization.sentences,
-      // controller: groupDescriptionController,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.descriptionMustNotEmpty;
-      },
-      onChanged: (val) {
-        description = val;
-      },
-    );
-  }
-
-  Widget getAmountField() {
-    return CustomizedTextFormField(
-      controller: amountController,
-      isReadOnly: currencyView ? true : false,
-      labelText: AppLocalization.of(context)!.priceLocalCurrency,
-      keyboardType: Platform.isIOS
-          ? const TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
-      isAmountField: true,
-      onChanged: (val) {
-        if (val.isNotEmpty) {
-          try {
-            price = double.parse(val.replaceAll(',', '')).toString();
-          } catch (e) {
-            showToast(message: e.toString());
-          }
+  Widget addNewCurrencyRate() {
+    return GestureDetector(
+      onTap: () async {
+        final result = await NavigationUtil.push(
+          context,
+          screen: AddEditCurrency(
+            currencyList: currencyList,
+          ),
+        );
+        if (result != null && result == true) {
+          await getCurrencyList();
         }
       },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            double.parse(val.replaceAll(',', ''));
-            return null;
-          } catch (e) {
-            return AppLocalization.of(context)!.invalidAmount;
-          }
-        }
-        return AppLocalization.of(context)!.pleaseEnterValidAmout;
-      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add New Currency Rate',
+            style: TextStyle(
+              fontSize: 12,
+              color: navyBlue,
+              fontWeight: FontWeight.w500,
+              fontFamily: "Inter",
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
+      ),
     );
   }
 
   Widget getIsAvailableField() {
     return CustomizedCheckBoxField(
       onTap: () {
-        isAvailable = !isAvailable;
+        productIsAvailable = !productIsAvailable;
         setState(() {});
       },
-      isChecked: isAvailable,
+      isChecked: productIsAvailable,
       title: "Available",
     );
   }
 
   Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: isAPILoading
-          ? () {}
-          : () async {
-              FocusScope.of(context).unfocus();
-              isAPILoading = true;
-              if (mounted) setState(() {});
+    if (isEdit) {
+      return CurvedButton(
+        onPressed: isAPILoading
+            ? () {}
+            : () async {
+                FocusScope.of(context).unfocus();
+                isAPILoading = true;
+                if (mounted) setState(() {});
 
-              await createAddOnOption();
-              isAPILoading = false;
-              if (mounted) setState(() {});
-            },
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "Save",
-      isLoading: isAPILoading,
-    );
+                await updateAddOnOption();
+
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              },
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Update",
+        isLoading: isAPILoading,
+      );
+    } else {
+      return CurvedButton(
+        onPressed: isAPILoading
+            ? () {}
+            : () async {
+                FocusScope.of(context).unfocus();
+                isAPILoading = true;
+                if (mounted) setState(() {});
+
+                await createAddOnOption();
+
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              },
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Save",
+        isLoading: isAPILoading,
+      );
+    }
+  }
+
+  Future<void> updateAddOnOption() async {
+    if (_formKey.currentState!.validate()) {
+      if (productLocalImages.isNotEmpty || picture.isNotEmpty) {
+        final AddOnOption addOnOption = AddOnOption();
+        addOnOption.name = name;
+        addOnOption.description = description;
+        addOnOption.price = moneyInputNormalizer(price).toString();
+        addOnOption.isAvailable = productIsAvailable;
+        addOnOption.picture =
+            picture.isNotEmpty ? picture : addOnOption.picture;
+        if (currencyView) {
+          foreignPriceModel ??= ForeignPrice();
+          foreignPriceModel?.price = moneyInputNormalizer(foreignPrice);
+          foreignPriceModel?.userCurrencyRate = selectedCurrencyId;
+
+          addOnOption.foreignPrice = foreignPriceModel;
+        }
+
+        await _auth
+            .updateAddOnOption(addOnOption, widget.arguments["productId"])
+            .then((value) async {
+          Navigator.pop(context, value);
+        }).catchError((error) {
+          debugPrint("ERROR While createAddOnOption :- $error");
+          if (mounted) setState(() {});
+          showToast(message: "$error");
+        });
+      } else {
+        if (mounted) setState(() {});
+        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
+      }
+    }
   }
 
   Future<void> createAddOnOption() async {
     if (_formKey.currentState!.validate()) {
+      final AddOnOption addOnOption = AddOnOption();
       addOnOption.name = name;
       addOnOption.description = description;
       addOnOption.price = moneyInputNormalizer(price).toString();
-      addOnOption.isAvailable = isAvailable;
+      addOnOption.isAvailable = productIsAvailable;
+      if (currencyView) {
+        foreignPriceModel ??= ForeignPrice();
+        foreignPriceModel?.price = moneyInputNormalizer(foreignPrice);
+        foreignPriceModel?.userCurrencyRate = selectedCurrencyId;
+
+        addOnOption.foreignPrice = foreignPriceModel;
+      }
 
       await _auth
           .createAddOnOption(addOnOption, widget.arguments["productId"])
@@ -741,12 +914,10 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
         Navigator.pop(context, value);
       }).catchError((error) {
         debugPrint("ERROR While createAddOnOption :- $error");
-        isAPILoading = false;
         if (mounted) setState(() {});
         showToast(message: "$error");
       });
     } else {
-      isAPILoading = false;
       if (mounted) setState(() {});
       showToast(message: AppLocalization.of(context)!.pleaseAddImage);
     }

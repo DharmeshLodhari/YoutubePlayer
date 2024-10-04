@@ -207,7 +207,7 @@ class _ProductVariantListState extends State<ProductVariantList>
       ),
       onTap: () async {
         final result = await Navigator.of(context)
-            .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+            .pushNamed(Routes.ADD_EDIT_VARIANT, arguments: {
           'option': 'edit',
           'productId': productId,
         });
@@ -265,7 +265,7 @@ class _ProductVariantListState extends State<ProductVariantList>
         child: GestureDetector(
           onTap: () async {
             final data = await Navigator.of(context)
-                .pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
+                .pushNamed(Routes.ADD_EDIT_VARIANT, arguments: {
               'variant': variant,
             });
 
@@ -361,6 +361,7 @@ class _ProductVariantListState extends State<ProductVariantList>
     } else {
       return Container(
         width: 60,
+        height: 70,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           image: DecorationImage(

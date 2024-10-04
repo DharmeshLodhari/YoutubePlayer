@@ -33,9 +33,10 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
         padding: const EdgeInsets.symmetric(vertical: 10.0),
         child: GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, Routes.PRODUCT, arguments: {
-              "product": widget.order?.item as Product,
-            });
+            Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
+                arguments: {
+                  "product": widget.order?.item as Product,
+                });
           },
           child: Row(
             children: [

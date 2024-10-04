@@ -162,9 +162,10 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
                         'Check this box to make this add-ons compulsory',
                         maxLines: 1,
                         style: TextStyle(
-                            color: black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12),
+                          color: black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
                       ),
                       const SizedBox(height: 30),
                       if (productAddOnOptionList.isEmpty) ...[
@@ -352,7 +353,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
       onTap: () async {
         //disable click if add-on option is not empty
         final result = await Navigator.of(context)
-            .pushNamed(Routes.PRODUCT_ADD_ON_OPTION_CREATE, arguments: {
+            .pushNamed(Routes.ADD_EDIT_ADD_ON_OPTION, arguments: {
           'productId': widget.arguments['productId'],
         });
         // final result = await Navigator.of(context).pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
@@ -483,7 +484,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
               onTap: () async {
                 //disable click if add-on option is not empty
                 final result = await Navigator.of(context)
-                    .pushNamed(Routes.PRODUCT_ADD_ON_OPTION_CREATE, arguments: {
+                    .pushNamed(Routes.ADD_EDIT_ADD_ON_OPTION, arguments: {
                   'productId': widget.arguments['productId'],
                 });
 

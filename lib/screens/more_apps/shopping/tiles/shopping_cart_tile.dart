@@ -56,7 +56,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                   subtitle: getSubtitle(context),
                   trailing: getTrailing(),
                   onTap: () {
-                    Navigator.pushNamed(context, Routes.PRODUCT,
+                    Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
                         arguments: {"product": product});
                   },
                 ),

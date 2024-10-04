@@ -2710,7 +2710,7 @@ class _AddProductState extends State<AddProduct> {
                   message:
                       AppLocalization.of(context)!.productAddedSuccessfully);
 
-              Navigator.pushNamed(context, Routes.PRODUCT,
+              Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
                   arguments: {"productId": productId});
             } else {
               //loop and add all variant
@@ -2748,7 +2748,7 @@ class _AddProductState extends State<AddProduct> {
     Navigator.pop(context);
     showToast(message: AppLocalization.of(context)!.productAddedSuccessfully);
 
-    Navigator.pushNamed(context, Routes.PRODUCT,
+    Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
         arguments: {"productId": productId});
   }
 
@@ -3116,7 +3116,7 @@ class _AddProductState extends State<AddProduct> {
             GestureDetector(
               onTap: () async {
                 final result = await Navigator.of(context)
-                    .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+                    .pushNamed(Routes.ADD_EDIT_VARIANT, arguments: {
                   'option': 'new',
                   'productId': '',
                 });
@@ -3413,7 +3413,7 @@ class _AddProductState extends State<AddProduct> {
           return;
         }
         final result = await Navigator.of(context)
-            .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+            .pushNamed(Routes.ADD_EDIT_VARIANT, arguments: {
           'option': 'new',
           'productId': '',
         });

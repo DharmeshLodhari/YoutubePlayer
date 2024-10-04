@@ -791,7 +791,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
             children: [
               for (var item in customerProfileListNearBy)
                 Container(
-                  width: 250,
+                  width: 260,
                   // height: 200,
                   margin: const EdgeInsets.only(right: 16),
                   child: GestureDetector(

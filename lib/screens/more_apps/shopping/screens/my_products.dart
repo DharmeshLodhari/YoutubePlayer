@@ -118,7 +118,7 @@ class _MyProductsState extends State<MyProducts> {
           final PermissionType? hasPermission =
               userBloc.user.hasWritePermission(ProtectionPermission.product);
           if (hasPermission == PermissionType.WRITE) {
-            Navigator.pushNamed(context, Routes.ADD_PRODUCT,
+            Navigator.pushNamed(context, Routes.ADD_EDIT_PRODUCT,
                 arguments: {"channelUsername": ""});
           } else {
             showSnackbar(context,

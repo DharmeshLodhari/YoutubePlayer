@@ -2930,7 +2930,7 @@ Widget displayQuillFormattedText(BuildContext context, String formattedText,
 
     quillController = flutterQuill.QuillController(
       document: flutterQuill.Document.fromJson(jsonDecodedText),
-      selection: const TextSelection.collapsed(offset: -1),
+      selection: const TextSelection.collapsed(offset: 0),
     );
 
     if (quillController.document.length > 0) {
@@ -2991,4 +2991,18 @@ String currencyNameAndSymbol(String? currencyCode) {
     return '$currencyCode (${worldCurrencies[currencyCode]})';
   }
   return '';
+}
+
+String? commaSeparatedListToJson(List? words) {
+  if (words?.isNotEmpty ?? false) {
+    return jsonEncode(words);
+  }
+  return null;
+}
+
+String mapToJson(Map<String, dynamic>? obj) {
+  if (obj?.isNotEmpty ?? false) {
+    return jsonEncode(obj);
+  }
+  return '{}';
 }

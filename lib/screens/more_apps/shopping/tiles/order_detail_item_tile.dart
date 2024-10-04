@@ -44,7 +44,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
                   trailing: getTrailing(),
                   subtitle: getSubtitle(context),
                   onTap: () {
-                    Navigator.pushNamed(context, Routes.PRODUCT,
+                    Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
                         arguments: {"product": widget.product});
                   },
                 ),

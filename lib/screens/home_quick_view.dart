@@ -735,7 +735,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         if (userBloc.user.type!.toLowerCase() == 'user') {
           showUpgradeDialog(context);
         } else {
-          Navigator.pushNamed(context, Routes.ADD_PRODUCT,
+          Navigator.pushNamed(context, Routes.ADD_EDIT_PRODUCT,
               arguments: {"channelUsername": ""});
         }
         break;
@@ -743,7 +743,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         if (userBloc.user.type!.toLowerCase() == 'user') {
           showUpgradeDialog(context);
         } else {
-          Navigator.pushNamed(context, Routes.ADD_SERVICE);
+          Navigator.pushNamed(context, Routes.ADD_EDIT_SERVICE);
         }
         break;
 

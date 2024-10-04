@@ -32,10 +32,13 @@ class Routes {
   static const String CHOOSE_SUBSCRIPTIONS = "/choose-subscriptions";
   static const String USER_PRODUCT_AND_SERVICE_SEARCH =
       "/user-product-and-service-search";
-  static const String PRODUCT = "/product";
+  static const String PRODUCT_DETAIL_PAGE = "/product";
+  static const String ADD_EDIT_PRODUCT = "/add-edit-product";
   static const String ADD_PRODUCT = "/add-product";
   static const String EDIT_PRODUCT = "/edit-product";
+  // static const String PRODUCT_ADVANCED_OPTIONS = "/product-advanced-options";
   static const String SERVICE_DETAIL = "/service-detail";
+  static const String ADD_EDIT_SERVICE = "/add-edit-service";
   static const String ADD_SERVICE = "/add-service";
   static const String EDIT_SERVICE = "/edit-service";
   static const String MESSAGE_LIST = "/message-list";
@@ -184,6 +187,7 @@ class Routes {
   static const String EDIT_SHIPPING_OPTIONS = "/edit-shipping-Option";
   static const String NEAR_BY_LIST_SCREEN = "/near-by-list-screen";
   static const String PRODUCT_VARIANT_LIST = "/product-variant-list";
+  static const String ADD_EDIT_VARIANT = "/add-edit-variant";
   static const String PRODUCT_NEW_OPTION = "/product-new-option";
   static const String PRODUCT_VARIANT_UPDATE = "/product-variant-update";
   static const String VIRTUAL_CARD_HOME = "/virtual-card-home";
@@ -199,10 +203,12 @@ class Routes {
   static const String PRE_ACCOUNT_UPGRADE = "/pre-account-upgrade";
   static const String PRODUCT_ADD_ON_LIST = "/product-add-on-list";
   static const String ADD_ON_OPTION_LIST = "/add-on-option-list";
+  static const String ADD_EDIT_ADD_ON_OPTION = "/add-edit-add-on-option";
   static const String PRODUCT_ADD_ON_OPTION_CREATE =
       "/product-add-on-option-create";
   static const String PRODUCT_ADD_ON_OPTION_UPDATE =
       "/product-add-on-option-update";
+  static const String ADD_EDIT_ADD_ON = "/add-edit-add-on";
   static const String NEW_ADD_ON = "/new-add-on";
   static const String UPDATE_ADD_ON = "/update-add-on";
   static const String FLASH_TAG_LIST = "/flash-tag-list";

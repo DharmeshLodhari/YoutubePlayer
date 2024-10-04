@@ -813,7 +813,7 @@ class _SearchModuleState extends State<SearchModule>
                       : getTrailingProduct(product),
                   subtitle: getSubtitleProduct(product),
                   onTap: () {
-                    Navigator.pushNamed(context, Routes.PRODUCT,
+                    Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
                         arguments: {"product": product});
                   },
                 ),

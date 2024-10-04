@@ -208,7 +208,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.option,
+        AppLocalization.of(context)!.updateOption,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),

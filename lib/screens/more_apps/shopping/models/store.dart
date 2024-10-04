@@ -389,14 +389,13 @@ class Product extends PurchasableItem {
     // this.qty,
   });
 
-  Map toMap() {
-    final data = {
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> data = {
       "name": name,
       "description": description,
       "short_description":
           getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
-      "foreign_price": foreignPrice?.toJson(),
       "condition": condition,
       "category": category?.id,
       "sub_category": subCategory?.id,
@@ -436,6 +435,9 @@ class Product extends PurchasableItem {
     }
     if (addOnsModels != null && (addOnsModels?.isNotEmpty ?? false)) {
       data["add_ons"] = addOnsModels;
+    }
+    if (foreignPrice != null) {
+      data["foreign_price"] = foreignPrice?.toJson();
     }
     if (searchKeywords != null &&
         (searchKeywords?.isNotEmpty ?? false) &&

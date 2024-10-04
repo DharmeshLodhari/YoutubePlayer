@@ -61,11 +61,16 @@ import 'package:Slydo/screens/more_apps/property/property_dashboard.dart';
 import 'package:Slydo/screens/more_apps/property/property_detail_page.dart';
 import 'package:Slydo/screens/more_apps/property/search_property.dart';
 import 'package:Slydo/screens/more_apps/property/specific_category_property_list.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/add_edit_product.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/add_edit_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_tags.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_service.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/product_add_on/add_edit_add_on.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/product_add_on/add_edit_add_on_option.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/product_variant/add_edit_variant.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/mix_cart_item.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_list.dart';
@@ -503,9 +508,25 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case Routes.PRODUCT:
+      case Routes.PRODUCT_DETAIL_PAGE:
         return PageTransition(
           child: ProductDetailPage(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      // case Routes.PRODUCT_ADVANCED_OPTIONS:
+      //   return PageTransition(
+      //     child: ProductAdvancedOptions(),
+      //     type: PageTransitionType.bottomToTop,
+      //     curve: Curves.ease,
+      //     settings: settings,
+      //   );
+      case Routes.ADD_EDIT_PRODUCT:
+        return PageTransition(
+          child: AddEditProduct(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
@@ -533,6 +554,15 @@ class RouteGenerator {
       case Routes.SERVICE_DETAIL:
         return PageTransition(
           child: ServiceDetailPage(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.ADD_EDIT_SERVICE:
+        return PageTransition(
+          child: AddEditService(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
@@ -1752,6 +1782,15 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case Routes.ADD_EDIT_VARIANT:
+        return PageTransition(
+          child: AddEditVariant(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
       case Routes.PRODUCT_NEW_OPTION:
         return PageTransition(
           child: AddProductVariant(
@@ -1886,6 +1925,16 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case Routes.ADD_EDIT_ADD_ON_OPTION:
+        return PageTransition(
+          child: AddEditAddOnOption(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       case Routes.PRODUCT_ADD_ON_OPTION_CREATE:
         return PageTransition(
           child: ProductAddOnOptionCreate(
@@ -1899,6 +1948,16 @@ class RouteGenerator {
       case Routes.PRODUCT_ADD_ON_OPTION_UPDATE:
         return PageTransition(
           child: ProductAddOnOptionUpdate(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.ADD_EDIT_ADD_ON:
+        return PageTransition(
+          child: AddEditAddOn(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

@@ -52,8 +52,8 @@ class _YarnProductTileState extends State<YarnProductTile> {
 
     return InkWell(
       onTap: () {
-        Navigator.of(context)
-            .pushNamed(Routes.PRODUCT, arguments: {"product": widget.product});
+        Navigator.of(context).pushNamed(Routes.PRODUCT_DETAIL_PAGE,
+            arguments: {"product": widget.product});
       },
       child: SizedBox(
         height: getItemHeight(widget.tileRenderPlace, context),

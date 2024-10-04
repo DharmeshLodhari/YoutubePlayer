@@ -215,8 +215,9 @@ class _QRCodeViewState extends State<QRCodeView> {
       final productId = scanDataList.last;
       final product = getProduct(productId);
 
-      final result = await Navigator.of(context)
-          .pushNamed(Routes.PRODUCT, arguments: {"product": product});
+      final result = await Navigator.of(context).pushNamed(
+          Routes.PRODUCT_DETAIL_PAGE,
+          arguments: {"product": product});
       // Handle the result here
       if (result != null) {
         if (result == 'back pressed') {

@@ -210,7 +210,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                               color: darkGrey.withOpacity(.12)),
                           child: Text(
                             widget.currencySymbol ??
-                                worldCurrencies[userBloc.user.currency!]!,
+                                worldCurrencies[userBloc.user.currency]!,
                             style: TextStyle(
                               color: blackFont,
                               fontWeight: FontWeight.bold,

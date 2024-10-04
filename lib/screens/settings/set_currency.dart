@@ -11,10 +11,11 @@ class SetCurrency extends StatefulWidget {
 
 class _SetCurrencyState extends State<SetCurrency> {
   final List<Map<String, String>> currencyList = [
+    {'name': 'NGN', 'flag': 'assets/images/flags/ng.png'},
     {'name': 'USD', 'flag': 'assets/images/flags/us.png'},
     {'name': 'GBP', 'flag': 'assets/images/flags/sh.png'},
     {'name': 'EUR', 'flag': 'assets/images/flags/eu.png'},
-    {'name': 'KHR', 'flag': 'assets/images/flags/kh.png'},
+    {'name': 'AED', 'flag': 'assets/images/flags/ae.png'},
     {'name': 'CAD', 'flag': 'assets/images/flags/ca.png'},
   ];
   int selectedCurrencyIndex = 0;

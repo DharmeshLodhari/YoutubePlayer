@@ -217,8 +217,8 @@ class _ScanProductQrViewState extends State<ScanProductQr> {
       final productId = scanDataList.last;
       final product = getProduct(productId);
 
-      final result =
-          await Navigator.of(context).pushNamed(Routes.PRODUCT, arguments: {
+      final result = await Navigator.of(context)
+          .pushNamed(Routes.PRODUCT_DETAIL_PAGE, arguments: {
         "product": product,
         "isUserNotLogIn": true,
       });

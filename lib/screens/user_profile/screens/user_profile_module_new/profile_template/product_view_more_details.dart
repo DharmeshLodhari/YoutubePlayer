@@ -307,7 +307,7 @@ class _ProductViewMoreDetailsState extends State<ProductViewMoreDetails> {
               Navigator.pop(context);
               final result = await Navigator.pushNamed(
                 context,
-                Routes.EDIT_PRODUCT,
+                Routes.ADD_EDIT_PRODUCT,
                 arguments: {
                   "productId": productId,
                 },

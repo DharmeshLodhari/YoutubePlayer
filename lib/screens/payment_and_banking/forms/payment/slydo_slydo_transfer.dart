@@ -1343,6 +1343,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                                     message: 'Unable to update yarn payment');
                               } else {
                                 widget.callback?.call(true);
+                                showToast(message: 'Payment sent successfully');
                                 // Navigator.pop(context);
                                 //Pop send payment page
                                 Navigator.pop(context);
@@ -1364,7 +1365,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                                     message: 'Unable to update moment payment');
                               } else {
                                 widget.callback?.call(true);
-                                Navigator.pop(context);
+                                showToast(message: 'Payment sent successfully');
+                                // Navigator.pop(context);
                                 //Pop send payment page
                                 Navigator.pop(context);
                                 return;

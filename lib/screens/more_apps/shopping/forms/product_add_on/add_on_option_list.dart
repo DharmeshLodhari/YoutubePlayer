@@ -165,14 +165,15 @@ class _AddOnOptionListState extends State<AddOnOptionList>
           body: SlidableAutoCloseBehavior(
             closeWhenOpened: true,
             child: SmartRefresher(
-                enablePullDown: true,
-                header: WaterDropHeader(
-                  complete: Container(),
-                  waterDropColor: navyBlue,
-                ),
-                controller: _refreshController,
-                onRefresh: _onRefresh,
-                child: _buildAddOnOptionList()),
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: _buildAddOnOptionList(),
+            ),
           ),
         ),
       ),
@@ -227,7 +228,7 @@ class _AddOnOptionListState extends State<AddOnOptionList>
       ),
       onTap: () async {
         final result = await Navigator.of(context)
-            .pushNamed(Routes.NEW_ADD_ON, arguments: {
+            .pushNamed(Routes.ADD_EDIT_ADD_ON, arguments: {
           'option': 'edit',
           'productId': productId,
         });
@@ -268,7 +269,7 @@ class _AddOnOptionListState extends State<AddOnOptionList>
                           onTap: () async {
                             // toggleAddOnCheckedState(index);
                             final data = await Navigator.of(context).pushNamed(
-                                Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
+                                Routes.ADD_EDIT_ADD_ON_OPTION,
                                 arguments: {
                                   'addOnOption': addOnOptionList[index],
                                   'productId': productId,
@@ -318,7 +319,7 @@ class _AddOnOptionListState extends State<AddOnOptionList>
                   fontFamily: "Inter",
                 ),
               ),
-              const SizedBox(height: 10.0),
+              const SizedBox(height: 3.0),
               Text(
                 'Created: ${getProductDateTime(addOnOption.createdAt)}',
                 maxLines: 1,
@@ -443,8 +444,8 @@ class _AddOnOptionListState extends State<AddOnOptionList>
     } else {
       return CustomBoxShadow(
         child: Container(
-          width: 45,
-          height: 45,
+          width: 50,
+          height: 50,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
@@ -480,7 +481,7 @@ class _AddOnOptionListState extends State<AddOnOptionList>
         icon: Icons.edit,
         onPressed: (con) async {
           final data = await Navigator.of(context)
-              .pushNamed(Routes.PRODUCT_ADD_ON_OPTION_UPDATE, arguments: {
+              .pushNamed(Routes.ADD_EDIT_ADD_ON_OPTION, arguments: {
             'addOnOption': addOnOption,
             'productId': productId,
           });

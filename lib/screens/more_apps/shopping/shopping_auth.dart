@@ -1119,7 +1119,6 @@ class ShoppingAuthService extends AuthService {
       data['width'] = 0.0;
       data['width_si_unit'] = '';
     }
-    debugPrint('DATA from ---> $data');
 
     if (productAddOnsList.isNotEmpty) {
       final List ids = productAddOnsList
@@ -1129,9 +1128,13 @@ class ShoppingAuthService extends AuthService {
       data["add_ons"] = ids;
     }
 
+    debugPrint('DATA from ---> $data');
+
     data.forEach((k, v) {
-      if (k == "search_keywords" || k == "foreign_price") {
-        request.fields[k] = jsonEncode(v);
+      if (k == "search_keywords") {
+        request.fields[k] = commaSeparatedListToJson(v)!;
+      } else if (k == "foreign_price" && v is Map<String, dynamic>) {
+        request.fields[k] = mapToJson(v);
       } else {
         request.fields[k] = v.toString();
       }
@@ -1205,8 +1208,8 @@ class ShoppingAuthService extends AuthService {
     data["image_count"] = item.localImages!.length;
 
     data.forEach((k, v) {
-      if (k == "foreign_price") {
-        request.fields[k] = jsonEncode(v);
+      if (k == "foreign_price" && v is Map<String, dynamic>) {
+        request.fields[k] = mapToJson(v);
       } else {
         request.fields[k] = v.toString();
       }
@@ -1315,8 +1318,8 @@ class ShoppingAuthService extends AuthService {
     data["image_count"] = item.localImages!.length;
 
     data.forEach((k, v) {
-      if (k == "foreign_price") {
-        request.fields[k] = jsonEncode(v);
+      if (k == "foreign_price" && v is Map<String, dynamic>) {
+        request.fields[k] = mapToJson(v);
       } else {
         request.fields[k] = v.toString();
       }
@@ -1396,9 +1399,10 @@ class ShoppingAuthService extends AuthService {
     }
 
     data.forEach((k, v) {
-      if (k == "search_keywords" || k == "foreign_price") {
-        debugPrint("$k ==> ${jsonEncode(v)}");
-        request.fields[k] = jsonEncode(v);
+      if (k == "search_keywords") {
+        request.fields[k] = commaSeparatedListToJson(v)!;
+      } else if (k == "foreign_price" && v is Map<String, dynamic>) {
+        request.fields[k] = mapToJson(v);
       } else {
         request.fields[k] = v.toString();
       }
@@ -1687,8 +1691,10 @@ class ShoppingAuthService extends AuthService {
     data["image_count"] = service.localImages!.length;
 
     data.forEach((k, v) {
-      if (k == "search_keywords" || k == "foreign_price") {
-        request.fields[k] = jsonEncode(v);
+      if (k == "search_keywords") {
+        request.fields[k] = commaSeparatedListToJson(v)!;
+      } else if (k == "foreign_price" && v is Map<String, dynamic>) {
+        request.fields[k] = mapToJson(v);
       } else {
         request.fields[k] = v.toString();
       }
@@ -1740,8 +1746,10 @@ class ShoppingAuthService extends AuthService {
     data["image_count"] = service.localImages!.length;
 
     data.forEach((k, v) {
-      if (k == "search_keywords" || k == "foreign_price") {
-        request.fields[k] = jsonEncode(v);
+      if (k == "search_keywords") {
+        request.fields[k] = commaSeparatedListToJson(v)!;
+      } else if (k == "foreign_price" && v is Map<String, dynamic>) {
+        request.fields[k] = mapToJson(v);
       } else {
         request.fields[k] = v.toString();
       }
@@ -3551,11 +3559,11 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
 
     final request = http.MultipartRequest("POST", Uri.parse(url));
-
-    request.fields["name"] = addOnOption.name!;
-    request.fields["description"] = addOnOption.description!;
+    request.fields["name"] = addOnOption.name ?? "";
+    request.fields["description"] = addOnOption.description ?? "";
     request.fields["is_available"] = jsonEncode(addOnOption.isAvailable);
-    request.fields["foreign_price"] = jsonEncode(addOnOption.foreignPrice);
+    request.fields["foreign_price"] =
+        mapToJson(addOnOption.foreignPrice?.toJson());
     request.fields["price"] = addOnOption.price!;
 
     if (addOnOption.picture != null) {
@@ -3788,7 +3796,8 @@ class ShoppingAuthService extends AuthService {
     request.fields["name"] = addOnOption.name ?? "";
     request.fields["description"] = addOnOption.description ?? "";
     request.fields["is_available"] = jsonEncode(addOnOption.isAvailable);
-    request.fields["foreign_price"] = jsonEncode(addOnOption.foreignPrice);
+    request.fields["foreign_price"] =
+        mapToJson(addOnOption.foreignPrice?.toJson());
     request.fields["price"] = addOnOption.price ?? "";
 
     if (addOnOption.picture != null && !addOnOption.picture!.contains("http")) {

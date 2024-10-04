@@ -46,12 +46,12 @@ class _FindBusinessState extends State<FindBusiness> {
 
   Widget getNearByBusiness() {
     return Card(
-      color: Colors.transparent,
+      color: Colors.white,
       semanticContainer: true,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       margin: EdgeInsets.zero,
       shadowColor: boxShadow,
-      elevation: 0,
+      elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,141 +62,115 @@ class _FindBusinessState extends State<FindBusiness> {
             alignment: Alignment.topCenter,
             children: [
               SizedBox(
-                  height: getContainerHeight(widget.tileRenderPlace, context),
-                  child: getWallpaper()),
-              Positioned(
-                left: 10,
-                top: widget.tileRenderPlace == TileRenderPlace.Thiny
-                    ? getContainerHeight(widget.tileRenderPlace, context) - 20
-                    : getContainerHeight(widget.tileRenderPlace, context) - 25,
-                child: InkWell(
-                  onTap: () {
-                    String? image = '';
-                    if (widget.customerProfile.avatar! == "" ||
-                        widget.customerProfile.avatar! ==
-                            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-                      image = getInitials(widget.customerProfile.fullName!)
-                          .toUpperCase();
-                    } else {
-                      image = widget.customerProfile.avatar!;
-                    }
-
-                    Navigator.of(context)
-                        .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
-                  },
-                  child: SizedBox(
-                      width: widget.tileRenderPlace == TileRenderPlace.Thiny
-                          ? 35
-                          : 50,
-                      height: widget.tileRenderPlace == TileRenderPlace.Thiny
-                          ? 35
-                          : 50,
-                      child: CircularUserColorImage(
-                          imageUrl: widget.customerProfile.avatar!,
-                          name: widget.customerProfile.fullName!)),
-                ),
+                height: getContainerHeight(widget.tileRenderPlace, context),
+                child: getWallpaper(),
               ),
+              getProfileImage(),
             ],
           ),
-          Container(
-            padding: widget.tileRenderPlace == TileRenderPlace.Thiny
-                ? const EdgeInsets.only(top: 20, bottom: 5)
-                : const EdgeInsets.only(top: 30, bottom: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, Routes.USER_PROFILE, arguments: {
-                            "searchedUserName": widget.customerProfile.userName
-                          });
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  appendStringDot(
-                                      messageDecoderWithEmoji(
-                                              widget.customerProfile.fullName ??
-                                                  "") ??
-                                          "",
-                                      20),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: yarnBlack,
-                                    fontFamily: "Inter",
-                                  ),
-                                )),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: userNameWithVerifiedIcon(
-                                  name: appendStringDot(
-                                      messageDecoderWithEmoji(
-                                              '@${widget.customerProfile.userName}') ??
-                                          "",
-                                      20),
-                                  isVerified: widget.customerProfile.isVerified,
-                                  textStyle: TextStyle(
-                                    fontSize: 12,
-                                    color: fontLightGrey,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: "Inter",
-                                  ),
-                                  verifiedIconColor: verifyGreen,
-                                  verifiedIconSize: widget.tileRenderPlace ==
-                                          TileRenderPlace.Thiny
-                                      ? 12
-                                      : 15),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    getFollowUnFollowBtn(),
-                  ],
-                ),
-                const SizedBox(height: 5.0),
-                getRating(
-                    numberOfRating: widget.customerProfile.rating.toInt(),
-                    starSize: 14),
-                if (widget.customerProfile.bio!.isNotEmpty ||
-                    widget.customerProfile.bio != null) ...[
-                  const SizedBox(height: 5.0),
+          InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                "searchedUserName": widget.customerProfile.userName
+              });
+            },
+            child: Container(
+              padding: widget.tileRenderPlace == TileRenderPlace.Thiny
+                  ? const EdgeInsets.only(
+                      left: 10, top: 20, bottom: 5, right: 10)
+                  : const EdgeInsets.only(
+                      left: 10, top: 30, bottom: 10, right: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: Text(
-                          messageDecoderWithEmoji(widget.customerProfile.bio) ??
-                              "",
-                          style: TextStyle(
-                            fontSize:
-                                getFontSize(widget.tileRenderPlace, context),
-                            fontWeight: FontWeight.w400,
-                            color: fontLightGrey,
-                            fontFamily: "Inter",
-                          ),
-                          maxLines:
-                              widget.tileRenderPlace == TileRenderPlace.Thiny
-                                  ? 2
-                                  : 3,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                appendStringDot(
+                                    messageDecoderWithEmoji(
+                                            widget.customerProfile.fullName ??
+                                                "") ??
+                                        "",
+                                    20),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: yarnBlack,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: userNameWithVerifiedIcon(
+                                name: appendStringDot(
+                                    messageDecoderWithEmoji(
+                                            '@${widget.customerProfile.userName}') ??
+                                        "",
+                                    20),
+                                isVerified: widget.customerProfile.isVerified,
+                                textStyle: TextStyle(
+                                  fontSize: 12,
+                                  color: fontLightGrey,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: "Inter",
+                                ),
+                                verifiedIconColor: verifyGreen,
+                                verifiedIconSize: widget.tileRenderPlace ==
+                                        TileRenderPlace.Thiny
+                                    ? 12
+                                    : 15,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      getFollowUnFollowBtn(),
                     ],
                   ),
+                  const SizedBox(height: 5.0),
+                  getRating(
+                      numberOfRating: widget.customerProfile.rating.toInt(),
+                      starSize: 14),
+                  if (widget.customerProfile.bio!.isNotEmpty ||
+                      widget.customerProfile.bio != null) ...[
+                    const SizedBox(height: 5.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            messageDecoderWithEmoji(
+                                    widget.customerProfile.bio) ??
+                                "",
+                            style: TextStyle(
+                              fontSize:
+                                  getFontSize(widget.tileRenderPlace, context),
+                              fontWeight: FontWeight.w400,
+                              color: fontLightGrey,
+                              fontFamily: "Inter",
+                            ),
+                            maxLines:
+                                widget.tileRenderPlace == TileRenderPlace.Thiny
+                                    ? 2
+                                    : 3,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
           const SizedBox(height: 5.0),
@@ -345,6 +319,36 @@ class _FindBusinessState extends State<FindBusiness> {
                 ),
               ),
             ),
+    );
+  }
+
+  Widget getProfileImage() {
+    return Positioned(
+      left: 10,
+      top: widget.tileRenderPlace == TileRenderPlace.Thiny
+          ? getContainerHeight(widget.tileRenderPlace, context) - 20
+          : getContainerHeight(widget.tileRenderPlace, context) - 25,
+      child: InkWell(
+        onTap: () {
+          String? image = '';
+          if (widget.customerProfile.avatar! == "" ||
+              widget.customerProfile.avatar! ==
+                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+            image = getInitials(widget.customerProfile.fullName!).toUpperCase();
+          } else {
+            image = widget.customerProfile.avatar!;
+          }
+
+          Navigator.of(context)
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+        },
+        child: SizedBox(
+            width: widget.tileRenderPlace == TileRenderPlace.Thiny ? 35 : 50,
+            height: widget.tileRenderPlace == TileRenderPlace.Thiny ? 35 : 50,
+            child: CircularUserColorImage(
+                imageUrl: widget.customerProfile.avatar!,
+                name: widget.customerProfile.fullName!)),
+      ),
     );
   }
 

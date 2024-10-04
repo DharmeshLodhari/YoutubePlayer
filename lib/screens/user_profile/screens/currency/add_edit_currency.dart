@@ -34,7 +34,7 @@ class _AddEditCurrencyState extends State<AddEditCurrency> {
     "USD",
     "GBP",
     "EUR",
-    "KHR",
+    "AED",
     "CAD",
   ];
 

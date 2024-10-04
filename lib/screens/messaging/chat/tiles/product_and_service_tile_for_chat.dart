@@ -64,8 +64,8 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.of(context)
-            .pushNamed(Routes.PRODUCT, arguments: {"product": product});
+        Navigator.of(context).pushNamed(Routes.PRODUCT_DETAIL_PAGE,
+            arguments: {"product": product});
       },
       child: Column(
         children: [

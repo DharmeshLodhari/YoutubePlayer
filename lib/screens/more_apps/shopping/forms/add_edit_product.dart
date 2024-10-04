@@ -1,0 +1,2403 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/product_advanced_options.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/utils.dart';
+import 'package:Slydo/screens/user_profile/models/currency_model.dart';
+import 'package:Slydo/screens/user_profile/screens/currency/add_edit_currency.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
+import 'package:Slydo/utils/cache_manager.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
+import 'package:Slydo/widget/custom_textfield_tag.dart';
+import 'package:Slydo/widget/customized_checkbox_field.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/customized_textform_field_for_foreign_currency.dart';
+import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/image_crop.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:textfield_tags/textfield_tags.dart';
+
+class AddEditProduct extends StatefulWidget {
+  final dynamic arguments;
+
+  const AddEditProduct({super.key, this.arguments});
+
+  @override
+  State<AddEditProduct> createState() => _AddEditProductState();
+}
+
+class _AddEditProductState extends State<AddEditProduct>
+    with WidgetsBindingObserver {
+  final _auth = ShoppingAuthService();
+  final _formKey = GlobalKey<FormState>();
+
+  UserBloc? userBloc;
+
+  bool isEdit = false;
+  String? productId;
+  Product currentProduct = Product();
+  ProductCondition? selectedProductCondition;
+  ProductCondition? selectedDeliveryTimeCondition;
+
+  int imageCount = 5;
+  final ScrollController _scrollController = ScrollController();
+
+  //text editing controllers for the edit fields
+  TextEditingController productTitleController = TextEditingController();
+
+  // TextEditingController productDescriptionController = TextEditingController();
+  TextEditingController productShortDescriptionController =
+      TextEditingController();
+  TextEditingController productManufacturerController = TextEditingController();
+  TextEditingController customProductController = TextEditingController();
+  TextEditingController productPriceController = TextEditingController();
+  TextEditingController foreignController = TextEditingController();
+
+  final TextfieldTagsController tagController = TextfieldTagsController();
+  List<PickedFile> productLocalImages = [];
+  List<String?> productImagesFromServer = [];
+  String? productName = "";
+
+  // String productDescription = "";
+  String? productShortDescription = "";
+
+  String productCategory = "";
+
+  String productSubCategory = "";
+  String? productCondition = "";
+
+  String deliveryTimeCondition = "";
+  String productPrice = "";
+  String foreignPrice = "";
+  String? productManufacturer = "";
+  String productCustomCategory = "";
+
+  // bool productEnableInSuperStore = false;
+
+  ProductCategory? pressedCustomCategory;
+
+  List<ProductCategory>? productCustomCategories;
+  List<ProductCategory>? productCustomCategoriesCopy;
+  ProductCategory? selectedCustomCategory;
+
+  List<ProductCategory>? customCategories;
+
+  List<ProductCategory>? subCategories;
+  List<ProductCategory>? productCategories;
+  List<ProductCategory>?
+      productCategoriesCopy; //To hold the full product category at all times.
+  List<ProductCategory>? subCategoriesCopy;
+  ProductCategory? pressedCategory;
+  ProductCategory? pressedSubCategory;
+  ProductCategory? selectedProductCategory;
+  ProductCategory? selectedSubCategory;
+
+  String? selectedCurrency;
+  String? selectedCurrencyId;
+  int? selectedCurrencyRate;
+
+  String? pressedCurrency;
+  ForeignPrice? foreignPriceModel;
+
+  List<CurrencyModel>? currencyList;
+  List<CurrencyModel>? currencyListCopy;
+  int? currencyItemCount = 0;
+  String? currencyNext = "";
+  String? currencyPrevious = "";
+  bool noItemInList = false;
+  bool currencyView = false;
+  List<Tags> userTags = [];
+  bool isEmpty = false;
+
+  bool isLoading = false;
+
+  bool isAPILoading = false;
+
+  dynamic productBodyTextJson;
+  final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
+      GlobalKey<ScaffoldMessengerState>();
+  final FocusNode _focusNodeDescription = FocusNode();
+  QuillController _quillController = QuillController.basic();
+
+  final ScrollController _textEditorScrollController = ScrollController();
+  bool _isKeyboardVisible = false;
+  bool _isProductDescriptionVisible = false;
+  double? bottomInset;
+
+  @override
+  void deactivate() {
+    CacheManager().deleteCache();
+
+    super.deactivate();
+  }
+
+  @override
+  void didChangeDependencies() {
+    userBloc = Provider.of<UserBloc>(context);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void initState() {
+    productId = widget.arguments['productId'];
+
+    if (productId != null) {
+      isEdit = true;
+    }
+
+    isLoading = true;
+    if (mounted) setState(() {});
+    Future.delayed(const Duration(seconds: 2), () {
+      getCurrencyList();
+
+      getCategories();
+      obtainCustomCategory();
+    });
+
+    _focusNodeDescription.addListener(_handleFocusChange);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateKeyboardVisibility();
+      selectedProductCondition = conditions[3];
+    });
+    super.initState();
+  }
+
+  void _handleFocusChange() {
+    setState(() {
+      _isProductDescriptionVisible = _focusNodeDescription.hasFocus;
+    });
+    _updateKeyboardVisibility();
+  }
+
+  void _updateKeyboardVisibility() {
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    setState(() {
+      _isKeyboardVisible = (bottomInset ?? 0) > 0;
+    });
+  }
+
+  Future<void> getCurrencyList() async {
+    final Map<String, dynamic> result =
+        await UserAuth().getCurrency(currencyNext, currencyPrevious);
+    if (result == null) {
+      isLoading = false;
+      noItemInList = true;
+      return;
+    }
+
+    currencyList = [];
+    currencyItemCount = result['count'];
+    currencyNext = result['next'];
+    currencyPrevious = result['previous'];
+    final tempList = result['results'];
+
+    currencyList?.addAll(tempList);
+    currencyListCopy = currencyList;
+    if ((currencyList?.isNotEmpty ?? false)) {
+      if (selectedCurrency == null || (selectedCurrency?.isEmpty ?? false)) {
+        selectedCurrency = currencyList?[0].currency;
+        selectedCurrencyId = currencyList?[0].id;
+        selectedCurrencyRate = currencyList?[0].rate;
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        noItemInList = false;
+      });
+    }
+
+    if (currencyList?.isEmpty ?? false) {
+      if (mounted) {
+        setState(() {
+          noItemInList = true;
+          currencyList = [];
+          currencyListCopy = [];
+        });
+      }
+    } else if (currencyNext == null && currencyList!.length > 6) {
+      _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+        content:
+            Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        duration: const Duration(milliseconds: 500),
+      ));
+    }
+  }
+
+  void getSubCategories(dynamic id) async {
+    if (mounted) setState(() {});
+
+    try {
+      subCategories = await ShoppingAuthService().getProductSubCategories(id);
+
+      subCategoriesCopy = subCategories;
+    } catch (e) {
+      subCategories = [];
+      subCategoriesCopy = [];
+    }
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getCategories() async {
+    try {
+      productCategories = await ShoppingAuthService()
+          .obtainProductCategories(userBloc!.userAbout!.industry!.id!);
+
+      productCategoriesCopy = productCategories;
+    } catch (e) {
+      productCategories = [];
+    }
+
+    if (isEdit) {
+      await fetchProduct();
+    }
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void obtainCustomCategory() async {
+    try {
+      productCustomCategories = await ShoppingAuthService()
+          .obtainCustomCategory(userBloc!.user.userName!);
+
+      productCustomCategoriesCopy = productCustomCategories;
+    } catch (e) {
+      productCustomCategories = [];
+      productCustomCategoriesCopy = [];
+    }
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  Future<void> fetchProduct() async {
+    //fetchProductFrom id to edit
+    await _auth.getProduct(productId!).then((value) {
+      if (mounted) {
+        setState(() {
+          currentProduct = value;
+
+          // assigning to our edit controllers
+          productTitleController.text =
+              messageDecoderWithEmoji(currentProduct.name) ?? "";
+          // productDescriptionController.text =
+          //     messageDecoderWithEmoji(currentProduct.description) ?? "";
+
+          try {
+            productBodyTextJson = jsonDecode(
+                messageDecoderWithEmoji(currentProduct.description) ?? "");
+
+            _quillController = QuillController(
+                document: Document.fromJson(productBodyTextJson),
+                selection: const TextSelection.collapsed(offset: 0));
+          } catch (e) {
+            e.toString();
+          }
+
+          if (productBodyTextJson != null) {
+            _quillController = QuillController(
+                document: Document.fromJson(productBodyTextJson),
+                selection: const TextSelection.collapsed(offset: 0));
+          } else {
+            final String plainTextDescription =
+                currentProduct.description ?? "";
+
+            if (plainTextDescription != null &&
+                plainTextDescription.isNotEmpty) {
+              // Convert plain text into a Quill Document
+              final doc = Document()..insert(0, plainTextDescription);
+
+              _quillController = QuillController(
+                  document: doc,
+                  selection: const TextSelection.collapsed(offset: 0));
+            } else {
+              // Handle the case where the description is empty or null
+              _quillController = QuillController.basic();
+            }
+          }
+
+          productPriceController.text = moneyNormalizer(currentProduct.price!);
+
+          if (currentProduct.manufacturer != null) {
+            productManufacturerController.text = currentProduct.manufacturer!;
+          }
+          customProductController.text =
+              currentProduct.customCategory?.name ?? "";
+
+          productShortDescriptionController.text =
+              messageDecoderWithEmoji(currentProduct.shortDescription) ?? "";
+
+          productImagesFromServer.addAll(currentProduct.serverImages!);
+          productName = currentProduct.name;
+          productCategory = currentProduct.category!.name;
+          productCondition = currentProduct.condition;
+          productPrice = moneyNormalizer(currentProduct.price!);
+
+          if (currentProduct.foreignPrice != null) {
+            currencyView = true;
+            foreignController.text =
+                moneyNormalizer(currentProduct.foreignPrice?.price ?? 0);
+            foreignPrice =
+                moneyNormalizer(currentProduct.foreignPrice?.price ?? 0);
+            selectedCurrencyId = currentProduct.foreignPrice?.userCurrencyRate;
+
+            if (selectedCurrencyId?.isNotEmpty ?? false) {
+              getCurrencyData();
+            }
+          }
+          // productDescription =
+          //     messageDecoderWithEmoji(currentProduct.description);
+          productManufacturer = currentProduct.manufacturer;
+          productShortDescription =
+              messageDecoderWithEmoji(currentProduct.shortDescription);
+
+          // productEnableInSuperStore = currentProduct.enableInSuperStore!;
+
+          // debugPrint('fola edit::::: ${currentProduct.toJson()}');
+
+          // selectedDiscount = currentProduct.discount;
+
+          //convert list to variant
+          // productVariantList = currentProduct.variantModels != null
+          //     ? Variant.convertToVariantList(currentProduct.variantModels!)
+          //     : [];
+          //convert list to addOns
+          // productAddOnsList = currentProduct.addOnsModels != null
+          //     ? AddOns.convertToAddOnList(currentProduct.addOnsModels!)
+          //     : [];
+
+          // assigning the dropdown from currentProduct
+          selectedProductCategory = currentProduct.category;
+          selectedSubCategory = currentProduct.subCategory;
+          selectedCustomCategory = currentProduct.customCategory;
+          userTags = currentProduct.tags!;
+
+          // debugPrint(
+          //     'CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
+
+          if (currentProduct.condition != null) {
+            for (var condition in conditions) {
+              if (condition.name == currentProduct.condition) {
+                selectedProductCondition = condition;
+              }
+            }
+          } else {
+            selectedProductCondition = conditions[3];
+          }
+          for (var preparation in deliverTimeCondition) {
+            if (preparation.name == currentProduct.preparationTime.toString()) {
+              selectedDeliveryTimeCondition = preparation;
+            }
+          }
+        });
+      }
+    });
+  }
+
+  void getCurrencyData() async {
+    final CurrencyModel result =
+        await UserAuth().fetchCurrency(selectedCurrencyId ?? "");
+    selectedCurrency = result.currency;
+    selectedCurrencyRate = result.rate;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    _isKeyboardVisible = (bottomInset ?? 0) > 0;
+    return WillPopScope(
+      onWillPop: () async {
+        if (isEdit) {
+          return await getExitDialog(context);
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        resizeToAvoidBottomInset: true,
+        appBar: appBar(context) as PreferredSizeWidget?,
+        body: scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget appBar(BuildContext context) {
+    return AppBar(
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      centerTitle: false,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () async {
+          if (isEdit) {
+            await getExitDialog(context);
+          } else {
+            Navigator.pop(context);
+          }
+        },
+      ),
+      title: Text(
+        isEdit
+            ? AppLocalization.of(context)!.editProduct
+            : AppLocalization.of(context)!.addProduct,
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          fontFamily: "Inter",
+        ),
+      ),
+    );
+  }
+
+  Widget scaffoldBody() {
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Center(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const SizedBox(height: 10),
+                            if (isEdit) editImages() else addLocalImages(),
+                            const SizedBox(height: 10),
+                            addTitleField(),
+                            const SizedBox(height: 10),
+                            getManufacturerField(),
+                            const SizedBox(height: 10),
+                            getAmountField(),
+                            const SizedBox(height: 10),
+                            getForeignCurrencyFieldAndInfo(),
+                            if (currencyView) ...[
+                              const SizedBox(height: 10),
+                              getForeignCurrencyPriceField(),
+                              const SizedBox(height: 5),
+                              addNewCurrencyRate(),
+                            ],
+                            const SizedBox(height: 10),
+                            getAddTagsField(),
+                            const SizedBox(height: 10),
+                            getProductConditionField(),
+                            const SizedBox(height: 10),
+                            if (userBloc?.userAbout?.industry?.name ==
+                                    "Restaurant/Cafe" ||
+                                userBloc?.userAbout?.industry?.name ==
+                                    "Pharmaceutical") ...[
+                              getProductDeliveryTimeField(),
+                              const SizedBox(height: 10),
+                            ],
+                            getProductShortDescription(),
+                            const SizedBox(height: 10),
+                            getProductDescription(),
+                            const SizedBox(height: 10),
+                            getProductCategory(),
+                            const SizedBox(height: 10),
+                            getAdvancedOptions(),
+                            // const SizedBox(height: 10),
+                            // getEnableInSuperStoreField(),
+                            const SizedBox(height: 20),
+                            getSubmitButton(),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              if (_isKeyboardVisible &&
+                  _isProductDescriptionVisible &&
+                  _focusNodeDescription.hasFocus)
+                getEditor(_quillController)
+              else
+                const SizedBox.shrink()
+            ],
+          );
+  }
+
+  Widget addLocalImages() {
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: productLocalImages.length + 1,
+        itemBuilder: (context, index) => Container(
+          padding: const EdgeInsets.only(right: 6),
+          child: index != productLocalImages.length
+              ? showLocalImage(index)
+              : productLocalImages.length + productImagesFromServer.length !=
+                      imageCount
+                  ? addImageButton()
+                  : null,
+        ),
+      ),
+    );
+  }
+
+  Widget addImageButton() {
+    return CustomBoxShadow(
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shadowColor: boxShadowTwo,
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        child: Container(
+          width: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: InkWell(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  SlydoAppIcon.addImage,
+                  color: darkGrey,
+                ),
+                const SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  AppLocalization.of(context)!.addImage,
+                  style: TextStyle(
+                    color: darkGrey,
+                    fontSize: 14,
+                    fontFamily: "Inter",
+                  ),
+                ),
+              ],
+            ),
+            onTap: () {
+              pickImage();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void pickImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.gallery),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      ImagePicker().pickImage(source: imageSource).then((value) async {
+        if (value != null) {
+          /// for cropping the image
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
+          if (croppedImage == null) {
+            return;
+          }
+
+          productLocalImages.add(PickedFile(croppedImage));
+          if (mounted) setState(() {});
+        }
+      });
+    }
+  }
+
+  Widget viewServerImages() {
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: productImagesFromServer.length,
+        itemBuilder: (context, index) => Container(
+          padding: const EdgeInsets.only(right: 6),
+          child: showServerImage(index),
+        ),
+      ),
+    );
+  }
+
+  Widget showServerImage(int index) {
+    return SizedBox(
+      height: 100,
+      child: Stack(
+        children: <Widget>[
+          CustomBoxShadow(
+            child: Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              shadowColor: boxShadowTwo,
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              child: Container(
+                width: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                      image: NetworkImage(
+                        productImagesFromServer[index]!,
+                      ),
+                      fit: BoxFit.fill),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              padding: const EdgeInsets.only(right: 6, top: 6),
+              alignment: Alignment.topRight,
+              icon: Container(
+                padding: const EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  color: iconBtnGrey,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(
+                  SlydoAppIcon.remove,
+                  color: blackFont,
+                  size: 15,
+                ),
+              ),
+              onPressed: () {
+                final imageId =
+                    currentProduct.getImageId(productImagesFromServer[index]);
+                // debugPrint("imageId:- $imageId");
+                _auth.deleteProductOrServiceImage(imageId).then((value) {
+                  if (value) {
+                    if (mounted) {
+                      setState(() {
+                        productImagesFromServer.removeAt(index);
+                      });
+                    }
+                  }
+                }).catchError((error) {
+                  debugPrint("ERROR $error");
+                });
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget editImages() {
+    return Column(
+      children: [
+        if (productImagesFromServer.isNotEmpty)
+          if (checkImageLimitForServerImage())
+            viewServerImages()
+          else
+            Container(),
+        // checkImageLimitForServerImage()
+        //     ? SizedBox(
+        //         height: 8,
+        //       )
+        //     : Container(),
+        if (checkImageLimitForLocalImage()) addLocalImages() else Container(),
+      ],
+    );
+  }
+
+  // decide that serverImage List is need to be show or not
+  bool checkImageLimitForServerImage() {
+    if (productLocalImages.length + productImagesFromServer.length !=
+            imageCount ||
+        productImagesFromServer.isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
+
+  // decide that localImage List is need to be show or not
+  bool checkImageLimitForLocalImage() {
+    if (productLocalImages.length + productImagesFromServer.length !=
+            imageCount ||
+        productLocalImages.isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
+
+  Widget showLocalImage(int index) {
+    return Stack(
+      children: <Widget>[
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          shadowColor: dividerColor,
+          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          child: Container(
+            width: 100,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              image: DecorationImage(
+                  image: FileImage(
+                    File(productLocalImages[index].path),
+                  ),
+                  fit: BoxFit.fill),
+            ),
+          ),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: IconButton(
+            padding: const EdgeInsets.only(right: 6, top: 6),
+            alignment: Alignment.topRight,
+            icon: Container(
+              padding: const EdgeInsets.all(2.0),
+              decoration: BoxDecoration(
+                color: iconBtnGrey,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Icon(
+                SlydoAppIcon.remove,
+                color: blackFont,
+                size: 15,
+              ),
+            ),
+            onPressed: () {
+              if (mounted) {
+                setState(() {
+                  productLocalImages.removeAt(index);
+                });
+              }
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget addTitleField() {
+    return CustomizedTextFormField(
+      controller: productTitleController,
+      labelText: AppLocalization.of(context)!.productName,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.pleaseEnterProductName;
+      },
+      onTap: () async {},
+      onChanged: (val) {
+        productName = val;
+      },
+    );
+  }
+
+  Widget getManufacturerField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.manufacturer,
+      controller: productManufacturerController,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.pleaseEnterManufacturerName;
+      },
+      onChanged: (val) {
+        productManufacturer = val;
+      },
+    );
+  }
+
+  Widget getAmountField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.priceLocalCurrency,
+      controller: productPriceController,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      isReadOnly: currencyView ? true : false,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            productPrice = double.parse(val.replaceAll(',', '')).toString();
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.invalidAmount;
+      },
+    );
+  }
+
+  Widget getForeignCurrencyFieldAndInfo() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: getForeignCurrencyField(),
+        ),
+        getCurrencyInfo(),
+      ],
+    );
+  }
+
+  Widget getForeignCurrencyField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        currencyView = !currencyView;
+        removeQuillFocus();
+        setState(() {});
+      },
+      isChecked: currencyView,
+      title: AppLocalization.of(context)!.setPriceWithForeignCurrency,
+    );
+  }
+
+  Widget getCurrencyInfo() {
+    return GestureDetector(
+      onTap: () async {
+        await showInfoDialog(
+          context: context,
+          title: 'Why set currency rate ?',
+          description:
+              'Setting a currency rate allows you to offer products in different currencies while ensuring accurate and up-to-date pricing.',
+        );
+      },
+      child: Icon(
+        Icons.info_outline_rounded,
+        color: blackFont,
+        size: 20,
+      ),
+    );
+  }
+
+  Widget getForeignCurrencyPriceField() {
+    return CustomizedTextFormFieldForForeignCurrency(
+      labelText: AppLocalization.of(context)!.priceForeignCurrency,
+      controller: foreignController,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      selectedCurrencySymbol:
+          selectedCurrency != null ? worldCurrencies[selectedCurrency] : "-",
+      onTapCurrency: () {
+        currencyAndroidSheet();
+      },
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            foreignPrice = double.parse(val.replaceAll(',', '')).toString();
+
+            final price = getForeignPrice(double.parse(val.replaceAll(',', '')),
+                    selectedCurrencyRate) ??
+                "";
+            productPrice = price.replaceAll(',', '');
+            productPriceController.text = productPrice!;
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        } else {
+          productPriceController.clear();
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+
+  void currencyAndroidSheet() {
+    currencyList = currencyListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search currency',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      currencyList = currencyListCopy!
+                          .where((element) =>
+                              element.currency?.startsWith(value.toString()) ??
+                              false)
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      currencyList = currencyListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                if (currencyList?.isNotEmpty ?? false)
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: currencyList?.length,
+                      itemBuilder: (context, index) {
+                        final String currency =
+                            currencyList?[index].currency ?? "-";
+                        if (selectedCurrency == currency) {
+                          return Container(
+                            color: selectedListItemBackgroundBlue,
+                            child: ListTile(
+                              dense: true,
+                              title: Text(
+                                currencyNameAndSymbol(currency),
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                    color: navyBlue,
+                                    fontSize: 16,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              trailing: Icon(
+                                SlydoAppIcon.checked,
+                                color: navyBlue,
+                                size: 12,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                pressedCurrency = currency;
+                                if (pressedCurrency != null) {
+                                  productPriceController.clear();
+                                  foreignController.clear();
+                                  productPrice = "";
+                                  foreignPrice = "";
+                                  selectedCurrency = pressedCurrency;
+                                  selectedCurrencyId = currencyList?[index].id;
+                                  selectedCurrencyRate =
+                                      currencyList?[index].rate;
+                                  setState(() {});
+                                }
+                              },
+                            ),
+                          );
+                        }
+                        return ListTile(
+                          title: Text(
+                            currencyNameAndSymbol(currency),
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400),
+                          ),
+                          dense: true,
+                          onTap: () {
+                            Navigator.pop(context);
+                            pressedCurrency = currency;
+                            if (pressedCurrency != null) {
+                              productPriceController.clear();
+                              foreignController.clear();
+                              productPrice = "";
+                              foreignPrice = "";
+                              selectedCurrency = pressedCurrency;
+                              selectedCurrencyId = currencyList?[index].id;
+                              selectedCurrencyRate = currencyList?[index].rate;
+                              setState(() {});
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: NoItemInList(
+                      msg: 'No Rate Found',
+                      isButtonShow: true,
+                      buttonTitle: 'Add New Currency Rate',
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        final result = await NavigationUtil.push(
+                          context,
+                          screen: AddEditCurrency(
+                            currencyList: currencyList,
+                          ),
+                        );
+                        if (result != null && result == true) {
+                          await getCurrencyList();
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget addNewCurrencyRate() {
+    return GestureDetector(
+      onTap: () async {
+        final result = await NavigationUtil.push(
+          context,
+          screen: AddEditCurrency(
+            currencyList: currencyList,
+          ),
+        );
+        if (result != null && result == true) {
+          await getCurrencyList();
+        }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add New Currency Rate',
+            style: TextStyle(
+              fontSize: 12,
+              color: navyBlue,
+              fontWeight: FontWeight.w500,
+              fontFamily: "Inter",
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getProductCategory() {
+    return ExpansionTile(
+      shape: const Border(),
+      tilePadding: EdgeInsets.zero,
+      title: Text(
+        "Product Category",
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          fontFamily: "Inter",
+        ),
+      ),
+      subtitle: Text(
+        "Expand this section to choose the main, sub, and custom categories.",
+        style: TextStyle(
+          color: lightBlackFont,
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          fontFamily: "Inter",
+        ),
+      ),
+      children: <Widget>[
+        Column(
+          children: [
+            getCategoryField(),
+            const SizedBox(height: 10),
+            getSubCategoryField(),
+            const SizedBox(height: 10),
+            getCustomCategoryField(),
+            const SizedBox(height: 5),
+            addCustomCategory(),
+          ],
+        )
+      ],
+      onExpansionChanged: (bool expanded) {
+        // You can manage the icon color or perform any action based on expanded state if needed
+      },
+    );
+  }
+
+  Widget getAdvancedOptions() {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(
+        AppLocalization.of(context)!.advancedOptions,
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          fontFamily: "Inter",
+        ),
+      ),
+      subtitle: Text(
+        "Explore additional features like discount, measurement & more to enhance your product listing.",
+        style: TextStyle(
+          color: lightBlackFont,
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          fontFamily: "Inter",
+        ),
+      ),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () async {
+        final Product? product = await NavigationUtil.push(
+          context,
+          screen: ProductAdvancedOptions(
+            isEdit: isEdit,
+            productId: productId,
+            currentProduct: currentProduct,
+          ),
+        );
+
+        if (product != null) {
+          setState(() {
+            currentProduct = product;
+          });
+        }
+      },
+    );
+  }
+
+  Widget getCategoryField() {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.category,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedProductCategory != null ? selectedProductCategory!.name : "",
+          style: TextStyle(
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          categoryAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  void categoryAndroidSheet() {
+    productCategories = productCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      productCategories = productCategoriesCopy!
+                          .where((element) => element.name
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      productCategories = productCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: productCategories?.isNotEmpty ?? false
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: productCategories?.length,
+                          itemBuilder: (context, index) {
+                            final ProductCategory category =
+                                productCategories![index];
+                            if (selectedProductCategory == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category.name,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: "Inter",
+                                    ),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedCategory = category;
+                                    Navigator.pop(context);
+                                    if (pressedCategory != null) {
+                                      selectedProductCategory = pressedCategory;
+                                      productCategory =
+                                          selectedProductCategory!.name;
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category.name,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedCategory = category;
+                                Navigator.pop(context);
+                                if (pressedCategory != null) {
+                                  getSubCategories(category.id);
+                                  selectedProductCategory = pressedCategory;
+                                  productCategory =
+                                      selectedProductCategory!.name;
+                                  productSubCategory = "";
+                                  selectedSubCategory = null;
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : const Center(
+                          child: Text(
+                            "No Data",
+                          ),
+                        ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget getSubCategoryField() {
+    return CustomizedDropDownField(
+      title: "Sub-Category",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedSubCategory != null ? selectedSubCategory!.name : "",
+          style: TextStyle(
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          subCategoryAndroidSheet();
+          // selectItemCategory();
+        },
+      ),
+    );
+  }
+
+  void subCategoryAndroidSheet() {
+    subCategories = subCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search  sub category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      subCategories = subCategoriesCopy!
+                          .where((element) => element.name
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      subCategories = subCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: subCategories?.isNotEmpty ?? false
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: subCategories?.length,
+                          itemBuilder: (context, index) {
+                            final ProductCategory category =
+                                subCategories![index];
+                            if (selectedSubCategory == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category.name,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: "Inter",
+                                    ),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedSubCategory = category;
+                                    Navigator.pop(context);
+                                    if (pressedSubCategory != null) {
+                                      selectedSubCategory = pressedSubCategory;
+                                      productSubCategory =
+                                          selectedSubCategory!.name;
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category.name,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedCategory = category;
+                                Navigator.pop(context);
+                                if (pressedCategory != null) {
+                                  selectedSubCategory = pressedCategory;
+                                  productCategory = selectedSubCategory!.name;
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : const Center(
+                          child: Text(
+                            "No Data",
+                          ),
+                        ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  String getCustomCategoryLabel() {
+    final String industryName = userBloc?.userAbout?.industry?.name ?? "";
+    switch (industryName) {
+      case 'Electronics Store':
+        return "Aisle";
+      case 'Furniture':
+        return "Aisle";
+      case 'Grocery Store':
+        return "Aisle";
+      case 'Liquor Store':
+        return "Aisle";
+      case 'Pharmaceutical':
+        return "Aisle";
+      case 'Restaurant/Cafe':
+        return "Menu";
+      case 'Retail':
+        return "Aisle";
+      default:
+        return "Custom Category";
+    }
+  }
+
+  Widget getCustomCategoryField() {
+    return CustomizedDropDownField(
+      title: getCustomCategoryLabel(),
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedCustomCategory?.name != null
+              ? selectedCustomCategory?.name ?? ""
+              : "",
+          style: TextStyle(
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          customCategoryAndroidSheet();
+          // selectItemCategory();
+        },
+      ),
+    );
+  }
+
+  void customCategoryAndroidSheet() {
+    customCategories = productCustomCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search custom category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      customCategories = productCustomCategoriesCopy!
+                          .where((element) => element.name
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      customCategories = productCustomCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: customCategories?.isNotEmpty ?? false
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: customCategories?.length,
+                          itemBuilder: (context, index) {
+                            final ProductCategory category =
+                                customCategories![index];
+                            if (selectedCustomCategory == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category.name,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: "Inter",
+                                    ),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedCustomCategory = category;
+                                    Navigator.pop(context);
+                                    if (pressedSubCategory != null) {
+                                      selectedCustomCategory =
+                                          pressedCustomCategory;
+                                      productCustomCategory =
+                                          selectedCustomCategory!.name;
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category.name,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedCustomCategory = category;
+                                Navigator.pop(context);
+                                if (pressedCustomCategory != null) {
+                                  selectedCustomCategory =
+                                      pressedCustomCategory;
+                                  productCustomCategory =
+                                      selectedCustomCategory!.name;
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : Expanded(
+                          child: NoItemInList(
+                            msg: 'No Custom Category Found',
+                            isButtonShow: true,
+                            buttonTitle: 'Add New Custom Category',
+                            onTap: () async {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pushNamed(
+                                  Routes.CUSTOM_CATEGORY,
+                                  arguments: {
+                                    "isHome": true
+                                  }).whenComplete(() => obtainCustomCategory());
+                            },
+                          ),
+                        ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget addCustomCategory() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Categories your product with custom category.',
+          style: TextStyle(
+            fontSize: 12,
+            color: fontLightGrey,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        ),
+        const SizedBox(height: 5),
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.CUSTOM_CATEGORY, arguments: {
+              "isHome": true
+            }).whenComplete(() => obtainCustomCategory());
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Add New Custom Category',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: navyBlue,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: blackFont,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getAddTagsField() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Tags",
+              style: TextStyle(
+                color: darkGrey,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+              ),
+            ),
+            GestureDetector(
+              onTap: () async {
+                final result = await Navigator.of(context).pushNamed(
+                    Routes.ADD_TAGS,
+                    arguments: {"tagList": userTags});
+                if (result != null && result is List<Tags>) {
+                  userTags = [];
+                  tagController.clearTags();
+
+                  for (var tags in result) {
+                    if (tags.isSelected == true) {
+                      tagController.addTag =
+                          tags.name?.replaceAll(" ", "-").toLowerCase() ?? "";
+
+                      // _myController.addTag(tags.name ?? "");
+
+                      final Tags tagData = Tags(id: tags.id, name: tags.name);
+                      userTags.add(tagData);
+                    }
+                  }
+                  // userTags.addAll(allTags);
+                }
+                setState(() {});
+              },
+              child: Text(
+                "Add Tags",
+                style: TextStyle(
+                  color: navyBlue,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
+                ),
+              ),
+            )
+          ],
+        ),
+        const SizedBox(
+          height: 6,
+        ),
+        CustomTextFieldTag(
+          initialTags: isEdit ? (userTags).map((e) => e.name!).toList() : [],
+          textFieldTagsController: tagController,
+          onTap: (String tag) {
+            setState(() {
+              userTags.removeWhere((e) => e.name == tag);
+            });
+            userTags.removeWhere((tag) => tag.name!.isEmpty);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget getProductConditionField() {
+    return CustomizedDropDownField(
+      title: "Product condition",
+      child: ListTile(
+        dense: true,
+        title: Row(
+          children: [
+            Text(
+              selectedProductCondition != null
+                  ? selectedProductCondition!.name
+                  : "",
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
+            ),
+            Expanded(
+              child: Text(
+                selectedProductCondition != null
+                    ? " (${selectedProductCondition!.description})"
+                    : "",
+                maxLines: 1,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontFamily: "Inter",
+                ),
+                softWrap: false,
+                overflow: TextOverflow.fade,
+              ),
+            ),
+          ],
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectItemCondition();
+        },
+      ),
+    );
+  }
+
+  void selectItemCondition() async {
+    final pressedCondition = await showDialog<ProductCondition>(
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: conditions.map<Widget>((condition) {
+                          if (selectedProductCondition == condition) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Row(
+                                  children: [
+                                    Text(
+                                      condition.name,
+                                      style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: "Inter",
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        selectedProductCondition != null
+                                            ? " (${selectedProductCondition!.description})"
+                                            : "",
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: navyBlue,
+                                          fontFamily: "Inter",
+                                        ),
+                                        softWrap: false,
+                                        overflow: TextOverflow.fade,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, condition);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Row(
+                              children: [
+                                Text(
+                                  condition.name,
+                                  style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    " (${condition.description})",
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: blackFont,
+                                      fontFamily: "Inter",
+                                    ),
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, condition);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCondition != null) {
+      selectedProductCondition = pressedCondition;
+      productCondition = selectedProductCondition!.name;
+      setState(() {});
+    }
+  }
+
+  Widget getProductDeliveryTimeField() {
+    return CustomizedDropDownField(
+      title: "Preparation Time",
+      child: ListTile(
+        dense: true,
+        title: Row(
+          children: [
+            Text(
+              selectedDeliveryTimeCondition != null
+                  ? selectedDeliveryTimeCondition!.description
+                  : "",
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
+            ),
+          ],
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectDeliveryTimeCondition();
+        },
+      ),
+    );
+  }
+
+  void selectDeliveryTimeCondition() async {
+    final pressedCondition = await showDialog<ProductCondition>(
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: deliverTimeCondition.map<Widget>((condition) {
+                          if (selectedDeliveryTimeCondition == condition) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        selectedDeliveryTimeCondition != null
+                                            ? selectedDeliveryTimeCondition!
+                                                .description
+                                            : "",
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: navyBlue,
+                                          fontFamily: "Inter",
+                                        ),
+                                        softWrap: false,
+                                        overflow: TextOverflow.fade,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, condition);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    condition.description,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: blackFont,
+                                      fontFamily: "Inter",
+                                    ),
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, condition);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCondition != null) {
+      selectedDeliveryTimeCondition = pressedCondition;
+      deliveryTimeCondition = selectedDeliveryTimeCondition!.name;
+      setState(() {});
+    }
+  }
+
+  Widget getProductShortDescription() {
+    return CustomizedTextFormField(
+      labelText: "Short description",
+      controller: productShortDescriptionController,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.shortDescription;
+        // if (val == null || val == "") {
+        //   val = AppLocalization.of(context)!.shortDescription;
+        // }
+        // var newVal = emptyTextValidator(
+        //     val ?? AppLocalization.of(context)!.shortDescription);
+      },
+      onTap: () async {},
+      onChanged: (val) {
+        productShortDescription = val;
+      },
+    );
+  }
+
+  Widget getProductDescription() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildProductDescriptionText(),
+        const SizedBox(height: 5),
+        Container(
+          height: 120,
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: _focusNodeDescription.hasFocus
+                    ? navyBlue
+                    : greyBorderColor),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 150,
+            ),
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                textSelectionTheme: TextSelectionThemeData(
+                  cursorColor: _focusNodeDescription.hasFocus ? null : navyBlue,
+                ),
+              ),
+              child: QuillEditor(
+                focusNode: _focusNodeDescription,
+                scrollController: _textEditorScrollController,
+                configurations: QuillEditorConfigurations(
+                  autoFocus: false,
+                  controller: _quillController,
+                  scrollable: true,
+                  expands: false,
+                  padding: const EdgeInsets.only(top: 10, left: 15),
+                  placeholder: "",
+                  scrollBottomInset: 20,
+                  showCursor:
+                      _isKeyboardVisible || _isProductDescriptionVisible,
+                  embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProductDescriptionText() {
+    return Text(
+      AppLocalization.of(context)!.description,
+      style: TextStyle(
+        color: darkGrey,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  // Widget getEnableInSuperStoreField() {
+  //   return CustomizedCheckBoxField(
+  //     onTap: () {
+  //       productEnableInSuperStore = !productEnableInSuperStore;
+  //       removeQuillFocus();
+  //       setState(() {});
+  //     },
+  //     isChecked: productEnableInSuperStore,
+  //     title: AppLocalization.of(context)!.enableInSuperStore,
+  //   );
+  // }
+
+  Widget getSubmitButton() {
+    return ButtonTheme(
+      child: Row(
+        children: <Widget>[
+          if (isEdit)
+            Expanded(
+              child: CurvedButton(
+                  textColor: Colors.white,
+                  backgroundColor: mateRed,
+                  text: AppLocalization.of(context)!.delete,
+                  onPressed: () async {
+                    FocusScope.of(context).unfocus();
+                    deleteProductDialog();
+                  }),
+            ),
+          if (isEdit) const SizedBox(width: 8),
+          Expanded(
+            child: CurvedButton(
+              textColor: Colors.white,
+              text:
+                  isEdit ? AppLocalization.of(context)!.update : 'Add product',
+              backgroundColor: navyBlue,
+              onPressed: isAPILoading
+                  ? () {}
+                  : () async {
+                      FocusScope.of(context).unfocus();
+                      isAPILoading = true;
+                      if (mounted) setState(() {});
+
+                      await addEditProduct();
+
+                      isAPILoading = false;
+                      if (mounted) setState(() {});
+                    },
+              isLoading: isAPILoading,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void removeQuillFocus() {
+    _focusNodeDescription.unfocus();
+  }
+
+  dynamic getExitDialog(BuildContext context) async {
+    await showExitDialogBackButton(
+      context: context,
+      leftButtonOnPressed: () {
+        Navigator.pop(context);
+      },
+      rightButtonOnPressed: () async {
+        FocusScope.of(context).unfocus();
+        await addEditProduct();
+      },
+    );
+  }
+
+  Future<void> addEditProduct() async {
+    if (_formKey.currentState!.validate()) {
+      if (productLocalImages.isNotEmpty || productImagesFromServer.isNotEmpty) {
+        // if (containsWeight() && selectedWeight.isEmpty && weight != 0.0) {
+        //   showToast(message: AppLocalization.of(context)!.pleaseFillWeight);
+        //   return;
+        // }
+        // if (containsHeight() && selectedHeight.isEmpty && height != 0.0) {
+        //   showToast(message: AppLocalization.of(context)!.pleaseFillHeight);
+        //   return;
+        // }
+        // if (containsWidth() && selectedWidth.isEmpty && width != 0.0) {
+        //   showToast(message: AppLocalization.of(context)!.pleaseFillWidth);
+        //   return;
+        // }
+
+        if (validateDropdown()) {
+          currentProduct.name = productName;
+          currentProduct.description =
+              jsonEncode(_quillController.document.toDelta().toJson());
+          currentProduct.category = selectedProductCategory;
+          currentProduct.subCategory = selectedSubCategory;
+          currentProduct.customCategory = selectedCustomCategory;
+          currentProduct.tags = userTags;
+          if (selectedDeliveryTimeCondition != null) {
+            currentProduct.preparationTime =
+                int.parse(selectedDeliveryTimeCondition!.name);
+          }
+          currentProduct.condition = productCondition;
+          currentProduct.price = moneyInputNormalizer(productPrice);
+          if (currencyView) {
+            foreignPriceModel ??= ForeignPrice();
+            foreignPriceModel?.price = moneyInputNormalizer(foreignPrice);
+            foreignPriceModel?.userCurrencyRate = selectedCurrencyId;
+
+            currentProduct.foreignPrice = foreignPriceModel;
+          }
+          currentProduct.localImages =
+              productLocalImages.map((file) => File(file.path)).toList();
+          currentProduct.serverImages = productImagesFromServer;
+
+          currentProduct.shortDescription =
+              messageDecoderWithEmoji(productShortDescription);
+          currentProduct.manufacturer = productManufacturer;
+          currentProduct.enableInSuperStore = true;
+
+          if (isEdit) {
+            await ShoppingAuthService()
+                .editProduct(currentProduct, currentProduct.addOnsModels)
+                .then((value) {
+              if (value) {
+                showToast(
+                    message:
+                        AppLocalization.of(context)!.productEditedSuccessfully);
+                Navigator.pop(context, "update_item");
+              }
+            }).catchError((error) {
+              showToast(message: error.toString());
+            });
+          } else {
+            await _auth.addProduct(
+                currentProduct,
+                widget.arguments['channelUsername'] ?? "",
+                // productAddOnsList)
+                []).then((value) async {
+              final productId = value[1];
+
+              if (currentProduct.variantModels?.isEmpty ?? false) {
+                Navigator.pop(context);
+                showToast(
+                    message:
+                        AppLocalization.of(context)!.productAddedSuccessfully);
+
+                Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
+                    arguments: {"productId": productId});
+              } else {
+                addVariants(productId);
+              }
+            }).catchError((error) {
+              debugPrint("Product check::: ${error.toString()}");
+              showToast(message: error.toString());
+            });
+          }
+        }
+      } else {
+        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
+      }
+    }
+  }
+
+  Future<void> addVariants(String productId) async {
+    for (var variantItem in currentProduct.variantModels ?? []) {
+      // Make the API call for the current product variant
+      await makeApiCallAddVariant(variantItem, productId);
+    }
+
+    // This will be executed after all API calls are completed
+    // debugPrint("All API calls are done!");
+    Navigator.pop(context);
+    showToast(message: AppLocalization.of(context)!.productAddedSuccessfully);
+
+    Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
+        arguments: {"productId": productId});
+  }
+
+  Future<void> makeApiCallAddVariant(
+      Variant variantItem, String productId) async {
+    await _auth.addVariant(variantItem, productId).then((value) {
+      // backValue = true;
+    }).catchError((error) {
+      debugPrint("Product check variant::: ${error.toString()}");
+      // showToast(message: error.toString());
+    });
+  }
+
+  void deleteProductDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Product',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this product?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () {
+        deleteProduct();
+      },
+    );
+  }
+
+  bool validateDropdown() {
+    if (selectedProductCategory != null) {
+      return true;
+    } else {
+      showToast(
+          message: AppLocalization.of(context)!.pleaseSelectProductCategory);
+      return false;
+    }
+  }
+
+  void deleteProduct() async {
+    final bool result = await showDialog(
+      context: context,
+      builder: (context) => const ConfirmDelete(),
+    );
+    if (result) {
+      await _auth.deleteProduct(currentProduct.id!).then((value) {
+        Navigator.pop(context, "delete_item");
+        showToast(
+            message: AppLocalization.of(context)!.productDeletedSuccessfully);
+      }).catchError((error) {
+        showToast(message: error.toString());
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    tagController.dispose();
+    userTags = [];
+    _quillController.dispose();
+    _focusNodeDescription.dispose();
+    super.dispose();
+  }
+}

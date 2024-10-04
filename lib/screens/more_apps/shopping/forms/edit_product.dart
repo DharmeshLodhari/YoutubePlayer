@@ -3643,7 +3643,7 @@ class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
         //   return;
         // }
         final result = await Navigator.of(context).pushNamed(
-            Routes.PRODUCT_NEW_OPTION,
+            Routes.ADD_EDIT_VARIANT,
             arguments: {'productId': productId, 'option': 'edit'});
 
         // Handle the result (map) received from Product Add New Option

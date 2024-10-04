@@ -754,8 +754,18 @@ class _YarnOptionsState extends State<YarnOptions> {
         await YarnAuth().addStatusInPost(widget.yarnTopic!.id!, status);
     if (data != null) {
       if (data) {
-        showToast(message: "Status Updated Successfully");
+        if (status == 'saved') {
+          showToast(message: "Yarn Saved Successfully");
+        } else {
+          showToast(message: "Status Updated Successfully");
+        }
         Navigator.pop(context);
+      } else {
+        if (status == 'saved') {
+          showToast(message: "Yarn Already Saved");
+        } else {
+          showToast(message: "Status Already Updated");
+        }
       }
     }
   }

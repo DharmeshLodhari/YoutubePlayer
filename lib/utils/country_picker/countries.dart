@@ -1429,7 +1429,7 @@ final List<Country> countryList = [
     isoCode: "AE",
     phoneCode: "971",
     name: "United Arab Emirates",
-    iso3Code: "ARE",
+    iso3Code: "AED",
   ),
   Country(
     isoCode: "GB",

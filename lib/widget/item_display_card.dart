@@ -342,7 +342,7 @@ class _DisplayProductState extends State<DisplayProduct> {
       actionOneText: "I'll choose",
       actionTwoText: "Repeat last",
       leftButtonOnPressed: () {
-        Navigator.pushNamed(context, Routes.PRODUCT,
+        Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
             arguments: {"product": widget.product, "type": "changeAddons"});
       },
       rightButtonOnPressed: () {
@@ -814,8 +814,9 @@ class _DisplayServiceState extends State<DisplayService> {
         onTap: () async {
           Navigator.pop(context);
 
-          final result = await Navigator.of(context).pushNamed(
-            '/edit-service',
+          final result = await Navigator.pushNamed(
+            context,
+            Routes.ADD_EDIT_SERVICE,
             arguments: {
               "serviceId": widget.service.id.toString(),
             },

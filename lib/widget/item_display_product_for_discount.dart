@@ -22,7 +22,7 @@ class DisplayProductForDiscount extends StatelessWidget {
     // debugPrint(DateTime.now().toString());
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, Routes.PRODUCT,
+        Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
             arguments: {"product": product});
       },
       child: Container(

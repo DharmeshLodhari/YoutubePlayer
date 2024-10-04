@@ -1496,9 +1496,9 @@ class YarnAuth extends AuthService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
-      return null;
+      throw jsonDecode(response.body);
     } else {
-      return null;
+      return false;
     }
   }
 

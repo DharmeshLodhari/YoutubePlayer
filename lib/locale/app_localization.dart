@@ -1234,7 +1234,7 @@ class AppLocalization {
     );
   }
 
-  String get newOption {
+  String get newVariant {
     return Intl.message(
       "New Variant",
       name: "newOption",
@@ -1248,10 +1248,31 @@ class AppLocalization {
     );
   }
 
+  String get newOption {
+    return Intl.message(
+      "New Option",
+      name: "newOption",
+    );
+  }
+
+  String get updateOption {
+    return Intl.message(
+      "Update Option",
+      name: "updateOption",
+    );
+  }
+
   String get newAddOns {
     return Intl.message(
       "New Add-ons",
       name: "newAddOns",
+    );
+  }
+
+  String get updateAddOns {
+    return Intl.message(
+      "Update Add-ons",
+      name: "updateAddOns",
     );
   }
 
@@ -3069,6 +3090,13 @@ class AppLocalization {
     return Intl.message(
       "Edit Product",
       name: "editProduct",
+    );
+  }
+
+  String get advancedOptions {
+    return Intl.message(
+      "Advanced Options ",
+      name: "advancedOptions",
     );
   }
 

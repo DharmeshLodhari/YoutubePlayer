@@ -129,6 +129,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
             color: yarnBlack,
           ),
         ),
+        centerTitle: false,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
@@ -149,58 +150,61 @@ class _NearByListScreenState extends State<NearByListScreen> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noResultFound,
           )
-        : ListView.builder(
-            physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.all(16.0),
-            controller: _scrollController,
-            itemCount: customerProfileList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == customerProfileList.length) {
-                return buildShimmerLoadingIndicator(isLoading: isNearbyLoading);
-              }
+        : isNearbyLoading && customerProfileList.isEmpty
+            ? buildShimmerLoadingIndicator(isLoading: isNearbyLoading)
+            : ListView.builder(
+                physics: const ClampingScrollPhysics(),
+                padding: const EdgeInsets.all(16.0),
+                controller: _scrollController,
+                itemCount: customerProfileList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == customerProfileList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: isNearbyLoading);
+                  }
 
-              return Container(
-                margin: const EdgeInsets.all(5.0),
-                child: FindBusiness(
-                  customerProfile: customerProfileList[index],
-                  tileRenderPlace: TileRenderPlace.YarnTimeLine,
-                  callback: (username, value) {
-                    //create a list to edit
-                    final List<CustomerProfile> customerProfileListEdit =
-                        customerProfileList;
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 7.0),
+                    child: FindBusiness(
+                      customerProfile: customerProfileList[index],
+                      tileRenderPlace: TileRenderPlace.YarnTimeLine,
+                      callback: (username, value) {
+                        //create a list to edit
+                        final List<CustomerProfile> customerProfileListEdit =
+                            customerProfileList;
 
-                    // modify customerProfileList for the username and refresh the list
-                    // set the isFollowing for that particular user
-                    for (var customer in customerProfileListEdit) {
-                      if (customer.userName == username) {
-                        customer.isFollowing =
-                            value; // Modify the isFollowing property
-                      }
-                    }
+                        // modify customerProfileList for the username and refresh the list
+                        // set the isFollowing for that particular user
+                        for (var customer in customerProfileListEdit) {
+                          if (customer.userName == username) {
+                            customer.isFollowing =
+                                value; // Modify the isFollowing property
+                          }
+                        }
 
-                    customerProfileList = [];
-                    customerProfileList = customerProfileListEdit;
+                        customerProfileList = [];
+                        customerProfileList = customerProfileListEdit;
 
-                    if (mounted) setState(() {});
-                  },
-                ),
-              );
-            }
-            //   separatorBuilder: (context, int) {
-            //     return Column(
-            //       children: [
-            //         const SizedBox(
-            //           height: 20,
-            //         ),
-            //         Divider(
-            //           height: 0,
-            //           thickness: 0.5,
-            //           color: greySecondaryYarn,
-            //         ),
-            //       ],
-            //     );
-            //   },
-            );
+                        if (mounted) setState(() {});
+                      },
+                    ),
+                  );
+                }
+                //   separatorBuilder: (context, int) {
+                //     return Column(
+                //       children: [
+                //         const SizedBox(
+                //           height: 20,
+                //         ),
+                //         Divider(
+                //           height: 0,
+                //           thickness: 0.5,
+                //           color: greySecondaryYarn,
+                //         ),
+                //       ],
+                //     );
+                //   },
+                );
   }
 
   void onRefresh() async {

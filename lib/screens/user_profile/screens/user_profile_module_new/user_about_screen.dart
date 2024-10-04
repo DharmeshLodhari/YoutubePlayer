@@ -75,7 +75,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
                 scrollDirection: Axis.vertical,
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: Column(
                     children: <Widget>[
                       displayUserBio(),
@@ -96,7 +96,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
         shadowColor: boxShadowTwo,
         borderOnForeground: true,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

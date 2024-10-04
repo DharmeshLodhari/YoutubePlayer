@@ -1049,6 +1049,7 @@ class _ShareAsYarnScreenState extends State<ShareAsYarnScreen> {
             offset: textController.text.length,
           ));
           searchString = "";
+          isMentionName = false;
           if (mounted) setState(() {});
         }
       },

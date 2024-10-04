@@ -333,8 +333,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         onTap: () async {
           if (hasPermission == PermissionType.WRITE) {
             Navigator.pop(context);
-            final result = await Navigator.of(context).pushNamed(
-              '/edit-service',
+            final result = await Navigator.pushNamed(
+              context,
+              Routes.ADD_EDIT_SERVICE,
               arguments: {
                 "serviceId": serviceId,
               },

@@ -302,7 +302,8 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 8, horizontal: 16),
                               child: Container(
-                                margin: const EdgeInsets.all(8.0),
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 7.0),
                                 child: FindBusiness(
                                   customerProfile: product,
                                   tileRenderPlace:

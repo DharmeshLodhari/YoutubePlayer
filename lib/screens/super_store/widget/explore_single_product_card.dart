@@ -324,7 +324,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
       actionOneText: "I'll choose",
       actionTwoText: "Repeat last",
       leftButtonOnPressed: () {
-        Navigator.pushNamed(context, Routes.PRODUCT,
+        Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
             arguments: {"product": widget.product, "type": "changeAddons"});
       },
       rightButtonOnPressed: () {

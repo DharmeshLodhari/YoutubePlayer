@@ -262,7 +262,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         backgroundColor: lightGrey,
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: SmartRefresher(
               enablePullDown: true,
               header: WaterDropHeader(
@@ -341,28 +341,31 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
               "searchedUserName": customerProfileList[index].userName
             });
           },
-          child: FindBusiness(
-            customerProfile: customerProfileList[index],
-            tileRenderPlace: TileRenderPlace.YarnProductService,
-            callback: (username, value) {
-              //create a list to edit
-              final List<CustomerProfile> customerProfileListEdit =
-                  customerProfileList;
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 7.0),
+            child: FindBusiness(
+              customerProfile: customerProfileList[index],
+              tileRenderPlace: TileRenderPlace.YarnProductService,
+              callback: (username, value) {
+                //create a list to edit
+                final List<CustomerProfile> customerProfileListEdit =
+                    customerProfileList;
 
-              // modify customerProfileList for the username and refresh the list
-              // set the isFollowing for that particular user
-              for (var customer in customerProfileListEdit) {
-                if (customer.userName == username) {
-                  customer.isFollowing =
-                      value; // Modify the isFollowing property
+                // modify customerProfileList for the username and refresh the list
+                // set the isFollowing for that particular user
+                for (var customer in customerProfileListEdit) {
+                  if (customer.userName == username) {
+                    customer.isFollowing =
+                        value; // Modify the isFollowing property
+                  }
                 }
-              }
 
-              customerProfileList = [];
-              customerProfileList = customerProfileListEdit;
+                customerProfileList = [];
+                customerProfileList = customerProfileListEdit;
 
-              if (mounted) setState(() {});
-            },
+                if (mounted) setState(() {});
+              },
+            ),
           ),
         );
       },

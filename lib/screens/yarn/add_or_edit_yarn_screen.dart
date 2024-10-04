@@ -302,11 +302,21 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         return checkShowBackDialog(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: true,
+        backgroundColor: lightGrey,
         appBar: _buildAppBar(),
         body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
-          return Column(
-            children: [_buildYarnForm(model)],
+          return CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    _buildYarnForm(model),
+                  ],
+                ),
+              ),
+            ],
           );
         }),
       ),
@@ -393,7 +403,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         counterText: "${textController!.text.length}/${400}",
         hintText: "Leave your thought",
         hintStyle: TextStyle(
-          fontSize: 13,
+          fontSize: 12,
           color: HexColor("#7A7A7A"),
           fontWeight: FontWeight.w400,
         ),
@@ -439,85 +449,87 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget _buildRowForMedia() {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: HexColor("#D9D9D9")),
-              top: BorderSide(color: HexColor("#D9D9D9")))),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(left: 8, bottom: 20, top: 15),
-        child: Row(
-          children: [
-            //check if image is not selected
-            if (existingMediaList.isEmpty && newMediaList.isEmpty) ...[
-              //add plus icon for product/services
-              getAddLayout(),
-            ],
+    return SafeArea(
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(color: HexColor("#D9D9D9")),
+                top: BorderSide(color: HexColor("#D9D9D9")))),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.only(left: 8, bottom: 20, top: 15),
+          child: Row(
+            children: [
+              //check if image is not selected
+              if (existingMediaList.isEmpty && newMediaList.isEmpty) ...[
+                //add plus icon for product/services
+                getAddLayout(),
+              ],
 
-            //check if product/service is selected
-            if (yarnDashboardBloc!.productService == null) ...[
-              InkWell(
-                  onTap: () {
-                    // selectCameraGallery(context);
-                    if (existingMediaList.length + newMediaList.length == 4) {
-                      showToast(
-                          message: "You can select only 4 images or videos");
-                    } else {
-                      buildCreateMediaScreen();
-                    }
-                  },
-                  child: SvgPicture.asset("yarn/images".toSVG())),
-            ],
+              //check if product/service is selected
+              if (yarnDashboardBloc!.productService == null) ...[
+                InkWell(
+                    onTap: () {
+                      // selectCameraGallery(context);
+                      if (existingMediaList.length + newMediaList.length == 4) {
+                        showToast(
+                            message: "You can select only 4 images or videos");
+                      } else {
+                        buildCreateMediaScreen();
+                      }
+                    },
+                    child: SvgPicture.asset("yarn/images".toSVG())),
+              ],
 
-            const SizedBox(
-              width: 8,
-            ),
-            InkWell(
-              onTap: () {
-                showToast(message: 'Coming soon');
-                // if (FocusScope.of(context).hasFocus) {
-                //   FocusScope.of(context).unfocus();
-                //   Future.delayed(Duration(milliseconds: 100)).then((value) {
-                //     showMoreAction = !showMoreAction;
-                //     if (mounted) setState(() {});
-                //   });
-                // } else {
-                //   showMoreAction = !showMoreAction;
-                //   if (mounted) setState(() {});
-                // }
-                // showMoreAction = false;
-                // _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
-                // getGIFs(isRandom: true);
-                // if (mounted) setState(() {});
-              },
-              child: SvgPicture.asset(
-                "yarn/yarn_gif".toSVG(),
+              const SizedBox(
+                width: 8,
               ),
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            _buildCategory(),
-            const SizedBox(
-              width: 4,
-            ),
-            _buildRatingCategory(),
-            const SizedBox(
-              width: 4,
-            ),
-            _buildEnableComment(),
-            const SizedBox(
-              width: 4,
-            ),
-            _buildEnablePayme(),
-            const SizedBox(
-              width: 4,
-            ),
-            _buildEnableViewerAdvice(),
-            const SizedBox(width: 4),
-            _buildEnableAdultsOnly(),
-          ],
+              InkWell(
+                onTap: () {
+                  showToast(message: 'Coming soon');
+                  // if (FocusScope.of(context).hasFocus) {
+                  //   FocusScope.of(context).unfocus();
+                  //   Future.delayed(Duration(milliseconds: 100)).then((value) {
+                  //     showMoreAction = !showMoreAction;
+                  //     if (mounted) setState(() {});
+                  //   });
+                  // } else {
+                  //   showMoreAction = !showMoreAction;
+                  //   if (mounted) setState(() {});
+                  // }
+                  // showMoreAction = false;
+                  // _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+                  // getGIFs(isRandom: true);
+                  // if (mounted) setState(() {});
+                },
+                child: SvgPicture.asset(
+                  "yarn/yarn_gif".toSVG(),
+                ),
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              _buildCategory(),
+              const SizedBox(
+                width: 4,
+              ),
+              _buildRatingCategory(),
+              const SizedBox(
+                width: 4,
+              ),
+              _buildEnableComment(),
+              const SizedBox(
+                width: 4,
+              ),
+              _buildEnablePayme(),
+              const SizedBox(
+                width: 4,
+              ),
+              _buildEnableViewerAdvice(),
+              const SizedBox(width: 4),
+              _buildEnableAdultsOnly(),
+            ],
+          ),
         ),
       ),
     );
@@ -1211,6 +1223,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             offset: textController!.text.length,
           ));
           searchString = "";
+          isMentionName = false;
           if (mounted) setState(() {});
         }
       },
