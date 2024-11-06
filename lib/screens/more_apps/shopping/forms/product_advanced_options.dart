@@ -348,6 +348,8 @@ class _ProductAdvancedOptionsState extends State<ProductAdvancedOptions> {
     currentProduct?.addressId = defaultAddress?.id;
     currentProduct?.searchKeywords =
         commaSeparatedStringToList(searchKeyword ?? "");
+    currentProduct?.variantModels = productVariantList;
+    currentProduct?.addOnsModels = productAddOnsList;
 
     Navigator.pop(context, currentProduct);
   }
