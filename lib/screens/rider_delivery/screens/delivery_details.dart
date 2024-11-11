@@ -11,6 +11,7 @@ import 'package:Slydo/screens/rider_delivery/tiles/delivery_order_tile.dart';
 import 'package:Slydo/screens/rider_delivery/tiles/rider_delivery_map.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -48,6 +49,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   late RiderDeliveryBloc riderDeliveryBloc;
   String? username = "";
   final DatabaseHelper _db = DatabaseHelper();
+  TextEditingController? codeController;
 
   List<String> reasons = [
     "Wrong destination",
@@ -981,14 +983,49 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           ? null
           : () async {
               FocusScope.of(context).unfocus();
-              isEndedAPILoading = true;
-              if (mounted) setState(() {});
-              await endOffer();
-
-              isEndedAPILoading = false;
-              if (mounted) setState(() {});
+              endDeliveryDialog();
             },
       isLoading: isEndedAPILoading,
+    );
+  }
+
+  Future<void> endDeliveryDialog() async {
+    await showDialogBox(
+      context: context,
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: navyBlue,
+      actionTwoTextColor: Colors.white,
+      firstActionPrimary: false,
+      title: 'End Delivery',
+      description:
+          'You are free to browse in different currencies but will always pay in NGN (Naira) at checkout',
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: "End Delivery",
+      rightButtonOnPressed: () {
+        confirmDeliveryCodeDialog();
+      },
+    );
+  }
+
+  Future<void> confirmDeliveryCodeDialog() async {
+    await showDialogBoxValidateCode(
+      context: context,
+      actionOneBgColor: navyBlue,
+      actionOneTextColor: Colors.white,
+      firstActionPrimary: false,
+      isCloseIconShow: true,
+      title: 'Confirm Delivery',
+      description: 'Input the code given to the receiver.',
+      actionOneText: AppLocalization.of(context)!.submit,
+      buttonOnPressed: () async {
+        isEndedAPILoading = true;
+        if (mounted) setState(() {});
+        await endOffer();
+
+        isEndedAPILoading = false;
+        if (mounted) setState(() {});
+      },
     );
   }
 

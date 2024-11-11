@@ -22,6 +22,7 @@ class ProtectionPermission {
   static const String utility = "Utility";
   static const String chat = "Chat";
   static const String orders = "Orders";
+  static const String dispatch = "Dispatch";
   static const String superStore = "Super store";
   static const String servicesHub = "Services Hub";
   static const String send = "Send";

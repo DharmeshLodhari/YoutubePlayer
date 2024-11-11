@@ -203,6 +203,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
       },
       child: Scaffold(
         backgroundColor: lightGrey,
+        resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: _scaffoldBody(),
       ),

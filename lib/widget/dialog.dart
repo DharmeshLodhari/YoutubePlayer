@@ -6,6 +6,7 @@ import 'package:Slydo/widget/cutomized_alert/alert_style.dart';
 import 'package:Slydo/widget/cutomized_alert/border_dialog_button.dart';
 import 'package:Slydo/widget/cutomized_alert/customized_alert.dart';
 import 'package:Slydo/widget/cutomized_alert/customized_alert_column_button.dart';
+import 'package:Slydo/widget/cutomized_alert/customized_alert_verify_code.dart';
 import 'package:Slydo/widget/cutomized_alert/dailog_button_stateful.dart';
 import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
 import 'package:Slydo/widget/cutomized_alert/modified_customized_alert.dart';
@@ -765,6 +766,49 @@ void showUserLogoutCard({required BuildContext context}) {
       ),
     ),
   );
+}
+
+Future<bool?> showDialogBoxValidateCode(
+    {Widget? content,
+    required BuildContext context,
+    String? title,
+    String? description,
+    required String actionOneText,
+    bool firstActionPrimary = true,
+    String? image,
+    Color? actionOneBgColor,
+    Color? actionOneTextColor,
+    double? fontSize,
+    Function()? buttonOnPressed,
+    bool isOverlayTapDismiss = true,
+    bool isCloseIconShow = false,
+    RoundedBackgroundIcon? roundedBackgroundIcon}) {
+  return CustomizedAlertVerifyCode(
+    title: title,
+    content: content,
+    context: context,
+    desc: description,
+    roundedBackgroundIcon: roundedBackgroundIcon,
+    isCloseIconShow: isCloseIconShow,
+    style: AlertStyle(
+      isOverlayTapDismiss: isOverlayTapDismiss,
+      isCloseButton: false,
+    ),
+    buttons: [
+      DialogButton(
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? true : false);
+          if (buttonOnPressed != null) {
+            buttonOnPressed();
+          }
+        },
+        textColor: actionOneTextColor,
+        text: actionOneText,
+        fontSize: fontSize,
+        backgroundColor: actionOneBgColor,
+      ),
+    ],
+  ).show();
 }
 
 Future<bool> showInAppLocationAlertPopUp(

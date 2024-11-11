@@ -579,14 +579,15 @@ class _HomeState extends State<Home> {
         'ForReadPermission': '2',
       },
       {
+        'imagePath': 'home/package',
+        'title': ProtectionPermission.dispatch,
+        'ForReadPermission': '2',
+      },
+      {
         'imagePath': 'home/order',
         'title': ProtectionPermission.orders,
         'ForReadPermission': '2',
       },
-      // {
-      //   'imagePath': 'home/request',
-      //   'title': 'Dispatch',
-      // },
       {
         'imagePath': 'home/yarn',
         'title': ProtectionPermission.yarn,
@@ -719,10 +720,10 @@ class _HomeState extends State<Home> {
         hideBalance();
         Navigator.pushNamed(context, Routes.ACCOUNTS);
         break;
-      // case 'Dispatch':
-      //   hideBalance();
-      //   Navigator.pushNamed(context, Routes.DISPATCH);
-      //   break;
+      case ProtectionPermission.dispatch:
+        hideBalance();
+        Navigator.pushNamed(context, Routes.DISPATCH);
+        break;
       case ProtectionPermission.orders:
         hideBalance();
         Navigator.pushNamed(context, Routes.ORDER_LIST);
