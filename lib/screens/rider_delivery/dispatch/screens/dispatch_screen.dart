@@ -18,6 +18,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
   double _initialSheetChildSize = 0.0;
 
   bool isPackageReview = false;
+  bool isSelectedDestination = false;
 
   @override
   void initState() {
@@ -31,6 +32,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
     return ColorfulSafeArea(
       child: Scaffold(
         backgroundColor: white,
+        resizeToAvoidBottomInset: true,
         appBar: _buildAppBar() as PreferredSizeWidget?,
         body: _buildBody(),
       ),
@@ -67,15 +69,6 @@ class _DispatchScreenState extends State<DispatchScreen> {
       elevation: 0,
       actions: <Widget>[
         historyIcon(),
-        infoIcon(),
-        GestureDetector(
-          onTap: () {},
-          child: Image.asset(
-            "assets/images/cross_icon.png",
-            height: 34,
-            width: 34,
-          ),
-        ),
         const SizedBox(width: 10.0),
       ],
     );
@@ -83,28 +76,13 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget historyIcon() {
     return SizedBox(
-      height: 34,
-      width: 34,
+      height: 38,
+      width: 38,
       child: IconButton(
         icon: const Icon(
           Icons.history,
           color: Colors.black,
-          size: 20,
-        ),
-        onPressed: () async {},
-      ),
-    );
-  }
-
-  Widget infoIcon() {
-    return SizedBox(
-      height: 34,
-      width: 34,
-      child: IconButton(
-        icon: const Icon(
-          Icons.info_outlined,
-          color: Colors.black,
-          size: 20,
+          size: 24,
         ),
         onPressed: () async {},
       ),
@@ -128,20 +106,20 @@ class _DispatchScreenState extends State<DispatchScreen> {
             fit: BoxFit.fill,
           ),
         ),
-        // _buildPackageReview(),
-        // _buildSelectDestination(),
+        if (isPackageReview) _buildPackageReview(),
+        // if (isSelectedDestination) _buildSelectDestination(),
         // _buildNoVehicles(),
         // _buildSelectOption(),
         // _buildDestinationLocation(),
         // _buildRiderOption(),
         // _buildYouFare(),
         // _buildPaymentFailed(),
-        // _buildPaymentRetryProcess(),
+        if (isSelectedDestination) _buildPaymentRetryProcess(),
         // _buildArriving(),
         // _buildPartnerArrivingDetails(),
         // _buildArrivedRider(),
         // _buildOnTripRider(),
-        _buildOnTripMiles(),
+        // _buildOnTripMiles(),
       ],
     );
   }
@@ -182,7 +160,14 @@ class _DispatchScreenState extends State<DispatchScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildPackageLogo(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildPackageLogo(),
+                    _buildRightArrow(),
+                  ],
+                ),
                 _buildPackageReviewText(),
                 const SizedBox(height: 15),
                 _buildContent(),
@@ -194,22 +179,29 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildPackageLogo() {
-    return Row(
-      children: [
-        _buildLogo(),
-      ],
+  Widget _buildRightArrow() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isPackageReview = false;
+          isSelectedDestination = true;
+        });
+      },
+      child: const Icon(
+        Icons.keyboard_arrow_right_outlined,
+        size: 20,
+      ),
     );
   }
 
-  Widget _buildLogo() {
+  Widget _buildPackageLogo() {
     return Image.asset(
       "assets/images/package.png",
       fit: BoxFit.fill,
-      height: 100,
+      height: 80,
       width: 100,
       filterQuality: FilterQuality.high,
-      cacheHeight: 100,
+      cacheHeight: 80,
       cacheWidth: 100,
       frameBuilder: imageFrameBuilder,
       errorBuilder: (context, error, stackTrace) {
@@ -230,7 +222,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
     return Text(
       "Package Review",
       style: TextStyle(
-        color: black,
+        color: blackFont,
         fontSize: 16,
         fontWeight: FontWeight.w700,
         fontFamily: "Inter",
@@ -245,9 +237,9 @@ class _DispatchScreenState extends State<DispatchScreen> {
         Text(
           "For a successful delivery, make sure your package is :",
           style: TextStyle(
-            color: black,
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
+            color: blackFont,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
             fontFamily: "Inter",
           ),
         ),
@@ -258,9 +250,9 @@ class _DispatchScreenState extends State<DispatchScreen> {
               Text(
                 '\u2022',
                 style: TextStyle(
-                  color: black,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  color: blackFont,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
                   fontFamily: "Inter",
                 ),
               ),
@@ -268,8 +260,8 @@ class _DispatchScreenState extends State<DispatchScreen> {
               Text(
                 "20kg or less",
                 style: TextStyle(
-                  color: black,
-                  fontSize: 13,
+                  color: blackFont,
+                  fontSize: 14,
                   fontWeight: FontWeight.w400,
                   fontFamily: "Inter",
                 ),
@@ -284,9 +276,9 @@ class _DispatchScreenState extends State<DispatchScreen> {
               Text(
                 '\u2022',
                 style: TextStyle(
-                  color: black,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  color: blackFont,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
                   fontFamily: "Inter",
                 ),
               ),
@@ -294,8 +286,8 @@ class _DispatchScreenState extends State<DispatchScreen> {
               Text(
                 "Securely sealed and ready for pickup.",
                 style: TextStyle(
-                  color: black,
-                  fontSize: 13,
+                  color: blackFont,
+                  fontSize: 14,
                   fontWeight: FontWeight.w400,
                   fontFamily: "Inter",
                 ),
@@ -303,13 +295,13 @@ class _DispatchScreenState extends State<DispatchScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 10),
         Text(
           "Note : We don't deliver goods prohibited by law.",
           style: TextStyle(
-            color: black,
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
+            color: blackFont,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
             fontFamily: "Inter",
           ),
         ),
@@ -319,9 +311,9 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget _buildSelectDestination() {
     return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
+      initialChildSize: 0.50,
+      maxChildSize: 0.50,
+      minChildSize: 0.50,
       builder: (context, scrollController) => ClipRRect(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),

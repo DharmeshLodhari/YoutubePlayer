@@ -1,3 +1,4 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/cutomized_alert/alert_style.dart';
 import 'package:Slydo/widget/cutomized_alert/animation_transition.dart';
@@ -5,30 +6,32 @@ import 'package:Slydo/widget/cutomized_alert/constants.dart';
 import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:pinput/pinput.dart';
 
-class CustomizedAlert {
+class CustomizedAlertVerifyCode {
   final BuildContext context;
   final AlertStyle style;
-  final String? image;
   final String? title;
   final String? desc;
   final Widget? content;
   final List<DialogButton>? buttons;
   final Function? closeFunction;
   final RoundedBackgroundIcon? roundedBackgroundIcon;
-  final double? descriptionPadding;
+  TextEditingController? codeController;
+  final FocusNode _pinPutFocusNode = FocusNode();
+  final bool isCloseIconShow;
 
-  CustomizedAlert({
+  CustomizedAlertVerifyCode({
     required this.context,
     this.style = const AlertStyle(),
-    this.image,
     required this.title,
     this.roundedBackgroundIcon,
     this.desc,
     this.content,
     this.buttons,
     this.closeFunction,
-    this.descriptionPadding,
+    this.codeController,
+    this.isCloseIconShow = false,
   });
 
   /// Displays defined alert window
@@ -55,6 +58,27 @@ class CustomizedAlert {
 
   // Alert dialog content widget
   Widget _buildDialog() {
+    final defaultPinTheme = PinTheme(
+      height: 40,
+      width: 40,
+      margin: const EdgeInsets.only(right: 5),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(5),
+        ),
+        shape: BoxShape.rectangle,
+        border: Border.all(
+          color: darkGrey.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      textStyle: TextStyle(
+        fontSize: 35,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+        fontFamily: "Inter",
+      ),
+    );
     return Center(
       child: ConstrainedBox(
         constraints: style.constraints ??
@@ -62,7 +86,9 @@ class CustomizedAlert {
                 width: double.infinity, height: double.infinity),
         child: Center(
           child: SingleChildScrollView(
-            child: AlertDialog(
+            child: PopScope(
+              canPop: false,
+              child: AlertDialog(
                 insetPadding: EdgeInsets.zero,
                 backgroundColor: style.backgroundColor ?? white,
                 shape: style.alertBorder ?? _defaultShape(),
@@ -79,34 +105,47 @@ class CustomizedAlert {
                                 const SizedBox(
                                   height: 20,
                                 ),
-                                _getImage() ?? Container(),
+                                if (isCloseIconShow)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 10.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Icon(Icons.close),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 const SizedBox(
-                                  height: 20,
+                                  height: 10,
                                 ),
                                 Text(
                                   title ?? "",
                                   style: TextStyle(
-                                    color: blackFont,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: "Inter",
-                                    fontSize: 16.0,
-                                  ),
+                                      color: blackFont,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: "Inter",
+                                      fontSize: 16.0),
                                   textAlign: TextAlign.center,
                                 ),
-                                SizedBox(
-                                  height: image != null ? 15 : 20,
+                                const SizedBox(
+                                  height: 10,
                                 ),
                                 if (desc == null)
                                   Container()
                                 else
                                   Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: descriptionPadding ?? 40),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 40),
                                     child: Text(
                                       desc ?? "",
                                       style: TextStyle(
-                                        color: lightBlackFont,
-                                        fontSize: 14.0,
+                                        color: blackFont,
+                                        fontSize: 12.0,
                                         fontWeight: FontWeight.w400,
                                         fontFamily: "Inter",
                                       ),
@@ -114,7 +153,45 @@ class CustomizedAlert {
                                     ),
                                   ),
                                 const SizedBox(
-                                  height: 10,
+                                  height: 15,
+                                ),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: Pinput(
+                                    obscureText: true,
+                                    obscuringCharacter: '•',
+                                    showCursor: false,
+                                    validator: (val) => val!.length < 4
+                                        ? AppLocalization.of(context)!
+                                            .invalidPassword
+                                        : null,
+                                    length: 4,
+                                    focusNode: _pinPutFocusNode,
+                                    controller: codeController,
+                                    defaultPinTheme: defaultPinTheme,
+                                    focusedPinTheme: defaultPinTheme.copyWith(
+                                      decoration:
+                                          defaultPinTheme.decoration!.copyWith(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: navyBlue),
+                                      ),
+                                    ),
+                                    submittedPinTheme: defaultPinTheme.copyWith(
+                                      decoration:
+                                          defaultPinTheme.decoration!.copyWith(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: navyBlue),
+                                      ),
+                                    ),
+                                    errorPinTheme:
+                                        defaultPinTheme.copyBorderWith(
+                                      border:
+                                          Border.all(color: Colors.redAccent),
+                                    ),
+                                    pinAnimationType: PinAnimationType.scale,
+                                    textInputAction: TextInputAction.done,
+                                    keyboardType: TextInputType.number,
+                                  ),
                                 ),
                               ],
                             )
@@ -123,10 +200,11 @@ class CustomizedAlert {
                   ),
                 ),
                 contentPadding: style.buttonAreaPadding,
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                content: Column(
                   children: _getButtons(),
-                )),
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -144,55 +222,21 @@ class CustomizedAlert {
   List<Widget> _getButtons() {
     final List<Widget> expandedButtons = [];
     if (buttons != null) {
-      final btnOne = Expanded(
-        child: Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: buttons?[0] ?? Container(),
-        ),
+      final btnOne = Padding(
+        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+        child: buttons?[0] ?? Container(),
       );
       expandedButtons.add(btnOne);
       if ((buttons?.length ?? 0) > 1) {
-        final btnTwo = Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: buttons?[1] ?? Container(),
-          ),
+        final btnTwo = Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: buttons?[1] ?? Container(),
         );
         expandedButtons.add(btnTwo);
       }
     }
 
     return expandedButtons;
-  }
-
-// Returns alert image for icon
-  Widget? _getImage() {
-    return roundedBackgroundIcon ??
-        (image != null
-            ? ClipOval(
-                child: Image.network(
-                  image ?? "",
-                  height: 170,
-                  width: 170,
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.high,
-                  cacheHeight: 170,
-                  cacheWidth: 170,
-                  frameBuilder: imageFrameBuilder,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.network(
-                        defaultImage,
-                        colorBlendMode: BlendMode.darken,
-                        fit: BoxFit.fill,
-                        filterQuality: FilterQuality.high,
-                      ),
-                    );
-                  },
-                ),
-              )
-            : Container());
   }
 
 // Shows alert with selected animation

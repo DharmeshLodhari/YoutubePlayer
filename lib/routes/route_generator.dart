@@ -124,6 +124,7 @@ import 'package:Slydo/screens/review/main_review.dart';
 import 'package:Slydo/screens/review/screen/review_detail_screen.dart';
 import 'package:Slydo/screens/review/screen/review_list_screen.dart';
 import 'package:Slydo/screens/rider_delivery/dispatch/screens/cancellation_screen.dart';
+import 'package:Slydo/screens/rider_delivery/dispatch/screens/dispatch_screen.dart';
 import 'package:Slydo/screens/rider_delivery/dispatch/screens/your_trip_end_screen.dart';
 import 'package:Slydo/screens/rider_delivery/screens/delivery_completed.dart';
 import 'package:Slydo/screens/rider_delivery/screens/delivery_details.dart';
@@ -1994,7 +1995,15 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Discount
+      /// Dispatch
+      case Routes.DISPATCH:
+        return PageTransition(
+          child: const DispatchScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       case Routes.DISPATCH_ADDRESS:
         return PageTransition(
           child: DispatchAddress(arguments: settings.arguments),
