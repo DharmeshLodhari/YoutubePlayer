@@ -5,6 +5,7 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 
 class DispatchScreen extends StatefulWidget {
@@ -18,7 +19,10 @@ class _DispatchScreenState extends State<DispatchScreen> {
   double _initialSheetChildSize = 0.0;
 
   bool isPackageReview = false;
-  bool isSelectedDestination = false;
+  bool isSearchDestination = false;
+  bool isSelectDestination = false;
+  bool isLocationViaMap = false;
+  bool isConfirmPickupLocation = false;
 
   @override
   void initState() {
@@ -107,14 +111,15 @@ class _DispatchScreenState extends State<DispatchScreen> {
           ),
         ),
         if (isPackageReview) _buildPackageReview(),
-        // if (isSelectedDestination) _buildSelectDestination(),
-        // _buildNoVehicles(),
-        // _buildSelectOption(),
-        // _buildDestinationLocation(),
+        if (isSearchDestination) _buildSearchDestination(),
+        if (isSelectDestination) _buildSelectDestination(),
+        // _buildNoVeshicles(),
+        if (isLocationViaMap) _buildSelectOption(),
+        if (isConfirmPickupLocation) _buildDestinationLocation(),
         // _buildRiderOption(),
         // _buildYouFare(),
         // _buildPaymentFailed(),
-        if (isSelectedDestination) _buildPaymentRetryProcess(),
+        // _buildPaymentRetryProcess(),
         // _buildArriving(),
         // _buildPartnerArrivingDetails(),
         // _buildArrivedRider(),
@@ -184,7 +189,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       onTap: () {
         setState(() {
           isPackageReview = false;
-          isSelectedDestination = true;
+          isSearchDestination = true;
         });
       },
       child: const Icon(
@@ -309,11 +314,11 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildSelectDestination() {
+  Widget _buildSearchDestination() {
     return DraggableScrollableSheet(
-      initialChildSize: 0.50,
-      maxChildSize: 0.50,
-      minChildSize: 0.50,
+      initialChildSize: 0.25,
+      maxChildSize: 0.25,
+      minChildSize: 0.25,
       builder: (context, scrollController) => ClipRRect(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -321,13 +326,13 @@ class _DispatchScreenState extends State<DispatchScreen> {
         ),
         child: Container(
           color: white,
-          child: getSelectDestinationDetails(),
+          child: getSearchDestination(),
         ),
       ),
     );
   }
 
-  Widget getSelectDestinationDetails() {
+  Widget getSearchDestination() {
     return Container(
       padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
@@ -347,11 +352,6 @@ class _DispatchScreenState extends State<DispatchScreen> {
               children: [
                 _buildSelectDestinationText(),
                 _buildSearchBar(),
-                const SizedBox(height: 15),
-                _buildShowOnMapTextAndIcon(),
-                const SizedBox(height: 15),
-                _buildRecent(),
-                _buildLocationData(),
               ],
             ),
           ),
@@ -375,31 +375,188 @@ class _DispatchScreenState extends State<DispatchScreen> {
   Widget _buildSearchBar() {
     return CustomizedTextFormField(
       hintText: 'Search...',
-      suffixIcon: const Icon(
-        Icons.search,
+      suffixIcon: GestureDetector(
+        onTap: () {
+          setState(() {
+            isSearchDestination = false;
+            isSelectDestination = true;
+          });
+        },
+        child: const Icon(
+          Icons.search,
+        ),
       ),
       onChanged: (value) {},
     );
   }
 
-  Widget _buildShowOnMapTextAndIcon() {
-    return Row(
-      children: [
-        Image.asset(
-          "assets/images/location_pin.png",
-          width: 30,
-          height: 30,
+  Widget _buildSelectDestination() {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.60,
+      maxChildSize: 0.60,
+      minChildSize: 0.60,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
-        Text(
-          "Show on a map",
-          style: TextStyle(
-            color: navyBlue,
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            fontFamily: "Inter",
+        child: Container(
+          color: white,
+          child: getSelectDestination(),
+        ),
+      ),
+    );
+  }
+
+  Widget getSelectDestination() {
+    return Container(
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
           ),
-        ),
-      ],
+          const SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildAddressSelection(),
+                const SizedBox(height: 15),
+                _buildShowOnMapTextAndIcon(),
+                const SizedBox(height: 15),
+                _buildRecent(),
+                _buildLocationData(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddressSelection() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border:
+            Border.all(color: Colors.blue), // replace with navyBlue if defined
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Icon Section
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: SvgPicture.asset(
+              'assets/images/rider/ic_route.svg',
+              height: 80,
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          // Address List Section (Static items)
+          Expanded(
+            child: Column(
+              children: [
+                // First address item
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        '24 Bashir Musa Road, Agege',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
+                          "isForSelection": true,
+                        });
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.grey[200],
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: const Text('Select'),
+                    ),
+                  ],
+                ),
+                Divider(color: Colors.grey[300], thickness: 1),
+
+                // Second address item
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        '20, Pedro Street, Alausa, Ikeja',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
+                          "isForSelection": true,
+                        });
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.grey[200],
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: const Text('Select'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShowOnMapTextAndIcon() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isSelectDestination = false;
+          isLocationViaMap = true;
+        });
+      },
+      child: Row(
+        children: [
+          Image.asset(
+            "assets/images/location_pin.png",
+            width: 30,
+            height: 30,
+          ),
+          Text(
+            "Show on a map",
+            style: TextStyle(
+              color: navyBlue,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              fontFamily: "Inter",
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -624,7 +781,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                       "Bike",
                       style: TextStyle(
                         color: black,
-                        fontSize: 13,
+                        fontSize: 14,
                         fontFamily: "Inter",
                         fontWeight: FontWeight.w500,
                       ),
@@ -667,7 +824,12 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget _buildSelectPackageButton() {
     return CurvedButton(
-      onPressed: () {},
+      onPressed: () {
+        setState(() {
+          isLocationViaMap = false;
+          isConfirmPickupLocation = true;
+        });
+      },
       textColor: Colors.white,
       backgroundColor: navyBlue,
       text: "Select Package",
@@ -725,7 +887,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget _buildDestinationLocationText() {
     return Text(
-      "Destination location",
+      "Confirm Pickup Spot",
       style: TextStyle(
         color: black,
         fontSize: 16,
@@ -766,14 +928,22 @@ class _DispatchScreenState extends State<DispatchScreen> {
                   fontFamily: "Inter",
                 ),
               ),
-              Text(
-                "Select",
-                style: TextStyle(
-                  color: black,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: "Inter",
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
+                    "isForSelection": true,
+                  });
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.grey[200],
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
+                child: const Text('Select'),
               ),
             ],
           ),
@@ -784,10 +954,12 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget _buildConfirmDestinationButton() {
     return CurvedButton(
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).pushNamed(Routes.DELIVERY_DETAILS);
+      },
       textColor: Colors.white,
       backgroundColor: navyBlue,
-      text: "Confirm Destination",
+      text: "Proceed",
     );
   }
 

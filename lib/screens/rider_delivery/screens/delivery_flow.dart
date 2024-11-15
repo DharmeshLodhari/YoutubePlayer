@@ -19,16 +19,16 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class DeliveryDetails extends StatefulWidget {
+class DeliveryFlow extends StatefulWidget {
   final dynamic arguments;
 
-  const DeliveryDetails({super.key, this.arguments});
+  const DeliveryFlow({super.key, this.arguments});
 
   @override
-  State<DeliveryDetails> createState() => _DeliveryDetailsState();
+  State<DeliveryFlow> createState() => _DeliveryFlowState();
 }
 
-class _DeliveryDetailsState extends State<DeliveryDetails> {
+class _DeliveryFlowState extends State<DeliveryFlow> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? journeyId;

@@ -216,6 +216,8 @@ class Routes {
   static const String CUSTOM_CATEGORY = "/custom-Category";
   static const String DISPATCH = "/dispatch";
   static const String DISPATCH_ADDRESS = "/dispatch-address";
+  static const String DELIVERY_DETAILS = "/delivery-details";
+  static const String PAYMENT_OPTION = "/payment-option";
   static const String RIDER_JOB_DETAILS = "/rider-job-details";
   static const String TAKE_DELIVERY_PROOF = "/take-delivery-proof";
   static const String PREVIEW_DELIVERY_PROOF_SCREEN =

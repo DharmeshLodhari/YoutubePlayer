@@ -76,7 +76,7 @@ void main() async {
     AppConfig();
 
     /// ENABLE and DISABLE Logs
-    AppConfig.enableLogs.value = false;
+    AppConfig.enableLogs.value = true;
 
     getAppFeaturesFromServer();
     await FlutterDownloader.initialize();

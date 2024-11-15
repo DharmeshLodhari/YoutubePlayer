@@ -2608,6 +2608,13 @@ class AppLocalization {
     );
   }
 
+  String get pleaseEnterRecipientName {
+    return Intl.message(
+      "Please Enter Recipient Name",
+      name: "pleaseEnterRecipientName",
+    );
+  }
+
   String get pleaseEnterLabel {
     return Intl.message(
       "Please Enter Label",

@@ -370,11 +370,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : Column(
-            children: [
-              Expanded(child: _buildConnectionsList()),
-            ],
-          );
+        : _buildConnectionsList();
   }
 
   Widget getGroupDescription() {
@@ -447,6 +443,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           SlidableAutoCloseBehavior(
             closeWhenOpened: true,
             child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
               padding: const EdgeInsets.all(4),
               itemCount: groupDetail!.participants.length,
               itemBuilder: (BuildContext context, int index) {
@@ -667,12 +665,12 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       key: UniqueKey(),
       startActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.20,
+        extentRatio: 0.25,
         children: listActionSlideActions(user, index),
       ),
       endActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.20,
+        extentRatio: 0.25,
         children: listSecondaryActions(user, index),
       ),
       child: VerticalListItem(user, groupDetail),
