@@ -244,11 +244,12 @@ class _ChangePasswordState extends State<ChangePassword> {
         };
 
         showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => Center(
-                  child: CircularLoadingIndicator(),
-                ));
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => Center(
+            child: CircularLoadingIndicator(),
+          ),
+        );
 
         await UserAuth().changePassword(data).then((value) async {
           if (value.isNotEmpty) {

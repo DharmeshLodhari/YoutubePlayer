@@ -12,6 +12,11 @@ import 'package:Slydo/screens/business/screens/invoice_detail.dart';
 import 'package:Slydo/screens/business/screens/invoice_screen.dart';
 import 'package:Slydo/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/dashboard.dart';
+import 'package:Slydo/screens/dispatch/cancellation_screen.dart';
+import 'package:Slydo/screens/dispatch/delivery_details.dart';
+import 'package:Slydo/screens/dispatch/dispatch_screen.dart';
+import 'package:Slydo/screens/dispatch/payment_option.dart';
+import 'package:Slydo/screens/dispatch/your_trip_end_screen.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/home.dart';
 import 'package:Slydo/screens/messaging/chat/forms/add_media_to_chat_message.dart';
@@ -123,11 +128,8 @@ import 'package:Slydo/screens/review/forms/edit_user_review.dart';
 import 'package:Slydo/screens/review/main_review.dart';
 import 'package:Slydo/screens/review/screen/review_detail_screen.dart';
 import 'package:Slydo/screens/review/screen/review_list_screen.dart';
-import 'package:Slydo/screens/rider_delivery/dispatch/screens/cancellation_screen.dart';
-import 'package:Slydo/screens/rider_delivery/dispatch/screens/dispatch_screen.dart';
-import 'package:Slydo/screens/rider_delivery/dispatch/screens/your_trip_end_screen.dart';
 import 'package:Slydo/screens/rider_delivery/screens/delivery_completed.dart';
-import 'package:Slydo/screens/rider_delivery/screens/delivery_details.dart';
+import 'package:Slydo/screens/rider_delivery/screens/delivery_flow.dart';
 import 'package:Slydo/screens/rider_delivery/screens/delivery_history.dart';
 import 'package:Slydo/screens/rider_delivery/screens/earning_list.dart';
 import 'package:Slydo/screens/rider_delivery/screens/preview_delivery_proof_screen.dart';
@@ -2011,6 +2013,21 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+      case Routes.DELIVERY_DETAILS:
+        return PageTransition(
+          child: const DeliveryDetails(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.PAYMENT_OPTION:
+        return PageTransition(
+          child: const PaymentOption(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
 
       /// Custom Category
       case Routes.CUSTOM_CATEGORY:
@@ -2032,10 +2049,10 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Rider Dileviry
+      /// Rider Delivery
       case Routes.RIDER_JOB_DETAILS:
         return PageTransition(
-          child: DeliveryDetails(
+          child: DeliveryFlow(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

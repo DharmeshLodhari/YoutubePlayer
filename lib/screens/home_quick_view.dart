@@ -618,12 +618,12 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         NavigationUtil.push(context, screen: const MyServices());
         break;
       case ProtectionPermission.invoice:
-        if (appConfigurationModel?.enableInvoice == true) {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
-        } else {
-          showToast(message: 'Coming soon');
-        }
+        // if (appConfigurationModel?.enableInvoice == true) {
+        Navigator.pop(context);
+        Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
+        // } else {
+        //   showToast(message: 'Coming soon');
+        // }
         break;
       case ProtectionPermission.contract:
         if (appConfigurationModel?.enableContract == true) {
@@ -757,12 +757,12 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         // showToast(message: 'Coming soon');
         break;
       case ProtectionPermission.invoice:
-        if (appConfigurationModel?.enableInvoice == true) {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
-        } else {
-          showToast(message: 'Coming soon');
-        }
+        // if (appConfigurationModel?.enableInvoice == true) {
+        Navigator.pop(context);
+        Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
+        // } else {
+        //   showToast(message: 'Coming soon');
+        // }
         break;
       case ProtectionPermission.contract:
         if (appConfigurationModel?.enableContract == true) {
