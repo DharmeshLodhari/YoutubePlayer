@@ -6,6 +6,7 @@ import 'package:badges/badges.dart' as badges;
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sizer/sizer.dart';
 
 class DispatchScreen extends StatefulWidget {
@@ -17,7 +18,8 @@ class DispatchScreen extends StatefulWidget {
 
 class _DispatchScreenState extends State<DispatchScreen> {
   double _initialSheetChildSize = 0.0;
-
+  late CameraPosition _initialCameraPosition;
+  GoogleMapController? googleMapController;
   bool isPackageReview = false;
   bool isSearchDestination = false;
   bool isSelectDestination = false;
@@ -26,6 +28,8 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   @override
   void initState() {
+    _initialCameraPosition =
+    const CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
     isPackageReview = true;
     _initialSheetChildSize = 0.45;
     super.initState();
@@ -88,16 +92,31 @@ class _DispatchScreenState extends State<DispatchScreen> {
           color: Colors.black,
           size: 24,
         ),
-        onPressed: () async {},
+        onPressed: () async {
+          Navigator.of(context).pushNamed(Routes.DISPATCH_HISTORY);
+        },
       ),
+    );
+  }
+  Widget MapUI(){
+    return GoogleMap(
+      initialCameraPosition: _initialCameraPosition,
+      myLocationButtonEnabled: false,
+      zoomControlsEnabled: false,
+      onMapCreated: (controller) {
+        googleMapController = controller;
+      },
+   //   markers: getMarkers() as Set<Marker>,
+      //polylines: getPolylines(),
+      //circles: getCircles() as Set<Circle>,
     );
   }
 
   Widget _buildBody() {
     return Stack(
       children: [
-        // MapUI(),
-        Image.asset(
+         MapUI(),
+       /* Image.asset(
           "assets/images/map.png",
           height: double.infinity,
           width: double.infinity,
@@ -109,10 +128,10 @@ class _DispatchScreenState extends State<DispatchScreen> {
             "assets/images/taxi/route_map_image.png",
             fit: BoxFit.fill,
           ),
-        ),
+        ),*/
         if (isPackageReview) _buildPackageReview(),
         if (isSearchDestination) _buildSearchDestination(),
-        if (isSelectDestination) _buildSelectDestination(),
+        if (isSelectDestination) _buildConfirmDestinationView(),
         // _buildNoVeshicles(),
         if (isLocationViaMap) _buildSelectOption(),
         if (isConfirmPickupLocation) _buildDestinationLocation(),
@@ -193,7 +212,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
         });
       },
       child: const Icon(
-        Icons.keyboard_arrow_right_outlined,
+        Icons.close,
         size: 20,
       ),
     );
@@ -316,9 +335,9 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget _buildSearchDestination() {
     return DraggableScrollableSheet(
-      initialChildSize: 0.25,
-      maxChildSize: 0.25,
-      minChildSize: 0.25,
+      initialChildSize: 0.60,
+      maxChildSize: 0.60,
+      minChildSize: 0.60,
       builder: (context, scrollController) => ClipRRect(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -350,8 +369,39 @@ class _DispatchScreenState extends State<DispatchScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSelectDestinationText(),
-                _buildSearchBar(),
+                _buildSelectDestinationText("Select Pickup"),
+
+                const SizedBox(height: 8,),
+               Row(
+                 children: [
+                   _buildRecent(),
+                   const Spacer(),
+                   GestureDetector(
+                  //   onTap: seeAllGroupMember,
+                     child: Text(
+                       "See all",
+                       style: TextStyle(
+                           color: navyBlue,
+                           fontSize: 14,
+                           fontWeight: FontWeight.w500),
+                     ),
+                   ),
+                 ],
+               ),
+                const SizedBox(height: 20,),
+                _buildRecentSearchAddresses(),
+           //     _buildRecentSearchAddresses(),
+         //       _buildRecentSearchAddresses(),
+              const Spacer(),
+            CurvedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(Routes.SEARCH_ADDRESS);
+              },
+              textColor: Colors.white,
+              backgroundColor: navyBlue,
+              text: "Add a new address",
+            ),
+                const SizedBox(height: 20,),
               ],
             ),
           ),
@@ -360,21 +410,128 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildSelectDestinationText() {
+  Widget _buildRecentSearchAddresses(){
+    return GestureDetector(
+      onTap: (){
+        setState(() {
+          isSearchDestination = false;
+          isSelectDestination = true;
+
+        });
+      },
+      child: Container(
+        color: white,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Column(
+                children: [
+                  SvgPicture.asset(
+                    'assets/images/dispatch/user.svg',
+                    height: 24,
+                    fit: BoxFit.cover,
+                  ),
+                ],
+              ),
+              const SizedBox(width: 10,),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Home • No 5, Adetutu Street, Lagos",
+                      style: TextStyle(
+                        color: fontDarkGrey,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                    const SizedBox(height: 6,),
+                    Text(
+                      "Current Location",
+                      style: TextStyle(
+                        color: darkGrey,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: "Inter",
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10,),
+              Column(
+                children: [
+                  SvgPicture.asset(
+                    'assets/images/dispatch/ic_edit.svg',
+                    height: 24,
+                    fit: BoxFit.cover,
+                  ),
+                ],
+              ),
+
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectDestinationText(String text) {
     return Text(
-      "Select Destination",
+      text,
       style: TextStyle(
         color: black,
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
         fontFamily: "Inter",
       ),
     );
   }
 
   Widget _buildSearchBar() {
+    return GestureDetector(
+      onTap: (){
+        setState(() {
+          isSearchDestination = false;
+          isSelectDestination = true;
+        });
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 40,
+        decoration:new BoxDecoration(
+          border: Border.all(
+            color: darkGrey.withOpacity(0.5),
+            width: 1.0, // Border width
+          ),
+        ),
+        child:  Row(
+          children: [
+             const SizedBox(width: 10,),
+             Text('Search',
+             style: TextStyle(
+               color: darkGrey.withOpacity(0.5),
+               fontSize: 14,
+               fontWeight: FontWeight.w400,
+             ),
+             ),
+            const  Spacer(),
+            const  Icon(
+              Icons.search,
+            ),
+            const SizedBox(width: 10,),
+          ],
+        ),
+      ),
+    );
     return CustomizedTextFormField(
       hintText: 'Search...',
+      hasLabel: true,
       suffixIcon: GestureDetector(
         onTap: () {
           setState(() {
@@ -963,23 +1120,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildRiderOption() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getRiderOptionDetails(),
-        ),
-      ),
-    );
-  }
+
 
   Widget getRiderOptionDetails() {
     return Container(
@@ -1840,6 +1981,146 @@ class _DispatchScreenState extends State<DispatchScreen> {
         textColor: white,
         backgroundColor: mateRed,
         text: "Exit",
+      ),
+    );
+  }
+
+  Widget _buildConfirmDestinationView(){
+    double initialChildSize = 0.40;
+    double maxChildSize = 0.40;
+    double minChildSize = 0.40;
+    bool isKeyboardVisible =
+        MediaQuery.of(context).viewInsets.bottom > 0;
+    if (isKeyboardVisible) {
+      initialChildSize = 0.65;
+      maxChildSize = 0.65;
+      minChildSize = 0.40;
+    } else {
+      initialChildSize = 0.40;
+      maxChildSize = 0.40;
+      minChildSize = 0.40;
+    }
+    return DraggableScrollableSheet(
+      initialChildSize: initialChildSize,
+      maxChildSize: maxChildSize,
+      minChildSize: minChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: _buildSelectDestination_1(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectDestination_1(){
+    return Container(
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                _buildSelectDestinationText("Confirm Destination"),
+                const SizedBox(height: 40),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Icon Section
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: SvgPicture.asset(
+                        'assets/images/rider/ic_route.svg',
+                        height: 80,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+
+                    // Address List Section (Static items)
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'No 5, Adetutu Street, Lagos',
+                                  style: TextStyle(
+                                      color: fontDarkGrey,
+                                      fontFamily: 'Inter',
+                                      fontSize: 14),
+                                ),
+                              ),
+                              const SizedBox(width: 4,),
+                              GestureDetector(
+                               onTap: (){
+                                 Navigator.of(context).pushNamed(Routes.SEARCH_ADDRESS);
+                               },
+                                child: Text('Change',
+                                  style: TextStyle(
+                                      color: blackFont,
+                                      fontFamily: 'Inter',
+                                      fontSize: 12),),
+                              ),
+                            ],
+                          ),
+                          Divider(
+                            color: dividerColor,
+                          ),
+                          TextFormField(
+                           // initialValue: '101, Lagos-Ikorodu Expressway',
+                            autofocus: true,
+                            style: TextStyle(
+                                color: fontDarkGrey,
+                                fontFamily: 'Inter',
+                                fontSize: 14),
+                            decoration: InputDecoration(
+                              suffixIcon: Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: GestureDetector(
+                                  onTap: (){
+                                    Navigator.of(context).pushNamed(Routes.SEARCH_ADDRESS);
+                                  },
+                                  child: Text('Change',
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontFamily: 'Inter',
+                                        fontSize: 12),),
+                                ),
+                              ),
+                            ),
+                          ),
+
+
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                _buildConfirmDestinationButton(),
+              ],
+            ),
+          ),
+
+        ],
       ),
     );
   }

@@ -237,6 +237,11 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         'title': ProtectionPermission.servicesHub,
         'ForReadPermission': '2',
       },
+      {
+        'imagePath': 'home/package.png',
+        'title': ProtectionPermission.dispatch,
+        'ForReadPermission': '2',
+      },
     ];
     final List<Map<String, String>> create = [
       {
@@ -511,6 +516,19 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     );
   }
 
+  Widget _getImage(String imagePath){
+    if(imagePath.contains('.png')){
+      return Image.asset(
+        "assets/images/$imagePath",
+        height: 30,
+        width: 30,
+      );
+    }
+   return SvgPicture.asset(
+      imagePath.toSVG(),
+    );
+  }
+
   Widget shortcutView(
       String imagePath, String title, String forReadPermission) {
     return Container(
@@ -539,9 +557,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               isLockForRead: forReadPermission,
               child: Row(
                 children: [
-                  SvgPicture.asset(
-                    imagePath.toSVG(),
-                  ),
+                 _getImage(imagePath),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -711,6 +727,10 @@ class _HomeQuickViewState extends State<HomeQuickView> {
       case ProtectionPermission.servicesHub:
         Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
         break;
+      case ProtectionPermission.dispatch:
+        Navigator.pushNamed(context, Routes.DISPATCH);
+        break;
+
       default:
         // Handle the default case (if any)
         debugPrint('Tapped on an unknown shortcut');

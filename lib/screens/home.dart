@@ -579,7 +579,7 @@ class _HomeState extends State<Home> {
         'ForReadPermission': '2',
       },
       {
-        'imagePath': 'home/package',
+        'imagePath': 'home/package.png',
         'title': ProtectionPermission.dispatch,
         'ForReadPermission': '2',
       },
@@ -652,6 +652,19 @@ class _HomeState extends State<Home> {
     return _buildIconAndText(imagePath, title, forReadPermission);
   }
 
+  Widget _buildShortcutIcon(String imagePath){
+    if(imagePath.contains('.png')){
+      return Image.asset(
+        "assets/images/$imagePath",
+        height: 30,
+        width: 30,
+      );
+    }
+    return SvgPicture.asset(
+      imagePath.toSVG(),
+    );
+  }
+
   Widget _buildIconAndText(
       String imagePath, String title, String forReadPermission) {
     return title == ProtectionPermission.services
@@ -659,9 +672,8 @@ class _HomeState extends State<Home> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              SvgPicture.asset(
-                imagePath.toSVG(),
-              ),
+              _buildShortcutIcon(imagePath),
+
               const SizedBox(height: 10),
               Text(
                 title,
@@ -681,9 +693,7 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SvgPicture.asset(
-                  imagePath.toSVG(),
-                ),
+                _buildShortcutIcon(imagePath),
                 const SizedBox(height: 10),
                 Text(
                   title,
@@ -722,7 +732,10 @@ class _HomeState extends State<Home> {
         break;
       case ProtectionPermission.dispatch:
         hideBalance();
+       // Navigator.pushNamed(context, Routes.YOU_TRIP_END);
         Navigator.pushNamed(context, Routes.DISPATCH);
+      //  Navigator.of(context).pushNamed(Routes.DISPATCH_DONE);
+       // Navigator.pushNamed(context, Routes.SLYDER_ARRIVING);
         break;
       case ProtectionPermission.orders:
         hideBalance();

@@ -66,10 +66,12 @@ Color orange = HexColor("#F08770");
 Color darkRed = HexColor("#33FF0000");
 Color bgLightGrey = HexColor("#E4E7EC");
 Color bgLightPink = HexColor("#FEF1F5");
+Color green = HexColor("#0F973D");
 
 Color boxShadow = const Color.fromARGB(51, 50, 55, 140);
 Color boxShadowTwo = HexColor("#32378C").withOpacity(0.07);
 Color boxBorderColor = HexColor("#F7F9FC");
+Color bgGreyColor = HexColor("#F9FAFB");
 
 // Define your custom colors
 const Map<int, Color> navyBlueColorShades = {

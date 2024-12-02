@@ -1,3 +1,6 @@
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/dispatch/payment_confirmation_screen.dart';
+import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
@@ -162,6 +165,17 @@ class _PaymentOptionState extends State<PaymentOption> {
   }
 
   Future<void> placeOrder(int? totalAmount) async {
+    /*Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => const PaymentLoadingScreen(
+            text: 'Payment Processing......',
+            imagePath: 'assets/images/app_logo.png',
+          )),
+    );
+
+    await Future.delayed(Duration(seconds: 5),);*/
+    Navigator.of(context).pushNamed(Routes.PAYMENT_CONFIRMATION);
     // if (!isOrderLoading) {
     //   isOrderLoading = true;
     //   if (mounted) setState(() {});

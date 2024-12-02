@@ -14,8 +14,14 @@ import 'package:Slydo/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/dispatch/cancellation_screen.dart';
 import 'package:Slydo/screens/dispatch/delivery_details.dart';
+import 'package:Slydo/screens/dispatch/dispatch_history.dart';
 import 'package:Slydo/screens/dispatch/dispatch_screen.dart';
+import 'package:Slydo/screens/dispatch/driver_arriving_screen.dart';
+import 'package:Slydo/screens/dispatch/payment_confirmation_screen.dart';
 import 'package:Slydo/screens/dispatch/payment_option.dart';
+import 'package:Slydo/screens/dispatch/search_address.dart';
+import 'package:Slydo/screens/dispatch/search_rider_screen.dart';
+import 'package:Slydo/screens/dispatch/search_vehicle.dart';
 import 'package:Slydo/screens/dispatch/your_trip_end_screen.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/home.dart';
@@ -2313,6 +2319,49 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+      case Routes.PAYMENT_CONFIRMATION:
+        return PageTransition(
+          child: const PaymentConfirmationScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.SEARCH_RIDER:
+        return PageTransition(
+          child: const SearchingRiderScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.SLYDER_ARRIVING:
+        return PageTransition(
+          child: const DriverArrivingScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.SEARCH_ADDRESS:
+        return PageTransition(
+          child: const SearchAddressScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.DISPATCH_HISTORY:
+        return PageTransition(
+          child: const DispatchHistoryScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.FIND_VEHICLE:
+        return PageTransition(
+          child: const FindVehicleScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();

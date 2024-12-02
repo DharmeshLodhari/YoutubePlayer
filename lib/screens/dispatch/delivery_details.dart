@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -7,6 +9,7 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 
 class DeliveryDetails extends StatefulWidget {
   const DeliveryDetails({super.key});
@@ -16,6 +19,7 @@ class DeliveryDetails extends StatefulWidget {
 }
 
 class _DeliveryDetailsState extends State<DeliveryDetails> {
+  String? _imagePath = '';
   @override
   Widget build(BuildContext context) {
     return ColorfulSafeArea(
@@ -72,11 +76,12 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             ),
             _buildProductMeasurement(),
             const SizedBox(
-              height: 10,
+              height: 20,
             ),
             _buildUploadPackageImage(),
-            const SizedBox(
-              height: 15,
+            _viewPackageImage(),
+           /* const SizedBox(
+              height: 20,
             ),
             _buildRecipientName(),
             const SizedBox(
@@ -90,11 +95,19 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             const SizedBox(
               height: 10,
             ),
-            _buildItemDescription(),
+
+
+
             const SizedBox(
               height: 10,
             ),
             _buildPinConfirmation(),
+
+            */
+            const SizedBox(
+              height: 10,
+            ),
+            _buildItemDescription(),
             const SizedBox(
               height: 20,
             ),
@@ -110,18 +123,18 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         border: Border.all(
-            color: greySecondaryYarn), // replace with navyBlue if defined
+            color: bgGreyColor), // replace with navyBlue if defined
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Icon Section
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: SvgPicture.asset(
               'assets/images/rider/ic_route.svg',
-              height: 80,
+              height: 110,
               fit: BoxFit.cover,
             ),
           ),
@@ -132,38 +145,54 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Pick Up',
+                  'Prineygladhair',
                   style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w600,
                     fontFamily: "Inter",
-                    fontSize: 12,
+                    fontSize: 16,
                   ),
                 ),
                 const SizedBox(
                   height: 5,
                 ),
                 Text(
-                  '24 Bashir Musa Road, Agege',
+                  '+234 8179882345',
                   style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w400,
                     fontFamily: "Inter",
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                 ),
-                Divider(color: Colors.grey[300], thickness: 1),
                 Text(
-                  'Destination',
+                  '24 Bashir Musa Road, Agege TT house, Unit 4',
                   style: TextStyle(
                     color: blackFont,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     fontFamily: "Inter",
                     fontSize: 12,
                   ),
                 ),
-                const SizedBox(
-                  height: 5,
+               const SizedBox(height: 20,),
+               // Divider(color: Colors.grey[300], thickness: 1),
+                Text(
+                  'Jacob',
+                  style:TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Inter",
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  '+234 8034771077',
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "Inter",
+                    fontSize: 12,
+                  ),
                 ),
                 Text(
                   '20, Pedro Street, Alausa, Ikeja',
@@ -171,9 +200,10 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                     color: blackFont,
                     fontWeight: FontWeight.w400,
                     fontFamily: "Inter",
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                 ),
+
               ],
             ),
           ),
@@ -187,10 +217,20 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Package Measurement',
+          'Package Details',
           style: TextStyle(
             color: blackFont,
             fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 8,),
+        Text(
+          'Package Measurement (Optional)',
+          style: TextStyle(
+            color: lightBlackFont,
+            fontWeight: FontWeight.w500,
             fontFamily: "Inter",
             fontSize: 14,
           ),
@@ -249,17 +289,67 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       ],
     );
   }
+  void _pickBlogImage({Function(String image)? imagePickedCallBack}) async {
+    final String? croppedImage = await getFile(context);
+
+    if (imagePickedCallBack != null && croppedImage != null) {
+      imagePickedCallBack(croppedImage);
+    } else {
+      if (croppedImage != null) {
+        setState(() {
+          _imagePath = croppedImage;
+          //isImagePicked = true;
+
+        });
+      }
+    }
+  }
 
   Widget _buildUploadPackageImage() {
+    if(_imagePath!.isNotEmpty){
+      return Container();
+    }
     return GestureDetector(
-      onTap: () {
+      onTap: () async{
         // Handle image upload action
+        _pickBlogImage();
+
       },
-      child: SvgPicture.asset(
-        'assets/images/upload_package_Image.svg',
-        height: 80,
-        fit: BoxFit.fill,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: SvgPicture.asset(
+          'assets/images/upload_package_Image.svg',
+          height: 90,
+          fit: BoxFit.fill,
+        ),
       ),
+    );
+  }
+
+  Widget _viewPackageImage(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Package Image',
+          style:TextStyle(
+            color: lightBlackFont,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: 10,),
+        if(_imagePath!.isNotEmpty)
+        Image.file(
+          File(_imagePath!),
+          width: 160,
+          height: 100,
+          fit: BoxFit.cover,
+        ),
+        const SizedBox(height: 10,),
+
+      ],
     );
   }
 
@@ -401,11 +491,11 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildConfirmDetailsButton() {
     return CurvedButton(
       onPressed: () {
-        Navigator.of(context).pushNamed(Routes.PAYMENT_OPTION);
+        Navigator.of(context).pushNamed(Routes.FIND_VEHICLE);
       },
       textColor: Colors.white,
       backgroundColor: navyBlue,
-      text: "Confirm Details  (Pay ₦1,000)",
+      text: "Confirm",
     );
   }
 }

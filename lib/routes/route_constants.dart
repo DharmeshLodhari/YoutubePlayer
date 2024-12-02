@@ -256,4 +256,11 @@ class Routes {
   static const String PRODUCT_AND_SERVICE_SOCIAL_MEDIA =
       "/product-and-service-social-media";
   static const String CURRENCY_LIST = "/currency-list";
+  static const String PAYMENT_CONFIRMATION = "/payment-confirmation";
+  static const String SEARCH_RIDER = "/search-rider";
+  static const String SLYDER_ARRIVING = "/slyder-arriving";
+  static const String DISPATCH_DONE = "/dispatch-done";
+  static const String SEARCH_ADDRESS = "/search-address";
+  static const String DISPATCH_HISTORY = "/dispatch-history";
+  static const String FIND_VEHICLE = "/find-vehicle";
 }
