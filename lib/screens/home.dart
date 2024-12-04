@@ -732,10 +732,7 @@ class _HomeState extends State<Home> {
         break;
       case ProtectionPermission.dispatch:
         hideBalance();
-       // Navigator.pushNamed(context, Routes.YOU_TRIP_END);
         Navigator.pushNamed(context, Routes.DISPATCH);
-      //  Navigator.of(context).pushNamed(Routes.DISPATCH_DONE);
-       // Navigator.pushNamed(context, Routes.SLYDER_ARRIVING);
         break;
       case ProtectionPermission.orders:
         hideBalance();

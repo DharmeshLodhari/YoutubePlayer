@@ -105,7 +105,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
             */
             const SizedBox(
-              height: 10,
+              height: 20,
             ),
             _buildItemDescription(),
             const SizedBox(
@@ -327,6 +327,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   }
 
   Widget _viewPackageImage(){
+    if(_imagePath!.isEmpty){
+      return Container();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -341,13 +344,31 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         ),
         const SizedBox(height: 10,),
         if(_imagePath!.isNotEmpty)
-        Image.file(
-          File(_imagePath!),
-          width: 160,
-          height: 100,
-          fit: BoxFit.cover,
+        Container(
+          alignment: Alignment.center,
+          child: Image.file(
+            File(_imagePath!),
+            width: 160,
+            height: 100,
+            fit: BoxFit.cover,
+          ),
         ),
         const SizedBox(height: 10,),
+        InkWell(
+          onTap: (){
+            _pickBlogImage();
+          },
+          child: Text(
+            'Change Image',
+            style:TextStyle(
+              color: navyBlue,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+              fontSize: 14,
+            ),
+          ),
+        ),
+
 
       ],
     );

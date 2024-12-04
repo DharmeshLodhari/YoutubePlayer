@@ -113,6 +113,7 @@ dependencies:
   path_provider: ^2.1.4
   number_to_character: ^0.0.12
   google_places_flutter: ^2.0.9
+  google_maps_directions: ^0.0.4
 
 dependency_overrides:
   js: ^0.7.1

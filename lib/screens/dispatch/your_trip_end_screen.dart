@@ -21,8 +21,9 @@ class _YourTripEndScreenState extends State<YourTripEndScreen> {
         body: Column(
           children: [
             _buildYourTripEndImageAndText(),
-            const SizedBox(height: 40),
+            const Spacer(),
             _buildOkButton(),
+            const SizedBox(height: 20,),
           ],
         ),
       ),
@@ -60,111 +61,115 @@ class _YourTripEndScreenState extends State<YourTripEndScreen> {
             "assets/images/white_background.png",
           ),
         ),
-        Column(
-          children: [
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              elevation: 5,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  color: naturalGreen,
-                  child: Image.asset(
-                    "assets/images/check_icon.png",
-                    width: 24,
-                    height: 24,
+        Expanded(
+          child: Column(
+            children: [
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 5,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    color: navyBlue,
+                    child: Image.asset(
+                      "assets/images/check_icon.png",
+                      width: 24,
+                      height: 24,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 36),
-            Text(
-              "Your trip has ended",
-              style: TextStyle(
-                color: black,
-                fontWeight: FontWeight.w700,
-                fontFamily: "Inter",
-                fontSize: 24,
-              ),
-            ),
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: BorderSide(
-                  color: Colors.grey.shade200,
+              const SizedBox(height: 36),
+              Text(
+                "Your delivery is Successful",
+                style: TextStyle(
+                  color: black,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: "Inter",
+                  fontSize: 20,
                 ),
               ),
-              margin: const EdgeInsets.only(left: 50, right: 50, top: 20),
-              elevation: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "11:24",
-                          style: TextStyle(
-                            color: black,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: "Inter",
-                            fontSize: 13,
+
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: Colors.grey.shade200,
+                  ),
+                ),
+                margin: const EdgeInsets.only(left: 50, right: 50, top: 20),
+                elevation: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "11:24",
+                            style: TextStyle(
+                              color: black,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: "Inter",
+                              fontSize: 13,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 25),
-                        Text(
-                          "11:38",
-                          style: TextStyle(
-                            color: black,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: "Inter",
-                            fontSize: 13,
+                          const SizedBox(height: 25),
+                          Text(
+                            "11:38",
+                            style: TextStyle(
+                              color: black,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: "Inter",
+                              fontSize: 13,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Image.asset(
-                        "assets/images/ic_route_icon.png",
-                        width: 16,
-                        height: 65,
+                        ],
                       ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "24 Bashir Musa Road, Agege",
-                          style: TextStyle(
-                            color: black,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: "Inter",
-                            fontSize: 13,
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Image.asset(
+                          "assets/images/ic_route_icon.png",
+                          width: 16,
+                          height: 65,
                         ),
-                        const SizedBox(height: 25),
-                        Text(
-                          "20, Pedro Street, Alausa, Ikeja",
-                          style: TextStyle(
-                            color: black,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: "Inter",
-                            fontSize: 13,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "24 Bashir Musa Road, Agege",
+                            style: TextStyle(
+                              color: black,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: "Inter",
+                              fontSize: 13,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(height: 25),
+                          Text(
+                            "20, Pedro Street, Alausa, Ikeja",
+                            style: TextStyle(
+                              color: black,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: "Inter",
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+
+            ],
+          ),
         ),
       ],
     );

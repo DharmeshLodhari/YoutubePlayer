@@ -6,6 +6,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class PaymentOption extends StatefulWidget {
   const PaymentOption({super.key});
@@ -16,6 +17,16 @@ class PaymentOption extends StatefulWidget {
 
 class _PaymentOptionState extends State<PaymentOption> {
   double _initialSheetChildSize = 0.25;
+  late CameraPosition _initialCameraPosition;
+  GoogleMapController? googleMapController;
+
+  @override
+  void initState() {
+    _initialCameraPosition =
+    const CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
+    super.initState();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,23 +71,21 @@ class _PaymentOptionState extends State<PaymentOption> {
     );
   }
 
+  Widget MapUI(){
+    return GoogleMap(
+      initialCameraPosition: _initialCameraPosition,
+      myLocationButtonEnabled: false,
+      zoomControlsEnabled: false,
+      onMapCreated: (controller) {
+        googleMapController = controller;
+      },
+
+    );
+  }
   Widget _buildBody() {
     return Stack(
       children: [
-        // MapUI(),
-        Image.asset(
-          "assets/images/map.png",
-          height: double.infinity,
-          width: double.infinity,
-          fit: BoxFit.fill,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(50.0),
-          child: Image.asset(
-            "assets/images/taxi/route_map_image.png",
-            fit: BoxFit.fill,
-          ),
-        ),
+         MapUI(),
         _buildPaymentBottomSheet(),
       ],
     );
@@ -131,15 +140,24 @@ class _PaymentOptionState extends State<PaymentOption> {
 
   Widget _buildPaymentDetails() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Text(
-        "You are about to make a payment of ₦1000 for this delivery ",
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: RichText(
         textAlign: TextAlign.center,
-        style: TextStyle(
-          color: black,
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          fontFamily: "Inter",
+        text: TextSpan(
+
+          style: TextStyle(
+            color: black,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              fontFamily: "Inter",), // Default color
+          children: <TextSpan>[
+            TextSpan(text: 'You are about to make a payment of '),
+            TextSpan(
+              text: '₦1000',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black), // Bold and black color
+            ),
+            TextSpan(text: ' for this delivery'),
+          ],
         ),
       ),
     );

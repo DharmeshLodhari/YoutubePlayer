@@ -1,8 +1,10 @@
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sizer/sizer.dart';
 class FindVehicleScreen extends StatefulWidget {
   const FindVehicleScreen({super.key});
 
@@ -17,6 +19,7 @@ class _FindVehicleScreenState extends State<FindVehicleScreen> {
   List<VehicleDetails> vehicleList = [];
   List<PaymentOptions1> paymetnOptionList = [];
   int? selectIndex;
+  bool? showPaymentOption =false;
   @override
   void initState() {
     _initialCameraPosition =
@@ -69,7 +72,9 @@ class _FindVehicleScreenState extends State<FindVehicleScreen> {
     return Stack(
       children: [
         MapUI(),
+        if(!showPaymentOption!)
         _buildVehicleOption(),
+        if(showPaymentOption!)
         _buildPaymentOption(),
       ],
     );
@@ -112,7 +117,12 @@ class _FindVehicleScreenState extends State<FindVehicleScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: CurvedButton(
             onPressed: () {
-              //Navigator.of(context).pushNamed(Routes.DELIVERY_DETAILS);
+              if(selectIndex != null)
+              {
+                showPaymentOption = true;
+                setState(() {});
+              }
+
             },
             textColor: Colors.white,
             backgroundColor: navyBlue,
@@ -222,10 +232,20 @@ class _FindVehicleScreenState extends State<FindVehicleScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              Container(
+                height: 2,
+                width: 12.0.w,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  color: greyBorderColor,
+                ),
+              ),
+              const SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.only(left: 4),
+                padding: const EdgeInsets.only(left: 14),
                 child: _buildText("Choose Payment Method"),
               ),
+             // const SizedBox(height: 10,),
               _buildPaymentOptionList(),
               const SizedBox(height: 10,),
 
@@ -242,6 +262,8 @@ class _FindVehicleScreenState extends State<FindVehicleScreen> {
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         return Container(
+          padding: EdgeInsets.all(10),
+          margin: EdgeInsets.all(10),
           decoration:new BoxDecoration(
             borderRadius: BorderRadius.circular(0),
             border: Border.all(
@@ -249,11 +271,50 @@ class _FindVehicleScreenState extends State<FindVehicleScreen> {
               width: 1.0, // Border width
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Image.asset('assets/images/app_logo_navyBlue.png'),
-            ],
+          child: GestureDetector(
+            onTap: (){
+              Navigator.of(context).pushNamed(Routes.PAYMENT_OPTION);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Image.asset('assets/images/app_logo_navyBlue.png',
+                height: 24,
+                  width: 24,
+                ),
+                const SizedBox(width: 10,),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        paymetnOptionList[index].title!,
+                        style: TextStyle(
+                          color: black,
+                          fontSize: 14,
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        paymetnOptionList[index].subTitle!,
+                        style: TextStyle(
+                          color: black,
+                          fontSize: 12,
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                Icon(Icons.arrow_forward_ios
+                )
+              ],
+            ),
           ),
         );
       },
@@ -264,7 +325,7 @@ class _FindVehicleScreenState extends State<FindVehicleScreen> {
       text,
       style: TextStyle(
         color: black,
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: FontWeight.w600,
         fontFamily: "Inter",
       ),
@@ -275,6 +336,8 @@ class _FindVehicleScreenState extends State<FindVehicleScreen> {
       vehicleList[i].isSelected = false;
     }
     vehicleList[index].isSelected = true;
+    selectIndex = index;
+
     setState(() {
 
     });

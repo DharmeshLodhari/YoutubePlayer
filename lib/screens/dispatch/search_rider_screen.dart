@@ -2,11 +2,21 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sizer/sizer.dart';
 class SearchingRiderScreen extends StatelessWidget {
   const SearchingRiderScreen({super.key});
 
+  void _gotoNextScreen(BuildContext context){
+    Future.delayed(Duration(seconds: 5),(){
+      Navigator.of(context).pop();
+      Navigator.of(context).pushNamed(Routes.SLYDER_ARRIVING);
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    _gotoNextScreen(context);
     return  Scaffold(
       body: Container(
         color: blackFont,
@@ -64,56 +74,62 @@ class SearchingRiderScreen extends StatelessWidget {
     );
   }
   Widget _buildAddressSelection(BuildContext context) {
-    return InkWell(
-      onTap: (){
-        Navigator.of(context).pop();
-        Navigator.of(context).pushNamed(Routes.SLYDER_ARRIVING);
-      },
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          border:
-          Border.all(color: Colors.blue), // replace with navyBlue if defined
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Icon Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: SvgPicture.asset(
-                'assets/images/rider/ic_route.svg',
-                height: 70,
-                fit: BoxFit.cover,
-              ),
-            ),
+    return Container(
+      padding: const EdgeInsets.only(left: 10, right: 10, top: 8),
 
-            // Address List Section (Static items)
-            Expanded(
-              child: Column(
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Card(
+            child: Container(
+              padding: EdgeInsets.all(8.0),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
-                  Text(
-                    '24 Bashir Musa Road, Agege',
-                    style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14),
+                  // Icon Section
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: SvgPicture.asset(
+                      'assets/images/rider/ic_route.svg',
+                      height: 70,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  const SizedBox(height: 30,),
-
-                  Text(
-                    '20, Pedro Street, Alausa, Ikeja',
-                    style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+              
+                        Text(
+                          '24 Bashir Musa Road, Agege',
+                          style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 14),
+                        ),
+                        const SizedBox(height: 30,),
+              
+                        Text(
+                          '20, Pedro Street, Alausa, Ikeja',
+                          style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 14),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -389,10 +389,20 @@ class _DispatchScreenState extends State<DispatchScreen> {
                  ],
                ),
                 const SizedBox(height: 20,),
-                _buildRecentSearchAddresses(),
+                Expanded(
+                  child: Container(
+                    child: ListView.builder(
+                        itemCount: 2,
+                        shrinkWrap: true,
+                        itemBuilder: (context,index){
+                      return _buildRecentSearchAddresses();
+                    }),
+                  ),
+                ),
+
            //     _buildRecentSearchAddresses(),
          //       _buildRecentSearchAddresses(),
-              const Spacer(),
+             // const Spacer(),
             CurvedButton(
               onPressed: () {
                 Navigator.of(context).pushNamed(Routes.SEARCH_ADDRESS);
@@ -463,14 +473,15 @@ class _DispatchScreenState extends State<DispatchScreen> {
                 ),
               ),
               const SizedBox(width: 10,),
-              Column(
-                children: [
-                  SvgPicture.asset(
-                    'assets/images/dispatch/ic_edit.svg',
-                    height: 24,
-                    fit: BoxFit.cover,
-                  ),
-                ],
+              GestureDetector(
+                onTap: (){
+                  Navigator.of(context).pushNamed(Routes.ADD_NEW_ADDRESS);
+                },
+                child: SvgPicture.asset(
+                  'assets/images/dispatch/ic_edit.svg',
+                  height: 24,
+                  fit: BoxFit.cover,
+                ),
               ),
 
 

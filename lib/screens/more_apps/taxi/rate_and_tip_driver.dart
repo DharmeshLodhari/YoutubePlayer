@@ -70,7 +70,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 100),
+          const SizedBox(height: 50),
           getRatingUI(),
           const SizedBox(height: 40),
           getTipUI(),
@@ -98,7 +98,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
               child: Icon(
                 SlydoAppIcon.star,
                 size: 38,
-                color: rating >= 1 ? navyBlue : dividerColor,
+                color: rating >= 1 ? ratingStarColor : greyBorderColor,
               ),
             ),
             const SizedBox(width: 10),
@@ -110,7 +110,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
               child: Icon(
                 SlydoAppIcon.star,
                 size: 38,
-                color: rating >= 2 ? navyBlue : dividerColor,
+                color: rating >= 2 ? ratingStarColor : greyBorderColor,
               ),
             ),
             const SizedBox(width: 10),
@@ -122,7 +122,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
               child: Icon(
                 SlydoAppIcon.star,
                 size: 38,
-                color: rating >= 3 ? navyBlue : dividerColor,
+                color: rating >= 3 ? ratingStarColor : greyBorderColor,
               ),
             ),
             const SizedBox(width: 10),
@@ -134,7 +134,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
               child: Icon(
                 SlydoAppIcon.star,
                 size: 38,
-                color: rating >= 4 ? navyBlue : dividerColor,
+                color: rating >= 4 ? ratingStarColor : greyBorderColor,
               ),
             ),
             const SizedBox(width: 10),
@@ -146,7 +146,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
               child: Icon(
                 SlydoAppIcon.star,
                 size: 38,
-                color: rating >= 5 ? navyBlue : dividerColor,
+                color: rating >= 5 ? ratingStarColor : greyBorderColor,
               ),
             ),
           ],
@@ -165,13 +165,22 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
 
     return Column(
       children: [
-        ClipRRect(
+      /*  ClipRRect(
           borderRadius: BorderRadius.circular(50),
           child: CachedNetworkImage(
             imageUrl: userBloc.user.avatar!,
             height: 80,
             width: 80,
             fit: BoxFit.fill,
+          ),
+        ),*/
+        ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: Image.asset(
+            'assets/images/dispatch/dummy_driver_pic.jpeg', // Replace with the correct path to your asset image
+            height: 80,
+            width: 80,
+            fit: BoxFit.cover,
           ),
         ),
         const SizedBox(height: 40),
@@ -368,7 +377,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
         Navigator.of(context).pushNamed("/payment-options");
       },
       textColor: Colors.white,
-      text: "Pay",
+      text: "Submit",
     );
   }
 

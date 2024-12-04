@@ -72,6 +72,7 @@ Color boxShadow = const Color.fromARGB(51, 50, 55, 140);
 Color boxShadowTwo = HexColor("#32378C").withOpacity(0.07);
 Color boxBorderColor = HexColor("#F7F9FC");
 Color bgGreyColor = HexColor("#F9FAFB");
+Color ratingStarColor = HexColor("#FFF5B546");
 
 // Define your custom colors
 const Map<int, Color> navyBlueColorShades = {

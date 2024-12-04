@@ -48,6 +48,7 @@ class PaymentConfirmationScreen extends StatelessWidget {
              const Spacer(),
              CurvedButton(
             onPressed: () {
+            Navigator.pop(context);
           Navigator.of(context).pushNamed(Routes.SEARCH_RIDER);
       },
         textColor: Colors.white,

@@ -12,8 +12,10 @@ import 'package:Slydo/screens/business/screens/invoice_detail.dart';
 import 'package:Slydo/screens/business/screens/invoice_screen.dart';
 import 'package:Slydo/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/dashboard.dart';
+import 'package:Slydo/screens/dispatch/add_address.dart';
 import 'package:Slydo/screens/dispatch/cancellation_screen.dart';
 import 'package:Slydo/screens/dispatch/delivery_details.dart';
+import 'package:Slydo/screens/dispatch/dispatch_cancel.dart';
 import 'package:Slydo/screens/dispatch/dispatch_history.dart';
 import 'package:Slydo/screens/dispatch/dispatch_screen.dart';
 import 'package:Slydo/screens/dispatch/driver_arriving_screen.dart';
@@ -2357,6 +2359,20 @@ class RouteGenerator {
       case Routes.FIND_VEHICLE:
         return PageTransition(
           child: const FindVehicleScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.ADD_NEW_ADDRESS:
+        return PageTransition(
+          child: const AddAddressScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.DISPATCH_CANCEL:
+        return PageTransition(
+          child: const DisPatchCancelScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

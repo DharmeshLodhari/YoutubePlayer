@@ -263,4 +263,6 @@ class Routes {
   static const String SEARCH_ADDRESS = "/search-address";
   static const String DISPATCH_HISTORY = "/dispatch-history";
   static const String FIND_VEHICLE = "/find-vehicle";
+  static const String ADD_NEW_ADDRESS = "/add-new-address";
+  static const String DISPATCH_CANCEL = "/dispatch-cancel";
 }
