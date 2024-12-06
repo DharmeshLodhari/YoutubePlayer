@@ -24,6 +24,7 @@ import 'package:Slydo/screens/dispatch/payment_option.dart';
 import 'package:Slydo/screens/dispatch/search_address.dart';
 import 'package:Slydo/screens/dispatch/search_rider_screen.dart';
 import 'package:Slydo/screens/dispatch/search_vehicle.dart';
+import 'package:Slydo/screens/dispatch/trip_details.dart';
 import 'package:Slydo/screens/dispatch/your_trip_end_screen.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/home.dart';
@@ -2365,7 +2366,9 @@ class RouteGenerator {
         );
       case Routes.ADD_NEW_ADDRESS:
         return PageTransition(
-          child: const AddAddressScreen(),
+          child:  AddAddressScreen(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -2373,6 +2376,13 @@ class RouteGenerator {
       case Routes.DISPATCH_CANCEL:
         return PageTransition(
           child: const DisPatchCancelScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.TRIP_DETAILS:
+        return PageTransition(
+          child: const TripDetailsScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

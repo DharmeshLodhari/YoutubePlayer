@@ -1,4 +1,6 @@
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -25,14 +27,44 @@ class _DispatchScreenState extends State<DispatchScreen> {
   bool isSelectDestination = false;
   bool isLocationViaMap = false;
   bool isConfirmPickupLocation = false;
-
+  String? next = "";
+  String? previous = "";
+  List<ShippingAddress> itemList = [];
+  bool isLoading =true;
+  int? itemCount = 0;
+  ShippingAddress? selectedFromAddress;
   @override
   void initState() {
     _initialCameraPosition =
     const CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
     isPackageReview = true;
     _initialSheetChildSize = 0.45;
+    _getAddressList();
     super.initState();
+  }
+
+  Future _getAddressList() async{
+    final Map<String, dynamic>? result =
+        await ShoppingAuthService().listOfDispatchAddress(next, previous);
+    if (result == null) {
+      isLoading = false;
+      //noItemInList = true;
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
+    itemCount = result['count'];
+    next = result['next'];
+    previous = result['previous'];
+    final tempList = result['results'];
+
+    //noItemInList = false;
+    isLoading = false;
+    itemList.addAll(tempList);
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -116,34 +148,11 @@ class _DispatchScreenState extends State<DispatchScreen> {
     return Stack(
       children: [
          MapUI(),
-       /* Image.asset(
-          "assets/images/map.png",
-          height: double.infinity,
-          width: double.infinity,
-          fit: BoxFit.fill,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(50.0),
-          child: Image.asset(
-            "assets/images/taxi/route_map_image.png",
-            fit: BoxFit.fill,
-          ),
-        ),*/
         if (isPackageReview) _buildPackageReview(),
         if (isSearchDestination) _buildSearchDestination(),
         if (isSelectDestination) _buildConfirmDestinationView(),
-        // _buildNoVeshicles(),
         if (isLocationViaMap) _buildSelectOption(),
         if (isConfirmPickupLocation) _buildDestinationLocation(),
-        // _buildRiderOption(),
-        // _buildYouFare(),
-        // _buildPaymentFailed(),
-        // _buildPaymentRetryProcess(),
-        // _buildArriving(),
-        // _buildPartnerArrivingDetails(),
-        // _buildArrivedRider(),
-        // _buildOnTripRider(),
-        // _buildOnTripMiles(),
       ],
     );
   }
@@ -389,21 +398,8 @@ class _DispatchScreenState extends State<DispatchScreen> {
                  ],
                ),
                 const SizedBox(height: 20,),
-                Expanded(
-                  child: Container(
-                    child: ListView.builder(
-                        itemCount: 2,
-                        shrinkWrap: true,
-                        itemBuilder: (context,index){
-                      return _buildRecentSearchAddresses();
-                    }),
-                  ),
-                ),
-
-           //     _buildRecentSearchAddresses(),
-         //       _buildRecentSearchAddresses(),
-             // const Spacer(),
-            CurvedButton(
+               _buildAddressList(),
+                CurvedButton(
               onPressed: () {
                 Navigator.of(context).pushNamed(Routes.SEARCH_ADDRESS);
               },
@@ -420,13 +416,37 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildRecentSearchAddresses(){
+  Widget _buildAddressList(){
+
+    if(isLoading){
+      return Expanded(
+        child: Container(
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+     return Expanded(
+                  child: Container(
+                    child: ListView.builder(
+                        itemCount: itemList.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context,index){
+                      return _buildRecentSearchAddresses(itemList[index]);
+                    }),
+                  ),
+                );
+
+  }
+
+  Widget _buildRecentSearchAddresses(ShippingAddress address){
     return GestureDetector(
       onTap: (){
         setState(() {
           isSearchDestination = false;
           isSelectDestination = true;
-
+          selectedFromAddress = address;
         });
       },
       child: Container(
@@ -451,7 +471,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      "Home • No 5, Adetutu Street, Lagos",
+                      address.toFullAddress(),
                       style: TextStyle(
                         color: fontDarkGrey,
                         fontSize: 14,
@@ -475,7 +495,9 @@ class _DispatchScreenState extends State<DispatchScreen> {
               const SizedBox(width: 10,),
               GestureDetector(
                 onTap: (){
-                  Navigator.of(context).pushNamed(Routes.ADD_NEW_ADDRESS);
+                  Navigator.of(context).pushNamed(Routes.ADD_NEW_ADDRESS,
+                      arguments: {"isEdit": true});
+                 // Navigator.of(context).pushNamed(Routes.ADD_NEW_ADDRESS);
                 },
                 child: SvgPicture.asset(
                   'assets/images/dispatch/ic_edit.svg',
@@ -2072,7 +2094,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  'No 5, Adetutu Street, Lagos',
+                                  selectedFromAddress!.toFullAddress(),
                                   style: TextStyle(
                                       color: fontDarkGrey,
                                       fontFamily: 'Inter',
@@ -2095,7 +2117,40 @@ class _DispatchScreenState extends State<DispatchScreen> {
                           Divider(
                             color: dividerColor,
                           ),
-                          TextFormField(
+                          Row(
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: (){
+                                    Navigator.of(context).pushNamed(Routes.SEARCH_ADDRESS);
+                                  },
+                                  child: Text(
+                                    '',
+                                    style: TextStyle(
+                                        color: fontDarkGrey,
+                                        fontFamily: 'Inter',
+                                        fontSize: 14),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 4,),
+                              GestureDetector(
+                                onTap: (){
+                                  Navigator.of(context).pushNamed(Routes.SEARCH_ADDRESS);
+                                },
+                                child: Text('Change',
+                                  style: TextStyle(
+                                      color: blackFont,
+                                      fontFamily: 'Inter',
+                                      fontSize: 12),),
+                              ),
+                            ],
+                          ),
+                          Divider(
+                            color: navyBlue,
+                          ),
+
+                         /* TextFormField(
                            // initialValue: '101, Lagos-Ikorodu Expressway',
                             autofocus: true,
                             style: TextStyle(
@@ -2117,7 +2172,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                                 ),
                               ),
                             ),
-                          ),
+                          ),*/
 
 
                         ],

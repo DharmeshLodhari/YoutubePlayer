@@ -1,5 +1,7 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/taxi/taxi_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_directions/google_maps_directions.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 class DriverArrivingScreen extends StatefulWidget {
   const DriverArrivingScreen({super.key});
 
@@ -29,6 +32,7 @@ class _DriverArrivingScreenState extends State<DriverArrivingScreen> {
   bool driverToDestination = false;
   bool destinationArrived =false;
   List<Polyline> polylines = [];
+  late TaxiBloc taxiBloc;
   @override
   void initState() {
     //72.66349094212764
@@ -70,21 +74,7 @@ class _DriverArrivingScreenState extends State<DriverArrivingScreen> {
       _markers.add(marker);
     });
   }
-  void _addPolyline() {
-    final Polyline polyline = Polyline(
-      polylineId: PolylineId('polyline_1'),
-      points: [
-        LatLng(23.040060, 72.666630),
-        LatLng(23.071360,72.656387),
-      ],
-      color: navyBlue,
-      width: 5,
-    );
 
-    setState(() {
-      _polylines.add(polyline);
-    });
-  }
 
   void _gotoNextStep(){
     Future.delayed(Duration(seconds: 7),(){
@@ -131,6 +121,7 @@ class _DriverArrivingScreenState extends State<DriverArrivingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    taxiBloc = Provider.of<TaxiBloc>(context);
     return  Scaffold(
       appBar: appBar() as PreferredSizeWidget?,
       body: Stack(
@@ -196,7 +187,7 @@ class _DriverArrivingScreenState extends State<DriverArrivingScreen> {
         googleMapController = controller;
       },
          markers:  driverArrived ?{}:_markers,
-      polylines: Set.of(polylines),
+      polylines: getPolylines(),
       circles: _circles,
     );
   }
@@ -421,38 +412,42 @@ class _DriverArrivingScreenState extends State<DriverArrivingScreen> {
   }
 
   Future<void> _getDirections() async {
-    GoogleMapsDirections.init(googleAPIKey: 'AIzaSyAs0AD96236ASgq_7l8u4q9OHW0bOuESV8');
-    try{
-      /*Directions directions = await getDirections(
-        23.046156198086162,
-        72.66349094212764,
-        23.06357027724092,
-        72.67164485771536,
-      );
-      DirectionRoute route = directions.shortestRoute;
-      List<LatLng> points = PolylinePoints().decodePolyline(route.overviewPolyline.points)
-          .map((point) => LatLng(point.latitude, point.longitude))
-          .toList();*/
-      List<LatLng> points = [];
-      points.add(LatLng(  23.046156198086162, 72.66349094212764,));
-      //points.add(LatLng(23.0579632686704, 72.67143028101417 ));
-      //points.add(LatLng(23.053007584190592, 72.67044322816838 ));
-      points.add(LatLng(23.06357027724092, 72.67164485771536, ));
 
-      polylines = [
-        Polyline(
-          width: 5,
-          polylineId: PolylineId("UNIQUE_ROUTE_ID"),
-          color: navyBlue,
-          points: points,
-        ),
-      ];
-      setState(() {});
+    try{
+
+      TaxiAuth()
+          .getDirections(
+          origin: LatLng(6.58541971245351, 3.357889094413491,),
+          destination: LatLng(
+            6.508305615452742, 3.390813342612795,))
+          .then((value) {
+
+         taxiBloc.startingPointToDestinationDirections = value;
+        //  isLoading = false;
+        if (mounted) setState(() {});
+      }).catchError((error) {
+        //   isLoading = false;
+        if (mounted) setState(() {});
+      });
 
     }catch(e){
     e.toString();
     }
 
+  }
+  Set<Polyline> getPolylines() {
+    return {
+      if (taxiBloc.startingPointToDestinationDirections != null)
+        Polyline(
+          polylineId: const PolylineId('startingPointToDestination'),
+          color: navyBlue,
+          width: 5,
+          points: taxiBloc.startingPointToDestinationDirections!.polylinePoints
+              .map((e) => LatLng(e.latitude, e.longitude))
+              .toList(),
+        ),
+
+    };
   }
   Widget getDriverActions() {
     if(driverArrived || destinationArrived){

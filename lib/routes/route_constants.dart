@@ -265,4 +265,5 @@ class Routes {
   static const String FIND_VEHICLE = "/find-vehicle";
   static const String ADD_NEW_ADDRESS = "/add-new-address";
   static const String DISPATCH_CANCEL = "/dispatch-cancel";
+  static const String TRIP_DETAILS = "/trip-details";
 }

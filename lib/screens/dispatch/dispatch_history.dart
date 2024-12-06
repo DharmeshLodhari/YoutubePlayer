@@ -1,3 +1,4 @@
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/yarn/widgets/category_chip.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -66,7 +67,9 @@ class _DispatchHistoryScreenState extends State<DispatchHistoryScreen> {
         color: Colors.black,
         size: 20,
       ),
-      onTap: () async {},
+      onTap: () async {
+
+      },
       backgroundColor: iconBtnGrey,
       enableMargin: false,
     ),
@@ -130,114 +133,120 @@ class _DispatchHistoryScreenState extends State<DispatchHistoryScreen> {
     );
   }
   Widget _buildSingleRow(){
-    return  Card(
-      child: Container(
-        padding: EdgeInsets.all(6.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Text(
-                  '21 November,2023',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontFamily: "Inter",
-                    fontWeight: FontWeight.w500,
-                    color: lightBlackFont,
+    return  GestureDetector(
+      onTap: (){
+        Navigator.pushNamed(context, Routes.TRIP_DETAILS);
+      },
+      child:
+      Card(
+        child: Container(
+          padding: EdgeInsets.all(6.0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    '21 November,2023',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w500,
+                      color: lightBlackFont,
+
+                    ),
+                  ),
+                  const Spacer(),
+                  CategoryChip(
+                    onTap: () {},
+                    title: 'Completed',
+                    categoryColor: lightGreenBg,
+                    selectedCategoryTextColor: green,
 
                   ),
-                ),
-                const Spacer(),
-                CategoryChip(
-                  onTap: () {},
-                  title: 'Completed',
-                  categoryColor: lightGreenBg,
-                  selectedCategoryTextColor: green,
+                ],
+              ),
+              const SizedBox(height: 10,),
 
-                ),
-              ],
-            ),
-            const SizedBox(height: 10,),
+              Row(
+                children: [
+                  Text(
+                    'Bimpe Ajoshin',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w500,
+                      color: black,
 
-            Row(
-              children: [
-                Text(
-                  'Bimpe Ajoshin',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontFamily: "Inter",
-                    fontWeight: FontWeight.w500,
-                    color: black,
-
+                    ),
                   ),
-                ),
-                const Spacer(),
-                Text(
-                  '₦2500',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: "Inter",
-                    fontWeight: FontWeight.w500,
-                    color: fontLightGrey,
+                  const Spacer(),
+                  Text(
+                    '₦2500',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w500,
+                      color: fontLightGrey,
 
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  '4 Items (18kg)',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontFamily: "Inter",
-                    fontWeight: FontWeight.w500,
-                    color: yarnBlack,
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    '4 Items (18kg)',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w500,
+                      color: yarnBlack,
 
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10,),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Icon Section
-                Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: SvgPicture.asset(
-                    'assets/images/rider/ic_route.svg',
-                    height: 50,
-                    fit: BoxFit.cover,
+                ],
+              ),
+              const SizedBox(height: 10,),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Icon Section
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: SvgPicture.asset(
+                      'assets/images/rider/ic_route.svg',
+                      height: 50,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
 
-                // Address List Section (Static items)
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                  // Address List Section (Static items)
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
 
-                      Text(
-                        '24 Bashir Musa Road, Agege',
-                        style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14),
-                      ),
-                      const SizedBox(height: 10,),
+                        Text(
+                          '24 Bashir Musa Road, Agege',
+                          style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 14),
+                        ),
+                        const SizedBox(height: 10,),
 
-                      Text(
-                        '20, Pedro Street, Alausa, Ikeja',
-                        style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14),
-                      ),
-                    ],
+                        Text(
+                          '20, Pedro Street, Alausa, Ikeja',
+                          style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 14),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

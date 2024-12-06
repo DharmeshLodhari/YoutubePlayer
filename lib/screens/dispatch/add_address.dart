@@ -1,14 +1,15 @@
 import 'package:Slydo/screens/yarn/widgets/category_chip.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 class AddAddressScreen extends StatefulWidget {
-  const AddAddressScreen({super.key});
-
+   AddAddressScreen({this.arguments, super.key});
+  final dynamic arguments;
   @override
   State<AddAddressScreen> createState() => _AddAddressScreenState();
 }
@@ -18,9 +19,13 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   GoogleMapController? googleMapController;
   Set<Marker> _markers = {};
   bool saveAddressForFuture = false;
+  bool isEditView = false;
   @override
   void initState() {
-    // TODO: implement initState
+    if(widget.arguments != null){
+      isEditView =widget.arguments['isEdit'] ;
+    }
+
     _initialCameraPosition =
     const CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
     _addMarker();
@@ -29,9 +34,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   void _addMarker() async{
     final Marker marker =  Marker(
       markerId: MarkerId('marker_1'),
-      icon: await BitmapDescriptor.fromAssetImage(
 
-          ImageConfiguration.empty, "assets/images/dispatch/vehicle_marker.png"),
+      icon: await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(devicePixelRatio: 2.0), // Increase the pixel ratio for a larger icon
+          "assets/images/dispatch/vehicle_marker.png"
+      ),
       position: LatLng(23.040060, 72.666630), // Example coordinates (San Francisco)
 
     );
@@ -94,7 +101,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             const SizedBox(height: 10,),
             _getTextView('Mark your entrance'),
             _getTextLightView('Help Courier reach you faster'),
-        
+
             const SizedBox(height: 10,),
             _mapUi(),
             const SizedBox(height: 10,),
@@ -206,7 +213,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               },
             ),
             const SizedBox(height: 10,),
-           Row(
+            if(!isEditView )
+              toggleActiveTag(),
+          /*  Row(
              children: [
                 InkWell(
                   onTap: (){
@@ -236,8 +245,10 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                // Checkbox(value:false, onChanged: (val){}),
                Expanded(child: _getTextView('Save For Future Reference'))
              ],
-           ),
+           ),*/
+
             const SizedBox(height: 10,),
+            if(!isEditView )
             CurvedButton(
               onPressed: () {
 
@@ -247,10 +258,47 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               backgroundColor: navyBlue,
               text: "Save",
             ),
+            if(isEditView)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                  Expanded(child:   CurvedButton(
+                    onPressed: () {
+
+                      Navigator.pop(context, "back pressed");
+                    },
+                    textColor: Colors.white,
+                    backgroundColor: mateRed,
+                    text: "Delete",
+                  ),),
+                const SizedBox(width: 20,),
+
+                  Expanded(child:   CurvedButton(
+                    onPressed: () {
+
+                      Navigator.pop(context, "back pressed");
+                    },
+                    textColor: Colors.white,
+                    backgroundColor: navyBlue,
+                    text: "Update",
+                  ),),
+
+              ],
+            ),
             const SizedBox(height: 10,),
           ],
         ),
       ),
+    );
+  }
+  Widget toggleActiveTag() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+
+      },
+      isChecked: false,
+      title: "Save For Future Reference",
     );
   }
   Widget addAddressField() {
