@@ -368,7 +368,7 @@ class _DriverArrivingScreenState extends State<DriverArrivingScreen> {
         elevation: 1,
         child: Container(
           padding: const EdgeInsets.all(10),
-          
+
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

@@ -28,6 +28,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/cart_with_badge.dart';
+import 'package:Slydo/widget/marqee_widget.dart';
 import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -55,6 +56,7 @@ import '../widget/rounded_background_icon.dart';
 import '../widget/user_dashboard_item_tile.dart';
 import 'moments/screens/moments_screen.dart';
 import 'yarn/models/Topics/yarn_model.dart';
+//import 'package:marquee/marquee.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -397,6 +399,73 @@ class _HomeState extends State<Home> {
           ),
           Container(
               padding: const EdgeInsets.only(left: 5.0), child: _appBar()),
+          const SizedBox(
+            height: 15,
+          ),
+          Container(
+            height: 40,
+            margin: EdgeInsets.symmetric(horizontal: 8),
+            decoration:  BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: bgLightPink
+            ),
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: 10,
+                ),
+                Image.asset('assets/images/home/volume.png',
+                  color: darkPinkColor,
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+            Expanded(child:  Marquee(
+              text: ProtectionPermission.notificationText,
+              style:   TextStyle(
+                fontSize: 12,
+                color: darkPinkColor,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+              ),
+              velocity: 30,
+              blankSpace: 100,
+              startPadding: 10,
+              scrollAxis: Axis.horizontal,
+            ),),
+            /*  Expanded(
+                child: MarqueeWidget(
+                    direction: Axis.horizontal,
+                    child: Text(ProtectionPermission.notificationText,
+                  style:  TextStyle(
+                    fontSize: 12,
+                    color: darkPinkColor,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: "Inter",
+                  ),
+                )),
+              ),*/
+
+              /*  Marquee(
+                  text: ProtectionPermission.notificationText,
+                  style:  TextStyle(
+                    fontSize: 12,
+                    color: darkPinkColor,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: "Inter",
+                  ),
+                  velocity: 30,
+                  blankSpace: 100,
+                  startPadding: 10,
+                  scrollAxis: Axis.horizontal,
+                ),*/
+
+                const SizedBox(
+                  width: 10,
+                ),
+              ],
+            ),
+          ),
           const SizedBox(
             height: 15,
           ),

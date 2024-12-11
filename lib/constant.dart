@@ -36,6 +36,7 @@ class ProtectionPermission {
   static const String shippingOptions = "Shipping Options";
   static const String customCategory = "Custom Category";
   static const String dispatchAddress = "Dispatch Address";
+  static const String notificationText = "Transfers can’t be made at the moment due to an ongoing system upgrade. We’re working hard to enhance your experience and will have everything back to normal as soon as possible. We sincerely apologize for the inconvenience and appreciate your patience.";
 }
 
 class ProtectionPermissionType {
