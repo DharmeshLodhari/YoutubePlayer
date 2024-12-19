@@ -733,7 +733,8 @@ Widget buildProductShimmerLoadingIndicator({required bool isLoading}) {
     child: isLoading ? const ProductDetailShimmer() : Container(),
   );
 }
-
+// Book Cameraman today and earm 70% off!
+// Don’t Miss the sales, 20% off on all, 10” wigs
 Widget buildProfileShimmerLoadingIndicator({required bool isLoading}) {
   return Opacity(
     opacity: isLoading ? 1.0 : 00,

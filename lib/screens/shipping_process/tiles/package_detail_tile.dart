@@ -4,8 +4,11 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/shipping_process/models/package_details_model.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -88,47 +91,97 @@ class PackageDetailTile extends StatelessWidget {
       ],
     );
   }
+  Widget getTrailing(int index) {
+
+    return Container(
+      width: 110,
+      color: Colors.transparent,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          RoundedBackgroundIcon(
+            backgroundColor: iconBtnGrey,
+            icon: Icon(
+              SlydoAppIcon.minus,
+              color: blackFont,
+              size: 2,
+            ),
+
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Text(
+            //'${productList[index].quantity}',
+            '${productList[index].quantity}',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: blackFont,
+              fontFamily: "Inter",
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          RoundedBackgroundIcon(
+            backgroundColor: iconBtnGrey,
+            icon: Icon(
+              SlydoAppIcon.plus,
+              color: blackFont,
+              size: 14, // Adjust the size as needed
+            ),),
+        ],
+      ),
+    );
+  }
 
   Widget _getConfirmOrderDetails(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: productList.length,
-        itemBuilder: (context, index) {
-          return Column(
-            children: [
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: getLeading(index),
-                title: getTitle(index),
-                subtitle: getSubtitle(context, index),
-                onTap: () {
-                  Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
-                      arguments: {"product": productList[index]});
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SizedBox(),
-                    Text(
-                      "Subtotal",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: darkGrey,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: "Inter",
-                      ),
-                    ),
-                    const SizedBox(width: 60),
-                    getSubTotalPriceWidget(index),
-                  ],
+    return Container(
+     // height: 300,
+      child: Expanded(
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: productList.length,
+          itemBuilder: (context, index) {
+            return Column(
+              children: [
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: getLeading(index),
+                  title: getTitle(index),
+                  subtitle: getSubtitle(context, index),
+                  trailing: getTrailing(index),
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
+                        arguments: {"product": productList[index]});
+                  },
                 ),
-              ),
-            ],
-          );
-        },
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(),
+                      Text(
+                        "Subtotal",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: darkGrey,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Inter",
+                        ),
+                      ),
+                      const SizedBox(width: 60),
+                      getSubTotalPriceWidget(index),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -194,27 +247,32 @@ class PackageDetailTile extends StatelessWidget {
 
   String getSubTotalPrice(int index) {
     int totalPrice = 0;
+    int tempPrice = 0;
     int addOnTotal = 0;
-    if (productList[index].isProduct) {
-      if (productList[index].addOnsModels != null) {
-        for (AddOns itemAddOn in productList[index].addOnsModels ?? []) {
-          for (var option in itemAddOn.options!) {
-            addOnTotal += int.parse(option.price.toString()) * option.quantity;
+    for(int i =0;i < productList.length;i++){
+      if (productList[i].isProduct) {
+        if (productList[i].addOnsModels != null) {
+          for (AddOns itemAddOn in productList[i].addOnsModels ?? []) {
+            for (var option in itemAddOn.options!) {
+              addOnTotal += int.parse(option.price.toString()) * option.quantity;
+            }
           }
+          final int priceQuantity = (productList[i].quantity ?? 0) *
+              getProductPrice(productList[i]);
+          totalPrice += addOnTotal + priceQuantity;
+        } else if (productList[i].variantModels != null) {
+          totalPrice = (productList[i].variantModels?.first.quantity ?? 0) *
+              (getProductDiscountPrice(productList[i]) ?? 0);
+        } else {
+          totalPrice = (productList[i].quantity ?? 0) *
+              (getProductDiscountPrice(productList[i]) ?? 0);
         }
-        final int priceQuantity = (productList[index].quantity ?? 0) *
-            getProductPrice(productList[index]);
-        totalPrice += addOnTotal + priceQuantity;
-      } else if (productList[index].variantModels != null) {
-        totalPrice = (productList[index].variantModels?.first.quantity ?? 0) *
-            (getProductDiscountPrice(productList[index]) ?? 0);
-      } else {
-        totalPrice = (productList[index].quantity ?? 0) *
-            (getProductDiscountPrice(productList[index]) ?? 0);
       }
+      tempPrice  = tempPrice + totalPrice;
     }
 
-    return totalPrice.toString();
+
+    return tempPrice.toString();
   }
 
   Widget getSubtitle(BuildContext context, int index) {
@@ -732,11 +790,224 @@ class PackageDetailTile extends StatelessWidget {
                     height: 10,
                   ),
                   _getConfirmOrderDetails(context),
+                 /* _getDeliveryByHeader(Icons.keyboard_arrow_right_outlined,"Delivery by"),
+                  // Selecter Delivery Option
+                  _getDeliveryOptionDetails(),*/
+                  //Note Section
+                  _getDeliveryByHeader(Icons.edit,"Note"),
+
+                  _buildItemDescription(),
+                  //save Button
+                  saveWidget(),
+
                 ],
               ),
             ),
           ),
         );
+      },
+    );
+  }
+  Widget _buildItemDescription() {
+    return CustomizedTextFormField(
+   //   labelText: 'Delivery Note',
+      hintText: 'Call me when you arrive.',
+      maxLines: 3,
+      onChanged: (value) {},
+    );
+  }
+  Widget _getDeliveryByHeader(IconData icon, String text){
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        const SizedBox(width: 10,),
+        Expanded(
+          child: Text(text,
+
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: black,
+              fontFamily: "Inter",
+            ),
+          ),
+        ),
+         Padding(
+          padding: const EdgeInsets.only(right: 7.0),
+          child: Icon(
+            icon,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _getDeliveryOptionDetails(){
+    return Card(
+      shape:
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Column(
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: _buildImage(),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "DHL",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: black,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    "${worldCurrencies[userBloc.user.currency]}",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: black,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                  Text(
+                    moneyDisplayNormalizer(30000),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: black,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+
+                  Text(
+                    "Estimated delivery time 2-5 days",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: black,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+
+                ],
+              ),
+
+            ),
+            Row(
+              children: [
+                Flexible(
+                  child: Text('No 4, ilewole street, Ogba -➜ No 5,Adetutu street,ikeja, lagos',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: black,
+                        fontFamily: "Inter",
+                      )
+
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                      color: darkGrey.withOpacity(0.1),
+
+                      borderRadius: BorderRadius.circular(20)),
+                child: Text('No Tracking Available',
+                    style: TextStyle(
+                      fontSize: 8,
+                      color: darkGrey,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w500
+                    )
+
+                ),
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+  Widget saveWidget() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shadowColor: boxShadowTwo,
+      elevation: 4,
+      child: Container(
+        decoration: decorateBox(),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Text(
+                      "Total : ",
+                      style: TextStyle(fontSize: 14, color: blackFont),
+                    ),
+                    Text(
+                      worldCurrencies[userBloc.user.currency] ?? "",
+                      style: const TextStyle(
+                          fontFamily: "Inter",
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(int.parse(getSubTotalPrice(index!))),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const Expanded(
+                  child: SizedBox(
+                    width: 10,
+                  ),
+                ),
+                _buildSaveButton(),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _buildSaveButton() {
+    return MaterialButton(
+      height: 40,
+      color: navyBlue,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: const Text(
+        "Save",
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+          fontFamily: "Inter",
+        ),
+      ),
+      onPressed: () {
+
       },
     );
   }

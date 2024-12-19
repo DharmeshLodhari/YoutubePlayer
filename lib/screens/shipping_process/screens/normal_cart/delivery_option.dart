@@ -30,8 +30,8 @@ class DeliveryOption extends StatefulWidget {
 }
 
 class _DeliveryOptionState extends State<DeliveryOption> {
-  // List<String?> deliveryOption = ["Shipping", "In Store/Eat In", "Pickup"];
-  List<String?> deliveryOption = ["In Store/Eat In", "Pickup"];
+   List<String?> deliveryOption = ["Shipping", "In Store/Eat In", "Pickup"];
+  // List<String?> deliveryOption = ["In Store/Eat In", "Pickup"];
 
   late ShippingProcessBloc shippingProcessBloc;
   late Country _selectedDialogCountry;
