@@ -3,7 +3,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 
 import 'models/city_data.dart';
@@ -119,8 +119,8 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                     children: <Widget>[
                       Stack(
                         children: [
-                          CarouselSlider(
-                            options: CarouselOptions(
+                          cs.CarouselSlider(
+                            options: cs.CarouselOptions(
                                 viewportFraction: 1.0,
                                 enlargeCenterPage: true,
                                 autoPlay: false,
@@ -324,8 +324,8 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                 children: <Widget>[
                   Stack(
                     children: [
-                      CarouselSlider(
-                        options: CarouselOptions(
+                      cs.CarouselSlider(
+                        options: cs.CarouselOptions(
                             viewportFraction: 1.0,
                             enlargeCenterPage: true,
                             autoPlay: false,

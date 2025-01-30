@@ -8,7 +8,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -298,8 +298,8 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           else
             Stack(
               children: [
-                CarouselSlider(
-                  options: CarouselOptions(
+                cs.CarouselSlider(
+                  options: cs.CarouselOptions(
                       viewportFraction: 1.0,
                       enlargeCenterPage: true,
                       autoPlay: false,

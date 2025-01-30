@@ -36,7 +36,7 @@ import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -1086,9 +1086,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       children: [
                         Stack(
                           children: [
-                            CarouselSlider.builder(
+                            cs.CarouselSlider.builder(
                               key: ValueKey<int>(selectedIndex),
-                              options: CarouselOptions(
+                              options: cs.CarouselOptions(
                                 initialPage: selectedIndex,
                                 enableInfiniteScroll: false,
                                 viewportFraction: 1.0,

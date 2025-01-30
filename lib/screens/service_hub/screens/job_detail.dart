@@ -1,6 +1,6 @@
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
@@ -16,7 +16,7 @@ class JobsJobDetail extends StatefulWidget {
 }
 
 class _JobsJobDetailState extends State<JobsJobDetail> {
-  CarouselController controller = CarouselController();
+  cs.CarouselSliderController controller = cs.CarouselSliderController();
   int currentIndex = 0;
   String getFormatedDate(ActiveListingData args) {
     return DateFormat('dd-MM-yyyy')
@@ -325,8 +325,8 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
     );
   }
 
-  CarouselSlider customImageSlider(ActiveListingData args) {
-    return CarouselSlider.builder(
+  cs.CarouselSlider customImageSlider(ActiveListingData args) {
+    return cs.CarouselSlider.builder(
       carouselController: controller,
       itemCount: args.job!.pictures!.length,
       itemBuilder: (context, index, realIndex) {
@@ -364,7 +364,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
           ],
         );
       },
-      options: CarouselOptions(
+      options: cs.CarouselOptions(
           height: 260,
           aspectRatio: 2,
           viewportFraction: 1,
@@ -402,7 +402,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
     );
   }
 
-  void onPageFunction(int index, CarouselPageChangedReason reason) {
+  void onPageFunction(int index, cs.CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }

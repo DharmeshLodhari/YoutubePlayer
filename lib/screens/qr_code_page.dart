@@ -7,7 +7,7 @@ import 'package:Slydo/screens/payment_and_banking/models/virtual_account.dart';
 import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:disk_space/disk_space.dart';
 import 'package:external_path/external_path.dart';
@@ -116,8 +116,8 @@ class _QrCodePageState extends State<QrCodePage> {
             controller: screenshotController,
             child: SizedBox(
               height: 550,
-              child: CarouselSlider(
-                options: CarouselOptions(
+              child: cs.CarouselSlider(
+                options: cs.CarouselOptions(
                   height: 550,
                   autoPlay: false,
                   enableInfiniteScroll: false,
@@ -139,7 +139,7 @@ class _QrCodePageState extends State<QrCodePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
-              2, // Number of items in the CarouselSlider
+              2, // Number of items in the cs.CarouselSlider
               (index) {
                 return Container(
                   width: 8,

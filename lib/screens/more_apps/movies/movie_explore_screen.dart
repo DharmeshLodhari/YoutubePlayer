@@ -5,7 +5,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -17,7 +17,7 @@ class MovieExploreScreen extends StatefulWidget {
 }
 
 class _MovieExploreScreenState extends State<MovieExploreScreen> {
-  final CarouselController _carouselController = CarouselController();
+  final cs.CarouselSliderController _carouselController = cs.CarouselSliderController();
 
   List<MovieItem> mostRecentDiscoveryList = [];
   bool isMostRecentDiscoveryLoading = false;
@@ -262,9 +262,9 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                 child: CircularLoadingIndicator(),
               ),
             )
-          : CarouselSlider(
+          : cs.CarouselSlider(
               carouselController: _carouselController,
-              options: CarouselOptions(
+              options: cs.CarouselOptions(
                 viewportFraction: 0.9,
                 enlargeCenterPage: false,
                 autoPlay: true,

@@ -10,7 +10,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +40,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
   bool isAPILoading = false;
   List<Color> cardColors = [navyBlue, richPink, black, orange];
   int currentColorIndex = 0;
-  final CarouselController _carouselController = CarouselController();
+  final cs.CarouselSliderController _carouselController = cs.CarouselSliderController();
 
   @override
   void deactivate() {
@@ -194,9 +194,9 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
   Widget creditCardCarousel() {
     return Column(
       children: [
-        CarouselSlider(
+        cs.CarouselSlider(
           carouselController: _carouselController,
-          options: CarouselOptions(
+          options: cs.CarouselOptions(
             viewportFraction: 0.9,
             enableInfiniteScroll: false,
             onPageChanged: (index, reason) {

@@ -18,7 +18,7 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -67,7 +67,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   bool isBalanceHidden = true;
 
   String currency = '\$';
-  final CarouselController _carouselController = CarouselController();
+  final cs.CarouselSliderController _carouselController = cs.CarouselSliderController();
   int _currentIndex = 0;
   List<CardAction> cardActions = [];
   final TextEditingController labelController = TextEditingController();
@@ -316,9 +316,9 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   Widget creditCardCarousel(List<AllCards> cardsData) {
     return Column(
       children: [
-        CarouselSlider(
+        cs.CarouselSlider(
           carouselController: _carouselController,
-          options: CarouselOptions(
+          options: cs.CarouselOptions(
             height: 200,
             enableInfiniteScroll: false,
             viewportFraction: 0.9,

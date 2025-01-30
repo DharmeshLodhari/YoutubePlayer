@@ -10,7 +10,7 @@ import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profi
 import 'package:Slydo/screens/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -77,7 +77,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   String _currentCategory = '';
   late DashboardBloc _dashboardBloc;
 
-  final CarouselController _controller = CarouselController();
+  final cs.CarouselSliderController _controller = cs.CarouselSliderController();
   int currentIndex = 0;
 
   AppBar appBar() {
@@ -541,9 +541,9 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
       child: Column(
         children: [
           Expanded(
-            child: CarouselSlider(
+            child: cs.CarouselSlider(
               carouselController: _controller,
-              options: CarouselOptions(
+              options: cs.CarouselOptions(
                   height: 150,
                   autoPlay: true,
                   enlargeCenterPage: true,
@@ -835,7 +835,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     return SectionProducts(headers: headers, isLast: isLast);
   }
 
-  void onPageFunction(int index, CarouselPageChangedReason reason) {
+  void onPageFunction(int index, cs.CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }

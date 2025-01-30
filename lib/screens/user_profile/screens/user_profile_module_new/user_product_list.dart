@@ -14,7 +14,7 @@ import 'package:Slydo/widget/custom_pagination.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
@@ -73,7 +73,7 @@ class _UserProductListState extends State<UserProductList> {
   bool noItemInList = false;
   int? itemCount = 0;
   int productHorizontalLength = 10;
-  final CarouselController _controller = CarouselController();
+  final cs.CarouselSliderController _controller = cs.CarouselSliderController();
 
   String selectedFilter = "all";
 
@@ -663,7 +663,7 @@ class _UserProductListState extends State<UserProductList> {
     );
   }
 
-  void onPageFunction(int index, CarouselPageChangedReason reason) {
+  void onPageFunction(int index, cs.CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }
@@ -675,9 +675,9 @@ class _UserProductListState extends State<UserProductList> {
         children: [
           Expanded(
             child: itemList.length > 1
-                ? CarouselSlider(
+                ? cs.CarouselSlider(
                     carouselController: _controller,
-                    options: CarouselOptions(
+                    options: cs.CarouselOptions(
                         height: 150,
                         autoPlay: true,
                         enlargeCenterPage: true,

@@ -8,7 +8,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -37,7 +37,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  final CarouselController _carouselController = CarouselController();
+  final cs.CarouselSliderController _carouselController = cs.CarouselSliderController();
 
   @override
   void initState() {
@@ -270,9 +270,9 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                 child: CircularLoadingIndicator(),
               ),
             )
-          : CarouselSlider(
+          : cs.CarouselSlider(
               carouselController: _carouselController,
-              options: CarouselOptions(
+              options: cs.CarouselOptions(
                 viewportFraction: 0.9,
                 enlargeCenterPage: false,
                 autoPlay: true,

@@ -5,7 +5,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 
 import 'models/city_data.dart';
@@ -51,8 +51,8 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
                   children: <Widget>[
                     Stack(
                       children: [
-                        CarouselSlider(
-                          options: CarouselOptions(
+                        cs.CarouselSlider(
+                          options: cs.CarouselOptions(
                               viewportFraction: 1.0,
                               enlargeCenterPage: true,
                               autoPlay: false,
@@ -255,8 +255,8 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                 children: <Widget>[
                   Stack(
                     children: [
-                      CarouselSlider(
-                        options: CarouselOptions(
+                      cs.CarouselSlider(
+                        options: cs.CarouselOptions(
                             viewportFraction: 1.0,
                             enlargeCenterPage: true,
                             autoPlay: false,
@@ -445,8 +445,8 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                       children: <Widget>[
                         Stack(
                           children: [
-                            CarouselSlider(
-                              options: CarouselOptions(
+                            cs.CarouselSlider(
+                              options: cs.CarouselOptions(
                                   viewportFraction: 1.0,
                                   enlargeCenterPage: true,
                                   autoPlay: false,
@@ -898,8 +898,8 @@ class _RentPropertyTileWithoutHeartState
                       children: <Widget>[
                         Stack(
                           children: [
-                            CarouselSlider(
-                              options: CarouselOptions(
+                            cs.CarouselSlider(
+                              options: cs.CarouselOptions(
                                   viewportFraction: 1.0,
                                   enlargeCenterPage: true,
                                   autoPlay: false,

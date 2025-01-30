@@ -66,3 +66,5 @@ fvm_config.json
 launch.json
 flutter_sdk
 /.fvm/
+
+ios/build/ios/Pods.build/Release-iphonesimulator

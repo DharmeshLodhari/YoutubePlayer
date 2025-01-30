@@ -14,7 +14,7 @@ import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
@@ -50,7 +50,7 @@ class JobsPreviewJobDetail extends StatefulWidget {
 }
 
 class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
-  CarouselController carouselController = CarouselController();
+  cs.CarouselSliderController carouselController = cs.CarouselSliderController();
   late final String jobId;
   late final String? listingId;
   late YarnDashboardBloc yarnDashboardBloc;
@@ -1526,8 +1526,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  CarouselSlider customImageSlider() {
-    return CarouselSlider.builder(
+  cs.CarouselSlider customImageSlider() {
+    return cs.CarouselSlider.builder(
       carouselController: carouselController,
       itemCount: job!.pictures!.length,
       itemBuilder: (context, index, realIndex) {
@@ -1568,7 +1568,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           ],
         );
       },
-      options: CarouselOptions(
+      options: cs.CarouselOptions(
           height: 260,
           aspectRatio: 2,
           viewportFraction: 1,
@@ -1585,7 +1585,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  void onPageFunction(int index, CarouselPageChangedReason reason) {
+  void onPageFunction(int index, cs.CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }

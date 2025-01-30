@@ -8,7 +8,7 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -24,7 +24,7 @@ class ShoppingExploreScreen extends StatefulWidget {
 }
 
 class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
-  final CarouselController _carouselController = CarouselController();
+  final cs.CarouselSliderController _carouselController = cs.CarouselSliderController();
 
   late ShoppingDashboardBloc shoppingDashboardBloc;
 
@@ -338,9 +338,9 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               child: CircularLoadingIndicator(),
             ),
           )
-        : CarouselSlider(
+        : cs.CarouselSlider(
             carouselController: _carouselController,
-            options: CarouselOptions(
+            options: cs.CarouselOptions(
               viewportFraction: 0.9,
               enlargeCenterPage: false,
               autoPlay: true,
