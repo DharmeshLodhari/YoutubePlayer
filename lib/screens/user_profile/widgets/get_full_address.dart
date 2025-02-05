@@ -1,0 +1,81 @@
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/user_profile/models/user_about.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class GetFullAddressWidget extends StatefulWidget {
+  final UserAbout userAbout;
+  const GetFullAddressWidget({super.key, required this.userAbout});
+
+  @override
+  State<GetFullAddressWidget> createState() => _GetFullAddressWidgetState();
+}
+
+class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
+  int? stateId;
+  String? stateName;
+  bool isStateLoading = true;
+  Map<int, String> statesMap = {};
+
+  @override
+  void initState() {
+    super.initState();
+
+    final UserAbout? userAbout =
+        Provider.of<UserBloc>(context, listen: false).userAbout;
+
+    if (userAbout?.userAddress?.state != null) {
+      stateId = userAbout!.userAddress!.state;
+    }
+
+    UserAuth().getStates().then((value) {
+      for (var element in value) {
+        statesMap[element.id!] = element.name!;
+      }
+
+      stateName = statesMap[stateId];
+
+      isStateLoading = false;
+      if (mounted) setState(() {});
+    }).catchError((e) {
+      isStateLoading = false;
+      if (mounted) setState(() {});
+    });
+  }
+
+  String getFullAddress() {
+    final UserAddress? userAddress = widget.userAbout.userAddress;
+    final List<String> addresses = [];
+
+    if (userAddress?.addressLine1 != null &&
+        userAddress!.addressLine1!.isNotEmpty) {
+      addresses.add(userAddress.addressLine1!);
+    }
+    if (userAddress?.addressLine2 != null &&
+        userAddress!.addressLine2!.isNotEmpty) {
+      addresses.add(userAddress.addressLine2!);
+    }
+    if (userAddress?.city != null && userAddress!.city!.isNotEmpty) {
+      addresses.add(userAddress.city!);
+    }
+    if (stateName != null && stateName!.isNotEmpty) {
+      addresses.add(stateName!);
+    }
+
+    return addresses.join(', ').replaceAll('.', '');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return isStateLoading
+        ? SizedBox(width: 20, height: 20, child: CircularLoadingIndicator())
+        : Expanded(
+            child: Text(
+              getFullAddress(),
+              // textAlign: TextAlign.justify,
+            ),
+          );
+  }
+}

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
 
 import 'chewie_progress_colors.dart';
@@ -7,6 +6,7 @@ import 'chewie_progress_colors.dart';
 class MaterialVideoProgressBar extends StatefulWidget {
   MaterialVideoProgressBar(
     this.controller, {
+    super.key,
     ChewieProgressColors? colors,
     this.onDragEnd,
     this.onDragStart,
@@ -20,7 +20,7 @@ class MaterialVideoProgressBar extends StatefulWidget {
   final Function()? onDragUpdate;
 
   @override
-  _VideoProgressBarState createState() {
+  State<MaterialVideoProgressBar> createState() {
     return _VideoProgressBarState();
   }
 }
@@ -128,7 +128,7 @@ class _ProgressBarPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final height = 2.0;
+    const height = 2.0;
 
     canvas.drawRRect(
       RRect.fromRectAndRadius(
@@ -136,7 +136,7 @@ class _ProgressBarPainter extends CustomPainter {
           Offset(0.0, size.height / 2),
           Offset(size.width, size.height / 2 + height),
         ),
-        Radius.circular(4.0),
+        const Radius.circular(4.0),
       ),
       colors.backgroundPaint,
     );
@@ -156,7 +156,7 @@ class _ProgressBarPainter extends CustomPainter {
             Offset(start, size.height / 2),
             Offset(end, size.height / 2 + height),
           ),
-          Radius.circular(4.0),
+          const Radius.circular(4.0),
         ),
         colors.bufferedPaint,
       );
@@ -167,7 +167,7 @@ class _ProgressBarPainter extends CustomPainter {
           Offset(0.0, size.height / 2),
           Offset(playedPart, size.height / 2 + height),
         ),
-        Radius.circular(4.0),
+        const Radius.circular(4.0),
       ),
       colors.playedPaint,
     );

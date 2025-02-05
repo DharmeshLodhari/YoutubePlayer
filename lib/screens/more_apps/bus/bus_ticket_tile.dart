@@ -1,6 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/bus/models/Transport.dart';
+import 'package:Slydo/screens/more_apps/bus/models/transport_model.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,21 +8,21 @@ import 'package:provider/provider.dart';
 class BusTicketTile extends StatelessWidget {
   final Transport? transport;
 
-  const BusTicketTile({Key? key, this.transport}) : super(key: key);
+  const BusTicketTile({super.key, this.transport});
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.zero,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: decorateBox(),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
                 height: 20,
                 width: 20,
                 child: ClipOval(
@@ -32,7 +32,7 @@ class BusTicketTile extends StatelessWidget {
                     width: double.infinity,
                   ),
                 )),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             Expanded(
@@ -72,7 +72,7 @@ class BusTicketTile extends StatelessWidget {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -88,7 +88,7 @@ class BusTicketTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 Row(
@@ -112,7 +112,7 @@ class BusTicketTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 Row(
@@ -128,7 +128,7 @@ class BusTicketTile extends StatelessWidget {
                             color: darkGrey,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(
@@ -151,7 +151,7 @@ class BusTicketTile extends StatelessWidget {
                             color: darkGrey,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(

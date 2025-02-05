@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
@@ -7,16 +7,17 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_message_handler.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_manager.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/main_socket_message_handler.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/chat_message.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/shipping_process/utils.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/device_info.dart';
@@ -30,14 +31,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/more_apps/yarn/models/Topics/yarn_model.dart';
-import '../screens/more_apps/yarn/yarn_detail_screen.dart';
+import '../screens/yarn/models/Topics/yarn_model.dart';
+import '../screens/yarn/yarn_detail_screen.dart';
 
 bool isDialogueOpen = false;
 
 Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
 // await Firebase.initializeApp();
-  print("onBackgroundMessage: ${remoteMessage.data}");
+//   debugPrint("onBackgroundMessage: ${remoteMessage.data}");
 
   try {
     /// {data:
@@ -54,15 +55,15 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
     /// "author_avatar":null},
     /// title: Slydo Notification}}
 
-    Map<String, dynamic> data = {};
+    final Map<String, dynamic> data = {};
 
-    Map<String, dynamic> notification =
+    final Map<String, dynamic> notification =
         remoteMessage.data["notification"] != null
             ? jsonDecode(remoteMessage.data["notification"])
             : {};
 
     if (notification.isEmpty) {
-      print("Invalid Data Format:-  ${remoteMessage.data}");
+      // debugPrint("Invalid Data Format:-  ${remoteMessage.data}");
       return;
     }
 
@@ -70,11 +71,11 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
 
     AwesomeNotificationService().init();
 
-    Map<String, dynamic> dataOfNotification = Platform.isIOS
+    final Map<String, dynamic> dataOfNotification = Platform.isIOS
         ? decodeNotificationIOS(remoteMessage.data)
         : decodeNotification(remoteMessage.data);
 
-    debugPrint("DATA:----- $dataOfNotification");
+    // debugPrint(":DATA----- $dataOfNotification");
     //If {dataOfNotification['data'] != null} this is true, the app will send local notification else the app sends a push notification.
 
     if (dataOfNotification['data'] != null &&
@@ -95,25 +96,25 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
       } else if (data['data']['type'] == "chatroom_message") {
         data['notification'] = notification;
 
-        ChatMessage textMessage = ChatMessage.fromJson(data['data']);
+        final ChatMessage textMessage = ChatMessage.fromJson(data['data']);
 
-        int result =
+        final int result =
             await ChatMessageHandler().addChatMessage(chatMessage: textMessage);
 
         if (result == 1) {
-          int? time =
+          final int? time =
               convertStringToMillisecondsSinceEpoch(textMessage.createdAt);
 
-          String? conversationId = textMessage.conversationId;
+          final String? conversationId = textMessage.conversationId;
 
           /// move user to top of the list in the connection list
           await ConnectionListManager().updateLastMessageTime(
               conversationId: conversationId, time: time);
 
-          String hashedMessage =
+          final String hashedMessage =
               generateHashedMessage(jsonEncode(data['data']));
 
-          log("====> UPDATE CHAT USER MESSAGE COUNT FROM FCM");
+          // log("====> UPDATE CHAT USER MESSAGE COUNT FROM FCM");
 
           /// update the message count
           await ChatUserManager().updateChatUserMessageCount(
@@ -129,9 +130,10 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
           AwesomeNotificationService().showNotification(message: data);
         }
       } else if (data['data']['type'] == "acknowledge_message") {
-        Map<String, dynamic> messageData = dataOfNotification['data'] is Map
-            ? dataOfNotification['data']
-            : jsonDecode(dataOfNotification['data']);
+        final Map<String, dynamic> messageData =
+            dataOfNotification['data'] is Map
+                ? dataOfNotification['data']
+                : jsonDecode(dataOfNotification['data']);
 
         /// set delivery status true for the message
         MainSocketMessageHandler()
@@ -139,21 +141,30 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
       }
 
       AwesomeNotificationService().showNotification(message: data);
-    }
+    } else if (notification["data"] != null &&
+        notification["data"]["alert_type"] != null &&
+        (notification["data"]["alert_type"] ==
+                "payment_request_in_shared_cart" ||
+            notification["data"]["alert_type"] == "added_to_new_shared_cart")) {
+      data['data'] = dataOfNotification['data'] is Map
+          ? dataOfNotification['data']
+          : jsonDecode(dataOfNotification['data']);
 
+      AwesomeNotificationService().showNotification(message: data);
+    }
     // Here is the push notification.
     else {
       data['notification'] = notification;
 
-      String action = data['notification']['actions'] ??
+      final String action = data['notification']['actions'] ??
           data['notification']['click_action'] ??
           "";
 
-      debugPrint('ACTION NOTI -> $action');
+      // debugPrint('ACTION NOTI -> $action');
       if (action == "/transaction") {
         data['data'] = {"type": "transaction"};
       } else if (action.contains('/moment')) {
-        debugPrint('FRANK body !--> ${data['body']}');
+        // debugPrint('FRANK body !--> ${data['body']}');
         data['data'] = {"type": action};
       } else if (action == Routes.REQUEST_PAYMENT) {
         data['data'] = {"type": "request-payment"};
@@ -167,6 +178,10 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
         data['data'] = {"type": "orders-list"};
       } else if (action.toString().contains("/order-detail-page/")) {
         data['data'] = {"type": "order-detail-page"};
+      } else if (action.toString().contains("/shared-cart/")) {
+        data['data'] = {"type": "accounts"};
+      } else if (action.toString().contains("/new-shared-cart/")) {
+        data['data'] = {"type": "shopping-cart"};
       } else {
         debugPrint("UNKNOWN NOTIFICATION TYPE $remoteMessage");
         return;
@@ -174,20 +189,21 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
       AwesomeNotificationService().showNotification(message: data);
     }
   } catch (error) {
-    print("ERROR IN BACKGROUND HANDLER : - $error");
-    print("DATA IN BACKGROUND HANDLER : - $remoteMessage");
+    debugPrint("ERROR IN BACKGROUND HANDLER : - $error");
+    debugPrint("DATA IN BACKGROUND HANDLER : - $remoteMessage");
   }
 
   return Future<void>.value();
 }
 
 class PushNotificationService {
-  static FirebaseMessaging _fcm = FirebaseMessaging.instance;
-  static AuthService _auth = AuthService();
-  static DatabaseHelper _db = DatabaseHelper();
+  static final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  static final AuthService _auth = AuthService();
+  static final DatabaseHelper _db = DatabaseHelper();
+  StreamSubscription? streamListen;
 
   static final PushNotificationService _singleton =
-      new PushNotificationService._internal();
+      PushNotificationService._internal();
 
   factory PushNotificationService() {
     return _singleton;
@@ -198,6 +214,20 @@ class PushNotificationService {
   FirebaseMessaging get fcm => _fcm;
 
   Future<void> initialize() async {
+    _fcm.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    _fcm.requestPermission(
+        sound: true,
+        provisional: false,
+        criticalAlert: false,
+        carPlay: true,
+        badge: true,
+        announcement: false,
+        alert: true);
     //to stop automatically recreates the token when we deregister user in logout
     _fcm.setAutoInitEnabled(false);
 
@@ -210,14 +240,14 @@ class PushNotificationService {
       // });
     }
 
-    var data = await getDeviceInfo();
+    final data = await getDeviceInfo();
     await _fcm.getToken().then((String? token) async {
       data["token"] = token;
 
-      print("FCM Token:- $token");
+      // debugPrint("FCM Token:- $token");
       // this piece of code convert Map<dynamic,dynamic> data to Map<String,String> tempData
       // so we can store that data into database
-      Map<String, dynamic> tempData = new Map<String, dynamic>();
+      final Map<String, dynamic> tempData = <String, dynamic>{};
       tempData['firebaseToken'] = data['token'];
       tempData['type'] = data['type'];
       tempData['mode'] = data['mode'];
@@ -239,29 +269,33 @@ class PushNotificationService {
     /// "body":"User Updated Order Status","title":"Order Update",
     /// "priority":"normal","actions":"\/orders\/52"}}
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("onMessage: ${message.data}");
+    await streamListen?.cancel();
+
+    streamListen =
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      // debugPrint("onMessage: ${message.data}");
       // creating notification from server payload
-      Map<String, dynamic> notification = Platform.isIOS
+      final Map<String, dynamic> notification = Platform.isIOS
           ? decodeNotificationIOS(message.data)
           : decodeNotification(message.data);
 
-      debugPrint('FRANK NOTI DATA ---> ${notification["data"]}');
+      // debugPrint('FRANK NOTI DATA ---> ${notification["data"]}');
 
       if (notification["data"] != null &&
           notification["data"]["type"] != null &&
           (notification["data"]['type'] == "chatroom_message" ||
               notification["data"]['type'] == "nudge_user" ||
               notification["data"]['type'] == "acknowledge_message")) {
-        print("notification data = ${notification["data"]}");
-        print("notification data type = ${notification["data"] is String}");
+        // debugPrint("notification data = ${notification["data"]}");
+        // debugPrint(
+        //     "notification data type = ${notification["data"] is String}");
         Map<String, dynamic>? decodeMessage;
         try {
           decodeMessage = notification["data"] is Map
               ? notification["data"]
               : jsonDecode(notification["data"]);
 
-          debugPrint('FRANK DECODED MESSAGE ---> ${decodeMessage}');
+          // debugPrint('FRANK DECODED MESSAGE ---> $decodeMessage');
         } catch (error) {
           debugPrint("ERROR:- while adding data to db from FCM $notification");
         }
@@ -271,30 +305,81 @@ class PushNotificationService {
                 message: jsonEncode(decodeMessage), isFCMMessage: true);
           }
         }
+      } else if (notification["data"] != null &&
+          notification["data"]["alert_type"] != null &&
+          (notification["data"]["alert_type"] ==
+                  "payment_request_in_shared_cart" ||
+              notification["data"]["alert_type"] ==
+                  "added_to_new_shared_cart")) {
+        ///{notification: {"image":"http:\/\/cdn.slydo.co.global.prod.fastly.net\/media\/customer\/avatar\/ca75f781-3615-4e3c-9e65-803ebcf7eb4b.jpg","body":"Received \u20A61.00","title":"Payment Received","priority":"normal","actions":"\/transaction"}}
+        ///notification from android {body: You have been added to shared cart, title: Cart Update, actions: /new-shared-cart/f581604c-dcfb-45e7-a2e4-82e91d25e133, image: http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/ca75f781-3615-4e3c-9e65-803ebcf7eb4b.jpg, data: {cart_id: f581604c-dcfb-45e7-a2e4-82e91d25e133, cart_name: new cart 1, alert_type: added_to_new_shared_cart}}
+        ///notification from android {body: You have a payment request for your cart., title: Cart Update, actions: /shared-cart/3bb7ee85-b5f9-48d8-affa-cf193ed66361, image: http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/ca75f781-3615-4e3c-9e65-803ebcf7eb4b.jpg, data: {cart_id: 3bb7ee85-b5f9-48d8-affa-cf193ed66361, amount: 480.0, cart_name: Test Cart, currency: ₦, alert_type: payment_request_in_shared_cart}}
+        ///{notification: {"image":"http:\/\/cdn.slydo.co.global.prod.fastly.net\/media\/customer\/avatar\/ca75f781-3615-4e3c-9e65-803ebcf7eb4b.jpg","body":"User Placed An Order.","title":"Order Created","priority":"normal","actions":"\/orders-list"}}
+        switch (notification["data"]["alert_type"]) {
+          case 'payment_request_in_shared_cart':
+            if (isDialogueOpen) {
+              Navigator.pop(myGlobals.scaffoldKey.currentContext!);
+              isDialogueOpen = false;
+            }
+            if (!isDialogueOpen) {
+              isDialogueOpen = true;
+              // dialog for shared cart payment request
+              final result = await buildCartPaymentRequestDialog(
+                  context: myGlobals.scaffoldKey.currentContext!,
+                  notification: notification);
+
+              if (result != null && result == true) {
+                isDialogueOpen = false;
+              } else {
+                isDialogueOpen = false;
+              }
+            }
+            break;
+          case 'added_to_new_shared_cart':
+            if (isDialogueOpen) {
+              Navigator.pop(myGlobals.scaffoldKey.currentContext!);
+              isDialogueOpen = false;
+            }
+            if (!isDialogueOpen) {
+              isDialogueOpen = true;
+              // dialog for new shared cart created
+              final result = await buildNewCartAlertDialog(
+                  context: myGlobals.scaffoldKey.currentContext!,
+                  notification: notification);
+
+              if (result != null && result == true) {
+                isDialogueOpen = false;
+              } else {
+                isDialogueOpen = false;
+              }
+            }
+            break;
+          default:
+        }
       } else {
-        debugPrint('FRANK ELSE BLOCK LINE 265 ---> ${notification}');
+        // debugPrint('FRANK ELSE BLOCK LINE 265 ---> $notification');
 
         if ((notification["body"].toString().toLowerCase() == "hello" ||
                     notification["body"].toString().toLowerCase() == "null") &&
                 notification['title'] == "" ||
             notification["body"] == "" && notification['title'] == "") {
-          print("ERROR:- notification data = $notification");
+          // debugPrint("ERROR:- notification data = $notification");
           return;
         }
         if (notification["actions"].toString().contains('/moment/')) return;
 
         if (isDialogueOpen) {
-          debugPrint('FRANK DIALOG OPEN');
+          // debugPrint('FRANK DIALOG OPEN');
 
           Navigator.pop(myGlobals.scaffoldKey.currentContext!);
           isDialogueOpen = false;
         }
         if (!isDialogueOpen) {
-          debugPrint('FRANK DIALOG NOT OPEN');
+          // debugPrint('FRANK DIALOG NOT OPEN');
 
-          log("BLACK LOG => $notification");
+          // log("BLACK LOG => $notification");
 
-          Future.delayed(Duration(seconds: 3), () {
+          Future.delayed(const Duration(seconds: 3), () {
             showAlertMessage(
                 notification: notification,
                 context: myGlobals.scaffoldKey.currentContext!);
@@ -304,13 +389,13 @@ class PushNotificationService {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print("onLaunch: ${message.data}");
+      // debugPrint("onLaunch: ${message.data}");
 
       // creating notification from server payload
       // var notification = Platform.isAndroid
       //     ? getAndroidNotification(message.data)
       //     : getIosNotification(message.data);
-      Map<String, dynamic> notification = Platform.isIOS
+      final Map<String, dynamic> notification = Platform.isIOS
           ? decodeNotificationIOS(message.data)
           : decodeNotification(message.data);
 
@@ -325,7 +410,7 @@ class PushNotificationService {
   // This is for the Firebase Push Notification
   void onSelectNotification(String? payload, BuildContext? context,
       Map<String, dynamic> notification) async {
-    debugPrint("showing payload : $payload");
+    // debugPrint("showing payload : $payload");
 
     // example of notification response
     // {body: abiola.rasheed.2 sent you a message,
@@ -334,7 +419,7 @@ class PushNotificationService {
     // actions: /detail_message/40892023-fa43-4652-b3eb-fd584f6530e9}
 
     try {
-      debugPrint("payload : $payload");
+      // debugPrint("payload : $payload");
       if (payload == Routes.REQUEST_PAYMENT) {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         NavigationUtil.pushNamed(context, routeName: Routes.ACCOUNTS);
@@ -346,9 +431,10 @@ class PushNotificationService {
         Navigator.of(context).pushNamed(Routes.CONTRACT_SCREEN);
       } else if (payload == "/transaction") {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
-        Navigator.of(context).pushNamed(Routes.TRANSACTIONS);
+        Navigator.of(context)
+            .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
       } else if (payload == "/connection-request") {
-        DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
+        final DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
             context ?? myGlobals.navigationKey.currentContext!,
             listen: false);
         dashboardBloc.index = 3;
@@ -357,7 +443,7 @@ class PushNotificationService {
         // Navigator.of(context)
         //     .pushNamed('/friends-dashboard', arguments: {"index": 1});
       } else if (payload == "/friends-dashboard") {
-        DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
+        final DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
             context ?? myGlobals.navigationKey.currentContext!,
             listen: false);
         dashboardBloc.index = 3;
@@ -368,7 +454,7 @@ class PushNotificationService {
       } else if (payload!.length > 15 &&
           payload.substring(0, 16) == "/detail_message/") {
         //this variable will fetch the id of message from the response
-        String idOfMessage = payload.replaceAll("/detail_message/", "");
+        final String idOfMessage = payload.replaceAll("/detail_message/", "");
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed('/detail_message', arguments: {
           'id': idOfMessage,
@@ -376,15 +462,16 @@ class PushNotificationService {
       } else if (payload.length > 13 &&
           payload.substring(0, 13) == "/chat-screen/") {
         //this variable will fetch the username of the recipient
-        String recipientUsername = payload.replaceAll("/chat-screen/", "");
-        print("Recipient user name = $recipientUsername");
+        final String recipientUsername =
+            payload.replaceAll("/chat-screen/", "");
+        // debugPrint("Recipient user name = $recipientUsername");
 
         if (recipientUsername != null) {
           showDialog(
               context: context!,
               builder: (context) => Center(child: CircularLoadingIndicator()));
 
-          ChatConversation chatConversation =
+          final ChatConversation chatConversation =
               await UserAuth().fetchContactProfile(recipientUsername);
 
           if (chatConversation == null) {
@@ -400,14 +487,15 @@ class PushNotificationService {
         Navigator.of(context!).popUntil(ModalRoute.withName(Routes.DASHBOARD));
         Navigator.of(context).pushNamed('/orders-list');
       } else if (payload.toString().contains("order-detail-page")) {
-        Order order = Order.fromJson(notification["data"]);
+        final Order order = Order.fromJson(notification["data"]);
 
         Navigator.of(context!).pushNamed(Routes.ORDER_DETAIL_PAGE, arguments: {
           'order': order,
         });
       } else if (payload.toString().contains('/moment/')) {
-        debugPrint('FRANK MOMENT ---> ${notification["data"]}');
-        MomentsModel momentsModel = MomentsModel.fromJson(notification['data']);
+        // debugPrint('FRANK MOMENT ---> ${notification["data"]}');
+        final MomentsModel momentsModel =
+            MomentsModel.fromJson(notification['data']);
         NavigationUtil.push(context!,
             screen: MomentsDetailsScreen(
               indexOfMoment: 0,
@@ -416,43 +504,50 @@ class PushNotificationService {
               ],
             ));
       } else if (payload.toString().contains('/yarn/')) {
-        String yarnId = payload.toString().replaceAll("/yarn/", "");
+        final String yarnId = payload.toString().replaceAll("/yarn/", "");
         NavigationUtil.push(context!,
             screen: YarnDetailScreen(
               yarn: Yarn(),
               yarnId: yarnId,
             ));
+      } else if (payload.toString().contains('/shared-cart/')) {
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context).pushNamed(Routes.ACCOUNTS);
+      } else if (payload.toString().contains('/new-shared-cart/')) {
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context).pushNamed(Routes.SHOPPING_CART);
       }
     } catch (error) {
-      print("new error:- $error");
+      debugPrint("new error:- $error");
     }
   }
 
   void _navigateToItemDetail(
       Map<String, dynamic> notification, BuildContext? context) async {
-    print("navigate function is called");
+    // debugPrint("navigate function is called");
     onSelectNotification(notification['actions'], context, notification);
   }
 
   Future<void> logout() async {
-    debugPrint("logout called!");
+    // debugPrint("logout called!");
 
     try {
       await FirebaseMessaging.instance.deleteToken();
+      await streamListen?.cancel();
     } catch (e) {
       debugPrint("logout error:- $e");
     }
 
-    debugPrint("LOGOUT=====>");
+    // debugPrint("LOGOUT=====>");
   }
 
   void showAlertMessage(
       {required Map<String, dynamic> notification,
       required BuildContext context}) async {
-    debugPrint("====> $notification");
+    // debugPrint("====> $notification");
     // show the notification in the dialog
     isDialogueOpen = true;
-    bool? result = await showDialogBoxWithImage(
+    final bool? result = await showDialogBoxWithImage(
       context: context,
       actionOneBgColor: greyBorderColor,
       actionOneTextColor: blackFont,
@@ -478,17 +573,17 @@ class PushNotificationService {
 }
 
 Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
-  debugPrint("DATA:- $message");
-  Map<String, dynamic> notification = {};
-  Map<String, dynamic> decodeNotification = jsonDecode(message["notification"]);
-  notification["body"] = decodeNotification["body"] ?? "";
-  notification["title"] = decodeNotification["title"] ?? "";
-  notification["actions"] =
-      decodeNotification["actions"] ?? decodeNotification["click_action"] ?? "";
-  notification['image'] = decodeNotification['image'];
+  // debugPrint("DATA:- $message");
+  final Map<String, dynamic> notification = {};
+  // final Map<String, dynamic> decodeNotification =
+  //     jsonDecode(message["notification"]);
+  notification["body"] = message["body"] ?? "";
+  notification["title"] = message["title"] ?? "";
+  notification["actions"] = message["actions"] ?? message["click_action"] ?? "";
+  notification['image'] = message['image'];
 
   if (message["data"] != null) {
-    Map<String, dynamic> decodedInnerData =
+    final Map<String, dynamic> decodedInnerData =
         message["data"] is Map ? message["data"] : jsonDecode(message["data"]);
     notification["data"] = decodedInnerData;
   }
@@ -497,7 +592,7 @@ Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
     if (message["data"] != null &&
         message['data'] is Map &&
         (message['data'] as Map)['notification'] != null) {
-      Map<String, dynamic> notificationFromMessage =
+      final Map<String, dynamic> notificationFromMessage =
           jsonDecode(message['data']['notification']);
 
       notification["body"] = notificationFromMessage['body'] ?? "";
@@ -511,13 +606,13 @@ Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
     debugPrint("ERROR11:- $error");
   }
 
-  print("notification from android $notification");
+  // debugPrint("notification from android $notification");
   return notification;
 }
 
 Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
-  debugPrint("DATA:- $message");
-  Map<String, dynamic> notification = {};
+  // debugPrint("DATA:- $message");
+  final Map<String, dynamic> notification = {};
 
   notification["body"] = message["body"] ?? "";
   notification["title"] = message["title"] ?? "";
@@ -525,7 +620,7 @@ Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
   notification['image'] = message['image'];
 
   if (message["data"] != null) {
-    Map<String, dynamic> decodedInnerData =
+    final Map<String, dynamic> decodedInnerData =
         message["data"] is Map ? message["data"] : jsonDecode(message["data"]);
     notification["data"] = decodedInnerData;
   }
@@ -534,7 +629,7 @@ Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
     if (message["data"] != null &&
         message['data'] is Map &&
         (message['data'] as Map)['notification'] != null) {
-      Map<String, dynamic> notificationFromMessage =
+      final Map<String, dynamic> notificationFromMessage =
           jsonDecode(message['data']['notification']);
 
       notification["body"] = notificationFromMessage['body'] ?? "";
@@ -548,7 +643,7 @@ Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
     debugPrint("ERROR22:- $error");
   }
 
-  print("notification from android $notification");
+  // debugPrint("notification from android $notification");
   return notification;
 }
 

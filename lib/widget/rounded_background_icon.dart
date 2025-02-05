@@ -34,7 +34,7 @@ class RoundedBackgroundIcon extends StatelessWidget {
           onTap!();
         }
       },
-      child: Container(
+      child: SizedBox(
         height: height,
         width: width,
         child: Card(

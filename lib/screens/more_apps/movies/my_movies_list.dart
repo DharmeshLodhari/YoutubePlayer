@@ -1,23 +1,22 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/MovieItem.dart';
+import 'models/movie_item.dart';
 import 'movie_auth.dart';
 
 class MyMovieList extends StatefulWidget {
+  const MyMovieList({super.key});
+
   @override
-  _MyMovieListState createState() => _MyMovieListState();
+  State<MyMovieList> createState() => _MyMovieListState();
 }
 
 class _MyMovieListState extends State<MyMovieList> {
   List<MovieItem> movieItem = [];
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
 
@@ -39,26 +38,18 @@ class _MyMovieListState extends State<MyMovieList> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       body: isLoading
           ? Center(
               child: CircularLoadingIndicator(),
@@ -73,12 +64,12 @@ class _MyMovieListState extends State<MyMovieList> {
               onRefresh: _onRefresh,
               child: SingleChildScrollView(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: movieItem
                         .map(
                           (movie) => Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: MovieTile(movieItem: movie)),
                         )
                         .toList(),

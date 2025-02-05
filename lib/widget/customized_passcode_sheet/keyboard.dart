@@ -37,12 +37,12 @@ class Keyboard extends StatelessWidget {
   //should have a proper order [1...9, 0]
   final List<String>? digits;
 
-  Keyboard({
-    Key? key,
+  const Keyboard({
+    super.key,
     required this.keyboardUIConfig,
     required this.onKeyboardTap,
     this.digits,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => _buildKeyboard(context);
@@ -55,13 +55,13 @@ class Keyboard extends StatelessWidget {
       keyboardItems = digits;
     }
     final screenSize = MediaQuery.of(context).size;
-    final keyboardHeight = 225.0;
+    const keyboardHeight = 225.0;
     final keyboardWidth = screenSize.width;
     final keyboardSize = Size(keyboardWidth, keyboardHeight);
     return Container(
       width: keyboardSize.width,
       height: keyboardSize.height,
-      margin: EdgeInsets.only(top: 1, bottom: 1),
+      margin: const EdgeInsets.only(top: 1, bottom: 1),
       child: AlignedGrid(
         keyboardSize: keyboardSize,
         children: List.generate(10, (index) {
@@ -73,7 +73,7 @@ class Keyboard extends StatelessWidget {
 
   Widget _buildKeyboardDigit(String text) {
     return Container(
-      margin: EdgeInsets.all(1),
+      margin: const EdgeInsets.all(1),
       child: Material(
         color: keyboardUIConfig.digitFillColor,
         child: InkWell(
@@ -82,6 +82,14 @@ class Keyboard extends StatelessWidget {
             onKeyboardTap(text);
           },
           child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                  color: keyboardUIConfig.primaryColor,
+                  width: keyboardUIConfig.digitBorderWidth),
+            ),
             child: Center(
               child: Text(
                 text,
@@ -91,14 +99,6 @@ class Keyboard extends StatelessWidget {
                     fontWeight: FontWeight.w800),
                 semanticsLabel: text,
               ),
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                  color: keyboardUIConfig.primaryColor,
-                  width: keyboardUIConfig.digitBorderWidth),
             ),
           ),
         ),
@@ -116,9 +116,8 @@ class AlignedGrid extends StatelessWidget {
   final Size keyboardSize;
 
   const AlignedGrid(
-      {Key? key, required this.children, required this.keyboardSize})
-      : listSize = children.length,
-        super(key: key);
+      {super.key, required this.children, required this.keyboardSize})
+      : listSize = children.length;
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +126,7 @@ class AlignedGrid extends StatelessWidget {
       spacing: spacing,
       alignment: WrapAlignment.center,
       children: children
-          .map((item) => Container(
+          .map((item) => SizedBox(
                 width: MediaQuery.of(context).size.width / 3,
                 height: 50,
                 child: item,

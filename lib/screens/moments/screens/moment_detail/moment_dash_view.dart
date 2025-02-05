@@ -1,27 +1,26 @@
 //The dashes at the top of the moment's page (similar to Whatsapp's)
 import 'dart:async';
 
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
-import '../../../../utils/colors.dart';
 
 class MomentDashView extends StatefulWidget {
   final int currentPageViewIndex;
   final int lengthOfMoment;
   final AnimationController controller;
   final PageController pageController;
-  double value;
+  final double value;
 
-  MomentDashView(
-      {Key? key,
+  const MomentDashView(
+      {super.key,
       required this.currentPageViewIndex,
       required this.lengthOfMoment,
       required this.controller,
       required this.value,
-      required this.pageController})
-      : super(key: key);
+      required this.pageController});
 
   @override
-  _MomentDashViewState createState() => _MomentDashViewState();
+  State<MomentDashView> createState() => _MomentDashViewState();
 }
 
 class _MomentDashViewState extends State<MomentDashView>
@@ -29,36 +28,38 @@ class _MomentDashViewState extends State<MomentDashView>
   late AnimationController controller;
   Timer? timer;
   double widthFactor = 0;
-  PageController? _pageController;
-  double? v;
+  late PageController _pageController;
 
   @override
   void initState() {
-    controller = AnimationController(vsync: this);
     _pageController = widget.pageController;
-    v = widget.value;
-    if (widget.value == 1.0) {
-      controller = widget.controller;
-    } else {
-      controller.lowerBound;
-    }
+    controller = widget.controller;
+
+    controller.addListener(controllerListener);
 
     super.initState();
   }
 
-  // @override
-  // void dispose() {
-  //   widget.videoPlayerControllers![0].dispose();
-  //   super.dispose();
-  // }
+  void controllerListener() {
+    if (controller.isCompleted) {
+      if (widget.currentPageViewIndex == widget.lengthOfMoment - 1) {
+        if (mounted) Navigator.pop(context);
+      } else {
+        _pageController.nextPage(
+            duration: const Duration(milliseconds: 50), curve: Curves.easeIn);
+        controller.reset();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.addListener(controllerListener);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    v = widget.value;
-
-    if (widget.value == 1.0) {
-      controller = widget.controller;
-    }
     return SizedBox(
       height: 50,
       child: Row(
@@ -71,9 +72,9 @@ class _MomentDashViewState extends State<MomentDashView>
 
   List<Widget> dashes(int lengthOfMoment, int currentIndex) {
     // debugPrint('DASHES ---> ');
-    List<Widget> widgets = [];
+    final List<Widget> widgets = [];
     for (int i = 0; i < lengthOfMoment; i++) {
-      Widget widget = Expanded(
+      final Widget widget = Expanded(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 4),
           child: LinearProgressIndicator(
@@ -85,15 +86,6 @@ class _MomentDashViewState extends State<MomentDashView>
         ),
       );
       widgets.add(widget);
-
-      if (controller.value == 1.0) {
-        _pageController?.nextPage(
-            duration: const Duration(milliseconds: 50), curve: Curves.easeIn);
-        controller.reset();
-        if (currentIndex == lengthOfMoment) {
-          break;
-        }
-      }
     }
 
     return widgets;

@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class EventDashboard extends StatefulWidget {
+  const EventDashboard({super.key});
+
   @override
-  _EventDashboardState createState() => _EventDashboardState();
+  State<EventDashboard> createState() => _EventDashboardState();
 }
 
 class _EventDashboardState extends State<EventDashboard> {
@@ -23,12 +25,13 @@ class _EventDashboardState extends State<EventDashboard> {
         return Future.value(true);
       },
       child: Scaffold(
+        backgroundColor: lightGrey,
         body: PageView(
           controller: _eventDashboardBloc.pageController,
           onPageChanged: (index) {
             _eventDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             EventExploreScreen(),
             MyEventsScreen(),
           ],
@@ -74,7 +77,7 @@ class _EventDashboardState extends State<EventDashboard> {
   BottomNavigationBarItem bottomNavigationBarItem(
       {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: SizedBox(
         height: 50,
         width: 108,
         child: Icon(
@@ -99,7 +102,7 @@ class _EventDashboardState extends State<EventDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
@@ -109,13 +112,13 @@ class _EventDashboardState extends State<EventDashboard> {
                 size: 16,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.w700),

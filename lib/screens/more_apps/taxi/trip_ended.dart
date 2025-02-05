@@ -4,8 +4,10 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 
 class TripEnded extends StatefulWidget {
+  const TripEnded({super.key});
+
   @override
-  _TripEndedState createState() => _TripEndedState();
+  State<TripEnded> createState() => _TripEndedState();
 }
 
 class _TripEndedState extends State<TripEnded> {
@@ -21,7 +23,7 @@ class _TripEndedState extends State<TripEnded> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
@@ -30,6 +32,7 @@ class _TripEndedState extends State<TripEnded> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -55,7 +58,7 @@ class _TripEndedState extends State<TripEnded> {
   Widget scaffoldBody() {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 80,
         ),
         Stack(
@@ -66,22 +69,22 @@ class _TripEndedState extends State<TripEnded> {
               shadowColor: dividerColor.withAlpha(125),
               color: Colors.white,
               borderOnForeground: true,
-              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              shape: RoundedRectangleBorder(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20))),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 60,
                     ),
                     getDriverInfo(),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     getRideInfo(),
-                    SizedBox(
+                    const SizedBox(
                       height: 40,
                     ),
                   ],
@@ -101,8 +104,8 @@ class _TripEndedState extends State<TripEnded> {
                   child: Container(
                       height: 60,
                       width: 60,
-                      padding: EdgeInsets.all(8),
-                      child: Icon(
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(
                         Icons.check_circle,
                         color: Colors.white,
                       )),
@@ -111,7 +114,7 @@ class _TripEndedState extends State<TripEnded> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
         getDriverActions(),
@@ -121,7 +124,7 @@ class _TripEndedState extends State<TripEnded> {
 
   Widget getDriverInfo() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Text(
         "Your trip has ended",
         style: TextStyle(
@@ -132,7 +135,7 @@ class _TripEndedState extends State<TripEnded> {
 
   Widget getDriverActions() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: CurvedButton(
         borderRadius: 10,
         backgroundColor: navyBlue,
@@ -152,7 +155,7 @@ class _TripEndedState extends State<TripEnded> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       shadowColor: dividerColor.withAlpha(125),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -165,7 +168,7 @@ class _TripEndedState extends State<TripEnded> {
                       fontSize: 14,
                       color: blackFont),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 ),
                 Text(
@@ -177,14 +180,14 @@ class _TripEndedState extends State<TripEnded> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Image.asset(
               "assets/images/taxi/route.png",
               height: 80,
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Expanded(
@@ -198,7 +201,7 @@ class _TripEndedState extends State<TripEnded> {
                         fontSize: 14,
                         color: blackFont),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Text(

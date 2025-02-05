@@ -10,10 +10,15 @@ class CustomizedCheckBoxField extends StatefulWidget {
   int? maxLines;
 
   CustomizedCheckBoxField(
-      {Key? key, required this.title, required this.onTap, required this.isChecked, this.fontSize, this.maxLines}) : super(key: key);
+      {super.key,
+      required this.title,
+      required this.onTap,
+      required this.isChecked,
+      this.fontSize,
+      this.maxLines});
 
   @override
-  _CustomizedCheckBoxFieldState createState() =>
+  State<CustomizedCheckBoxField> createState() =>
       _CustomizedCheckBoxFieldState();
 }
 
@@ -63,7 +68,9 @@ class _CustomizedCheckBoxFieldState extends State<CustomizedCheckBoxField> {
             child: Text(
               widget.title,
               style: TextStyle(
-                  color: blackFont, fontSize: widget.fontSize ?? 14.0, fontWeight: FontWeight.w600),
+                  color: blackFont,
+                  fontSize: widget.fontSize ?? 14.0,
+                  fontWeight: FontWeight.w600),
               maxLines: widget.maxLines ?? 1,
               softWrap: widget.maxLines == 2 ? true : false,
               overflow: TextOverflow.fade,

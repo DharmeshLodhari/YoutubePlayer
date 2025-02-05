@@ -4,16 +4,18 @@ import 'dart:io';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
+import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/routes/route_generator.dart';
+import 'package:Slydo/screens/business/bloc/contract_bloc.dart';
+import 'package:Slydo/screens/business/bloc/invoice_bloc.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/business/bloc/contract_bloc.dart';
-import 'package:Slydo/screens/more_apps/business/bloc/invoice_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/hotels/hotel_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/music/music_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/music/music_player.dart';
@@ -21,7 +23,7 @@ import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
@@ -31,10 +33,11 @@ import 'package:Slydo/services/route_provider.dart';
 import 'package:Slydo/services/timer_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show BindingBase, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -42,7 +45,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -58,57 +61,86 @@ String appVersion = '';
 final logger = Logger();
 
 void main() async {
-  HttpOverrides.global = new MyHttpOverrides();
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  await GetStorage.init();
-  WidgetsFlutterBinding.ensureInitialized();
+    HttpOverrides.global = MyHttpOverrides();
+    await GetStorage.init();
+    BindingBase.debugZoneErrorsAreFatal = true;
 
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  appVersion = packageInfo.version;
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    appVersion = packageInfo.version;
 
-  cameras = await availableCameras();
-  locatorSetup();
-  AppConfig();
+    cameras = await availableCameras();
+    locatorSetup();
+    AppConfig();
 
-  /// ENABLE and DISABLE Logs
-  AppConfig.enableLogs.value = false;
+    /// ENABLE and DISABLE Logs
+    AppConfig.enableLogs.value = true;
 
-  getAppFeaturesFromServer();
-  await FlutterDownloader.initialize();
+    getAppFeaturesFromServer();
+    await FlutterDownloader.initialize();
+    // await Firebase
+    //     .initializeApp(); // initialize firebase before actual app get start.
+    //
+    // AwesomeNotificationService().init();
+    //
+    // FirebaseMessaging.onBackgroundMessage(fcmBackgroundMessageHandler);
+    await Firebase.initializeApp();
 
-  await LocalNotificationService().init();
+    AwesomeNotificationService().init();
 
-  await Firebase.initializeApp();
-
-  AwesomeNotificationService().init();
-
-  if (kDebugMode) {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-  } else {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-  }
-
-  // Pass all uncaught errors to Crashlytics.
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-
-  // to set orientation only vertical
-  SystemChrome.setPreferredOrientations(
-    [
+    await LocalNotificationService().init();
+    // Set orientation only to vertical
+    await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
-    ],
-  ).then((value) {
-    runZonedGuarded(() {
-      runApp(
-        MultiProvider(providers: providersList, child: MyApp()),
-      );
-    }, (exception, stack) {
-      FirebaseCrashlytics.instance.recordError(exception, stack);
-//    final _auth = AuthService();
-//    _auth.logOut();
-//    exit(0);
-    });
+    ]);
+
+    // Run the app
+    runApp(
+      MultiProvider(providers: providersList, child: const MyApp()),
+    );
+
+    // Configure Firebase Crashlytics
+    if (kDebugMode) {
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+    } else {
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+    }
+
+    // Pass all uncaught errors to Crashlytics
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  }, (exception, stack) {
+    FirebaseCrashlytics.instance.recordError(exception, stack);
   });
+//   if (kDebugMode) {
+//     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+//   } else {
+//     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+//   }
+//
+//   // Pass all uncaught errors to Crashlytics.
+//   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+//
+//   // to set orientation only vertical
+//   SystemChrome.setPreferredOrientations(
+//     [
+//       DeviceOrientation.portraitUp,
+//       DeviceOrientation.portraitDown,
+//     ],
+//   ).then((value) {
+//     runZonedGuarded(() {
+//       runApp(
+//         MultiProvider(providers: providersList, child: const MyApp()),
+//       );
+//     }, (exception, stack) {
+//       FirebaseCrashlytics.instance.recordError(exception, stack);
+// //    final _auth = AuthService();
+// //    _auth.logOut();
+// //    exit(0);
+//     });
+//   });
 }
 
 void getAppFeaturesFromServer() async {
@@ -128,11 +160,11 @@ void getAppFeaturesFromServer() async {
     (timer) async {
       await AppFeaturesService().getAppFeatures().then(
         (value) async {
-          debugPrint('APP FEATURE AFTER 15 MINUTES ::: $value');
+          // debugPrint('APP FEATURE AFTER 15 MINUTES ::: $value');
 
           getIt<AppConfigurationBloc>().appConfigurationModel = value;
-          debugPrint(
-              'GET IT AFTER 15 MINUTES --> ${getIt<AppConfigurationBloc>().appConfigurationModel}');
+          // debugPrint(
+          //     'GET IT AFTER 15 MINUTES --> ${getIt<AppConfigurationBloc>().appConfigurationModel}');
         },
       );
     },
@@ -140,14 +172,16 @@ void getAppFeaturesFromServer() async {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   //default local language
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   final AppLocalizationDelegate _localeOverrideDelegate =
-      AppLocalizationDelegate(Locale('en', 'US'));
+      const AppLocalizationDelegate(Locale('en', 'US'));
 
   @override
   void initState() {
@@ -177,17 +211,17 @@ class _MyAppState extends State<MyApp> {
               _localeOverrideDelegate
             ],
             navigatorObservers: [MyRouteObserver()],
-            supportedLocales: [
-              const Locale('en', 'US'),
-              const Locale('fr', 'FR'),
-              const Locale('es', 'ES'),
-              const Locale('pt', 'PT'),
-              const Locale('am', 'ET'),
-              const Locale('ar', 'AE'),
-              const Locale('ha', 'KE'),
-              const Locale('sw', 'KE'),
-              const Locale('yo', 'NG'),
-              const Locale('zu', 'ZA'),
+            supportedLocales: const [
+              Locale('en', 'US'),
+              Locale('fr', 'FR'),
+              Locale('es', 'ES'),
+              Locale('pt', 'PT'),
+              Locale('am', 'ET'),
+              Locale('ar', 'AE'),
+              Locale('ha', 'KE'),
+              Locale('sw', 'KE'),
+              Locale('yo', 'NG'),
+              Locale('zu', 'ZA'),
             ],
             initialRoute: Routes.SPLASH,
             onGenerateRoute: RouteGenerator.generateRoute,
@@ -197,9 +231,12 @@ class _MyAppState extends State<MyApp> {
               fontFamily: "Inter",
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
-              backgroundColor: navyBlue,
+              scaffoldBackgroundColor: lightGrey,
               textSelectionTheme: TextSelectionThemeData(
                 selectionHandleColor: navyBlue,
+              ),
+              colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: navyBluePrimary,
               ),
             ),
           );
@@ -242,6 +279,12 @@ List<ChangeNotifierProvider> providersList = [
   ),
   ChangeNotifierProvider<RiderRegistrationBloc>.value(
     value: RiderRegistrationBloc(),
+  ),
+  ChangeNotifierProvider<RiderDeliveryBloc>.value(
+    value: RiderDeliveryBloc(),
+  ),
+  ChangeNotifierProvider<SharedCartBloc>.value(
+    value: SharedCartBloc(),
   ),
   ChangeNotifierProvider<AddressBloc>.value(
     value: AddressBloc(),

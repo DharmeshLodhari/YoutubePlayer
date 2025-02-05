@@ -1,7 +1,6 @@
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
-
-import '../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class MomentsUtils {
   String? getGetMomentDetailDateTime(String dateTime) {
@@ -17,7 +16,7 @@ class MomentsUtils {
         backgroundColor: navyBlue,
         radius: 12,
         child: Text(
-          getInitials(fullName??"").toUpperCase(),
+          getInitials(fullName).toUpperCase(),
           style: TextStyle(color: white, fontWeight: FontWeight.w600),
         ),
       );

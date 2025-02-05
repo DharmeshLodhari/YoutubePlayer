@@ -17,12 +17,12 @@ import '../../../../../routes/route_constants.dart';
 import '../../shopping_auth.dart';
 
 class CreateAddOn extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  CreateAddOn({this.arguments, Key? key}) : super(key: key);
+  const CreateAddOn({this.arguments, super.key});
 
   @override
-  _CreateAddOnState createState() => _CreateAddOnState();
+  State<CreateAddOn> createState() => _CreateAddOnState();
 }
 
 class _CreateAddOnState extends State<CreateAddOn> {
@@ -36,12 +36,11 @@ class _CreateAddOnState extends State<CreateAddOn> {
   bool isRequired = false;
   bool isLoading = false;
   bool isAPILoading = false;
-  var typeList = ['Single', 'Multiple'];
+  List<String> typeList = ['Single', 'Multiple'];
   String selectedType = "";
   String name = "";
   String description = "";
   String value = "";
-  String optionOnWhatToDo = "";
   TextEditingController? groupDescriptionController;
   List<AddOnOption> productAddOnOptionList = [];
   ScrollController scrollControllerAddOnOption = ScrollController();
@@ -54,13 +53,6 @@ class _CreateAddOnState extends State<CreateAddOn> {
   }
 
   @override
-  void initState() {
-    //get value if its form edit or add product
-    optionOnWhatToDo = widget.arguments["option"];
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
@@ -68,7 +60,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
@@ -78,6 +70,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -133,8 +126,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
                             fontSize: 12),
                       ),
                       const SizedBox(height: 30),
-                      if (productAddOnOptionList == null ||
-                          productAddOnOptionList.isEmpty) ...[
+                      if (productAddOnOptionList.isEmpty) ...[
                         getAddOns(),
                       ] else ...[
                         displaySelectedAddOnOption(),
@@ -160,22 +152,20 @@ class _CreateAddOnState extends State<CreateAddOn> {
   }
 
   Widget getDescription() {
-    return Container(
-      child: CustomizedTextFormField(
-        maxLines: 3,
-        labelText: "Description",
-        textCapitalization: TextCapitalization.sentences,
-        // controller: groupDescriptionController,
-        validator: (val) {
-          if (val.isNotEmpty) {
-            return null;
-          }
-          return AppLocalization.of(context)!.descriptionMustNotEmpty;
-        },
-        onChanged: (val) {
-          description = val;
-        },
-      ),
+    return CustomizedTextFormField(
+      maxLines: 3,
+      labelText: "Description",
+      textCapitalization: TextCapitalization.sentences,
+      // controller: groupDescriptionController,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.descriptionMustNotEmpty;
+      },
+      onChanged: (val) {
+        description = val;
+      },
     );
   }
 
@@ -195,7 +185,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
   }
 
   bool validateDropdown() {
-    if (selectedType != null && selectedType != '') {
+    if (selectedType.isNotEmpty && selectedType != '') {
       return true;
     } else {
       showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
@@ -220,7 +210,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedType != null ? selectedType : "",
+          selectedType.isNotEmpty ? selectedType : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -257,7 +247,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
                     shrinkWrap: true,
                     itemCount: typeList.length,
                     itemBuilder: (context, index) {
-                      var category = typeList[index];
+                      final category = typeList[index];
                       if (selectedType == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -318,7 +308,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
       onTap: () async {
         //disable click if add-on option is not empty
         final result = await Navigator.of(context)
-            .pushNamed(Routes.PRODUCT_ADD_ON_OPTION_CREATE, arguments: {
+            .pushNamed(Routes.ADD_EDIT_ADD_ON_OPTION, arguments: {
           'productId': widget.arguments['productId'],
         });
         // final result = await Navigator.of(context).pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
@@ -332,23 +322,21 @@ class _CreateAddOnState extends State<CreateAddOn> {
           if (mounted) setState(() {});
         }
       },
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Add Options',
-              maxLines: 1,
-              style: TextStyle(
-                  color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
-            ),
-            Icon(
-              SlydoAppIcon.add,
-              size: 16,
-              color: blackFont,
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add Options',
+            maxLines: 1,
+            style: TextStyle(
+                color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          Icon(
+            SlydoAppIcon.add,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
       ),
     );
   }
@@ -413,7 +401,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
               onTap: () async {
                 //disable click if add-on option is not empty
                 final result = await Navigator.of(context)
-                    .pushNamed(Routes.PRODUCT_ADD_ON_OPTION_CREATE, arguments: {
+                    .pushNamed(Routes.ADD_EDIT_ADD_ON_OPTION, arguments: {
                   'productId': widget.arguments['productId'],
                 });
 
@@ -432,9 +420,9 @@ class _CreateAddOnState extends State<CreateAddOn> {
             ),
           ],
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         _buildAddOnOptionList(),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         GestureDetector(
           onTap: () async {
             //disable click if add-on option is not empty
@@ -465,24 +453,27 @@ class _CreateAddOnState extends State<CreateAddOn> {
   }
 
   Widget _buildAddOnOptionList() {
-    return Container(
-      height: 80 * productAddOnOptionList.length.toDouble(),
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        //+1 for progressbar
-        itemCount: productAddOnOptionList.length + 1,
-        controller: scrollControllerAddOnOption,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == productAddOnOptionList.length) {
-            return buildLoadingIndicator(isLoading: isLoading);
-          } else {
-            return AddOnOptionTile(
-              addOnOption: productAddOnOptionList[index],
-            );
-          }
-        },
-      ),
-    );
+    return isLoading && productAddOnOptionList.isEmpty
+        ? buildLoadingIndicator(isLoading: isLoading)
+        : SizedBox(
+            height: 80 * productAddOnOptionList.length.toDouble(),
+            child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              //+1 for progressbar
+              itemCount: productAddOnOptionList.length + 1,
+              controller: scrollControllerAddOnOption,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == productAddOnOptionList.length) {
+                  return buildJumpingLoadingIndicator(isLoading: isLoading);
+                } else {
+                  return AddOnOptionTile(
+                    addOnOption: productAddOnOptionList[index],
+                  );
+                }
+              },
+            ),
+          );
   }
 
   @override

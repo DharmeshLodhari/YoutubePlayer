@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_video_player.dart';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/utils/cached_video_player/cached_video_player.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -24,7 +24,7 @@ class RenderMoment extends StatefulWidget {
   final AnimationController controller;
 
   const RenderMoment(
-      {Key? key,
+      {super.key,
       required this.momentsModel,
       required this.videoPlayerControllers,
       required this.onRightSwipe,
@@ -32,30 +32,33 @@ class RenderMoment extends StatefulWidget {
       required this.index,
       required this.pageCtrl,
       required this.controller,
-      required this.momentsModelList})
-      : super(key: key);
+      required this.momentsModelList});
 
   @override
-  RenderMomentState createState() => RenderMomentState(key: key);
+  RenderMomentState createState() => RenderMomentState();
 }
 
 class RenderMomentState extends State<RenderMoment>
     with TickerProviderStateMixin {
   Key? key;
+
   RenderMomentState({this.key});
 
-  GlobalKey<MomentVideoPlayerState> _momentVideoPlayerKey =
+  final GlobalKey<MomentVideoPlayerState> _momentVideoPlayerKey =
       GlobalKey<MomentVideoPlayerState>();
   PhotoViewController photoViewController = PhotoViewController();
+  AnimationController? controller;
+
   double? value;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 2), () {
-      MomentsService().updateMomentView(widget.momentsModel.id!);
+    Future.delayed(const Duration(seconds: 2), () {
+      MomentsAuthService().updateMomentView(widget.momentsModel.id!);
     });
     widget.photoViewController.add(photoViewController);
+    controller = widget.controller;
   }
 
   void toggleMediaPlayingState() {
@@ -64,8 +67,6 @@ class RenderMomentState extends State<RenderMoment>
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('GLAD IMAGE MEDIATYPE -> ${widget.momentsModel.id}');
-    debugPrint('GLAD IMAGE -> ${widget.momentsModel.media!}');
     if (widget.momentsModel.gif != null) {
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.gif!,
@@ -82,7 +83,7 @@ class RenderMomentState extends State<RenderMoment>
               widget.controller.stop();
             },
             onLongPressCancel: () {
-              widget.controller.animateBack(value!);
+              widget.controller.animateBack(value ?? 0);
             },
             child: PhotoView(
               //To be able to zoom the image.

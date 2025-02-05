@@ -1,25 +1,24 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../models/ShoppingProduct.dart';
+import '../../models/shopping_product_model.dart';
 import '../../shopping_auth.dart';
 import 'shopping_tile.dart';
 
 class SpecificCategoryProductList extends StatefulWidget {
+  const SpecificCategoryProductList({super.key});
+
   @override
-  _SpecificCategoryProductListState createState() =>
+  State<SpecificCategoryProductList> createState() =>
       _SpecificCategoryProductListState();
 }
 
 class _SpecificCategoryProductListState
     extends State<SpecificCategoryProductList> {
   List<ShoppingProduct> products = [];
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
 
@@ -41,19 +40,12 @@ class _SpecificCategoryProductListState
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -63,7 +55,7 @@ class _SpecificCategoryProductListState
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: isLoading
             ? Center(
@@ -79,12 +71,13 @@ class _SpecificCategoryProductListState
                 onRefresh: _onRefresh,
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: products
                           .map(
                             (product) => Container(
-                                padding: EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: ShoppingTileWithHeart(
                                   product: product,
                                 )),
@@ -100,6 +93,7 @@ class _SpecificCategoryProductListState
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

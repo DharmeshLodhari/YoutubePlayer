@@ -1,13 +1,10 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/PartialMusicItem.dart';
+import 'models/partial_music_item.dart';
 import 'music_auth.dart';
 import 'music_dashboard_bloc.dart';
 import 'music_player.dart';
@@ -17,15 +14,15 @@ import 'music_tile.dart';
 class MyMusicList extends StatefulWidget {
   MusicPlayer? musicPlayer;
 
-  MyMusicList({this.musicPlayer});
+  MyMusicList({super.key, this.musicPlayer});
 
   @override
-  _MyMusicListState createState() => _MyMusicListState();
+  State<MyMusicList> createState() => _MyMusicListState();
 }
 
 class _MyMusicListState extends State<MyMusicList> {
   List<PartialMusicItem> musicList = [];
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   @override
@@ -46,20 +43,14 @@ class _MyMusicListState extends State<MyMusicList> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      setState(() {
         _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+      });
+    }
   }
 
   late MusicDashboardBloc _musicDashboardBloc;
@@ -73,7 +64,7 @@ class _MyMusicListState extends State<MyMusicList> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: isLoading
             ? Center(
                 child: CircularLoadingIndicator(),
@@ -88,12 +79,13 @@ class _MyMusicListState extends State<MyMusicList> {
                 onRefresh: _onRefresh,
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: musicList
                           .map(
                             (partialMusicItem) => Container(
-                                padding: EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: MusicTileGeneral(
                                   partialMusicItem: partialMusicItem,
                                 )),

@@ -1,0 +1,178 @@
+import 'package:Slydo/utils/util.dart';
+import 'package:flutter/material.dart';
+
+class JobsSearchFilter extends StatefulWidget {
+  const JobsSearchFilter({super.key});
+
+  @override
+  State<JobsSearchFilter> createState() => _JobsSearchFilterState();
+}
+
+class _JobsSearchFilterState extends State<JobsSearchFilter> {
+  String? selectedFilter;
+  List list = ['Photography', 'Baby Care', 'Plumber'];
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: lightGrey,
+      appBar: appBar(),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Container(
+              // width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: const Color(0xfffafbff),
+                  width: 1,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0c31378c),
+                    blurRadius: 20,
+                    offset: Offset(0, 8),
+                  ),
+                ],
+                color: Colors.white,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Categories",
+                    style: TextStyle(
+                      color: Color(0xff75818f),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  FilterDropdown(
+                    selectedFilter: selectedFilter,
+                    hintText: "Choose category",
+                    list: list,
+                    onChangedCallback: (value) {
+                      selectedFilter = value.toString();
+                      setState(() {});
+                    },
+                  ),
+                  const SizedBox(
+                    height: 18,
+                  ),
+                  FilterDropdown(
+                    selectedFilter: selectedFilter,
+                    hintText: "Sort by",
+                    list: list,
+                    onChangedCallback: (value) {
+                      selectedFilter = value.toString();
+                      setState(() {});
+                    },
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Text(
+                    "Price",
+                    style: TextStyle(
+                      color: Color(0xff75818f),
+                      fontSize: 12,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      titleSpacing: 16,
+      backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
+      centerTitle: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Filter",
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
+class FilterDropdown extends StatelessWidget {
+  const FilterDropdown({
+    super.key,
+    required this.selectedFilter,
+    required this.list,
+    required this.onChangedCallback,
+    required this.hintText,
+  });
+
+  final String? selectedFilter;
+  final List list;
+  final void Function(String?) onChangedCallback;
+  final String hintText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 44,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color(0xffdce0e7),
+          width: 1,
+        ),
+        color: Colors.white,
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton(
+          value: selectedFilter,
+          icon: const Icon(Icons.keyboard_arrow_down),
+          hint: Text(
+            hintText,
+            style: const TextStyle(
+              color: Color(0xff75818f),
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          items: list.map((val) {
+            return DropdownMenuItem<String>(
+              value: val,
+              child: Text(val),
+            );
+          }).toList(),
+          onChanged: onChangedCallback,
+        ),
+      ),
+    );
+  }
+}

@@ -63,7 +63,7 @@ class ExploreMomentsModel {
     this.ownerName,
   });
   factory ExploreMomentsModel.fromJson(Map<String, dynamic> json) {
-    List moments = json['moments'];
+    final List moments = json['moments'];
 
     return ExploreMomentsModel(
       owner: json['owner'],
@@ -191,7 +191,7 @@ class MomentsModel {
       owner: json['owner'],
       createdAt: json['created_at'],
       expireAt: json['expire_at'],
-      duration: json['duration'] ?? 30,
+      duration: json['duration'] ?? 30000,
       userSupported: json['user_supported'] ?? false,
       isPublic: json['is_public'] ?? false,
       isPermanent: json['is_permanent'],
@@ -224,12 +224,13 @@ class MomentsModel {
     map['expire_at'] = expireAt;
     map['is_public'] = isPublic;
     map['user_supported'] = userSupported;
-    map['duration'] = duration ?? 30;
+    map['duration'] = duration ?? 30000;
     map['is_permanent'] = isPermanent;
     return map;
   }
 }
 
+// ignore: must_be_immutable
 class SearchMomentModel extends Equatable {
   String? id;
   String? text;
@@ -284,14 +285,14 @@ class SearchMomentModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['owner'] = this.owner;
-    data['created_at'] = this.createdAt;
-    data['tags'] = this.tags;
-    data['media_type'] = this.mediaType;
-    data['avatar'] = this.avatar;
-    data['owner_name'] = this.ownerName;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['owner'] = owner;
+    data['created_at'] = createdAt;
+    data['tags'] = tags;
+    data['media_type'] = mediaType;
+    data['avatar'] = avatar;
+    data['owner_name'] = ownerName;
     return data;
   }
 }

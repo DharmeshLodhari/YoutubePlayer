@@ -23,17 +23,17 @@ class OverlayContainer extends StatefulWidget {
   /// `color` attribute for the `Material` component that wraps `child`.
   final Color materialColor;
 
-  OverlayContainer({
-    Key? key,
+  const OverlayContainer({
+    super.key,
     required this.show,
     required this.child,
     this.asWideAsParent = false,
     this.position = const OverlayContainerPosition(0.0, 0.0),
     this.materialColor = Colors.transparent,
-  }) : super(key: key);
+  });
 
   @override
-  _OverlayContainerState createState() => _OverlayContainerState();
+  State<OverlayContainer> createState() => _OverlayContainerState();
 }
 
 class _OverlayContainerState extends State<OverlayContainer>
@@ -47,7 +47,7 @@ class _OverlayContainerState extends State<OverlayContainer>
     if (widget.show) {
       _show();
     }
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -88,25 +88,25 @@ class _OverlayContainerState extends State<OverlayContainer>
     if (widget.show) {
       _hide();
     }
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   void _show() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      await Future.delayed(Duration(milliseconds: 280));
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 280));
       if (_opened) {
         _overlayEntry.remove();
       }
       _overlayEntry = _buildOverlayEntry();
-      Overlay.of(context)!.insert(_overlayEntry);
+      Overlay.of(context).insert(_overlayEntry);
       _opened = true;
     });
   }
 
   void _hide() {
     if (_opened) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _overlayEntry.remove();
         _opened = false;
       });
@@ -122,7 +122,7 @@ class _OverlayContainerState extends State<OverlayContainer>
   }
 
   OverlayEntry _buildOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
     final size = renderBox.size;
     final offset = renderBox.localToGlobal(Offset.zero);
     return OverlayEntry(
@@ -132,8 +132,8 @@ class _OverlayContainerState extends State<OverlayContainer>
           top: offset.dy - widget.position.bottom,
           width: widget.asWideAsParent ? size.width : null,
           child: Material(
-            child: widget.child,
             color: widget.materialColor,
+            child: widget.child,
           ),
         );
       },

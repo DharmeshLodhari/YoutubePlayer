@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 class NavigationUtil {
-  static Future push(BuildContext context, {required Widget screen}) {
-    return Navigator.of(context).push(
+  static Future push(BuildContext context, {required Widget screen}) async {
+    final result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => screen,
       ),
     );
+    return result;
   }
 
   static Future pushReplacement(BuildContext context,
@@ -22,7 +23,7 @@ class NavigationUtil {
     return Navigator.of(context).pushNamed(routeName);
   }
 
-  static pop(BuildContext context) {
-    Navigator.of(context).pop();
+  static void pop(BuildContext context) {
+    return Navigator.of(context).pop();
   }
 }

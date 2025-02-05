@@ -1,16 +1,14 @@
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
 import 'package:Slydo/screens/super_store/list_category_product.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
 import 'package:Slydo/screens/super_store/widget/product_category_selection.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:badges/badges.dart' as badges;
+import 'package:Slydo/widget/cart_with_badge.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -19,12 +17,12 @@ import '../../routes/route_constants.dart';
 import '../../utils/navigation_util.dart';
 import '../../utils/util.dart';
 import '../../widget/rounded_background_icon.dart';
-import '../more_apps/yarn/widgets/yarn_tab_selection.dart';
+import '../../widget/tab_selection.dart';
 
 class SuperStore extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  SuperStore({Key? key, this.arguments}) : super(key: key);
+  const SuperStore({super.key, this.arguments});
 
   @override
   State<SuperStore> createState() => _SuperStoreState();
@@ -43,7 +41,7 @@ class _SuperStoreState extends State<SuperStore> {
   List<String> categoryList = [];
   String url = "";
   String nextUrl = "";
-  dynamic categoryId = null;
+  dynamic categoryId;
   late YarnDashboardBloc yarnDashboardBloc;
 
   @override
@@ -66,16 +64,16 @@ class _SuperStoreState extends State<SuperStore> {
     super.dispose();
   }
 
-  getIndustryUrls(ProductIndustryResults industry) {
+  void getIndustryUrls(ProductIndustryResults industry) {
     setState(() {
-      url = AppConfig.baseUrl +
-          "/api/v1/products/categories/?industry=${industry.id}";
-      nextUrl = AppConfig.baseUrl +
-          "/api/v1/products/super-store-industry/?industry=${industry.id}";
+      url =
+          "${AppConfig.baseUrl}/api/v1/products/categories/?industry=${industry.id}";
+      nextUrl =
+          "${AppConfig.baseUrl}/api/v1/products/super-store-industry/?industry=${industry.id}";
     });
   }
 
-  updateAppSetup(ProductIndustryResults industry) {
+  void updateAppSetup(ProductIndustryResults industry) {
     switch (industry.name) {
       case 'Restaurant/Cafe':
         setState(() {
@@ -133,14 +131,15 @@ class _SuperStoreState extends State<SuperStore> {
     basketBloc = Provider.of<BasketBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar() as PreferredSizeWidget,
+      backgroundColor: lightGrey,
+      appBar: _buildAppBar() as PreferredSizeWidget?,
       body: _buildBody(),
     );
   }
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         appTitle!,
@@ -161,7 +160,7 @@ class _SuperStoreState extends State<SuperStore> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context, "back pressed");
+          Navigator.pop(context);
         },
       ),
       shadowColor: greySecondaryYarn,
@@ -177,7 +176,8 @@ class _SuperStoreState extends State<SuperStore> {
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
-            ProductIndustryResults industryQuery = widget.arguments['industry'];
+            final ProductIndustryResults industryQuery =
+                widget.arguments['industry'];
             Navigator.of(context).pushNamed("/search-product",
                 arguments: {"industry": industryQuery.id});
           },
@@ -188,9 +188,9 @@ class _SuperStoreState extends State<SuperStore> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 20),
+      const SizedBox(width: 15),
       _cartBtn(),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
     ];
   }
 
@@ -208,7 +208,7 @@ class _SuperStoreState extends State<SuperStore> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 15),
+      const SizedBox(width: 15),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -224,7 +224,7 @@ class _SuperStoreState extends State<SuperStore> {
             height: 15,
             width: 15,
           )),
-      SizedBox(width: 15),
+      const SizedBox(width: 15),
 
       // RoundedBackgroundIcon(
       //     backgroundColor: Colors.transparent,
@@ -265,15 +265,15 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _buildCategoryAndTabs() {
-    ProductIndustryResults productUrl = widget.arguments['industry'];
+    final ProductIndustryResults productUrl = widget.arguments['industry'];
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         Column(
           children: [
-            YarnTabSelection(
+            TabSelection(
               onTap: (index) {
                 currentAskTapOnHome = index;
                 // _pageViewController.jumpToPage(currentAskTapOnHome);
@@ -283,7 +283,7 @@ class _SuperStoreState extends State<SuperStore> {
               firstTab: firstTabName,
               secondTab: secondTabName,
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
           ],
@@ -296,51 +296,54 @@ class _SuperStoreState extends State<SuperStore> {
                   categoryName = category;
                   categoryId = id;
                   if (id == "") {
-                    nextUrl = AppConfig.baseUrl +
-                        "/api/v1/products/super-store-industry/?industry=${productUrl.id}";
+                    nextUrl =
+                        "${AppConfig.baseUrl}/api/v1/products/super-store-industry/?industry=${productUrl.id}";
                   } else {
-                    nextUrl = AppConfig.baseUrl +
-                        "/api/v1/products/?industry=${productUrl.id}&category=$id";
+                    nextUrl =
+                        "${AppConfig.baseUrl}/api/v1/products/?industry=${productUrl.id}&category=$id";
                   }
                   if (mounted) setState(() {});
                 },
                 categoryName: categoryName,
-                next_url: AppConfig.baseUrl +
-                    "/api/v1/products/categories/?industry=${productUrl.id}"),
+                nextUrl:
+                    "${AppConfig.baseUrl}/api/v1/products/categories/?industry=${productUrl.id}"),
           ),
-          SizedBox(height: 14),
+          const SizedBox(height: 14),
           Divider(
             height: 0,
             thickness: 0.5,
             color: greySecondaryYarn,
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
         ],
       ],
     );
   }
 
   Widget _buildPageView() {
-    ProductIndustryResults industry = widget.arguments['industry'];
+    final ProductIndustryResults industry = widget.arguments['industry'];
     return IndexedStack(
       index: currentAskTapOnHome,
       children: [
-        categoryId == null || categoryId == ""
-            ? ShopListScreen(
-                onPageRefresh: (bool data) {
-                  if (data == true) {
-                    // _showTabs(true);
-                  }
-                },
-                category: categoryName,
-                industry: appTitle!,
-                nextUrl: nextUrl,
-                type:
-                    categoryId == null || categoryId == "" ? "sessions" : null)
-            : ListCategoryProduct(
-                key: ValueKey("$nextUrl$categoryName"),
-                nextUrl: nextUrl,
-                categoryName: categoryName),
+        if (categoryId == null || categoryId == "")
+          ShopListScreen(
+              onPageRefresh: (bool data) {
+                if (data == true) {
+                  // _showTabs(true);
+                }
+              },
+              arguments: industry,
+              category: categoryName,
+              industry: appTitle ?? "",
+              nextUrl: nextUrl,
+              industryId: industry.id,
+              categoryId: categoryId,
+              type: categoryId == null || categoryId == "" ? "sessions" : null)
+        else
+          ListCategoryProduct(
+              key: ValueKey("$nextUrl$categoryName"),
+              nextUrl: nextUrl,
+              categoryName: categoryName),
         FindBusinessListScreen(
             onPageRefresh: (bool data) {
               if (data == true) {
@@ -374,8 +377,8 @@ class _SuperStoreState extends State<SuperStore> {
     //         : FutureBuilder(
     //             future: getProducts(),
     //             builder: (context, snapshot) {
-    //               print(snapshot.data);
-    //               print("_________________________");
+    //               debugPrint(snapshot.data);
+    //               debugPrint("_________________________");
     //               if (snapshot.hasData) {
     //                 List<Product> result = snapshot.data as List<Product>;
     //                 return result.isEmpty
@@ -436,86 +439,15 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _cartBtn() {
-    return RoundedBackgroundIcon(
+    return CartWithBadge(
+      items: basketBloc.basketItems,
       height: 30,
       width: 30,
-      icon: badges.Badge(
-        badgeContent: getBadgeContent(),
-        badgeAnimation: badges.BadgeAnimation.rotation(
-          animationDuration: Duration(seconds: 1),
-          colorChangeAnimationDuration: Duration(seconds: 1),
-          loopAnimation: false,
-          curve: Curves.fastOutSlowIn,
-          colorChangeAnimationCurve: Curves.easeInCubic,
-        ),
-        badgeStyle: badges.BadgeStyle(
-          shape: badges.BadgeShape.circle,
-          badgeColor: naturalGreen,
-          padding: basketBloc.items.length == 0
-              ? EdgeInsets.all(0)
-              : EdgeInsets.only(
-                  left: getBadgeCount().length == 1 ? 6 : 8,
-                  right: 6,
-                  top: 4,
-                  bottom: 4),
-          elevation: 0,
-        ),
-        child: Center(
-          child: Icon(
-            SlydoAppIcon.cart,
-            size: 16,
-            color: blackFont,
-          ),
-        ),
-      ),
+      backgroundColor: transparent,
+      enableMargin: true,
       onTap: () {
         NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
       },
-      backgroundColor: blackFont.withOpacity(0.1),
-      enableMargin: true,
     );
-  }
-
-  Widget? getBadgeContent() {
-    if (basketBloc.items.length == 0) {
-      return null;
-    }
-    return Text(
-      getBadgeCount(),
-      style: TextStyle(
-        fontSize: 10,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  String getBadgeCount() {
-    int totalItem = 0;
-    basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
-    });
-    // for (var item in basketBloc.items) {
-    //
-    //   if (item['item'] is Product) {
-    //     var product = item['item'] as Product;
-    //
-    //     if (product.variant!.isEmpty && product.variant != null) {
-    //       // If the variant list is empty, add the quantity to the total
-    //       totalItem += int.parse(item['qty'].toString());
-    //     } else {
-    //       // If there are variants, calculate the total quantity from variants
-    //       for(var variant in product.variant!){
-    //         var vProduct = Variant.fromJson(variant);
-    //         totalItem += int.parse(vProduct.quantity.toString());
-    //       }
-    //     }
-    //
-    //   } else if (item['item'] is Service) {
-    //     totalItem += int.parse(item['qty'].toString());
-    //   }
-    // }
-    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 }

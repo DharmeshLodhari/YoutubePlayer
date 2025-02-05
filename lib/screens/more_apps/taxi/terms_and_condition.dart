@@ -1,19 +1,15 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 
 class TermsAndCondition extends StatefulWidget {
+  const TermsAndCondition({super.key});
+
   @override
-  _TermsAndConditionState createState() => _TermsAndConditionState();
+  State<TermsAndCondition> createState() => _TermsAndConditionState();
 }
 
 class _TermsAndConditionState extends State<TermsAndCondition> {
-  MapController? mapController;
-
-  LatLng mapPoint = LatLng(6.605874, 3.349149);
-
   @override
   void initState() {
     super.initState();
@@ -26,7 +22,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: getScaffoldBody(),
       ),
@@ -35,6 +31,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -60,7 +57,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
   Widget getScaffoldBody() {
     return SingleChildScrollView(
         child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -72,7 +69,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                   color: blackFont, fontSize: 22, fontWeight: FontWeight.w700),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Align(
@@ -83,7 +80,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                   color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Align(
@@ -94,7 +91,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                   color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           Text(
@@ -102,7 +99,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -110,7 +107,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -118,7 +115,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -126,7 +123,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(

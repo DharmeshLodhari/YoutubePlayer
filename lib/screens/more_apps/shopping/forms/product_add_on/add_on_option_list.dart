@@ -1,13 +1,13 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:Slydo/widget/vertical_list_item.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -21,15 +21,16 @@ import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
 class AddOnOptionList extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  AddOnOptionList({this.arguments, Key? key}) : super(key: key);
+  const AddOnOptionList({this.arguments, super.key});
 
   @override
-  _AddOnOptionListState createState() => _AddOnOptionListState();
+  State<AddOnOptionList> createState() => _AddOnOptionListState();
 }
 
-class _AddOnOptionListState extends State<AddOnOptionList> {
+class _AddOnOptionListState extends State<AddOnOptionList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -48,13 +49,12 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   bool noItemInList = false;
   final _auth = ShoppingAuthService();
   bool isAPILoading = false;
-
-  //slidable tile
-  SlidableController? _slideController;
+  List<AddOnOption> selectedOptions = [];
 
   @override
   void initState() {
     productId = widget.arguments["productId"];
+    selectedOptions = widget.arguments["options"] ?? [];
 
     getAddOnOptionList();
 
@@ -63,14 +63,11 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        getAddOnOptionList();
+        if (next != null) {
+          getAddOnOptionList();
+        }
       }
     });
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
   }
 
   void getAddOnOptionList() async {
@@ -80,19 +77,28 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
           isLoading = true;
         });
       }
-      Map<String, dynamic>? result =
+      final Map<String, dynamic> result =
           await _auth.getAddOnOptionsList(productId!, next, previous);
       if (result == null) {
         isLoading = false;
         noItemInList = true;
         return;
       }
+      addOnOptionList = [];
       count = result['count'];
       next = result['next'];
       previous = result['previous'];
-      var tempList = result['results'];
+      final tempList = result['results'];
 
       addOnOptionList.addAll(tempList);
+
+      for (var allOptions in addOnOptionList) {
+        for (var selectedOption in selectedOptions) {
+          if (selectedOption.id == allOptions.id) {
+            allOptions.isSelected = true;
+          }
+        }
+      }
 
       if (mounted) {
         setState(() {
@@ -108,10 +114,10 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
           });
         }
       } else if (next == null && addOnOptionList.length > 6) {
-        _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -120,29 +126,22 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   // refresh the list when lifecycle called onResume method
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        addOnOptionList = [];
-        if (mounted) setState(() {});
-        getAddOnOptionList();
-        setState(() {
-          // Call the callback function with the updated list
-          //to pass the list back to edit product page
-          // widget.onListRefreshed!(productVariantList);
-          _refreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      addOnOptionList = [];
+      if (mounted) setState(() {});
+      getAddOnOptionList();
+      setState(() {
+        // Call the callback function with the updated list
+        //to pass the list back to edit product page
+        // widget.onListRefreshed!(productVariantList);
         _refreshController.refreshCompleted();
-      }
-    });
+      });
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -158,9 +157,14 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
         key: _scaffoldMessengerKey,
         child: Scaffold(
           key: _scaffoldKey,
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
-          body: SmartRefresher(
+          floatingActionButton: getSubmitButton(),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          body: SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: SmartRefresher(
               enablePullDown: true,
               header: WaterDropHeader(
                 complete: Container(),
@@ -168,7 +172,9 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
               ),
               controller: _refreshController,
               onRefresh: _onRefresh,
-              child: _buildAddOnOptionList()),
+              child: _buildAddOnOptionList(),
+            ),
+          ),
         ),
       ),
     );
@@ -176,6 +182,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -186,8 +193,8 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
           size: 24,
         ),
         onPressed: () {
-          List<AddOnOption> addOnOption = addOnOptionList
-              .where((addOnOption) => addOnOption.isChecked == true)
+          final List<AddOnOption> addOnOption = addOnOptionList
+              .where((addOnOption) => addOnOption.isSelected == true)
               .toList();
           Navigator.pop(context, addOnOption);
         },
@@ -196,11 +203,14 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       title: Text(
         AppLocalization.of(context)!.option,
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          color: blackFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       actions: <Widget>[
         addOptionBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -218,7 +228,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       ),
       onTap: () async {
         final result = await Navigator.of(context)
-            .pushNamed(Routes.NEW_ADD_ON, arguments: {
+            .pushNamed(Routes.ADD_EDIT_ADD_ON, arguments: {
           'option': 'edit',
           'productId': productId,
         });
@@ -237,26 +247,41 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   }
 
   Widget _buildAddOnOptionList() {
-    return Stack(
-      children: [
-        noItemInList
-            ? NoItemInList(
-                title: AppLocalization.of(context)!.noAddOnYet,
-                msg: AppLocalization.of(context)!.noAddOnYetSub,
-              )
+    return noItemInList
+        ? NoItemInList(
+            title: AppLocalization.of(context)!.noAddOnYet,
+            msg: AppLocalization.of(context)!.noAddOnYetSub,
+          )
+        : isLoading && addOnOptionList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
             : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
                 //+1 for progressbar
                 itemCount: addOnOptionList.length + 1,
                 itemBuilder: (BuildContext context, int index) {
                   if (index == addOnOptionList.length) {
-                    return buildLoadingIndicator(isLoading: isLoading);
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
                   } else {
                     return _getSlidableWithLists(
                         context,
                         GestureDetector(
-                          onTap: () {
-                            toggleAddOnCheckedState(index);
+                          onTap: () async {
+                            // toggleAddOnCheckedState(index);
+                            final data = await Navigator.of(context).pushNamed(
+                                Routes.ADD_EDIT_ADD_ON_OPTION,
+                                arguments: {
+                                  'addOnOption': addOnOptionList[index],
+                                  'productId': productId,
+                                });
+
+                            // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
+                            if (data != null && data is AddOnOption) {
+                              //save the add-on option details for later use
+                              // _onRefresh();
+                              updateItemById(data.id!, data);
+                              if (mounted) setState(() {});
+                            }
                           },
                           child: addOnOptionTile(
                               addOnOption: addOnOptionList[index],
@@ -266,26 +291,17 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                   }
                 },
                 controller: _scrollController,
-              ),
-        Positioned(
-          bottom: 25, // Adjust the distance from the bottom as needed
-          right: 25,
-          left: 25,
-
-          child: getSubmitButton(),
-        ),
-      ],
-    );
+              );
   }
 
   Widget addOnOptionTile({required AddOnOption addOnOption, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: decorateBox(),
         child: ListTile(
           // dense: variant.isDefault! ? true : false,
@@ -297,16 +313,22 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                 appendStringDot(addOnOption.name!, 14),
                 maxLines: 1,
                 style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16),
+                  color: blackFont,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                ),
               ),
-              SizedBox(height: 10.0),
+              const SizedBox(height: 3.0),
               Text(
-                'Created: ${addOnOption.createdAt} ',
+                'Created: ${getProductDateTime(addOnOption.createdAt)}',
                 maxLines: 1,
                 style: TextStyle(
-                    color: darkGrey, fontWeight: FontWeight.w400, fontSize: 12),
+                  color: darkGrey,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  fontFamily: "Inter",
+                ),
               ),
             ],
           ),
@@ -329,6 +351,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                     moneyDisplayNormalizer(
                         int.parse(addOnOption.price.toString())),
                     style: TextStyle(
+                        fontFamily: "Inter",
                         fontSize: 14.0,
                         color: darkGrey,
                         fontWeight: FontWeight.w700),
@@ -338,7 +361,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
               Expanded(
                 child: Checkbox(
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  value: addOnOption.isChecked,
+                  value: addOnOption.isSelected,
                   activeColor: navyBlue,
                   onChanged: (bool? value) {
                     // Handle checkbox state change here
@@ -353,38 +376,49 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
     );
   }
 
+  DateTime getProductDateTime(String? date) {
+    if (date != null) {
+      final DateTime dateTime = DateTime.parse(date);
+      return dateTime;
+    }
+    return DateTime.now();
+  }
+
   void toggleAddOnCheckedState(int index) {
     if (index >= 0 && index < addOnOptionList.length) {
-      addOnOptionList[index].isChecked = !addOnOptionList[index].isChecked;
+      addOnOptionList[index].isSelected = !addOnOptionList[index].isSelected;
       if (mounted) setState(() {});
     }
   }
 
   Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: isAPILoading
-          ? () {}
-          : () async {
-              FocusScope.of(context).unfocus();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: CurvedButton(
+        onPressed: isAPILoading
+            ? () {}
+            : () async {
+                FocusScope.of(context).unfocus();
 
-              isAPILoading = true;
-              if (mounted) setState(() {});
+                isAPILoading = true;
+                if (mounted) setState(() {});
 
-              await loadAllCheckedAddOn();
+                loadAllCheckedAddOn();
 
-              isAPILoading = false;
-              if (mounted) setState(() {});
-            },
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "Save",
-      isLoading: isAPILoading,
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              },
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Save",
+        isLoading: isAPILoading,
+      ),
     );
   }
 
   Widget loadAllCheckedAddOn() {
-    List<AddOnOption> addOnOption = addOnOptionList
-        .where((addOnOption) => addOnOption.isChecked == true)
+    final List<AddOnOption> addOnOption = addOnOptionList
+        .where((addOnOption) => addOnOption.isSelected == true)
         .toList();
 
     Navigator.pop(context, addOnOption);
@@ -397,7 +431,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
 
     url = addOnOption.picture;
 
-    String imageUrl = url!.replaceAll('https//', 'https://');
+    final String imageUrl = url!.replaceAll('https//', 'https://');
     if (url == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
@@ -410,7 +444,8 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
     } else {
       return CustomBoxShadow(
         child: Container(
-          width: 60,
+          width: 50,
+          height: 50,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
@@ -427,38 +462,40 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   Widget _getSlidableWithLists(
       BuildContext context, Widget bankAccountTile, AddOnOption addOnOption) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(addOnOption: addOnOption),
+      ),
       child: VerticalListItem(bankAccountTile),
-      actions: listActionSlideActions(addOnOption: addOnOption),
-      secondaryActions: listSecondaryActions(addOnOption: addOnOption),
+      // secondaryActions: listSecondaryActions(addOnOption: addOnOption),
     );
   }
 
   List<Widget> listSecondaryActions({required AddOnOption addOnOption}) {
     return [
       SlideActionButton(
-          backgroundColor: starYellow,
-          icon: Icons.edit,
-          onTap: () async {
-            final data = await Navigator.of(context)
-                .pushNamed(Routes.PRODUCT_ADD_ON_OPTION_UPDATE, arguments: {
-              'addOnOption': addOnOption,
-              'productId': productId,
-            });
+        borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
+        backgroundColor: starYellow,
+        icon: Icons.edit,
+        onPressed: (con) async {
+          final data = await Navigator.of(context)
+              .pushNamed(Routes.ADD_EDIT_ADD_ON_OPTION, arguments: {
+            'addOnOption': addOnOption,
+            'productId': productId,
+          });
 
-            // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
-            if (data != null && data is AddOnOption) {
-              //save the add-on option details for later use
-              // _onRefresh();
-              updateItemById(data.id!, data);
-              if (mounted) setState(() {});
-            }
-          },
-          title: AppLocalization.of(context)!.edit,
-          slideController: _slideController),
+          // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
+          if (data != null && data is AddOnOption) {
+            //save the add-on option details for later use
+            // _onRefresh();
+            updateItemById(data.id!, data);
+            if (mounted) setState(() {});
+          }
+        },
+        label: AppLocalization.of(context)!.edit,
+      ),
     ];
   }
 
@@ -474,14 +511,39 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   List<Widget> listActionSlideActions({AddOnOption? addOnOption}) {
     return [
       SlideActionButton(
-          backgroundColor: mateRed,
-          icon: SlydoAppIcon.remove,
-          onTap: () async {
-            deleteAddOnOption(addOnOption!);
-          },
-          title: AppLocalization.of(context)!.delete,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
+        backgroundColor: mateRed,
+        icon: SlydoAppIcon.remove,
+        onPressed: (con) async {
+          deleteAddOnDialog(addOnOption!);
+        },
+        label: AppLocalization.of(context)!.delete,
+      ),
     ];
+  }
+
+  void deleteAddOnDialog(AddOnOption addOnOption) {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Add-on Option',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this add-on option?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        deleteAddOnOption(addOnOption);
+      },
+    );
   }
 
   void deleteAddOnOption(AddOnOption addOnOption) {
@@ -502,10 +564,6 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       showToast(message: error.toString());
     });
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   @override
   void dispose() {

@@ -2,12 +2,12 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
-import 'models/Transport.dart';
+import 'models/transport_model.dart';
 
 class TrainTicketTile extends StatelessWidget {
   final Transport? transport;
 
-  const TrainTicketTile({Key? key, this.transport}) : super(key: key);
+  const TrainTicketTile({super.key, this.transport});
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +16,12 @@ class TrainTicketTile extends StatelessWidget {
       margin: EdgeInsets.zero,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: decorateBox(),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
                 height: 20,
                 width: 20,
                 child: ClipOval(
@@ -31,7 +31,7 @@ class TrainTicketTile extends StatelessWidget {
                     width: double.infinity,
                   ),
                 )),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             Expanded(
@@ -68,7 +68,7 @@ class TrainTicketTile extends StatelessWidget {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -84,7 +84,7 @@ class TrainTicketTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 Row(
@@ -108,7 +108,7 @@ class TrainTicketTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 Row(
@@ -124,7 +124,7 @@ class TrainTicketTile extends StatelessWidget {
                             color: darkGrey,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(
@@ -147,7 +147,7 @@ class TrainTicketTile extends StatelessWidget {
                             color: darkGrey,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(

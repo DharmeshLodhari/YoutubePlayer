@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../../data/currency.dart';
 import '../../../../../data/state_notifier.dart';
-import '../../../../../utils/colors.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../utils/util.dart';
@@ -16,7 +15,7 @@ import '../../shopping_auth.dart';
 import '../checkout_screen.dart';
 
 class CheckoutProductService extends StatefulWidget {
-  const CheckoutProductService({Key? key}) : super(key: key);
+  const CheckoutProductService({super.key});
 
   @override
   State<CheckoutProductService> createState() => _CheckoutProductServiceState();
@@ -44,7 +43,8 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
   void initState() {
     super.initState();
 
-    BasketBloc basketBloc = Provider.of<BasketBloc>(context, listen: false);
+    final BasketBloc basketBloc =
+        Provider.of<BasketBloc>(context, listen: false);
     basketBloc.orderTotalProductService = 0;
     basketBloc.totalShippingCost = 0;
   }
@@ -77,6 +77,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
@@ -101,7 +102,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     );
   }
 
-  _scaffoldBody() {
+  SingleChildScrollView _scaffoldBody() {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -116,13 +117,13 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 14),
+            const SizedBox(height: 14),
             dropDownPickItemWidget(
               label: 'Merchant',
               selectedItem: merchantFullName,
               onTap: () {},
             ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
             Visibility(
               visible: merchantFullName != null,
               child: dropDownPickItemWidget(
@@ -131,18 +132,19 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
                 onTap: () => pickDeliveryOptions(),
               ),
             ),
-            SizedBox(height: 18),
-            shippingOptionsLoading
-                ? Center(child: CircularLoadingIndicator())
-                : Visibility(
-                    visible: shippingOptions.isNotEmpty,
-                    child: dropDownPickItemWidget(
-                      label: 'Shipping Options',
-                      onTap: () => pickShippingOptions(),
-                      selectedItem: selectedShippingOptionName,
-                    ),
-                  ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
+            if (shippingOptionsLoading)
+              Center(child: CircularLoadingIndicator())
+            else
+              Visibility(
+                visible: shippingOptions.isNotEmpty,
+                child: dropDownPickItemWidget(
+                  label: 'Shipping Options',
+                  onTap: () => pickShippingOptions(),
+                  selectedItem: selectedShippingOptionName,
+                ),
+              ),
+            const SizedBox(height: 18),
             Divider(thickness: 0.3, color: blackFont),
             Visibility(
               visible: merchantFullName != null,
@@ -168,14 +170,14 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
                       amount: deliveryOption == 'Pickup'
                           ? '0.00'
                           : shippingOption != null
-                              ? moneyDisplayNormalizer(shippingOption!.price)
+                              ? moneyDisplayNormalizer(shippingOption?.price)
                               : '0.00'),
                   Divider(thickness: 0.3, color: blackFont),
                   priceRow(
                     title: 'Order total',
                     amount: moneyDisplayNormalizer(getOrderTotalPrice()),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -189,7 +191,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
   int getOrderTotalPrice() {
     int? totalPrice;
 
-    Map<dynamic, dynamic>? variant = getVariantAsMap();
+    final Map<dynamic, dynamic>? variant = getVariantAsMap();
 
     if (deliveryOption == 'Pickup') {
       totalPrice = variant!['id'].isNotEmpty
@@ -214,7 +216,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     for (var product in basketBloc.productOrService) {
       // Access the 'key' in the outer map
       if (product.containsKey('results')) {
-        var results = product['variant'];
+        final results = product['variant'];
         variant = results;
       }
     }
@@ -227,16 +229,16 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     for (var product in basketBloc.productOrService) {
       // Access the 'key' in the outer map
       if (product.containsKey('results')) {
-        var results = product['add_ons'];
+        final results = product['add_ons'];
         variant = results;
       }
     }
     return variant;
   }
 
-  getSubTotalPrice() {
-    Map<dynamic, dynamic>? variant = getVariantAsMap();
-    Map<dynamic, dynamic>? addOn = getAddOnAsMap();
+  int? getSubTotalPrice() {
+    final Map<dynamic, dynamic>? variant = getVariantAsMap();
+    final Map<dynamic, dynamic>? addOn = getAddOnAsMap();
 
     if (variant!['id'] != null && variant['id'].isNotEmpty) {
       return int.parse(variant['current_price'].toString());
@@ -300,7 +302,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
       } else if (shippingOption != null) {
         return getCurvedButton();
       }
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     } else {
       if (merchantFullName != null &&
           deliveryOption != null &&
@@ -309,7 +311,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
       }
     }
 
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget getCurvedButton() {
@@ -319,7 +321,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     );
   }
 
-  onNextClicked() {
+  void onNextClicked() {
     if (shippingOption == null) {
       userSelectedShippingOption[merchantUsername!] = null;
     }
@@ -330,10 +332,10 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
 
     basketBloc.userSelectedShippingOption = userSelectedShippingOption;
     NavigationUtil.pushReplacement(context,
-        screen: UserAddressProductService(fromCheckoutScreen: true));
+        screen: const UserAddressProductService(fromCheckoutScreen: true));
   }
 
-  resetData() {
+  void resetData() {
     deliveryOption = null;
     merchantFullName = null;
     shippingOptions.clear();
@@ -341,8 +343,8 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     if (mounted) setState(() {});
   }
 
-  pickDeliveryOptions() async {
-    String? pickedDeliveryOption = await showPickItemDialog<String>(
+  void pickDeliveryOptions() async {
+    final String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOptions,
       selectedItem: deliveryOption,
@@ -362,13 +364,13 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
             shippingOptionsLoading = false;
             if (mounted) setState(() {});
 
-            debugPrint('VALUE :: $value');
-            value.forEach((element) {
+            // debugPrint('VALUE :: $value');
+            for (var element in value) {
               // String shippingOption = element.name;
               // int shippingOptionAmount = element.price;
               // String currencySymbol = worldCurrencies[element.currency] ?? '';
               shippingOptions.add(element);
-            });
+            }
           },
         ).catchError((error) {
           shippingOptionsLoading = false;
@@ -385,17 +387,18 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
 
   void selectCategory() async {}
 
-  pickShippingOptions() async {
-    ShippingOptionsModel? pickedShippingOption =
+  void pickShippingOptions() async {
+    final ShippingOptionsModel? pickedShippingOption =
         await showDialog<ShippingOptionsModel>(
             context: context,
             builder: (context) => AlertDialog(
+                  backgroundColor: Colors.white,
                   insetPadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  content: Container(
+                  content: SizedBox(
                     width: MediaQuery.of(context).size.width - 40,
                     child: Card(
                       elevation: 2,
@@ -462,10 +465,11 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
       shippingOption = pickedShippingOption;
       // userSelectedShippingOption.clear();
       selectedShippingOptionName = shippingOption?.name;
-      userSelectedShippingOption[shippingOption!.owner] = shippingOption!.id;
-      debugPrint('OWNER -> ${shippingOption!.owner}');
-      debugPrint('OWNER ID -> ${shippingOption!.id}');
-      debugPrint('USER OWNER  -> $userSelectedShippingOption');
+      userSelectedShippingOption[shippingOption?.owner ?? ""] =
+          shippingOption?.id;
+      // debugPrint('OWNER -> ${shippingOption?.owner}');
+      // debugPrint('OWNER ID -> ${shippingOption?.id}');
+      // debugPrint('USER OWNER  -> $userSelectedShippingOption');
       if (mounted) setState(() {});
     }
   }

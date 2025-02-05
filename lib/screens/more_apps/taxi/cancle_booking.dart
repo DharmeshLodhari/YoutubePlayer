@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CancelBooking extends StatefulWidget {
+  const CancelBooking({super.key});
+
   @override
-  _CancelBookingState createState() => _CancelBookingState();
+  State<CancelBooking> createState() => _CancelBookingState();
 }
 
 class _CancelBookingState extends State<CancelBooking> {
@@ -39,7 +41,7 @@ class _CancelBookingState extends State<CancelBooking> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
@@ -48,6 +50,7 @@ class _CancelBookingState extends State<CancelBooking> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -72,23 +75,23 @@ class _CancelBookingState extends State<CancelBooking> {
 
   Widget scaffoldBody() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
-          Text(
+          const Text(
             "Please select the reason for cancellation:",
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Expanded(child: getReason()),
           getDriverActions(),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
         ],
@@ -105,14 +108,14 @@ class _CancelBookingState extends State<CancelBooking> {
   }
 
   Widget getReasoneTile({required String reason}) {
-    bool isSelected = reason == selectedReason;
+    final bool isSelected = reason == selectedReason;
     return GestureDetector(
       onTap: () {
         selectedReason = reason;
         if (mounted) setState(() {});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
             Icon(
@@ -120,7 +123,7 @@ class _CancelBookingState extends State<CancelBooking> {
               color: isSelected ? navyBlue : dividerColor,
               size: 26,
             ),
-            SizedBox(
+            const SizedBox(
               width: 16,
             ),
             Expanded(
@@ -138,7 +141,7 @@ class _CancelBookingState extends State<CancelBooking> {
   }
 
   Widget getTipUI() {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
     return Column(
       children: [
@@ -151,7 +154,7 @@ class _CancelBookingState extends State<CancelBooking> {
             fit: BoxFit.fill,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
         Text(
@@ -159,10 +162,10 @@ class _CancelBookingState extends State<CancelBooking> {
           style: TextStyle(
               fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(
+        const SizedBox(
           height: 30,
         ),
-        SizedBox(
+        const SizedBox(
           height: 30,
         ),
         Text(
@@ -177,7 +180,7 @@ class _CancelBookingState extends State<CancelBooking> {
 
   Widget getDriverInfo() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Text(
         "Your trip has ended",
         style: TextStyle(
@@ -205,7 +208,7 @@ class _CancelBookingState extends State<CancelBooking> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       shadowColor: dividerColor.withAlpha(125),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -218,7 +221,7 @@ class _CancelBookingState extends State<CancelBooking> {
                       fontSize: 14,
                       color: blackFont),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 ),
                 Text(
@@ -230,14 +233,14 @@ class _CancelBookingState extends State<CancelBooking> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Image.asset(
               "assets/images/taxi/route.png",
               height: 80,
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Expanded(
@@ -251,7 +254,7 @@ class _CancelBookingState extends State<CancelBooking> {
                         fontSize: 14,
                         color: blackFont),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Text(

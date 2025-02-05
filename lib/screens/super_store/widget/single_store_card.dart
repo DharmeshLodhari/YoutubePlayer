@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 class SuperStoreSingleCard extends StatelessWidget {
   final Product product;
   // final String? next;
-  const SuperStoreSingleCard({Key? key, required this.product})
-      : super(key: key);
+  const SuperStoreSingleCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {

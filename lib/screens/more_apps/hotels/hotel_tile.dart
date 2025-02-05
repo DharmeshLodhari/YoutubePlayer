@@ -1,19 +1,18 @@
-import 'package:Slydo/screens/more_apps/hotels/models/PartialHotelRoomItem.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/partial_hotel_room_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 
-import 'models/CityData.dart';
-import 'models/HotelRoomItem.dart';
+import 'models/city_data.dart';
+import 'models/hotel_room_item.dart';
 
 // ignore: must_be_immutable
 class HotelTile extends StatelessWidget {
   String? imageUrl;
-  HotelTile({this.imageUrl});
+  HotelTile({super.key, this.imageUrl});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -23,7 +22,7 @@ class HotelTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -36,11 +35,11 @@ class HotelTile extends StatelessWidget {
                     width: 68,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 16,
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 86,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,9 +90,9 @@ class HotelTile extends StatelessWidget {
 class HotelTileWithHeart extends StatefulWidget {
   final HotelRoomItem? hotelRoom;
 
-  const HotelTileWithHeart({Key? key, this.hotelRoom}) : super(key: key);
+  const HotelTileWithHeart({super.key, this.hotelRoom});
   @override
-  _HotelTileWithHeartState createState() => _HotelTileWithHeartState();
+  State<HotelTileWithHeart> createState() => _HotelTileWithHeartState();
 }
 
 class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
@@ -105,7 +104,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width - 40,
           child: CustomBoxShadow(
             child: Card(
@@ -120,8 +119,8 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                     children: <Widget>[
                       Stack(
                         children: [
-                          CarouselSlider(
-                            options: CarouselOptions(
+                          cs.CarouselSlider(
+                            options: cs.CarouselOptions(
                                 viewportFraction: 1.0,
                                 enlargeCenterPage: true,
                                 autoPlay: false,
@@ -157,12 +156,12 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: widget.hotelRoom!.images!.map((url) {
-                                int index =
+                                final int index =
                                     widget.hotelRoom!.images!.indexOf(url);
                                 return Container(
                                   width: 5.0,
                                   height: 5.0,
-                                  margin: EdgeInsets.symmetric(
+                                  margin: const EdgeInsets.symmetric(
                                       vertical: 10.0, horizontal: 2.0),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
@@ -177,8 +176,8 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                         ],
                       ),
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -235,7 +234,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                                 ),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 4,
                             ),
                             Row(
@@ -258,7 +257,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                                       color: starYellow,
                                       size: 11,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 4,
                                     ),
                                     Text(
@@ -282,7 +281,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
           right: 10,
           child: IconButton(
             icon: Icon(
-              isChange ? SlydoAppIcon.heart_empty : SlydoAppIcon.heart_1,
+              isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
               color: Colors.white,
               size: 20,
             ),
@@ -300,9 +299,9 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
 class HotelRoomImagesTile extends StatefulWidget {
   final HotelRoomItem? hotelRoom;
 
-  const HotelRoomImagesTile({Key? key, this.hotelRoom}) : super(key: key);
+  const HotelRoomImagesTile({super.key, this.hotelRoom});
   @override
-  _HotelRoomImagesTileState createState() => _HotelRoomImagesTileState();
+  State<HotelRoomImagesTile> createState() => _HotelRoomImagesTileState();
 }
 
 class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
@@ -310,7 +309,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width - 40,
       child: CustomBoxShadow(
         child: Card(
@@ -325,8 +324,8 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                 children: <Widget>[
                   Stack(
                     children: [
-                      CarouselSlider(
-                        options: CarouselOptions(
+                      cs.CarouselSlider(
+                        options: cs.CarouselOptions(
                             viewportFraction: 1.0,
                             enlargeCenterPage: true,
                             autoPlay: false,
@@ -363,11 +362,12 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: widget.hotelRoom!.images!.map((url) {
-                            int index = widget.hotelRoom!.images!.indexOf(url);
+                            final int index =
+                                widget.hotelRoom!.images!.indexOf(url);
                             return Container(
                               width: 5.0,
                               height: 5.0,
-                              margin: EdgeInsets.symmetric(
+                              margin: const EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 2.0),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
@@ -382,7 +382,8 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                     ],
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -439,7 +440,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 4,
                         ),
                         Row(
@@ -462,7 +463,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                                   color: starYellow,
                                   size: 11,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 4,
                                 ),
                                 Text(
@@ -488,7 +489,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
 class PartialHotelRoomItemTile extends StatelessWidget {
   final PartialHotelRoomItem? hotelRoom;
 
-  PartialHotelRoomItemTile({this.hotelRoom});
+  const PartialHotelRoomItemTile({super.key, this.hotelRoom});
 
   @override
   Widget build(BuildContext context) {
@@ -503,7 +504,8 @@ class PartialHotelRoomItemTile extends StatelessWidget {
           width: 180,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -517,7 +519,7 @@ class PartialHotelRoomItemTile extends StatelessWidget {
                     fit: BoxFit.fill,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Column(
@@ -597,7 +599,7 @@ class PartialHotelRoomItemTile extends StatelessWidget {
 class CityItemCard extends StatelessWidget {
   final CityData? city;
 
-  CityItemCard({this.city});
+  const CityItemCard({super.key, this.city});
 
   @override
   Widget build(BuildContext context) {
@@ -612,7 +614,8 @@ class CityItemCard extends StatelessWidget {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -627,7 +630,7 @@ class CityItemCard extends StatelessWidget {
                     color: blackFont,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 ClipRRect(
@@ -649,190 +652,190 @@ class CityItemCard extends StatelessWidget {
 }
 
 class ReviewTile extends StatelessWidget {
+  const ReviewTile({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 20,
-                    width: 20,
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
-                        fit: BoxFit.fill,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
+                      fit: BoxFit.fill,
+                      width: double.infinity,
+                      height: double.infinity,
                     ),
                   ),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  Text(
-                    "Jamé Smith",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont),
-                  )
-                ],
-              ),
-              Text(
-                "20 Aug",
-                style: TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w400, color: darkGrey),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 16,
-          ),
-          Row(
-            children: [
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: greyBorderColor,
-                size: 11,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          Text(
-            "Very knowledgeable about all the history, really friendly, always smile, and always up for a chat.",
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
-            textAlign: TextAlign.justify,
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          Divider(
-            thickness: 1,
-            height: 4,
-            color: dividerColor,
-          ),
-        ],
-      ),
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
+                Text(
+                  "Jamé Smith",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: blackFont),
+                )
+              ],
+            ),
+            Text(
+              "20 Aug",
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w400, color: darkGrey),
+            )
+          ],
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Row(
+          children: [
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: greyBorderColor,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Text(
+          "Very knowledgeable about all the history, really friendly, always smile, and always up for a chat.",
+          style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
+          textAlign: TextAlign.justify,
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Divider(
+          thickness: 1,
+          height: 4,
+          color: dividerColor,
+        ),
+      ],
     );
   }
 }
 
 class PartnerTile extends StatelessWidget {
+  const PartnerTile({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          Container(
-            height: 32,
-            width: 32,
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl:
-                    "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
-                fit: BoxFit.fill,
-                width: double.infinity,
-                height: double.infinity,
-              ),
+    return Row(
+      children: [
+        SizedBox(
+          height: 32,
+          width: 32,
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl:
+                  "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
+              fit: BoxFit.fill,
+              width: double.infinity,
+              height: double.infinity,
             ),
           ),
-          SizedBox(
-            width: 16,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "Bond street dojo",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: blackFont),
-                ),
-                SizedBox(
-                  width: 8,
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      SlydoAppIcon.star,
-                      color: starYellow,
-                      size: 11,
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Text(
-                      "7.8 • Renter Friendly",
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: blackFont,
-                          fontWeight: FontWeight.w400),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: 16,
-          ),
-          Column(
+        ),
+        const SizedBox(
+          width: 16,
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: navyBlue,
-                size: 16,
-              )
+              Text(
+                "Bond street dojo",
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont),
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              Row(
+                children: [
+                  Icon(
+                    SlydoAppIcon.star,
+                    color: starYellow,
+                    size: 11,
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  Text(
+                    "7.8 • Renter Friendly",
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: blackFont,
+                        fontWeight: FontWeight.w400),
+                  )
+                ],
+              ),
             ],
           ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          width: 16,
+        ),
+        Column(
+          children: <Widget>[
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: navyBlue,
+              size: 16,
+            )
+          ],
+        ),
+      ],
     );
   }
 }

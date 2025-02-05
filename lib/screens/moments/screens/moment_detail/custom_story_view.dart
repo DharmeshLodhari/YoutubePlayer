@@ -1,17 +1,11 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:story_view/story_view.dart';
 
 import '../../models/moments_model.dart';
-
-// import '../controller/story_controller.dart';
-// import '../utils.dart';
-// import 'story_image.dart';
-// import 'story_video.dart';
 
 /// Indicates where the progress indicators should be placed.
 enum ProgressPosition { top, bottom, none }
@@ -21,7 +15,7 @@ enum ProgressPosition { top, bottom, none }
 enum IndicatorHeight { small, large }
 
 /// This is a representation of a story item (or page).
-class Shiddo  extends StoryItem{
+class Shiddo extends StoryItem {
   /// Specifies how long the page should be displayed. It should be a reasonable
   /// amount of time greater than 0 milliseconds.
   final Duration duration;
@@ -34,6 +28,7 @@ class Shiddo  extends StoryItem{
   /// last unshown page will have their `shown` attribute altered to false. This
   /// is because the next item to be displayed is taken by the last unshown
   /// story item.
+  @override
   bool shown;
 
   MomentsModel momentsModel;
@@ -66,7 +61,7 @@ class Shiddo  extends StoryItem{
     Duration? duration,
     MomentsModel? momentsModel,
   }) {
-    double contrast = ContrastHelper.contrast([
+    final double contrast = ContrastHelper.contrast([
       backgroundColor.red,
       backgroundColor.green,
       backgroundColor.blue,
@@ -86,7 +81,7 @@ class Shiddo  extends StoryItem{
               bottom: Radius.circular(roundedBottom ? 8 : 0),
             ),
           ),
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 24,
             vertical: 16,
           ),
@@ -106,7 +101,7 @@ class Shiddo  extends StoryItem{
           //color: backgroundColor,
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 3),
+        duration: duration ?? const Duration(seconds: 3),
         momentsModel: momentsModel ?? MomentsModel());
   }
 
@@ -124,7 +119,6 @@ class Shiddo  extends StoryItem{
       MomentsModel? momentsModel}) {
     return Shiddo(
         Container(
-          key: key,
           color: Colors.black,
           child: Stack(
             children: <Widget>[
@@ -139,10 +133,10 @@ class Shiddo  extends StoryItem{
                   alignment: Alignment.bottomCenter,
                   child: Container(
                     width: double.infinity,
-                    margin: EdgeInsets.only(
+                    margin: const EdgeInsets.only(
                       bottom: 24,
                     ),
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 8,
                     ),
@@ -151,13 +145,13 @@ class Shiddo  extends StoryItem{
                     child: caption != null
                         ? Text(
                             caption,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 15,
                               color: Colors.white,
                             ),
                             textAlign: TextAlign.center,
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
                   ),
                 ),
               )
@@ -165,7 +159,7 @@ class Shiddo  extends StoryItem{
           ),
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 3),
+        duration: duration ?? const Duration(seconds: 3),
         momentsModel: momentsModel ?? MomentsModel());
   }
 
@@ -175,7 +169,6 @@ class Shiddo  extends StoryItem{
       {required String url,
       Text? caption,
       required StoryController controller,
-      Key? key,
       BoxFit imageFit = BoxFit.cover,
       Map<String, dynamic>? requestHeaders,
       bool shown = false,
@@ -185,7 +178,10 @@ class Shiddo  extends StoryItem{
       MomentsModel? momentsModel}) {
     return Shiddo(
         ClipRRect(
-          key: key,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(roundedTop ? 8 : 0),
+            bottom: Radius.circular(roundedBottom ? 8 : 0),
+          ),
           child: Container(
             color: Colors.grey[100],
             child: Container(
@@ -199,13 +195,14 @@ class Shiddo  extends StoryItem{
                     requestHeaders: requestHeaders,
                   ),
                   Container(
-                    margin: EdgeInsets.only(bottom: 16),
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     child: Align(
                       alignment: Alignment.bottomLeft,
-                      child: Container(
-                        child: caption == null ? SizedBox() : caption,
+                      child: SizedBox(
                         width: double.infinity,
+                        child: caption ?? const SizedBox(),
                       ),
                     ),
                   ),
@@ -213,13 +210,9 @@ class Shiddo  extends StoryItem{
               ),
             ),
           ),
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(roundedTop ? 8 : 0),
-            bottom: Radius.circular(roundedBottom ? 8 : 0),
-          ),
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 3),
+        duration: duration ?? const Duration(seconds: 3),
         momentsModel: momentsModel ?? MomentsModel());
   }
 
@@ -236,7 +229,6 @@ class Shiddo  extends StoryItem{
       MomentsModel? momentsModel}) {
     return Shiddo(
         Container(
-          key: key,
           color: Colors.black,
           child: Stack(
             children: <Widget>[
@@ -250,17 +242,19 @@ class Shiddo  extends StoryItem{
                   alignment: Alignment.bottomCenter,
                   child: Container(
                     width: double.infinity,
-                    margin: EdgeInsets.only(bottom: 24),
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    margin: const EdgeInsets.only(bottom: 24),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     color:
                         caption != null ? Colors.black54 : Colors.transparent,
                     child: caption != null
                         ? Text(
                             caption,
-                            style: TextStyle(fontSize: 15, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 15, color: Colors.white),
                             textAlign: TextAlign.center,
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
                   ),
                 ),
               )
@@ -268,7 +262,7 @@ class Shiddo  extends StoryItem{
           ),
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 10),
+        duration: duration ?? const Duration(seconds: 10),
         momentsModel: momentsModel ?? MomentsModel());
   }
 
@@ -284,7 +278,6 @@ class Shiddo  extends StoryItem{
       MomentsModel? momentsModel}) {
     return Shiddo(
         Container(
-          key: key,
           color: Colors.black,
           child: Stack(
             children: <Widget>[
@@ -301,10 +294,10 @@ class Shiddo  extends StoryItem{
                   alignment: Alignment.bottomCenter,
                   child: Container(
                     width: double.infinity,
-                    margin: EdgeInsets.only(
+                    margin: const EdgeInsets.only(
                       bottom: 24,
                     ),
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 8,
                     ),
@@ -313,13 +306,13 @@ class Shiddo  extends StoryItem{
                     child: caption != null
                         ? Text(
                             caption,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 15,
                               color: Colors.white,
                             ),
                             textAlign: TextAlign.center,
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
                   ),
                 ),
               )
@@ -327,7 +320,7 @@ class Shiddo  extends StoryItem{
           ),
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 3),
+        duration: duration ?? const Duration(seconds: 3),
         momentsModel: momentsModel ?? MomentsModel());
   }
 
@@ -356,24 +349,24 @@ class Shiddo  extends StoryItem{
                 fit: BoxFit.cover,
               )),
           child: Container(
-            margin: EdgeInsets.only(
+            margin: const EdgeInsets.only(
               bottom: 16,
             ),
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: 24,
               vertical: 8,
             ),
             child: Align(
               alignment: Alignment.bottomLeft,
-              child: Container(
-                child: caption == null ? SizedBox() : caption,
+              child: SizedBox(
                 width: double.infinity,
+                child: caption ?? const SizedBox(),
               ),
             ),
           ),
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 3),
+        duration: duration ?? const Duration(seconds: 3),
         momentsModel: momentsModel ?? MomentsModel());
   }
 }
@@ -417,7 +410,8 @@ class StoryViewShiddo extends StatefulWidget {
   // Indicator Foreground Color
   final Color? indicatorForegroundColor;
 
-  StoryViewShiddo({
+  const StoryViewShiddo({
+    super.key,
     required this.storyItems,
     required this.controller,
     this.onComplete,
@@ -436,7 +430,8 @@ class StoryViewShiddo extends StatefulWidget {
   }
 }
 
-class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderStateMixin {
+class StoryViewShiddoState extends State<StoryViewShiddo>
+    with TickerProviderStateMixin {
   AnimationController? _animationController;
   Animation<double>? _currentAnimation;
   Timer? _nextDebouncer;
@@ -463,9 +458,9 @@ class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderSta
     // false
     final firstPage = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
     if (firstPage == null) {
-      widget.storyItems.forEach((it2) {
+      for (var it2 in widget.storyItems) {
         it2!.shown = false;
-      });
+      }
     } else {
       final lastShownPos = widget.storyItems.indexOf(firstPage);
       widget.storyItems.sublist(lastShownPos).forEach((it) {
@@ -473,17 +468,17 @@ class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderSta
       });
     }
 
-    this._playbackSubscription =
+    _playbackSubscription =
         widget.controller.playbackNotifier.listen((playbackStatus) {
       switch (playbackStatus) {
         case PlaybackState.play:
           _removeNextHold();
-          this._animationController?.forward();
+          _animationController?.forward();
           break;
 
         case PlaybackState.pause:
           _holdNext(); // then pause animation
-          this._animationController?.stop(canceled: false);
+          _animationController?.stop(canceled: false);
           break;
 
         case PlaybackState.next:
@@ -562,9 +557,9 @@ class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderSta
     }
 
     if (widget.repeat) {
-      widget.storyItems.forEach((it) {
+      for (var it in widget.storyItems) {
         it!.shown = false;
-      });
+      }
 
       _beginPlay();
     }
@@ -573,15 +568,15 @@ class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderSta
   void _goBack() {
     _animationController!.stop();
 
-    if (this._currentStory == null) {
+    if (_currentStory == null) {
       widget.storyItems.last!.shown = false;
     }
 
-    if (this._currentStory == widget.storyItems.first) {
+    if (_currentStory == widget.storyItems.first) {
       _beginPlay();
     } else {
-      this._currentStory!.shown = false;
-      int lastPos = widget.storyItems.indexOf(this._currentStory);
+      _currentStory!.shown = false;
+      final int lastPos = widget.storyItems.indexOf(_currentStory);
       final previous = widget.storyItems[lastPos - 1]!;
 
       previous.shown = false;
@@ -591,22 +586,22 @@ class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderSta
   }
 
   void _goForward() {
-    if (this._currentStory != widget.storyItems.last) {
+    if (_currentStory != widget.storyItems.last) {
       _animationController!.stop();
 
       // get last showing
-      final _last = this._currentStory;
+      final last = _currentStory;
 
-      if (_last != null) {
-        _last.shown = true;
-        if (_last != widget.storyItems.last) {
+      if (last != null) {
+        last.shown = true;
+        if (last != widget.storyItems.last) {
           _beginPlay();
         }
       }
     } else {
       // this is the last page, progress animation should skip to end
       _animationController!
-          .animateTo(1.0, duration: Duration(milliseconds: 10));
+          .animateTo(1.0, duration: const Duration(milliseconds: 10));
     }
   }
 
@@ -622,7 +617,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderSta
 
   void _holdNext() {
     _nextDebouncer?.cancel();
-    _nextDebouncer = Timer(Duration(milliseconds: 500), () {});
+    _nextDebouncer = Timer(const Duration(milliseconds: 500), () {});
   }
 
   @override
@@ -642,7 +637,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderSta
                 bottom: widget.inline ? false : true,
                 // we use SafeArea here for notched and bezeles phones
                 child: Container(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 8,
                   ),
@@ -650,7 +645,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderSta
                     widget.storyItems
                         .map((it) => PageData(it!.duration, it.shown))
                         .toList(),
-                    this._currentAnimation,
+                    _currentAnimation,
                     key: UniqueKey(),
                     indicatorHeight: widget.inline
                         ? IndicatorHeight.small
@@ -693,9 +688,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderSta
                 onVerticalDragUpdate: widget.onVerticalSwipeComplete == null
                     ? null
                     : (details) {
-                        if (verticalDragInfo == null) {
-                          verticalDragInfo = VerticalDragInfo();
-                        }
+                        verticalDragInfo ??= VerticalDragInfo();
 
                         verticalDragInfo!.update(details.primaryDelta!);
 
@@ -719,10 +712,10 @@ class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderSta
             alignment: Alignment.centerLeft,
             heightFactor: 1,
             child: SizedBox(
+                width: 70,
                 child: GestureDetector(onTap: () {
                   widget.controller.previous();
-                }),
-                width: 70),
+                })),
           ),
         ],
       ),
@@ -748,14 +741,14 @@ class PageBar extends StatefulWidget {
   final Color? indicatorColor;
   final Color? indicatorForegroundColor;
 
-  PageBar(
+  const PageBar(
     this.pages,
     this.animation, {
     this.indicatorHeight = IndicatorHeight.large,
     this.indicatorColor,
     this.indicatorForegroundColor,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -770,7 +763,7 @@ class PageBarState extends State<PageBar> {
   void initState() {
     super.initState();
 
-    int count = widget.pages.length;
+    final int count = widget.pages.length;
     spacing = (count > 15) ? 1 : ((count > 10) ? 2 : 4);
 
     widget.animation!.addListener(() {
@@ -795,8 +788,8 @@ class PageBarState extends State<PageBar> {
       children: widget.pages.map((it) {
         return Expanded(
           child: Container(
-            padding: EdgeInsets.only(
-                right: widget.pages.last == it ? 0 : this.spacing),
+            padding:
+                EdgeInsets.only(right: widget.pages.last == it ? 0 : spacing),
             child: StoryProgressIndicator(
               isPlaying(it) ? widget.animation!.value : (it.shown ? 1 : 0),
               indicatorHeight:
@@ -820,8 +813,9 @@ class StoryProgressIndicator extends StatelessWidget {
   final Color? indicatorColor;
   final Color? indicatorForegroundColor;
 
-  StoryProgressIndicator(
+  const StoryProgressIndicator(
     this.value, {
+    super.key,
     this.indicatorHeight = 5,
     this.indicatorColor,
     this.indicatorForegroundColor,
@@ -831,14 +825,14 @@ class StoryProgressIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size.fromHeight(
-        this.indicatorHeight,
+        indicatorHeight,
       ),
       foregroundPainter: IndicatorOval(
-        this.indicatorForegroundColor ?? Colors.white.withOpacity(0.8),
-        this.value,
+        indicatorForegroundColor ?? Colors.white.withOpacity(0.8),
+        value,
       ),
       painter: IndicatorOval(
-        this.indicatorColor ?? Colors.white.withOpacity(0.4),
+        indicatorColor ?? Colors.white.withOpacity(0.4),
         1.0,
       ),
     );
@@ -853,11 +847,11 @@ class IndicatorOval extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = this.color;
+    final paint = Paint()..color = color;
     canvas.drawRRect(
         RRect.fromRectAndRadius(
-            Rect.fromLTWH(0, 0, size.width * this.widthFactor, size.height),
-            Radius.circular(3)),
+            Rect.fromLTWH(0, 0, size.width * widthFactor, size.height),
+            const Radius.circular(3)),
         paint);
   }
 
@@ -871,7 +865,7 @@ class IndicatorOval extends CustomPainter {
 class ContrastHelper {
   static double luminance(int? r, int? g, int? b) {
     final a = [r, g, b].map((it) {
-      double value = it!.toDouble() / 255.0;
+      final double value = it!.toDouble() / 255.0;
       return value <= 0.03928
           ? value / 12.92
           : pow((value + 0.055) / 1.055, 2.4);

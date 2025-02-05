@@ -1,4 +1,3 @@
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,8 @@ class UserDashboardItemTile extends StatelessWidget {
   Widget? iconWidget;
 
   UserDashboardItemTile(
-      {this.iconWidget,
+      {super.key,
+      this.iconWidget,
       required this.title,
       this.icon,
       required this.iconColor,
@@ -73,17 +73,18 @@ class UserDashboardItemTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                isLocked
-                    ? Positioned(
-                        top: 6,
-                        right: 6,
-                        child: Icon(
-                          Icons.lock_outline_rounded,
-                          color: blackFont,
-                          size: 14,
-                        ),
-                      )
-                    : Container()
+                if (isLocked)
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: Icon(
+                      Icons.lock_outline_rounded,
+                      color: blackFont,
+                      size: 14,
+                    ),
+                  )
+                else
+                  Container()
               ],
             ),
           ),

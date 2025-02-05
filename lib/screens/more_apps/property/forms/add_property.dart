@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/property/models/PropertyType.dart';
+import 'package:Slydo/screens/more_apps/property/models/property_type.dart';
 import 'package:Slydo/screens/more_apps/property/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
@@ -16,7 +15,6 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_video_info/flutter_video_info.dart';
@@ -26,8 +24,10 @@ import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 class AddProperty extends StatefulWidget {
+  const AddProperty({super.key});
+
   @override
-  _AddPropertyState createState() => _AddPropertyState();
+  State<AddProperty> createState() => _AddPropertyState();
 }
 
 class _AddPropertyState extends State<AddProperty> {
@@ -42,7 +42,7 @@ class _AddPropertyState extends State<AddProperty> {
   int bathroomCount = 0;
   int livingRoomCount = 0;
 
-  Duration videoLimit = Duration(minutes: 1);
+  Duration videoLimit = const Duration(minutes: 1);
 
   List<String> cities = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
 
@@ -73,8 +73,8 @@ class _AddPropertyState extends State<AddProperty> {
   bool isPropertyForLongTerm = true;
 
   int imageCount = 5;
-  ScrollController _imageScrollController = ScrollController();
-  ScrollController _videoScrollController = ScrollController();
+  final ScrollController _imageScrollController = ScrollController();
+  final ScrollController _videoScrollController = ScrollController();
 
   List<File> propertyImages = [];
   List<File> propertyVideos = [];
@@ -94,7 +94,7 @@ class _AddPropertyState extends State<AddProperty> {
   bool propertyAvailableImmediately = true;
   DateTime propertyAvailableFrom = DateTime.now();
 
-  Duration videoDuration = Duration(seconds: 5);
+  Duration videoDuration = const Duration(seconds: 5);
 
   @override
   void deactivate() {
@@ -128,7 +128,7 @@ class _AddPropertyState extends State<AddProperty> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
@@ -138,6 +138,7 @@ class _AddPropertyState extends State<AddProperty> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -187,14 +188,14 @@ class _AddPropertyState extends State<AddProperty> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Center(
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 // _previewVideo(),
@@ -209,13 +210,13 @@ class _AddPropertyState extends State<AddProperty> {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 addImages(),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 addVideos(),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
 
@@ -230,19 +231,19 @@ class _AddPropertyState extends State<AddProperty> {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 sellOrRentSwitch(),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 addTagNameField(),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 getPropertyDescription(),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Row(
@@ -256,27 +257,33 @@ class _AddPropertyState extends State<AddProperty> {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
-                isPropertyForSellOrRent[1] ? getRentDuration() : Container(),
-                isPropertyForSellOrRent[1] ? SizedBox(height: 10) : Container(),
+                if (isPropertyForSellOrRent[1])
+                  getRentDuration()
+                else
+                  Container(),
+                if (isPropertyForSellOrRent[1])
+                  const SizedBox(height: 10)
+                else
+                  Container(),
                 Row(
                   children: <Widget>[
                     Expanded(child: getPropertyType()),
-                    SizedBox(
+                    const SizedBox(
                       width: 16,
                     ),
                     Expanded(child: getBedroomCountField()),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   children: <Widget>[
                     Expanded(
                       child: getBathroomCountField(),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 16,
                     ),
                     Expanded(
@@ -284,25 +291,33 @@ class _AddPropertyState extends State<AddProperty> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 getAmenityField(),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 getPropertyFurnitureDetailField(),
-                isPropertyForSellOrRent[1] ? SizedBox(height: 10) : Container(),
-                isPropertyForSellOrRent[1] ? getPetPolicyField() : Container(),
-                SizedBox(height: 16),
+                if (isPropertyForSellOrRent[1])
+                  const SizedBox(height: 10)
+                else
+                  Container(),
+                if (isPropertyForSellOrRent[1])
+                  getPetPolicyField()
+                else
+                  Container(),
+                const SizedBox(height: 16),
                 getIsAvailableImmediately(),
-                SizedBox(height: 16),
-                propertyAvailableImmediately
-                    ? Container()
-                    : getAvailableFromField(),
-                propertyAvailableImmediately
-                    ? Container()
-                    : SizedBox(height: 10),
+                const SizedBox(height: 16),
+                if (propertyAvailableImmediately)
+                  Container()
+                else
+                  getAvailableFromField(),
+                if (propertyAvailableImmediately)
+                  Container()
+                else
+                  const SizedBox(height: 10),
                 getAmountField(),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Row(
@@ -316,19 +331,19 @@ class _AddPropertyState extends State<AddProperty> {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 getPropertyAddressLineOne(),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 getPropertyAddressLineTwo(),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 getPropertyPassCode(),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 getPropertyCity(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 getSubmitButton(),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -339,7 +354,7 @@ class _AddPropertyState extends State<AddProperty> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -347,14 +362,14 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _imageScrollController,
         scrollDirection: Axis.horizontal,
         itemCount: propertyImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != propertyImages.length
               ? showImage(index)
               : propertyImages.length != imageCount
@@ -371,7 +386,7 @@ class _AddPropertyState extends State<AddProperty> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -382,10 +397,10 @@ class _AddPropertyState extends State<AddProperty> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -407,6 +422,7 @@ class _AddPropertyState extends State<AddProperty> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
@@ -432,7 +448,7 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -442,7 +458,7 @@ class _AddPropertyState extends State<AddProperty> {
               borderRadius: BorderRadius.circular(10),
             ),
             shadowColor: dividerColor,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
               width: 100,
               decoration: BoxDecoration(
@@ -459,10 +475,10 @@ class _AddPropertyState extends State<AddProperty> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -486,14 +502,14 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   Widget addVideos() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _videoScrollController,
         scrollDirection: Axis.horizontal,
         itemCount: propertyVideos.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != propertyVideos.length
               ? showVideo(index)
               : propertyVideos.length != imageCount
@@ -505,10 +521,10 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   void captureVideo() async {
-    var path = await Navigator.of(context)
+    final path = await Navigator.of(context)
         .pushNamed("/video-recorder", arguments: {"duration": videoDuration});
     if (path != null) {
-      debugPrint("$path");
+      // debugPrint("$path");
       propertyVideos.add(File(path as String));
       getVideoThumbnail(propertyVideos.length - 1);
       setState(() {});
@@ -521,7 +537,7 @@ class _AddPropertyState extends State<AddProperty> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -532,10 +548,10 @@ class _AddPropertyState extends State<AddProperty> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.movies_moreapps,
+                  SlydoAppIcon.moviesMoreApps,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -557,7 +573,8 @@ class _AddPropertyState extends State<AddProperty> {
     final videoSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text("Select video source"),
+              backgroundColor: Colors.white,
+              title: const Text("Select video source"),
               actions: <Widget>[
                 MaterialButton(
                   child: Text(AppLocalization.of(context)!.camera),
@@ -571,18 +588,18 @@ class _AddPropertyState extends State<AddProperty> {
             ));
 
     if (videoSource != null) {
-      bool? isConditionAccepted = await videoLengthAlert();
+      final bool? isConditionAccepted = await videoLengthAlert();
       if (isConditionAccepted != null && isConditionAccepted) {
         if (videoSource == ImageSource.gallery) {
           ImagePicker()
               .pickVideo(
-                  source: videoSource, maxDuration: Duration(minutes: 10))
+                  source: videoSource, maxDuration: const Duration(minutes: 10))
               .then((value) async {
             if (value != null) {
               final videoInfo = FlutterVideoInfo();
-              var info = await videoInfo.getVideoInfo(value.path);
+              final info = await videoInfo.getVideoInfo(value.path);
               if (info == null) return;
-              Duration pickedVideoDuration =
+              final Duration pickedVideoDuration =
                   Duration(milliseconds: info.duration!.toInt());
               if (pickedVideoDuration > videoLimit) {
                 showToast(
@@ -618,15 +635,16 @@ class _AddPropertyState extends State<AddProperty> {
         builder: (context) =>
             StatefulBuilder(builder: (context, videoLengthAlert) {
               return AlertDialog(
+                backgroundColor: Colors.white,
                 insetPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 content: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width - 40,
                       child: Card(
                         elevation: 2,
@@ -638,13 +656,13 @@ class _AddPropertyState extends State<AddProperty> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
-                            padding: EdgeInsets.only(top: 16, bottom: 8),
+                            padding: const EdgeInsets.only(top: 16, bottom: 8),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
                                   ),
                                   child: Column(
@@ -664,12 +682,12 @@ class _AddPropertyState extends State<AddProperty> {
                                               fontWeight: FontWeight.w700),
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 12,
                                       ),
                                       RichText(
                                         textAlign: TextAlign.justify,
-                                        text: new TextSpan(
+                                        text: TextSpan(
                                           // Note: Styles for TextSpans must be explicitly defined.
                                           // Child text spans will inherit styles from parent
                                           style: TextStyle(
@@ -677,17 +695,17 @@ class _AddPropertyState extends State<AddProperty> {
                                               fontSize: 14,
                                               fontWeight: FontWeight.w400),
                                           children: <TextSpan>[
-                                            TextSpan(
+                                            const TextSpan(
                                               text:
                                                   'Please make sure your picked or captured video do not exceed ',
                                             ),
                                             TextSpan(
                                                 text:
                                                     '${videoLimit.inMinutes} minutes',
-                                                style: new TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold)),
-                                            TextSpan(
+                                            const TextSpan(
                                                 text:
                                                     ' otherwise it will be not uploaded.'),
                                           ],
@@ -758,7 +776,7 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   Widget showVideo(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -768,7 +786,7 @@ class _AddPropertyState extends State<AddProperty> {
               borderRadius: BorderRadius.circular(10),
             ),
             shadowColor: dividerColor,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: index < propertyVideoThumbnail.length
                 ? Container(
                     width: 100,
@@ -779,7 +797,7 @@ class _AddPropertyState extends State<AddProperty> {
                           fit: BoxFit.fill),
                     ),
                   )
-                : Container(
+                : SizedBox(
                     width: 100,
                     height: 100,
                     child: Center(
@@ -791,10 +809,10 @@ class _AddPropertyState extends State<AddProperty> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -901,10 +919,10 @@ class _AddPropertyState extends State<AddProperty> {
           "Property for",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width - 40,
           height: 30,
           child: Row(
@@ -917,10 +935,6 @@ class _AddPropertyState extends State<AddProperty> {
                     height: 30,
                     width: (MediaQuery.of(context).size.width - 45) / 2),
                 selectedBorderColor: navyBlue,
-                children: <Widget>[
-                  sellButton(),
-                  rentButton(),
-                ],
                 isSelected: isPropertyForSellOrRent,
                 onPressed: (int index) {
                   if (index == 0) {
@@ -932,6 +946,10 @@ class _AddPropertyState extends State<AddProperty> {
                   }
                   setState(() {});
                 },
+                children: <Widget>[
+                  sellButton(),
+                  rentButton(),
+                ],
               ),
             ],
           ),
@@ -941,28 +959,24 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   Widget sellButton() {
-    return Container(
-      child: Text(
-        "Sell",
-        style: TextStyle(
-            fontWeight:
-                isPropertyForSellOrRent[0] ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
-            color: isPropertyForSellOrRent[0] ? Colors.white : blackFont),
-      ),
+    return Text(
+      "Sell",
+      style: TextStyle(
+          fontWeight:
+              isPropertyForSellOrRent[0] ? FontWeight.w600 : FontWeight.w400,
+          fontSize: 16,
+          color: isPropertyForSellOrRent[0] ? Colors.white : blackFont),
     );
   }
 
   Widget rentButton() {
-    return Container(
-      child: Text(
-        "Rent",
-        style: TextStyle(
-            fontWeight:
-                isPropertyForSellOrRent[1] ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
-            color: isPropertyForSellOrRent[1] ? Colors.white : blackFont),
-      ),
+    return Text(
+      "Rent",
+      style: TextStyle(
+          fontWeight:
+              isPropertyForSellOrRent[1] ? FontWeight.w600 : FontWeight.w400,
+          fontSize: 16,
+          color: isPropertyForSellOrRent[1] ? Colors.white : blackFont),
     );
   }
 
@@ -975,7 +989,11 @@ class _AddPropertyState extends State<AddProperty> {
         title: Text(
           getRentDurationSelection(),
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -1002,12 +1020,13 @@ class _AddPropertyState extends State<AddProperty> {
         builder: (context) =>
             StatefulBuilder(builder: (context, rentDurationStateSetter) {
               return AlertDialog(
+                backgroundColor: Colors.white,
                 insetPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -1111,7 +1130,11 @@ class _AddPropertyState extends State<AddProperty> {
         title: Text(
           propertyCity,
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -1132,11 +1155,13 @@ class _AddPropertyState extends State<AddProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1229,7 +1254,11 @@ class _AddPropertyState extends State<AddProperty> {
         title: Text(
           selectedPropertyType != null ? selectedPropertyType!.name! : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -1256,7 +1285,12 @@ class _AddPropertyState extends State<AddProperty> {
             Text(
               bedroomCount.toString(),
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
           ],
         ),
@@ -1282,7 +1316,12 @@ class _AddPropertyState extends State<AddProperty> {
             Text(
               bathroomCount.toString(),
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
           ],
         ),
@@ -1308,7 +1347,12 @@ class _AddPropertyState extends State<AddProperty> {
             Text(
               livingRoomCount.toString(),
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
           ],
         ),
@@ -1328,11 +1372,13 @@ class _AddPropertyState extends State<AddProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1405,11 +1451,13 @@ class _AddPropertyState extends State<AddProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1483,11 +1531,13 @@ class _AddPropertyState extends State<AddProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1561,11 +1611,13 @@ class _AddPropertyState extends State<AddProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1654,7 +1706,11 @@ class _AddPropertyState extends State<AddProperty> {
         title: Text(
           getAmenities(),
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -1690,12 +1746,13 @@ class _AddPropertyState extends State<AddProperty> {
         builder: (context) =>
             StatefulBuilder(builder: (context, amenitiesStateSetter) {
               return AlertDialog(
+                backgroundColor: Colors.white,
                 insetPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -1808,7 +1865,11 @@ class _AddPropertyState extends State<AddProperty> {
         title: Text(
           getPetPolicySelection(),
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -1844,12 +1905,13 @@ class _AddPropertyState extends State<AddProperty> {
         builder: (context) =>
             StatefulBuilder(builder: (context, petPolicyStateSetter) {
               return AlertDialog(
+                backgroundColor: Colors.white,
                 insetPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -1962,7 +2024,11 @@ class _AddPropertyState extends State<AddProperty> {
         title: Text(
           getPropertyFurnitureDetail(),
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -1989,12 +2055,13 @@ class _AddPropertyState extends State<AddProperty> {
         builder: (context) =>
             StatefulBuilder(builder: (context, furnitureDetailStateSetter) {
               return AlertDialog(
+                  backgroundColor: Colors.white,
                   insetPadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  content: Container(
+                  content: SizedBox(
                     width: MediaQuery.of(context).size.width - 40,
                     child: Card(
                       elevation: 2,
@@ -2092,7 +2159,7 @@ class _AddPropertyState extends State<AddProperty> {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.price,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       onChanged: (val) {
@@ -2140,7 +2207,7 @@ class _AddPropertyState extends State<AddProperty> {
               child: CircularLoadingIndicator(),
             ));
 
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     Navigator.pop(context);
     Navigator.pop(context);
     // Product product = Product();
@@ -2212,22 +2279,22 @@ class _AddPropertyState extends State<AddProperty> {
       child: CustomizedDropDownField(
         titleColor: darkGrey,
         title: "Available from",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(propertyAvailableFrom),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            formatDate(propertyAvailableFrom),
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              fontFamily: "Inter",
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
+            maxLines: 1,
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),
@@ -2236,7 +2303,7 @@ class _AddPropertyState extends State<AddProperty> {
 }
 
 class AspectRatioVideo extends StatefulWidget {
-  AspectRatioVideo(this.controller);
+  const AspectRatioVideo(this.controller, {super.key});
 
   final VideoPlayerController controller;
 

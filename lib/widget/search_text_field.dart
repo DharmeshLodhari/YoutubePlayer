@@ -12,7 +12,8 @@ class SearchTextField extends StatefulWidget {
   bool isDisabled;
 
   SearchTextField(
-      {required this.textEditingController,
+      {super.key,
+      required this.textEditingController,
       required this.onSubmit,
       required this.hintText,
       this.textStyle,
@@ -20,7 +21,7 @@ class SearchTextField extends StatefulWidget {
       this.isDisabled = false});
 
   @override
-  _SearchTextFieldState createState() => _SearchTextFieldState();
+  State<SearchTextField> createState() => _SearchTextFieldState();
 }
 
 class _SearchTextFieldState extends State<SearchTextField> {
@@ -31,7 +32,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
 
   Widget getSearchTextField() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Stack(
         alignment: Alignment.centerRight,
         children: [
@@ -56,11 +57,11 @@ class _SearchTextFieldState extends State<SearchTextField> {
                   hintText: widget.hintText,
                   fillColor: Colors.white,
                   filled: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
-                  prefix: Padding(
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  prefix: const Padding(
                     padding: EdgeInsets.only(left: 12),
                   ),
-                  suffix: Padding(
+                  suffix: const Padding(
                     padding: EdgeInsets.only(right: 36),
                   ),
                   enabledBorder: OutlineInputBorder(
@@ -98,15 +99,15 @@ class _SearchTextFieldState extends State<SearchTextField> {
                       width: 1.0,
                     ),
                   ),
-                  hintStyle: widget.hintStyle ?? null),
+                  hintStyle: widget.hintStyle),
               onFieldSubmitted: (val) {
                 widget.onSubmit();
               },
             ),
           ),
           Positioned(
-            child: searchIcon(),
             right: 0,
+            child: searchIcon(),
           )
         ],
       ),

@@ -1,20 +1,19 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/PropertyItem.dart';
+import 'models/property_item.dart';
 import 'property_auth.dart';
 import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
 class MyWishList extends StatefulWidget {
+  const MyWishList({super.key});
+
   @override
-  _MyWishListState createState() => _MyWishListState();
+  State<MyWishList> createState() => _MyWishListState();
 }
 
 class _MyWishListState extends State<MyWishList> {
@@ -24,7 +23,7 @@ class _MyWishListState extends State<MyWishList> {
 
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -49,19 +48,12 @@ class _MyWishListState extends State<MyWishList> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult("");
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult("");
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -74,7 +66,7 @@ class _MyWishListState extends State<MyWishList> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: isLoading
             ? Center(
                 child: CircularLoadingIndicator(),
@@ -89,11 +81,11 @@ class _MyWishListState extends State<MyWishList> {
                 onRefresh: _onRefresh,
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: myWishList
                           .map((element) => Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: RentPropertyTile(
                                 property: element,
                               )))

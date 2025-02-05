@@ -1,12 +1,25 @@
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/locator.dart';
+import 'package:Slydo/screens/messaging/chat/utils.dart';
+import 'package:Slydo/screens/moments/models/attachment_item_model.dart';
+import 'package:Slydo/screens/moments/models/create_moment_model.dart';
 import 'package:Slydo/screens/moments/screens/pick_attachment_screen.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:Slydo/screens/moments/screens/select_video_cover_page.dart';
+import 'package:Slydo/screens/moments/widgets/corner_radius_image.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,26 +27,14 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../locale/app_localization.dart';
-import '../../../locator.dart';
-import '../../../services/app_config_bloc.dart';
-import '../../../utils/slydo_app_icon_icons.dart';
-import '../../../utils/util.dart';
-import '../../../utils/video_player_controller/chewie_player.dart';
-import '../../../widget/dialog.dart';
-import '../../../widget/loading_indicator.dart';
-import '../../../widget/rounded_background_icon.dart';
-import '../models/attachment_item_model.dart';
-import '../models/create_moment_model.dart';
-import '../widgets/corner_radius_image.dart';
-import 'moments_service.dart';
+import '../moments_auth.dart';
 
 class PreviewMomentScreen extends StatefulWidget {
   final String filePath;
-  var arguments;
+  final dynamic arguments;
 
-  PreviewMomentScreen({Key? key, required this.filePath, this.arguments})
-      : super(key: key);
+  const PreviewMomentScreen(
+      {super.key, required this.filePath, this.arguments});
 
   @override
   State<PreviewMomentScreen> createState() => _PreviewMomentScreenState();
@@ -57,6 +58,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   bool attachmentItemLoading = false;
   List<String> attachmentList = ['Blog', 'Product', 'Service', 'Url', 'None'];
   List<String> attachmentItemList = [];
+  String? selectedImageThumb;
 
   // Thumbnail that would be generated from the video the user captured.
   String? generatedVideoThumbnail;
@@ -80,7 +82,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
   void changeColor(Color color) {
     pickedColor = color;
-    debugPrint('PICKED COLOR ::: $pickedColor');
+    // debugPrint('PICKED COLOR ::: $pickedColor');
   }
 
   AppConfigurationModel? appConfigurationModel;
@@ -102,7 +104,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     focusNode = FocusNode();
     super.initState();
 
-    String? fType = getFileTypeByPath(path: widget.filePath);
+    final String? fType = getFileTypeByPath(path: widget.filePath);
     if (fType == null) return;
     fileType = fType;
     /*If the media to be previewed is a video, generate a thumbnail from it (the video)*/
@@ -111,7 +113,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
       generateThumbNailFromVideo(videoPath: widget.filePath).then((thumbnail) {
         if (thumbnail != null) {
           generatedVideoThumbnail = thumbnail;
-          debugPrint('file path gen -> $generatedVideoThumbnail');
+          // debugPrint('file path gen -> $generatedVideoThumbnail');
         }
       });
     }
@@ -120,461 +122,499 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return Scaffold(
-      backgroundColor: lightGrey,
-      appBar: appBar(),
-      body: ListView(
-        // fit: StackFit.expand,
-        children: [
-          mediaRenderer(),
-          Container(
-            decoration: BoxDecoration(
-              color: lightGrey,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Align(
-                  //   alignment: Alignment.center,
-                  //   child: Container(
-                  //     width: 80,
-                  //     height: 8,
-                  //     decoration: BoxDecoration(
-                  //       color: greyBorderColor,
-                  //       borderRadius: BorderRadius.circular(50),
-                  //     ),
-                  //   ),
-                  // ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    maxLength: 255,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      hoverColor: white,
-                      hintText: 'Enter caption...',
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 12),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: greyBorderColor,
-                          width: 1.0,
+    return WillPopScope(
+      onWillPop: () async {
+        return await getExitDialog(context);
+      },
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: ListView(
+            // fit: StackFit.expand,
+            children: [
+              mediaRenderer(),
+              Container(
+                decoration: BoxDecoration(
+                  color: lightGrey,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Align(
+                    //   alignment: Alignment.center,
+                    //   child: Container(
+                    //     width: 80,
+                    //     height: 8,
+                    //     decoration: BoxDecoration(
+                    //       color: greyBorderColor,
+                    //       borderRadius: BorderRadius.circular(50),
+                    //     ),
+                    //   ),
+                    // ),
+                    const SizedBox(height: 15),
+                    TextFormField(
+                      maxLength: 255,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        hoverColor: white,
+                        hintText: 'Enter caption...',
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 12),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: greyBorderColor,
+                            width: 1.0,
+                          ),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: greyBorderColor,
+                            width: 1.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: navyBlue,
+                            width: 1.0,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: greyBorderColor,
+                            width: 1.0,
+                          ),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: greyBorderColor,
+                            width: 1.0,
+                          ),
                         ),
                       ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: greyBorderColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: navyBlue,
-                          width: 1.0,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: greyBorderColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: greyBorderColor,
-                          width: 1.0,
-                        ),
-                      ),
+                      onChanged: (value) {
+                        momentTitle = value;
+                        if (value.isNotEmpty) {
+                          isText = true;
+                        } else {
+                          isText = false;
+                        }
+                        setState(() {});
+                      },
                     ),
-                    onChanged: (value) {
-                      momentTitle = value;
-                      if (value.isNotEmpty) {
-                        isText = true;
-                      } else {
-                        isText = false;
-                      }
-                      setState(() {});
-                    },
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Visibility(
-                          visible: !isMore,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                isMore = !isMore;
-                                isOnMore = !isOnMore;
-                              });
-                            },
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10.0),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: greyBackground,
-                                  ),
-                                  child: SvgPicture.asset(
-                                    "yarn/world".toSVG(),
-                                    height: 10,
-                                    width: 10,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 6,
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(10.0),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: greyBackground,
-                                  ),
-                                  child: SvgPicture.asset(
-                                    "yarn/dark_comment".toSVG(),
-                                    height: 10,
-                                    width: 10,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 6,
-                                ),
-                                Container(
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Visibility(
+                            visible: !isMore,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isMore = !isMore;
+                                  isOnMore = !isOnMore;
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  Container(
                                     padding: const EdgeInsets.all(10.0),
-                                    // decoration: BoxDecoration(
-
-                                    // ),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: greyBackground,
+                                    ),
                                     child: SvgPicture.asset(
-                                      "yarn/thumbsup".toSVG(),
+                                      "yarn/world".toSVG(),
                                       height: 10,
                                       width: 10,
-                                    )),
-                                const SizedBox(
-                                  width: 6,
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(12.0),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: greyBackground,
+                                    ),
                                   ),
-                                  child: SvgPicture.asset(
-                                    "yarn/infinity".toSVG(),
-                                    height: 6,
+                                  const SizedBox(
                                     width: 6,
                                   ),
-                                ),
-                                const SizedBox(
-                                  width: 6,
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(10.0),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: greyBackground,
+                                  Container(
+                                    padding: const EdgeInsets.all(10.0),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: greyBackground,
+                                    ),
+                                    child: SvgPicture.asset(
+                                      "yarn/dark_comment".toSVG(),
+                                      height: 10,
+                                      width: 10,
+                                    ),
                                   ),
-                                  child: SvgPicture.asset(
-                                    "yarn/black_logo".toSVG(),
-                                    height: 10,
-                                    width: 10,
+                                  const SizedBox(
+                                    width: 6,
                                   ),
-                                ),
-                              ],
-                            ),
-                          )),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isMore = !isMore;
-                            isOnMore = !isOnMore;
-                          });
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              'More option',
-                              style: TextStyle(
-                                  color: darkGreyYarn,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Icon(
-                              isMore
-                                  ? Icons.keyboard_arrow_down_sharp
-                                  : Icons.keyboard_arrow_up_sharp,
-                              color: darkGreyYarn,
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Visibility(
-                    visible: isOnMore,
-                    child: Column(
-                      children: [
-                        previewMomentSwitchOptions(
-                          icon: 'yarn/world',
-                          title: 'Public',
-                          description:
-                              'If you make this moment public, it will be available to everyone under slydo network',
-                          switchBtn: Switch(
-                            value: isPublic,
-                            onChanged: (value) {
-                              setState(() {
-                                isPublic = !isPublic;
-                                print(value.toString());
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                        previewMomentSwitchOptions(
-                          title: 'Enable likes',
-                          icon: 'yarn/dark_comment',
-                          description:
-                              'Enable this to allow others like your post',
-                          switchBtn: Switch(
-                            value: enableLikes,
-                            onChanged: (value) {
-                              setState(() {
-                                enableLikes = !enableLikes;
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                        previewMomentSwitchOptions(
-                          icon: 'yarn/thumbsup',
-                          title: 'Enable Comments',
-                          description:
-                              'Enable this to allow others comment on your moment',
-                          switchBtn: Switch(
-                            value: enableCommenting,
-                            onChanged: (value) {
-                              setState(() {
-                                enableCommenting = !enableCommenting;
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                        previewMomentSwitchOptions(
-                          title: 'Make Permanent',
-                          icon: 'yarn/infinity',
-                          description:
-                              'If you make a moment Permanent it will stay forever till you delete it',
-                          switchBtn: Switch(
-                            value: isPermanent,
-                            onChanged: (value) {
-                              setState(() {
-                                isPermanent = !isPermanent;
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                        appConfigurationModel?.enablePayment == true
-                            ? previewMomentSwitchOptions(
-                                icon: 'yarn/black_logo',
-                                title: 'Enable Payment',
-                                description:
-                                    'Enable this to allow other users to support your work by making a donation.',
-                                switchBtn: Switch(
-                                  value: enablePayMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      enablePayMe = value;
-                                    });
-                                  },
-                                ),
-                              )
-                            : const SizedBox.shrink(),
-                        const SizedBox(height: 20),
-                        dropDownPickItemWidget(
-                          label: 'Pick attachment',
-                          selectedItem: pickedAttachmentType,
-                          onTap: () => pickAttachmentWidget(),
-                        ),
-                        Visibility(
-                          visible: attachmentItemModel != null,
-                          child: CustomizedTextFormField(
-                            isReadOnly: true,
-                            controller: pickedAttachmentTFCtrl,
-                          ),
-                        ),
-                        Visibility(
-                          visible: showUrlTextField,
-                          child: Column(
+                                  Container(
+                                      padding: const EdgeInsets.all(10.0),
+                                      // decoration: BoxDecoration(
+
+                                      // ),
+                                      child: SvgPicture.asset(
+                                        "yarn/thumbsup".toSVG(),
+                                        height: 10,
+                                        width: 10,
+                                      )),
+                                  const SizedBox(
+                                    width: 6,
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(12.0),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: greyBackground,
+                                    ),
+                                    child: SvgPicture.asset(
+                                      "yarn/infinity".toSVG(),
+                                      height: 6,
+                                      width: 6,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 6,
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(10.0),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: greyBackground,
+                                    ),
+                                    child: SvgPicture.asset(
+                                      "yarn/black_logo".toSVG(),
+                                      height: 10,
+                                      width: 10,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isMore = !isMore;
+                              isOnMore = !isOnMore;
+                            });
+                          },
+                          child: Row(
                             children: [
-                              CustomizedTextFormField(
-                                hintText: 'Enter Url',
-                                controller: urlTextCtrl,
+                              Text(
+                                'More option',
+                                style: TextStyle(
+                                    color: darkGreyYarn,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12),
                               ),
-                              CustomizedTextFormField(
-                                hintText: 'Enter a title for your url',
-                                controller: titleOfLinkCtrl,
-                                maxLength: 15,
+                              const SizedBox(
+                                width: 10,
                               ),
+                              Icon(
+                                isMore
+                                    ? Icons.keyboard_arrow_down_sharp
+                                    : Icons.keyboard_arrow_up_sharp,
+                                color: darkGreyYarn,
+                              )
                             ],
                           ),
-                        ),
-                        Focus(
-                          focusNode: focusNode,
-                          child: Visibility(
-                            visible: enablePayMe,
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Visibility(
+                      visible: isOnMore,
+                      child: Column(
+                        children: [
+                          previewMomentSwitchOptions(
+                            icon: 'yarn/world',
+                            title: 'Public',
+                            description:
+                                'If you make this moment public, it will be available to everyone under slydo network',
+                            switchBtn: Switch(
+                              value: isPublic,
+                              onChanged: (value) {
+                                setState(() {
+                                  isPublic = !isPublic;
+                                  // debugPrint(value.toString());
+                                });
+                              },
+                              thumbIcon:
+                                  MaterialStateProperty.all(const Icon(null)),
+                              activeTrackColor: navyBlue,
+                              activeColor: Colors.white,
+                              inactiveTrackColor: darkGreyYarn,
+                              inactiveThumbColor: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          previewMomentSwitchOptions(
+                            title: 'Enable likes',
+                            icon: 'yarn/dark_comment',
+                            description:
+                                'Enable this to allow others like your post',
+                            switchBtn: Switch(
+                              value: enableLikes,
+                              onChanged: (value) {
+                                setState(() {
+                                  enableLikes = !enableLikes;
+                                });
+                              },
+                              thumbIcon:
+                                  MaterialStateProperty.all(const Icon(null)),
+                              activeTrackColor: navyBlue,
+                              activeColor: Colors.white,
+                              inactiveTrackColor: darkGreyYarn,
+                              inactiveThumbColor: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          previewMomentSwitchOptions(
+                            icon: 'yarn/thumbsup',
+                            title: 'Enable Comments',
+                            description:
+                                'Enable this to allow others comment on your moment',
+                            switchBtn: Switch(
+                              value: enableCommenting,
+                              onChanged: (value) {
+                                setState(() {
+                                  enableCommenting = !enableCommenting;
+                                });
+                              },
+                              thumbIcon:
+                                  MaterialStateProperty.all(const Icon(null)),
+                              activeTrackColor: navyBlue,
+                              activeColor: Colors.white,
+                              inactiveTrackColor: darkGreyYarn,
+                              inactiveThumbColor: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          previewMomentSwitchOptions(
+                            title: 'Make Permanent',
+                            icon: 'yarn/infinity',
+                            description:
+                                'If you make a moment Permanent it will stay forever till you delete it',
+                            switchBtn: Switch(
+                              value: isPermanent,
+                              onChanged: (value) {
+                                setState(() {
+                                  isPermanent = !isPermanent;
+                                });
+                              },
+                              thumbIcon:
+                                  MaterialStateProperty.all(const Icon(null)),
+                              activeTrackColor: navyBlue,
+                              activeColor: Colors.white,
+                              inactiveTrackColor: darkGreyYarn,
+                              inactiveThumbColor: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          if (appConfigurationModel?.enablePayment == true)
+                            previewMomentSwitchOptions(
+                              icon: 'yarn/black_logo',
+                              title: 'Enable Payment',
+                              description:
+                                  'Enable this to allow other users to support your work by making a donation.',
+                              switchBtn: Switch(
+                                value: enablePayMe,
+                                onChanged: (value) {
+                                  setState(() {
+                                    enablePayMe = value;
+                                  });
+                                },
+                                thumbIcon:
+                                    MaterialStateProperty.all(const Icon(null)),
+                                activeTrackColor: navyBlue,
+                                activeColor: Colors.white,
+                                inactiveTrackColor: darkGreyYarn,
+                                inactiveThumbColor: Colors.white,
+                              ),
+                            )
+                          else
+                            const SizedBox.shrink(),
+                          const SizedBox(height: 20),
+                          dropDownPickItemWidget(
+                            label: 'Pick attachment',
+                            selectedItem: pickedAttachmentType,
+                            onTap: () => pickAttachmentWidget(),
+                          ),
+                          Visibility(
+                            visible: attachmentItemModel != null,
+                            child: CustomizedTextFormField(
+                              isReadOnly: true,
+                              controller: pickedAttachmentTFCtrl,
+                            ),
+                          ),
+                          Visibility(
+                            visible: showUrlTextField,
                             child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const SizedBox(height: 12),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Column(
-                                    children: [
-                                      const Text('Button Preview'),
-                                      const SizedBox(height: 6),
-                                      payMeBtn(),
-                                    ],
-                                  ),
+                                CustomizedTextFormField(
+                                  hintText: 'Enter Url',
+                                  controller: urlTextCtrl,
                                 ),
                                 CustomizedTextFormField(
-                                  controller: payMeCtrl,
+                                  hintText: 'Enter a title for your url',
+                                  controller: titleOfLinkCtrl,
                                   maxLength: 15,
-                                  hintText: 'Enter pay me label...',
                                 ),
-                                const SizedBox(height: 8),
-                                const Text('Pick button color',
-                                    textAlign: TextAlign.left),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'Pick a color to display as your payment button color',
-                                  style: TextStyle(
-                                    color: blackFont.withOpacity(0.5),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                InkWell(
-                                  onTap: () async {
-                                    //This is to dismiss the keyboard first, wait for 200 milliseconds
-                                    // for the keyboard to be fully dismissed before showing the dialog.
-                                    //To avoid overflow errors on the dialog.
-                                    focusNode.unfocus();
-                                    await Future.delayed(
-                                        const Duration(milliseconds: 200));
-                                    bool? _pickedColor = await showDialog<bool>(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text('Pick your color'),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            ColorPicker(
-                                              onColorChanged: changeColor,
-                                              pickerColor: pickedColor,
-                                            ),
-                                            CurvedButton(
-                                              text: 'Select',
-                                              onPressed: () {
-                                                Navigator.pop(context, true);
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                    if (_pickedColor != null &&
-                                        _pickedColor == true) {
-                                      // Calling setState here so that ONLY if they click the select button
-                                      // in the dialog should the color of the container change.
-
-                                      setState(() {});
-                                    }
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Image.asset(
-                                        'assets/images/color_picker_image.png',
-                                        width: 40,
-                                        height: 40,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                          ),
-                                          child: Text(
-                                            '#${pickedColor.value.toRadixString(16)}'
-                                                .toUpperCase(),
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: blackFont,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
                               ],
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
+                          Focus(
+                            focusNode: focusNode,
+                            child: Visibility(
+                              visible: enablePayMe,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const SizedBox(height: 12),
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Column(
+                                      children: [
+                                        const Text('Button Preview'),
+                                        const SizedBox(height: 6),
+                                        payMeBtn(),
+                                      ],
+                                    ),
+                                  ),
+                                  CustomizedTextFormField(
+                                    controller: payMeCtrl,
+                                    maxLength: 15,
+                                    hintText: 'Enter pay me label...',
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text('Pick button color',
+                                      textAlign: TextAlign.left),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Pick a color to display as your payment button color',
+                                    style: TextStyle(
+                                      color: blackFont.withOpacity(0.5),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  InkWell(
+                                    onTap: () async {
+                                      //This is to dismiss the keyboard first, wait for 200 milliseconds
+                                      // for the keyboard to be fully dismissed before showing the dialog.
+                                      //To avoid overflow errors on the dialog.
+                                      focusNode.unfocus();
+                                      await Future.delayed(
+                                          const Duration(milliseconds: 200));
+                                      final bool? pickColor =
+                                          await showDialog<bool>(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          backgroundColor: Colors.white,
+                                          title: const Text('Pick your color'),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              ColorPicker(
+                                                onColorChanged: changeColor,
+                                                pickerColor: pickedColor,
+                                              ),
+                                              CurvedButton(
+                                                text: 'Select',
+                                                onPressed: () {
+                                                  Navigator.pop(context, true);
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                      if (pickColor != null &&
+                                          pickColor == true) {
+                                        // Calling setState here so that ONLY if they click the select button
+                                        // in the dialog should the color of the container change.
 
-                        ///ToDo TextFieldTags check
-                        // TextFieldTags(
-                        //   initialTags: userTags,
-                        //   tagsStyler: textFieldTagStyler,
-                        //   validator: (value) {
-                        //     return null;
-                        //   },
-                        //   textFieldStyler: textFieldStyler,
-                        //   onTag: (tag) {
-                        //     setState(() {
-                        //       userTags.add(tag);
-                        //       userTags = userTags.toSet().toList();
-                        //     });
-                        //     userTags.removeWhere((tag) => tag.isEmpty);
-                        //   },
-                        //   onDelete: (tag) {
-                        //     setState(() {
-                        //       userTags.remove(tag);
-                        //     });
-                        //     userTags.removeWhere((tag) => tag.isEmpty);
-                        //   },
-                        // ),
-                      ],
+                                        setState(() {});
+                                      }
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Image.asset(
+                                          'assets/images/color_picker_image.png',
+                                          width: 40,
+                                          height: 40,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Container(
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: const BoxDecoration(
+                                              color: Colors.white,
+                                            ),
+                                            child: Text(
+                                              '#${pickedColor.value.toRadixString(16)}'
+                                                  .toUpperCase(),
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: blackFont,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+
+                          ///ToDo TextFieldTags check
+                          // TextFieldTags(
+                          //   initialTags: userTags,
+                          //   tagsStyler: textFieldTagStyler,
+                          //   validator: (value) {
+                          //     return null;
+                          //   },
+                          //   textFieldStyler: textFieldStyler,
+                          //   onTag: (tag) {
+                          //     setState(() {
+                          //       userTags.add(tag);
+                          //       userTags = userTags.toSet().toList();
+                          //     });
+                          //     userTags.removeWhere((tag) => tag.isEmpty);
+                          //   },
+                          //   onDelete: (tag) {
+                          //     setState(() {
+                          //       userTags.remove(tag);
+                          //     });
+                          //     userTags.removeWhere((tag) => tag.isEmpty);
+                          //   },
+                          // ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -652,9 +692,10 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                   Text(
                     title,
                     style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: blackFont,
+                    ),
                   ),
                   Text(
                     description,
@@ -665,7 +706,11 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
               ),
             ),
           ),
-          SizedBox(height: 30, child: switchBtn),
+          SizedBox(
+            width: 40,
+            height: 30,
+            child: FittedBox(fit: BoxFit.fill, child: switchBtn),
+          ),
         ],
       ),
     );
@@ -673,6 +718,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -682,8 +728,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
-          Navigator.pop(context);
+        onPressed: () async {
+          await getExitDialog(context);
         },
       ),
       title: Text(
@@ -695,63 +741,62 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         ),
       ),
       actions: [
-        isText == false
-            ? const SizedBox.shrink()
-            : Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: CurvedButton(
-                  width: 100,
-                  height: 10,
-                  borderRadius: 20,
-                  text: 'Submit',
-                  fontSize: 14,
-                  onPressed: () async {
-                    if (enablePayMe && payMeCtrl.text.isEmpty) {
-                      showToast(message: 'Payment label cannot be empty');
-                      return;
-                    }
+        if (isText == false)
+          const SizedBox.shrink()
+        else
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: CurvedButton(
+              width: 100,
+              borderRadius: 20,
+              text: 'Submit',
+              fontSize: 14,
+              onPressed: () async {
+                if (enablePayMe && payMeCtrl.text.isEmpty) {
+                  showToast(message: 'Payment label cannot be empty');
+                  return;
+                }
 
-                    if (pickedAttachmentType == 'Url' &&
-                        (urlTextCtrl.text.isEmpty ||
-                            (!await canLaunchUrl(
-                                Uri.parse(urlTextCtrl.text))))) {
-                      showToast(message: 'Please enter a valid url');
-                      return;
-                    }
-                    showDialogBox(
-                      context: context,
-                      actionOneTextColor: blackFont,
-                      actionTwoBgColor: navyBlue,
-                      actionTwoTextColor: Colors.white,
-                      actionOneBgColor: greyBorderColor,
-                      title: AppLocalization.of(context)!.post,
-                      actionTwoText: AppLocalization.of(context)!.post,
-                      actionOneText: AppLocalization.of(context)!.notNow,
-                      description:
-                          'Are you sure you want to post\nyour moment now?',
-                      roundedBackgroundIcon: RoundedBackgroundIcon(
-                        enableMargin: false,
-                        width: 90,
-                        height: 90,
-                        image: Image.asset(
-                          'assets/images/accept_dialog_icon.png',
-                          color: navyBlue,
-                        ),
-                      ),
-                      rightButtonOnPressed: () {
-                        postMoment();
-                      },
-                    );
+                if (pickedAttachmentType == 'Url' &&
+                    (urlTextCtrl.text.isEmpty ||
+                        (!await canLaunchUrl(Uri.parse(urlTextCtrl.text))))) {
+                  showToast(message: 'Please enter a valid url');
+                  return;
+                }
+                showDialogBox(
+                  context: context,
+                  actionOneTextColor: blackFont,
+                  actionTwoBgColor: navyBlue,
+                  actionTwoTextColor: Colors.white,
+                  actionOneBgColor: greyBorderColor,
+                  title: AppLocalization.of(context)!.post,
+                  actionTwoText: AppLocalization.of(context)!.post,
+                  actionOneText: AppLocalization.of(context)!.notNow,
+                  description:
+                      'Are you sure you want to post\nyour moment now?',
+                  roundedBackgroundIcon: RoundedBackgroundIcon(
+                    enableMargin: false,
+                    width: 90,
+                    height: 90,
+                    image: Image.asset(
+                      'assets/images/accept_dialog_icon.png',
+                      color: navyBlue,
+                    ),
+                  ),
+                  rightButtonOnPressed: () {
+                    postMoment();
                   },
-                ),
-              ),
+                );
+              },
+            ),
+          ),
       ],
     );
   }
 
   Widget mediaRenderer() {
     if (fileType == "image") {
-      return Container(
+      return SizedBox(
         width: 60,
         height: 250,
         child: Center(
@@ -770,35 +815,87 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
       //   borderRadius: BorderRadius.circular(20),
       //   child: Padding(
       //     padding: const EdgeInsets.fromLTRB(100, 10, 100, 10),
-      return Container(
+      return SizedBox(
           width: 60,
           height: 250,
           child: Center(
-            child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isTapped = !isTapped;
-                    if (isTapped == true) {
-                      videoPlayerController?.play();
-                    } else {
-                      videoPlayerController?.pause();
-                    }
-                  });
-                },
-                child: CornerRadiusVideo(
-                    widget: Stack(children: [
-                  VideoPlayer(videoPlayerController!),
-                  isTapped == false
-                      ? Align(
-                          alignment: Alignment.center,
-                          child: SvgPicture.asset(
-                            "yarn/cam_vec".toSVG(),
-                            height: 50,
-                            width: 50,
+            child: CornerRadiusVideo(
+              widget: Column(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isTapped = !isTapped;
+                          if (isTapped == true) {
+                            videoPlayerController?.play();
+                          } else {
+                            videoPlayerController?.pause();
+                          }
+                        });
+                      },
+                      child: Stack(children: [
+                        VideoPlayer(videoPlayerController!),
+                        if (selectedImageThumb != null && isTapped == false)
+                          Center(
+                            child: Image(
+                              width: double.infinity,
+                              height: 250,
+                              image: FileImage(
+                                File(selectedImageThumb ?? ""),
+                              ),
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        )
-                      : const SizedBox.shrink()
-                ]))),
+                        if (isTapped == false)
+                          Align(
+                            alignment: Alignment.center,
+                            child: SvgPicture.asset(
+                              "yarn/cam_vec".toSVG(),
+                              height: 50,
+                              width: 50,
+                            ),
+                          )
+                        else
+                          const SizedBox.shrink(),
+                      ]),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      final data = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SelectVideoCoverPage(
+                            videoPath: widget.filePath,
+                          ),
+                        ),
+                      );
+
+                      if (data != null) {
+                        selectedImageThumb = data;
+                        if (mounted) setState(() {});
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      color: greyTagColor,
+                      padding: const EdgeInsets.all(7.0),
+                      child: Center(
+                        child: Text(
+                          AppLocalization.of(context)!.selectCover,
+                          style: TextStyle(
+                            color: blackFont,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ));
       //   ),
       // );
@@ -850,46 +947,48 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   }
 
   void postMoment() {
-    List<String> newUserTags =
+    final List<String> newUserTags =
         []; // For replacing the # in a tag with an empty string.
 
-    userTags.forEach((tag) {
+    for (var tag in userTags) {
       if (tag.startsWith('#')) {
         newUserTags.add(tag.replaceAll("#", ''));
       } else {
         newUserTags.add(tag);
       }
-    });
+    }
 
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (dialogLoadingContext) => LoadingIndicator());
 
-    MomentsService()
+    MomentsAuthService()
         .createMoment(
       createMomentModel: CreateMomentModel(
-          enableLike: enableLikes,
-          enableCommenting: enableCommenting,
-          isPermanent: isPermanent,
-          enablePayMe: enablePayMe,
-          isPublic: isPublic,
-          userTags: newUserTags,
-          mediaPoster: generatedVideoThumbnail,
-          filePath: widget.filePath,
-          text: momentTitle,
-          url: urlTextCtrl.text,
-          payMeLabel: enablePayMe
-              ? payMeCtrl.text.isEmpty
-                  ? 'Pay Me'
-                  : payMeCtrl.text
-              : null,
-          payMeButtonColor:
-              enablePayMe ? pickedColor.value.toRadixString(16) : null,
-          attachmentMap: getAttachmentMap(),
-          duration: fileType == 'video'
-              ? videoPlayerController?.value.duration.inSeconds.toString()
-              : ''),
+        enableLike: enableLikes,
+        enableCommenting: enableCommenting,
+        isPermanent: isPermanent,
+        enablePayMe: enablePayMe,
+        isPublic: isPublic,
+        userTags: newUserTags,
+        // mediaPoster: generatedVideoThumbnail,
+        mediaPoster: selectedImageThumb ?? generatedVideoThumbnail,
+        filePath: widget.filePath,
+        text: momentTitle,
+        url: urlTextCtrl.text,
+        payMeLabel: enablePayMe
+            ? payMeCtrl.text.isEmpty
+                ? 'Pay Me'
+                : payMeCtrl.text
+            : null,
+        payMeButtonColor:
+            enablePayMe ? pickedColor.value.toRadixString(16) : null,
+        attachmentMap: getAttachmentMap(),
+        duration: fileType == 'video'
+            ? videoPlayerController?.value.duration.inMilliseconds.toString()
+            : '',
+      ),
       channelUsername:
           widget.arguments == "" ? "" : widget.arguments['channel'],
     )
@@ -936,8 +1035,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     super.dispose();
   }
 
-  pickAttachmentWidget() async {
-    String? pickedAttachmentOption = await showPickItemDialog<String>(
+  Future<void> pickAttachmentWidget() async {
+    final String? pickedAttachmentOption = await showPickItemDialog<String>(
       context: context,
       items: attachmentList,
       selectedItem: pickedAttachmentType,
@@ -949,7 +1048,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
       switch (pickedAttachmentOption) {
         case 'Blog':
-          var attachmentItemModelResult = await NavigationUtil.push(context,
+          final attachmentItemModelResult = await NavigationUtil.push(context,
               screen: const PickAttachmentScreen(
                   attachmentType: AttachmentType.Blog));
           if (attachmentItemModelResult != null) {
@@ -962,7 +1061,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           }
           break;
         case 'Product':
-          var attachmentItemModelResult = await NavigationUtil.push(context,
+          final attachmentItemModelResult = await NavigationUtil.push(context,
               screen: const PickAttachmentScreen(
                   attachmentType: AttachmentType.Product));
           if (attachmentItemModelResult != null) {
@@ -976,7 +1075,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
           break;
         case 'Service':
-          var attachmentItemModelResult = await NavigationUtil.push(context,
+          final attachmentItemModelResult = await NavigationUtil.push(context,
               screen: const PickAttachmentScreen(
                   attachmentType: AttachmentType.Service));
           if (attachmentItemModelResult != null) {
@@ -999,15 +1098,16 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     }
   }
 
-  pickAttachmentItemWidget() async {
-    AttachmentItemModel? pickedItemAttachment =
+  void pickAttachmentItemWidget() async {
+    final AttachmentItemModel? pickedItemAttachment =
         await showDialog<AttachmentItemModel>(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         contentPadding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        content: Container(
+        content: SizedBox(
           width: MediaQuery.of(context).size.width - 40,
           child: Card(
             elevation: 2,
@@ -1074,6 +1174,62 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
       attachmentItemName = pickedItemAttachment.title;
       if (mounted) setState(() {});
     }
+  }
+
+  dynamic getExitDialog(BuildContext context) async {
+    await showExitDialogBackButton(
+      context: context,
+      leftButtonOnPressed: () {
+        Navigator.pop(context);
+      },
+      rightButtonOnPressed: () async {
+        if (enablePayMe && payMeCtrl.text.isEmpty) {
+          showToast(message: 'Payment label cannot be empty');
+          return;
+        }
+
+        if (pickedAttachmentType == 'Url' &&
+            (urlTextCtrl.text.isEmpty ||
+                (!await canLaunchUrl(Uri.parse(urlTextCtrl.text))))) {
+          showToast(message: 'Please enter a valid url');
+          return;
+        }
+        showDialogBox(
+          context: context,
+          actionOneTextColor: blackFont,
+          actionTwoBgColor: navyBlue,
+          actionTwoTextColor: Colors.white,
+          actionOneBgColor: greyBorderColor,
+          title: AppLocalization.of(context)!.post,
+          actionTwoText: AppLocalization.of(context)!.post,
+          actionOneText: AppLocalization.of(context)!.notNow,
+          description: 'Are you sure you want to post\nyour moment now?',
+          roundedBackgroundIcon: RoundedBackgroundIcon(
+            enableMargin: false,
+            width: 90,
+            height: 90,
+            image: Image.asset(
+              'assets/images/accept_dialog_icon.png',
+              color: navyBlue,
+            ),
+          ),
+          rightButtonOnPressed: () {
+            postMoment();
+          },
+        );
+      },
+    );
+    //   if (result != null && result) {
+    //     if (userBloc.user != null) {
+    //       userBloc.user == null;
+    //     }
+    //     Navigator.of(context).pop();
+    //   }
+    //   return false;
+    // } else {
+    //   Navigator.of(context).pop();
+    //   return true;
+    // }
   }
 }
 

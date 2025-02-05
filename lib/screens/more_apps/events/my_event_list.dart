@@ -1,11 +1,8 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
-import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/more_apps/events/models/partial_event_item.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -13,15 +10,17 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'event_auth.dart';
 
 class MyEventList extends StatefulWidget {
+  const MyEventList({super.key});
+
   @override
-  _MyEventListState createState() => _MyEventListState();
+  State<MyEventList> createState() => _MyEventListState();
 }
 
 class _MyEventListState extends State<MyEventList> {
   List<PartialEventItem> eventList = [];
 
   bool isLoading = false;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   void getResult() async {
@@ -42,18 +41,12 @@ class _MyEventListState extends State<MyEventList> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   late EventDashboardBloc _eventDashboardBloc;
@@ -67,7 +60,7 @@ class _MyEventListState extends State<MyEventList> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: isLoading
             ? Center(
                 child: CircularLoadingIndicator(),
@@ -82,12 +75,13 @@ class _MyEventListState extends State<MyEventList> {
                 onRefresh: _onRefresh,
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: eventList
                           .map(
                             (element) => Container(
-                                padding: EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: EventTile(
                                   partialEventItem: element,
                                 )),

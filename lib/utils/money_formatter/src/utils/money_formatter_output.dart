@@ -35,6 +35,7 @@
 /// | Pub     | https://pub.dartlang.org/packages/flutter_money_formatter |
 ///
 /// ---
+library;
 
 /// [MoneyFormatterOutput] instance.
 ///

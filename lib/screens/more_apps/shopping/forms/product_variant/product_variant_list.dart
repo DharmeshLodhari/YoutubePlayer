@@ -1,13 +1,13 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:Slydo/widget/vertical_list_item.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -19,17 +19,17 @@ import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
 class ProductVariantList extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(List<Variant>)? onListRefreshed;
 
-  ProductVariantList({this.arguments, this.onListRefreshed, Key? key})
-      : super(key: key);
+  const ProductVariantList({this.arguments, this.onListRefreshed, super.key});
 
   @override
-  _ProductVariantListState createState() => _ProductVariantListState();
+  State<ProductVariantList> createState() => _ProductVariantListState();
 }
 
-class _ProductVariantListState extends State<ProductVariantList> {
+class _ProductVariantListState extends State<ProductVariantList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -48,9 +48,6 @@ class _ProductVariantListState extends State<ProductVariantList> {
   bool noItemInList = false;
   final _auth = ShoppingAuthService();
 
-  //slidable tile
-  SlidableController? _slideController;
-
   @override
   void initState() {
     productId = widget.arguments["productId"];
@@ -65,41 +62,38 @@ class _ProductVariantListState extends State<ProductVariantList> {
         getVariantList();
       }
     });
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
   }
 
   void getVariantList() async {
     if (!isLoading) {
-      if (mounted) {
-        setState(() {
-          isLoading = true;
-        });
-      }
-      Map<String, dynamic>? result =
-          await _auth.getVariantList(productId!, next, previous);
-      if (result == null) {
-        isLoading = false;
-        noItemInList = true;
-        return;
-      }
-      // count = result['count'];
-      // next = result['next'];
-      // previous = result['previous'];
-      var tempList = result['results'];
-
-      // productVariantList = Variant.convertToVariantList(tempList);
-      // productVariantList = tempList;
-      productVariantList.addAll(tempList);
-
-      if (mounted) {
-        setState(() {
+      if (next != null && !isLoading) {
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
+        final Map<String, dynamic>? result =
+            await _auth.getVariantList(productId!, next, previous);
+        if (result == null) {
           isLoading = false;
-          noItemInList = false;
-        });
+          noItemInList = true;
+          return;
+        }
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        final tempList = result['results'];
+
+        // productVariantList = Variant.convertToVariantList(tempList);
+        // productVariantList = tempList;
+        productVariantList.addAll(tempList);
+
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            noItemInList = false;
+          });
+        }
       }
 
       if (productVariantList.isEmpty) {
@@ -109,10 +103,10 @@ class _ProductVariantListState extends State<ProductVariantList> {
           });
         }
       } else if (next == null && productVariantList.length > 6) {
-        _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -121,29 +115,22 @@ class _ProductVariantListState extends State<ProductVariantList> {
   // refresh the list when lifecycle called onResume method
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        productVariantList = [];
-        if (mounted) setState(() {});
-        getVariantList();
-        setState(() {
-          // Call the callback function with the updated list
-          //to pass the list back to edit product page
-          // widget.onListRefreshed!(productVariantList);
-          _refreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      productVariantList = [];
+      if (mounted) setState(() {});
+      getVariantList();
+      setState(() {
+        // Call the callback function with the updated list
+        //to pass the list back to edit product page
+        // widget.onListRefreshed!(productVariantList);
         _refreshController.refreshCompleted();
-      }
-    });
+      });
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -161,15 +148,18 @@ class _ProductVariantListState extends State<ProductVariantList> {
           key: _scaffoldKey,
           backgroundColor: Colors.white,
           appBar: appBar() as PreferredSizeWidget?,
-          body: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: _buildProductVariantList()),
+          body: SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: _buildProductVariantList()),
+          ),
         ),
       ),
     );
@@ -177,6 +167,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -198,7 +189,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
       ),
       actions: <Widget>[
         addOptionBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -216,7 +207,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
       ),
       onTap: () async {
         final result = await Navigator.of(context)
-            .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+            .pushNamed(Routes.ADD_EDIT_VARIANT, arguments: {
           'option': 'edit',
           'productId': productId,
         });
@@ -240,24 +231,27 @@ class _ProductVariantListState extends State<ProductVariantList> {
             title: AppLocalization.of(context)!.noVariantYet,
             msg: AppLocalization.of(context)!.noVariantDetail,
           )
-        : ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            //+1 for progressbar
-            itemCount: productVariantList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == productVariantList.length) {
-                return buildLoadingIndicator(isLoading: isLoading);
-              } else {
-                return _getSlidableWithLists(
-                    context,
-                    productVariantTile(
-                      variant: productVariantList[index],
-                    ),
-                    productVariantList[index]);
-              }
-            },
-            controller: _scrollController,
-          );
+        : isLoading && productVariantList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                //+1 for progressbar
+                itemCount: productVariantList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == productVariantList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        productVariantTile(
+                          variant: productVariantList[index],
+                        ),
+                        productVariantList[index]);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   Widget productVariantTile({required Variant variant}) {
@@ -267,60 +261,78 @@ class _ProductVariantListState extends State<ProductVariantList> {
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
-        padding: EdgeInsets.symmetric(vertical: 7.0),
-        child: ListTile(
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                appendStringDot(variant.title!, 20),
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: "Inter",
-                    fontSize: 14),
-              ),
-              SizedBox(height: 3.0),
-              Text(
-                'Available . ${variant.quantity!}',
-                maxLines: 1,
-                style: TextStyle(
-                    color: darkGrey,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: "Inter",
-                    fontSize: 12),
-              ),
-              SizedBox(height: 3.0),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    worldCurrencies[variant.currency!]!,
-                    style: TextStyle(
-                        fontFamily: "Inter",
-                        fontSize: 14.0,
-                        color: blackFont,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    moneyDisplayNormalizer(int.parse(variant.price.toString())),
-                    style: TextStyle(
-                        fontSize: 14.0,
-                        color: blackFont,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ],
-              )
-            ],
-          ),
-          leading: GestureDetector(
-            onTap: () {
-              String? url = variant.serverImages![0]!;
-              Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
-            },
-            child: checkProductImage(variant),
+        padding: const EdgeInsets.symmetric(vertical: 7.0),
+        child: GestureDetector(
+          onTap: () async {
+            final data = await Navigator.of(context)
+                .pushNamed(Routes.ADD_EDIT_VARIANT, arguments: {
+              'variant': variant,
+            });
+
+            // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
+            if (data != null && data is Variant) {
+              //save the variant details for later use
+              // variantData = data;
+              _onRefresh();
+              if (mounted) setState(() {});
+            }
+          },
+          child: ListTile(
+            title: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  appendStringDot(variant.title!, 20),
+                  maxLines: 1,
+                  style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: "Inter",
+                      fontSize: 14),
+                ),
+                const SizedBox(height: 3.0),
+                Text(
+                  'Available . ${variant.quantity!}',
+                  maxLines: 1,
+                  style: TextStyle(
+                      color: darkGrey,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: "Inter",
+                      fontSize: 12),
+                ),
+                const SizedBox(height: 3.0),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      worldCurrencies[variant.currency!]!,
+                      style: TextStyle(
+                          fontFamily: "Inter",
+                          fontSize: 14.0,
+                          color: blackFont,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(
+                          int.parse(variant.price.toString())),
+                      style: TextStyle(
+                          fontSize: 14.0,
+                          color: blackFont,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            leading: GestureDetector(
+              onTap: () {
+                final String url = variant.serverImages![0]!;
+                Navigator.of(context)
+                    .pushNamed("/photo-viewer", arguments: url);
+              },
+              child: checkProductImage(variant),
+            ),
           ),
         ),
       ),
@@ -336,7 +348,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
       url = item;
     }
 
-    String imageUrl = url!.replaceAll('https//', 'https://');
+    final String imageUrl = url!.replaceAll('https//', 'https://');
     if (url == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
@@ -349,6 +361,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
     } else {
       return Container(
         width: 60,
+        height: 70,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           image: DecorationImage(
@@ -364,51 +377,82 @@ class _ProductVariantListState extends State<ProductVariantList> {
   Widget _getSlidableWithLists(
       BuildContext context, Widget bankAccountTile, Variant variant) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(variant: variant),
+      ),
+      // endActionPane: ActionPane(
+      //   motion: const BehindMotion(),
+      //   extentRatio: 0.25,
+      //   children: listSecondaryActions(variant: variant),
+      // ),
       child: VerticalListItem(bankAccountTile),
-      actions: listActionSlideActions(variant: variant),
-      secondaryActions: listSecondaryActions(variant: variant),
     );
   }
 
-  List<Widget> listSecondaryActions({required Variant variant}) {
-    return [
-      SlideActionButton(
-          backgroundColor: starYellow,
-          icon: Icons.edit,
-          onTap: () async {
-            final data = await Navigator.of(context)
-                .pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
-              'variant': variant,
-            });
-
-            // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
-            if (data != null && data is Variant) {
-              //save the variant details for later use
-              // variantData = data;
-              _onRefresh();
-              if (mounted) setState(() {});
-            }
-          },
-          title: AppLocalization.of(context)!.edit,
-          slideController: _slideController),
-    ];
-  }
+  // List<Widget> listSecondaryActions({required Variant variant}) {
+  //   return [
+  //     SlideActionButton(
+  //       borderRadius: BorderRadius.circular(5),
+  //       padding: EdgeInsets.zero,
+  //       backgroundColor: starYellow,
+  //       icon: Icons.edit,
+  //       onPressed: (con) async {
+  //         final data = await Navigator.of(context)
+  //             .pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
+  //           'variant': variant,
+  //         });
+  //
+  //         // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
+  //         if (data != null && data is Variant) {
+  //           //save the variant details for later use
+  //           // variantData = data;
+  //           _onRefresh();
+  //           if (mounted) setState(() {});
+  //         }
+  //       },
+  //       label: AppLocalization.of(context)!.edit,
+  //     ),
+  //   ];
+  // }
 
   List<Widget> listActionSlideActions({Variant? variant}) {
     return [
       SlideActionButton(
-          backgroundColor: mateRed,
-          icon: SlydoAppIcon.remove,
-          onTap: () async {
-            deleteProductVariant(variant);
-          },
-          title: AppLocalization.of(context)!.delete,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
+        backgroundColor: mateRed,
+        icon: SlydoAppIcon.remove,
+        onPressed: (con) async {
+          deleteProductDialog(variant);
+        },
+        label: AppLocalization.of(context)!.delete,
+      ),
     ];
+  }
+
+  void deleteProductDialog(Variant? variant) {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Product Variant',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this product variant?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () {
+        deleteProductVariant(variant);
+      },
+    );
   }
 
   void deleteProductVariant(Variant? variant) {
@@ -424,10 +468,6 @@ class _ProductVariantListState extends State<ProductVariantList> {
       showToast(message: error.toString());
     });
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   @override
   void dispose() {

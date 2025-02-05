@@ -4,7 +4,7 @@ import GoogleMaps
 import Firebase
 import flutter_downloader
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
   override func application(
     _ application: UIApplication,
@@ -12,7 +12,8 @@ import flutter_downloader
   ) -> Bool {
       FirebaseApp.configure()
       FlutterDownloaderPlugin.setPluginRegistrantCallback(registerPlugins)
-      GMSServices.provideAPIKey("AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY")
+//       GMSServices.provideAPIKey("AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY")
+      GMSServices.provideAPIKey("AIzaSyAs0AD96236ASgq_7l8u4q9OHW0bOuESV8")
       application.registerForRemoteNotifications()
       GeneratedPluginRegistrant.register(with: self)
       return super.application(application, didFinishLaunchingWithOptions: launchOptions)

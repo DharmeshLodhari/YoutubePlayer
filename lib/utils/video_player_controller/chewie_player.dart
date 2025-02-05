@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wakelock/wakelock.dart';
+//import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'chewie_progress_colors.dart';
 import 'player_with_controls.dart';
@@ -24,8 +24,7 @@ class Chewie extends StatefulWidget {
   String? posterUrl;
   String? titleName;
 
-  Chewie({Key? key, required this.controller, this.posterUrl, this.titleName})
-      : super(key: key);
+  Chewie({super.key, required this.controller, this.posterUrl, this.titleName});
 
   /// The [ChewieController]
   final ChewieController controller;
@@ -113,7 +112,7 @@ class ChewieState extends State<Chewie> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    var controllerProvider = _ChewieControllerProvider(
+    final controllerProvider = _ChewieControllerProvider(
       controller: widget.controller,
       child: PlayerWithControls(
         posterUrl: widget.posterUrl,
@@ -131,7 +130,7 @@ class ChewieState extends State<Chewie> {
 
   Future<dynamic> _pushFullScreenWidget(BuildContext context) async {
     final isAndroid = Theme.of(context).platform == TargetPlatform.android;
-    final TransitionRoute<Null> route = PageRouteBuilder<Null>(
+    final TransitionRoute<void> route = PageRouteBuilder<void>(
       pageBuilder: _fullScreenRoutePageBuilder,
     );
 
@@ -144,7 +143,8 @@ class ChewieState extends State<Chewie> {
     }
 
     if (!widget.controller.allowedScreenSleep) {
-      Wakelock.enable();
+      WakelockPlus.enable();
+      // Wakelock.enable();
     }
 
     await Navigator.of(context, rootNavigator: true).push(route);
@@ -153,7 +153,8 @@ class ChewieState extends State<Chewie> {
 
     // The wakelock plugins checks whether it needs to perform an action internally,
     // so we do not need to check Wakelock.isEnabled.
-    Wakelock.disable();
+    WakelockPlus.disable();
+    // Wakelock.disable();
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: widget.controller.systemOverlaysAfterFullScreen);
@@ -363,10 +364,9 @@ class ChewieController extends ChangeNotifier {
 
 class _ChewieControllerProvider extends InheritedWidget {
   const _ChewieControllerProvider({
-    Key? key,
     required this.controller,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final ChewieController controller;
 

@@ -1,10 +1,12 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
 import 'package:Slydo/widget/empty_page.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -14,25 +16,31 @@ import '../../data/currency.dart';
 import '../../data/state_notifier.dart';
 import '../../utils/util.dart';
 import '../../widget/item_display_card.dart';
-import '../more_apps/shopping/models/ShoppingProduct.dart';
+import '../more_apps/shopping/models/shopping_product_model.dart';
 import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 
 class ShopListScreen extends StatefulWidget {
-  Function(bool)? onPageRefresh;
-  String? category;
+  final Function(bool)? onPageRefresh;
+  final String? category;
   final String industry;
   final String? nextUrl;
   final String? type;
+  final String? categoryId;
+  final String? industryId;
+  final dynamic arguments;
 
-  ShopListScreen({
-    Key? key,
+  const ShopListScreen({
+    super.key,
     this.onPageRefresh,
     this.category,
     required this.industry,
     this.nextUrl,
     this.type,
-  }) : super(key: key);
+    this.categoryId,
+    this.industryId,
+    this.arguments,
+  });
 
   @override
   State<ShopListScreen> createState() => ShopListScreenState();
@@ -43,9 +51,11 @@ class ShopListScreenState extends State<ShopListScreen> {
   bool isTodayDealLoading = false;
   double todaysDealsSizeBox = 0;
   List<ShoppingProduct> todaysDealList = [];
-
   List<Product> productList = [];
+  List<Product> superStoreProductTab = [];
+  int productHorizontalLength = 10;
   bool isProductLoading = false;
+  bool dealsOfDayEmpty = false;
   bool noProductInList = false;
   int? productCount = 0;
   String? todayDealNext = "";
@@ -54,6 +64,8 @@ class ShopListScreenState extends State<ShopListScreen> {
   String? productPrevious = "";
   late BasketBloc basketBloc;
   List rowHeaders = [];
+  bool _isSnackBarShowing = false;
+  String url = "";
 
   final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -65,10 +77,11 @@ class ShopListScreenState extends State<ShopListScreen> {
 
   // final ScrollController _productScrollController = ScrollController();
   String _currentCategory = '';
-  late DashboardBloc _dashboardBloc;
+  // late DashboardBloc _dashboardBloc;
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
@@ -82,18 +95,18 @@ class ShopListScreenState extends State<ShopListScreen> {
           fontWeight: FontWeight.w700,
         ),
       ),
-      actions: [
+      actions: const [
         // _cartBtn(),
         // SizedBox(width: 12),
       ],
     );
   }
 
-  listOfSuperStores() async {
+  Future<void> listOfSuperStores() async {
     if (mounted) {
       isProductLoading = true;
     }
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await ShoppingAuthService().listOfSuperStores(sectionUrl: productNext);
     setState(() {
       rowHeaders = result!['store'];
@@ -101,9 +114,10 @@ class ShopListScreenState extends State<ShopListScreen> {
     });
   }
 
-  loadUrl() {
-    if (widget.nextUrl != null && widget.nextUrl != "")
+  void loadUrl() {
+    if (widget.nextUrl != null && widget.nextUrl != "") {
       productNext = widget.nextUrl;
+    }
   }
 
   @override
@@ -114,7 +128,8 @@ class ShopListScreenState extends State<ShopListScreen> {
     widget.type != null
         ? listOfSuperStores()
         : getProductList(_currentCategory);
-    getTodaysDealProducts();
+    getSuperStoreDealProducts();
+    // getDealsOfTheDayProducts(widget.arguments);
     // _productScrollController.addListener(() {
     //   if (_productScrollController.position.pixels ==
     //           _productScrollController.position.maxScrollExtent &&
@@ -128,7 +143,7 @@ class ShopListScreenState extends State<ShopListScreen> {
       if (_todayDealScrollController.position.pixels ==
               _todayDealScrollController.position.maxScrollExtent &&
           _todayDealScrollController.position.pixels != 0) {
-        getTodaysDealProducts();
+        getSuperStoreDealProducts();
       }
     });
   }
@@ -138,7 +153,7 @@ class ShopListScreenState extends State<ShopListScreen> {
     super.didUpdateWidget(oldWidget);
     if (widget.category != _currentCategory) {
       _currentCategory = widget.category!;
-      debugPrint('CALLING OTHER ::: $_currentCategory');
+      // debugPrint('CALLING OTHER ::: $_currentCategory');
       // _refreshPage(); // Reload shop list when category changes
     }
   }
@@ -149,7 +164,7 @@ class ShopListScreenState extends State<ShopListScreen> {
         isProductLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(
                 productNext, productPrevious, _currentCategory, false,
                 otherDeals: true);
@@ -165,7 +180,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 
         productCount = result['count'];
         productPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             productNext = result['next'];
@@ -179,26 +194,37 @@ class ShopListScreenState extends State<ShopListScreen> {
         if (mounted) {
           setState(() {
             noProductInList = true;
+            isProductLoading = false;
           });
         }
-      } else if (productNext == null && productList.length > 6) {
-        _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
-        ));
+      } else if (productNext == null &&
+          productList.length > 6 &&
+          !_isSnackBarShowing) {
+        _isSnackBarShowing = true;
+        _productScaffoldMessengerKey.currentState
+            ?.showSnackBar(SnackBar(
+              content: Text(
+                  AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+              duration: const Duration(milliseconds: 500),
+            ))
+            .closed
+            .then((_) {
+          _isSnackBarShowing = false;
+        });
       }
     }
   }
 
-  void getTodaysDealProducts() async {
+  void getSuperStoreDealProducts() async {
     if (!isTodayDealLoading) {
       if (todayDealNext != null && !isTodayDealLoading) {
         isTodayDealLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .getProductListForSuperStore(todayDealNext, todayDealPrevious,
+                categoryId: widget.categoryId,
+                industryId: widget.industryId,
                 todaysDeal: true);
 
         if (result == null) {
@@ -213,7 +239,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 
         todayDealNext = result['next'];
         todayDealPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         todaysDealsEmpty = false;
         isTodayDealLoading = false;
@@ -231,23 +257,60 @@ class ShopListScreenState extends State<ShopListScreen> {
     }
   }
 
+  // void getDealsOfTheDayProducts(ProductIndustryResults industry) async {
+  //   if (!isProductLoading) {
+  //     if (todayDealNext != null && !isProductLoading) {
+  //       isProductLoading = true;
+  //       if (mounted) setState(() {});
+  //       url =
+  //           "${AppConfig.baseUrl}/api/v1/products/?today_deals=true&?industry=${industry.id}";
+  //       final Map<String, dynamic>? response =
+  //           await ShoppingAuthService().getProductsStoreTab(
+  //         todayDealNext,
+  //         todayDealPrevious,
+  //         url: url,
+  //       );
+  //
+  //       if (response == null) {
+  //         todaysDealsEmpty = true;
+  //         todaysDealsSizeBox = 22;
+  //         isProductLoading = false;
+  //         if (mounted) {
+  //           setState(() {});
+  //         }
+  //         return;
+  //       }
+  //
+  //       todayDealNext = response['next'];
+  //       todayDealPrevious = response['previous'];
+  //       final tempList = response['results'];
+  //
+  //       todaysDealsEmpty = false;
+  //       isProductLoading = false;
+  //       superStoreProductTab.addAll(tempList);
+  //
+  //       if (mounted) setState(() {});
+  //     }
+  //     if (superStoreProductTab.isEmpty) {
+  //       if (mounted) {
+  //         setState(() {
+  //           todaysDealsEmpty = true;
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
+
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refreshPage();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      _refreshPage();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     productNext = "";
     productCount = 0;
     productPrevious = "";
@@ -263,7 +326,7 @@ class ShopListScreenState extends State<ShopListScreen> {
     widget.type != null
         ? listOfSuperStores()
         : getProductList(_currentCategory);
-    getTodaysDealProducts();
+    getSuperStoreDealProducts();
   }
 
   @override
@@ -303,51 +366,50 @@ class ShopListScreenState extends State<ShopListScreen> {
                 child: ListView(
                   children: [
                     SizedBox(height: todaysDealsSizeBox),
-                    todaysDealsEmpty
-                        ? const SizedBox.shrink()
-                        : getTodaysDealList(),
+                    if (todaysDealList.isNotEmpty) getDealOfTheDay(),
                     // const SizedBox(
                     //   height: 20,
                     // ),
-
                     if (widget.type != null && rowHeaders.isNotEmpty)
-                      ...rowHeaders
-                          .map((headers) => rowTitle(headers))
-                          .toList(),
+                      ...rowHeaders.map((headers) => rowTitle(headers)),
                     if (rowHeaders.isEmpty &&
                         !isProductLoading &&
+                        !isTodayDealLoading &&
+                        todaysDealList.isEmpty &&
+                        productList.isEmpty &&
                         widget.type != null)
                       EmptyPage(
                         msg: AppLocalization.of(context)!.noResultFound,
                       ),
                     if (widget.type == null) superStoreProducts(),
                     const SizedBox(height: 16),
-                    isProductLoading
-                        ? Shimmer.fromColors(
-                            baseColor: Colors.white,
-                            highlightColor: greyBorderColor,
-                            child: GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  const SliverGridDelegateWithMaxCrossAxisExtent(
-                                mainAxisSpacing: 14,
-                                mainAxisExtent: 180,
-                                crossAxisSpacing: 15,
-                                maxCrossAxisExtent: 200,
+                    if (isProductLoading && productList.isEmpty)
+                      Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisSpacing: 14,
+                            mainAxisExtent: 180,
+                            crossAxisSpacing: 15,
+                            maxCrossAxisExtent: 200,
+                          ),
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              itemCount: 2,
-                              itemBuilder: (context, index) {
-                                return Card(
-                                  color: Colors.grey,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                );
-                              },
-                            ),
-                          )
-                        : const SizedBox.shrink(),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink(),
 
                     // Visibility(
                     //   visible: widget.type != null ? !isProductLoading &&
@@ -370,167 +432,233 @@ class ShopListScreenState extends State<ShopListScreen> {
     );
   }
 
-  Widget rowTitle(headers) {
+  Widget _buildViewMoreStore(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        // for (final product in todaysDealList) {
+        NavigationUtil.push(
+          context,
+          screen: ProductViewMoreDetails(
+            industryId: widget.industryId,
+            // appTitle: product.name,
+          ),
+        );
+        // }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "View more",
+            style: TextStyle(
+              color: navyBlue,
+              fontSize: 12,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Icon(
+            Icons.arrow_forward_ios_sharp,
+            color: navyBlue,
+            size: 12,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget rowTitle(Map<String, dynamic> headers) {
     return SectionProducts(headers: headers);
   }
 
   Widget superStoreProducts() {
-    if (productList.isEmpty) {
-      return const SizedBox.shrink();
+    if (isProductLoading) {
+      return Container();
     }
-    return productNext == "" && isProductLoading
-        ? const SizedBox.shrink()
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              noProductInList
-                  ? const SizedBox.shrink()
-                  : todaysDealsEmpty
-                      ? const SizedBox.shrink()
-                      : Text(
-                          "Other deals",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: "Inter",
-                            color: blackFont,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-              noProductInList
-                  ? const SizedBox.shrink()
-                  : const SizedBox(height: 16),
-              Container(
-                margin: const EdgeInsets.only(bottom: 15.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Found ${productCount} ${widget.industry}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                      fontFamily: "Inter",
-                      color: blackFont,
-                    ),
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (noProductInList)
+          const SizedBox.shrink()
+        else
+          todaysDealsEmpty
+              ? const SizedBox.shrink()
+              : Text(
+                  "Other deals",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: "Inter",
+                    color: blackFont,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-              ),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 22,
-                  mainAxisExtent: 274,
-                  crossAxisSpacing: 15,
-                  maxCrossAxisExtent: 200,
+        if (noProductInList)
+          const SizedBox.shrink()
+        else ...[
+          const SizedBox(height: 16),
+          Container(
+            margin: const EdgeInsets.only(bottom: 15.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Found $productCount ${widget.industry}",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  fontFamily: "Inter",
+                  color: blackFont,
                 ),
-                itemCount: productList.length,
-                itemBuilder: (context, index) {
-                  return SuperStoreSingleCard(
-                    product: productList[index],
-                  );
-                },
+              ),
+            ),
+          ),
+        ],
+        if (productList.isEmpty && !isProductLoading && todaysDealList.isEmpty)
+          SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.noResultFound,
+            ),
+          )
+        else if (isProductLoading &&
+            productList.isEmpty &&
+            todaysDealList.isEmpty)
+          const SizedBox
+              .shrink() // Shimmer effect is already handled above in the ListView
+        else
+          CustomScrollView(
+            physics: const ScrollPhysics(),
+            shrinkWrap: true,
+            slivers: <Widget>[
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    // Calculate indices for the row items
+                    final int startIndex = index * 2;
+                    final int endIndex = startIndex + 2;
+
+                    // Get the items for this row
+                    final List<Product> rowItems = productList.sublist(
+                      startIndex,
+                      endIndex > productList.length
+                          ? productList.length
+                          : endIndex,
+                    );
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Container(
+                        color: Colors.red,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // First Item
+                            Expanded(
+                              child: SuperStoreSingleCard(
+                                product: rowItems[0],
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            // Second Item
+                            if (rowItems.length == 2)
+                              Expanded(
+                                child: SuperStoreSingleCard(
+                                  product: rowItems[1],
+                                ),
+                              ),
+                            // Add an empty widget if there is only one item
+                            if (rowItems.length == 1)
+                              const Expanded(
+                                child: SizedBox.shrink(),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: (productList.length / 2).ceil(), // Number of rows
+                ),
+              ),
+              // SliverGrid(
+              //   delegate: SliverChildBuilderDelegate(
+              //     (c, i) => SizedBox(
+              //       child: SuperStoreSingleCard(
+              //         product: productList[i],
+              //       ),
+              //     ),
+              //     childCount: productList.length,
+              //   ),
+              //   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              //     mainAxisSpacing: 8,
+              //     mainAxisExtent: 280,
+              //     crossAxisSpacing: 8,
+              //     maxCrossAxisExtent: 300,
+              //   ),
+              // ),
+              SliverToBoxAdapter(
+                child:
+                    buildJumpingLoadingIndicator(isLoading: isProductLoading),
               ),
             ],
-          );
+          ),
+      ],
+    );
   }
 
-  Widget getTodaysDealList() {
+  Widget getDealOfTheDay() {
+    final bool showViewMoreButton =
+        todaysDealList.length > productHorizontalLength;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        todaysDealsEmpty
-            ? const SizedBox.shrink()
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: [
-                      Text(
-                        "Today's deal",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                          fontFamily: "Inter",
-                          color: blackFont,
-                        ),
-                      ),
-                      Icon(
-                        Icons.bolt_rounded,
-                        color: mateRed,
-                      ),
-                    ],
-                  ),
-                  // GestureDetector(
-                  //   child: Row(
-                  //     children: [
-                  //       Text(
-                  //         "See all",
-                  //         style: TextStyle(
-                  //             fontWeight: FontWeight.w600,
-                  //             fontSize: 14,
-                  //             color: navyBlue),
-                  //       ),
-                  //       SizedBox(width: 8),
-                  //       Icon(Icons.arrow_forward_ios_sharp,
-                  //           size: 14, color: navyBlue),
-                  //     ],
-                  //   ),
-                  //   onTap: () {
-                  //     Navigator.of(context).pushNamed("/shopping-category");
-                  //   },
-                  // ),
-                ],
+        if (todaysDealsEmpty)
+          const SizedBox.shrink()
+        else
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                AppLocalization.of(context)?.newArrivals ?? "",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                  color: blackFont,
+                ),
               ),
-        Container(
-          height: 280,
-          child: ListView.builder(
-            padding: const EdgeInsets.only(bottom: 6),
-            scrollDirection: Axis.horizontal,
-            controller: _todayDealScrollController,
-            itemCount: todaysDealList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == todaysDealList.length) {
-                return isTodayDealLoading
-                    ? Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: SizedBox(
-                          height: 100,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: 3,
-                            itemBuilder: (context, index) {
-                              return SizedBox(
-                                width: 160,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink();
-              } else {
-                ShoppingProduct shoppingProduct = todaysDealList[index];
-                return DisplayProduct(
-                  giveRightPadding: true,
-                  product: Product(
-                      id: shoppingProduct.id,
-                      name: shoppingProduct.name,
-                      price: shoppingProduct.price.toString(),
-                      currency: shoppingProduct.currency,
-                      cover: shoppingProduct.cover,
-                      isAvailable: shoppingProduct.isAvailable,
-                      seller: shoppingProduct.seller,
-                      sellerFullName: shoppingProduct.sellerFullname,
-                      shortDescription: shoppingProduct.shortDescription),
-                );
-              }
-            },
+              _buildViewMoreStore(context),
+            ],
+          ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: todaysDealList
+                .take(showViewMoreButton
+                    ? productHorizontalLength
+                    : todaysDealList.length)
+                .map(
+                  (element) => Padding(
+                    padding: const EdgeInsets.only(right: 7.0),
+                    child: DisplayProduct(
+                      giveRightPadding: true,
+                      product: Product(
+                          id: element.id,
+                          name: element.name,
+                          price: element.price,
+                          currency: element.currency,
+                          cover: element.cover,
+                          isAvailable: element.isAvailable,
+                          seller: element.seller,
+                          sellerFullName: element.sellerFullName,
+                          shortDescription: element.shortDescription),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ),
       ],
@@ -582,7 +710,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      product.name!,
+                      messageDecoderWithEmoji(product.name) ?? "",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
@@ -625,78 +753,76 @@ class ShopListScreenState extends State<ShopListScreen> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: TextSelectionThemeData(
-            selectionHandleColor: navyBlue,
-          ),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: TextSelectionThemeData(
+          selectionHandleColor: navyBlue,
         ),
-        child: InkWell(
-          onTap: () {
-            Navigator.of(context).pushNamed("/search-product");
-          },
-          child: IgnorePointer(
-            ignoring: true,
-            child: TextFormField(
-              readOnly: true,
-              style: TextStyle(
-                fontSize: 16,
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed("/search-product");
+        },
+        child: IgnorePointer(
+          ignoring: true,
+          child: TextFormField(
+            readOnly: true,
+            style: TextStyle(
+              fontSize: 16,
+              fontFamily: "Inter",
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+            cursorWidth: 1.5,
+            cursorColor: navyBlue,
+            decoration: InputDecoration(
+              hintStyle: TextStyle(
+                fontSize: 14,
                 fontFamily: "Inter",
-                color: blackFont,
                 fontWeight: FontWeight.w600,
+                color: darkGrey,
               ),
-              cursorWidth: 1.5,
-              cursorColor: navyBlue,
-              decoration: InputDecoration(
-                hintStyle: TextStyle(
-                  fontSize: 14,
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.w600,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  SlydoAppIcon.search,
                   color: darkGrey,
+                  size: 14,
                 ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    SlydoAppIcon.search,
-                    color: darkGrey,
-                    size: 14,
-                  ),
-                  onPressed: () {},
+                onPressed: () {},
+              ),
+              hintText: "Search",
+              fillColor: Colors.white,
+              filled: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
+                padding: EdgeInsets.only(left: 16),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
-                hintText: "Search",
-                fillColor: Colors.white,
-                filled: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                prefix: const Padding(
-                  padding: EdgeInsets.only(left: 16),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: navyBlue,
+                  width: 1.0,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: navyBlue,
-                    width: 1.0,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
               ),
             ),
@@ -710,8 +836,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 class SuperStoreSingleCard extends StatelessWidget {
   final Product product;
 
-  const SuperStoreSingleCard({Key? key, required this.product})
-      : super(key: key);
+  const SuperStoreSingleCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {

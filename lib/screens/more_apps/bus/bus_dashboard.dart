@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BusDashboard extends StatefulWidget {
+  const BusDashboard({super.key});
+
   @override
-  _BusDashboardState createState() => _BusDashboardState();
+  State<BusDashboard> createState() => _BusDashboardState();
 }
 
 class _BusDashboardState extends State<BusDashboard> {
@@ -24,12 +26,13 @@ class _BusDashboardState extends State<BusDashboard> {
         return Future.value(true);
       },
       child: Scaffold(
+        backgroundColor: lightGrey,
         body: PageView(
           controller: _busDashboardBloc.pageController,
           onPageChanged: (index) {
             _busDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             BusExploreScreen(),
             MyBusTicketList(),
           ],
@@ -75,7 +78,7 @@ class _BusDashboardState extends State<BusDashboard> {
   BottomNavigationBarItem bottomNavigationBarItem(
       {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: SizedBox(
         height: 50,
         width: 108,
         child: Icon(
@@ -100,7 +103,7 @@ class _BusDashboardState extends State<BusDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
@@ -110,13 +113,13 @@ class _BusDashboardState extends State<BusDashboard> {
                 size: 16,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.w700),

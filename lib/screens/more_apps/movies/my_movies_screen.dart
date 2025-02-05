@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MyMoviesScreen extends StatefulWidget {
+  const MyMoviesScreen({super.key});
+
   @override
-  _MyMoviesScreenState createState() => _MyMoviesScreenState();
+  State<MyMoviesScreen> createState() => _MyMoviesScreenState();
 }
 
 class _MyMoviesScreenState extends State<MyMoviesScreen> {
@@ -25,7 +27,7 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),
@@ -35,6 +37,7 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -64,10 +67,10 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
 
   Widget tabBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
+      preferredSize: const Size.fromHeight(50.0),
       child: TabBar(
         labelPadding: EdgeInsets.zero,
-        indicator: BoxDecoration(),
+        indicator: const BoxDecoration(),
         onTap: (int index) {
           currentIndex = index;
           setState(() {});
@@ -75,7 +78,7 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
         tabs: [
           Tab(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -96,7 +99,7 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
           ),
           Tab(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -123,7 +126,7 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [
+      children: const [
         MyMovieList(),
         MyWishList(),
       ],

@@ -1,18 +1,24 @@
-import 'package:Slydo/screens/more_apps/events/models/EventDetailItem.dart';
-import 'package:Slydo/screens/more_apps/events/models/EventPoster.dart';
-import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
+import 'package:Slydo/screens/more_apps/events/models/event_detail_item.dart';
+import 'package:Slydo/screens/more_apps/events/models/event_poster.dart';
+import 'package:Slydo/screens/more_apps/events/models/partial_event_item.dart';
 import 'package:Slydo/services/auth.dart';
 
-import 'models/CityData.dart';
+import 'models/city_data.dart';
 
 class EventAuthService extends AuthService {
   Future<List<String>> getLocation() async {
-    List<String> list = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
+    final List<String> list = [
+      "Lagos",
+      "Kano",
+      "Ibadan",
+      "Benin City",
+      "Abuja"
+    ];
     return list;
   }
 
   Future<List<EventPoster>> getEventPosterList() async {
-    List<Map<String, String>> eventPoster = [
+    final List<Map<String, String>> eventPoster = [
       {
         "name": "Mongola",
         "image":
@@ -40,17 +46,17 @@ class EventAuthService extends AuthService {
       }
     ];
 
-    var eventPosterList = eventPoster
+    final eventPosterList = eventPoster
         .map(
           (element) => EventPoster.fromJson(element),
         )
         .toList();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return eventPosterList;
   }
 
   Future<List<PartialEventItem>> getPartialEventList() async {
-    List<PartialEventItem> propertyItem = List.generate(
+    final List<PartialEventItem> propertyItem = List.generate(
       8,
       (image) => PartialEventItem.fromJson({
         "name": "5th Borough food festival",
@@ -64,14 +70,20 @@ class EventAuthService extends AuthService {
         "date_time": "Thu, Oct 15 • 6:54 AM"
       }),
     );
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return propertyItem;
   }
 
   Future<List<CityData>> getCityList() async {
-    List<String> city = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
+    final List<String> city = [
+      "Lagos",
+      "Kano",
+      "Ibadan",
+      "Benin City",
+      "Abuja"
+    ];
 
-    List<CityData> cityItem = city
+    final List<CityData> cityItem = city
         .map(
           (name) => CityData.fromJson({
             "name": name,
@@ -80,12 +92,12 @@ class EventAuthService extends AuthService {
           }),
         )
         .toList();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return cityItem;
   }
 
   Future<EventDetailItem> getEventDetailItem() async {
-    var dummyData = {
+    final dummyData = {
       "name": '“Sundays on the beach" Brunch & beach party',
       "event_time": "Sunday, October 18 • 6:54 PM",
       "owner_name": "Bond street dojo",
@@ -175,13 +187,13 @@ class EventAuthService extends AuthService {
           "https://ichef.bbci.co.uk/news/976/cpsprodpb/D50C/production/_105204545_2men.jpg"
     };
 
-    EventDetailItem event = EventDetailItem.fromJson(dummyData);
-    await Future.delayed(Duration(seconds: 1));
+    final EventDetailItem event = EventDetailItem.fromJson(dummyData);
+    await Future.delayed(const Duration(seconds: 1));
     return event;
   }
 
   Future<void> addToWishList() async {
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     return;
   }
 }

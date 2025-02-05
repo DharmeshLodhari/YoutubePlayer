@@ -3,7 +3,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 class MyAudioPlayer {
   AssetsAudioPlayer? audioPlayer;
 
-  playAudio(String path) {
+  Future<void> playAudio(String path) async {
     audioPlayer = AssetsAudioPlayer();
     audioPlayer!.open(
       Audio(path),
@@ -13,7 +13,7 @@ class MyAudioPlayer {
     );
   }
 
-  stopAudio() async {
+  Future<void> stopAudio() async {
     audioPlayer!.stop();
     // audioPlayer!.dispose();
   }

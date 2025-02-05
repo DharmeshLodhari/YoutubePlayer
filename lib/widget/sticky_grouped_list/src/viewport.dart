@@ -10,7 +10,7 @@ import 'package:flutter/widgets.dart';
 /// for more information.
 class UnboundedViewport extends Viewport {
   UnboundedViewport({
-    Key? key,
+    super.key,
     AxisDirection axisDirection = AxisDirection.down,
     AxisDirection? crossAxisDirection,
     double anchor = 0.0,
@@ -20,7 +20,6 @@ class UnboundedViewport extends Viewport {
     List<Widget> slivers = const <Widget>[],
   })  : _anchor = anchor,
         super(
-            key: key,
             axisDirection: axisDirection,
             crossAxisDirection: crossAxisDirection,
             offset: offset,
@@ -181,8 +180,9 @@ class UnboundedRenderViewport extends RenderViewport {
         final bottom = _maxScrollExtent - mainAxisExtent * (1.0 - anchor);
         final maxScrollOffset = math.max(math.min(0.0, top), bottom);
         final minScrollOffset = math.min(top, maxScrollOffset);
-        if (offset.applyContentDimensions(minScrollOffset, maxScrollOffset))
+        if (offset.applyContentDimensions(minScrollOffset, maxScrollOffset)) {
           break;
+        }
         // *** End of difference from [RenderViewport].
       }
       count += 1;

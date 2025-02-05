@@ -1,3 +1,5 @@
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,13 +10,10 @@ import '../locale/app_localization.dart';
 import '../routes/route_constants.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
-import '../widget/loading_indicator.dart';
 import '../widget/no_item_in_list.dart';
-import 'more_apps/user_profile/models/user.dart';
-import 'more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class SearchUser extends StatefulWidget {
-  const SearchUser({Key? key}) : super(key: key);
+  const SearchUser({super.key});
 
   @override
   State<SearchUser> createState() => _SearchUserState();
@@ -28,10 +27,10 @@ class _SearchUserState extends State<SearchUser> {
   List<Widget> results = [];
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
-  AuthService _auth = AuthService();
+  final AuthService _auth = AuthService();
   String autoCompleteSearchText = "";
 
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   TextEditingController searchItemTextController = TextEditingController();
 
   void getList() async {
@@ -41,7 +40,7 @@ class _SearchUserState extends State<SearchUser> {
           isLoading = true;
           setState(() {});
         }
-        Map<String, dynamic>? result = await _auth
+        final Map<String, dynamic>? result = await _auth
             .searchEndpointPagination(
                 getSearchUrl(searchItemTextController.text), next, previous)
             .catchError((error) {
@@ -56,15 +55,15 @@ class _SearchUserState extends State<SearchUser> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List? tempList = result['results'];
+        final List? tempList = result['results'];
         if (mounted) {
           isLoading = false;
           results.clear();
 
           try {
-            tempList!.forEach((result) {
+            for (var result in tempList!) {
               results.add(getUserTile(result));
-            });
+            }
           } catch (e) {
             debugPrint(
                 'ERROR ADDING SEARCH RESULT TO LIST ::: ${e.toString()}');
@@ -85,15 +84,15 @@ class _SearchUserState extends State<SearchUser> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
   }
 
   Widget getUserTile(var object) {
-    print('object::::$object');
-    CustomerProfile user = CustomerProfile.fromJson(object);
+    // debugPrint('object::::$object');
+    final CustomerProfile user = CustomerProfile.fromJson(object);
 
     if (user.userName.toString().toLowerCase() == "slydo" ||
         user.userName.toString().toLowerCase() == "slydo_envelope") {
@@ -104,7 +103,7 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget userCard(CustomerProfile user) {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     return InkWell(
       onTap: () {
         if (userBloc.user.userName == user.userName) {
@@ -114,7 +113,7 @@ class _SearchUserState extends State<SearchUser> {
         }
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
         child: Card(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -126,7 +125,7 @@ class _SearchUserState extends State<SearchUser> {
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     dense: true,
                     title: Text(
@@ -156,7 +155,7 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    Color borderColor = getUserTypeColor(user: user);
+    // final Color borderColor = getUserTypeColor(user: user);
 
     return GestureDetector(
       onTap: () {
@@ -176,7 +175,7 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   String getSearchUrl(String searchedText) {
-    return AppConfig.baseUrl + "/api/v1/search/users/?search=" + searchedText;
+    return "${AppConfig.baseUrl}/api/v1/search/users/?search=$searchedText";
   }
 
   @override
@@ -197,7 +196,7 @@ class _SearchUserState extends State<SearchUser> {
 
       setState(() => _isRefreshing());
 
-      if (results.isNotEmpty || searchItemTextController.text.length != 0) {
+      if (results.isNotEmpty || searchItemTextController.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;
@@ -234,13 +233,13 @@ class _SearchUserState extends State<SearchUser> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: Column(
         children: [
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           searchBox(),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Expanded(
             child: _buildResultList(),
           ),
@@ -259,43 +258,27 @@ class _SearchUserState extends State<SearchUser> {
             ? NoItemInList(
                 msg: AppLocalization.of(context)!.noResultFound,
               )
-            : Container(
-                child: ListView.builder(
-                  //+1 for progressbar
-                  itemCount: results.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == results.length) {
-                      return _buildIndicator();
-                    } else {
-                      try {
+            : isLoading && results.isEmpty
+                ? buildLoadingIndicator(isLoading: isLoading)
+                : ListView.builder(
+                    //+1 for progressbar
+                    itemCount: results.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == results.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
                         return results[index];
-                      } catch (error) {
-                        debugPrint(error.toString());
                       }
-                    }
-                    return _buildIndicator();
-                  },
-                  controller: _scrollController,
-                ),
-              );
-  }
-
-  Widget _buildIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
+                    },
+                    controller: _scrollController,
+                  );
   }
 
   Widget searchBox() {
     try {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Theme(
           data: Theme.of(context).copyWith(
             textSelectionTheme: TextSelectionThemeData(
@@ -316,8 +299,8 @@ class _SearchUserState extends State<SearchUser> {
               hintText: AppLocalization.of(context)!.searchPageTextFieldHint,
               fillColor: Colors.white,
               filled: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
-              prefix: Padding(
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
                 padding: EdgeInsets.only(left: 12),
               ),
               suffixIcon: searchIcon(),
@@ -384,6 +367,7 @@ class _SearchUserState extends State<SearchUser> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

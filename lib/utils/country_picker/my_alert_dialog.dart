@@ -1,3 +1,4 @@
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ class MyAlertDialog<T> extends StatelessWidget {
   /// null, which implies a default that depends on the values of the other
   /// properties. See the documentation of [titlePadding] for details.
   const MyAlertDialog({
-    Key? key,
+    super.key,
     this.title,
     this.titlePadding,
     this.content,
@@ -21,8 +22,7 @@ class MyAlertDialog<T> extends StatelessWidget {
       height: 0.0,
     ),
     this.isDividerEnabled = true,
-  })  : assert(contentPadding != null),
-        super(key: key);
+  }) : assert(contentPadding != null);
 
   /// The (optional) title of the dialog is displayed in a large font at the top
   /// of the dialog.
@@ -100,13 +100,13 @@ class MyAlertDialog<T> extends StatelessWidget {
     String? label = semanticLabel;
 
     if (title != null) {
-      children.add(new Padding(
+      children.add(Padding(
         padding: titlePadding ??
-            new EdgeInsets.fromLTRB(
+            EdgeInsets.fromLTRB(
                 24.0, 24.0, 24.0, isDividerEnabled ? 20.0 : 0.0),
-        child: new DefaultTextStyle(
-          style: Theme.of(context).textTheme.subtitle1!,
-          child: new Semantics(child: title, namesRoute: true),
+        child: DefaultTextStyle(
+          style: Theme.of(context).textTheme.titleMedium!,
+          child: Semantics(namesRoute: true, child: title),
         ),
       ));
       if (isDividerEnabled) children.add(divider);
@@ -131,13 +131,10 @@ class MyAlertDialog<T> extends StatelessWidget {
     }
 
     if (content != null) {
-      children.add(new Flexible(
-        child: new Padding(
-          padding: contentPadding,
-          child: new DefaultTextStyle(
-            style: Theme.of(context).textTheme.subtitle1!,
-            child: content!,
-          ),
+      children.add(Flexible(
+        child: DefaultTextStyle(
+          style: Theme.of(context).textTheme.titleMedium!,
+          child: content!,
         ),
       ));
     }
@@ -145,23 +142,24 @@ class MyAlertDialog<T> extends StatelessWidget {
     if (actions != null) {
       if (isDividerEnabled) children.add(divider);
       children.add(ButtonBarTheme(
+        data: const ButtonBarThemeData(),
         child: ButtonBar(
           children: actions!,
         ),
-        data: ButtonBarThemeData(),
       ));
     }
 
-    Widget dialogChild = new Column(
+    Widget dialogChild = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: children,
     );
 
-    if (label != null)
+    if (label != null) {
       dialogChild =
-          new Semantics(namesRoute: true, label: label, child: dialogChild);
+          Semantics(namesRoute: true, label: label, child: dialogChild);
+    }
 
-    return new Dialog(child: dialogChild);
+    return Dialog(child: Container(color: lightGrey, child: dialogChild));
   }
 }

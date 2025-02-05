@@ -20,7 +20,8 @@ class CurvedButton extends StatelessWidget {
   double fontSize;
 
   CurvedButton(
-      {this.text,
+      {super.key,
+      this.text,
       this.width,
       this.textColor,
       this.backgroundColor,
@@ -36,7 +37,7 @@ class CurvedButton extends StatelessWidget {
     backgroundColor ??= navyBlue;
     textColor ??= Colors.white;
     text ??= "Button";
-    return Container(
+    return SizedBox(
       width: width ?? 100.w,
       height: height,
       child: MaterialButton(
@@ -71,7 +72,7 @@ class CurvedButton extends StatelessWidget {
     );
   }
 
-  onBtnPressed() {
+  void onBtnPressed() {
     if (isPaymentBtn) {
       if (getIt<AppConfigurationBloc>().appConfigurationModel?.enablePayment ==
           false) {
@@ -94,24 +95,27 @@ class OutlineCurvedButton extends StatelessWidget {
   Color? backgroundColor = Colors.transparent;
   Color? textColor = navyBlue;
   Function? onPressed = () {};
+  double borderRadius;
 
   OutlineCurvedButton({
+    super.key,
     this.width,
     this.text,
     this.textColor,
     this.backgroundColor,
     this.onPressed,
+    this.borderRadius = 10,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: width ?? 100.w,
       height: 42,
       child: MaterialButton(
         shape: OutlineInputBorder(
             borderRadius: BorderRadius.all(
-              Radius.circular(10),
+              Radius.circular(borderRadius),
             ),
             borderSide: BorderSide(color: textColor!)),
         color: backgroundColor,

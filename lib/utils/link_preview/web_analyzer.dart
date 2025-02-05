@@ -87,20 +87,21 @@ class WebAnalyzer {
     InfoBase? info = getInfoFromCache(url);
     if (info != null) return info;
     try {
-      if (useMultithread)
+      if (useMultithread) {
         info = await _getInfoByIsolate(url, multimedia);
-      else
+      } else {
         info = await _getInfo(url!, multimedia);
+      }
 
       if (info != null) {
         info._timeout = DateTime.now().add(cache);
         _map[url] = info;
       }
     } catch (e) {
-      print("Get web error:$url, Error:$e");
+      // debugPrint("Error $e");
     }
 
-    // print("$url cost ${DateTime.now().difference(start).inMilliseconds}");
+    // debugPrint("$url cost ${DateTime.now().difference(start).inMilliseconds}");
 
     return info;
   }
@@ -109,7 +110,7 @@ class WebAnalyzer {
     final response = await _requestUrl(url);
 
     if (response == null) return null;
-    // print("$url ${response.statusCode}");
+    // debugPrint("$url ${response.statusCode}");
     if (multimedia!) {
       final String? contentType = response.headers["content-type"];
       if (contentType != null) {
@@ -177,7 +178,7 @@ class WebAnalyzer {
     });
   }
 
-  static Map<String, String> _cookies = {
+  static final Map<String, String> _cookies = {
     "weibo.com":
         "YF-Page-G0=02467fca7cf40a590c28b8459d93fb95|1596707497|1596707497; SUB=_2AkMod12Af8NxqwJRmf8WxGjna49_ygnEieKeK6xbJRMxHRl-yT9kqlcftRB6A_dzb7xq29tqJiOUtDsy806R_ZoEGgwS; SUBP=0033WrSXqPxfM72-Ws9jqgMF55529P9D9W59fYdi4BXCzHNAH7GabuIJ"
   };
@@ -192,7 +193,7 @@ class WebAnalyzer {
     final uri = Uri.parse(url);
     final ioClient = HttpClient()..badCertificateCallback = _certificateCheck;
     final client = IOClient(ioClient);
-    Request request = Request('GET', uri)
+    final Request request = Request('GET', uri)
       ..followRedirects = false
       ..headers["User-Agent"] = useDesktopAgent
           ? "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36"
@@ -202,7 +203,7 @@ class WebAnalyzer {
     if (cookie != null || (cookie == null && _cookies[uri.host] != null)) {
       request.headers["Cookie"] = cookie ?? _cookies[uri.host]!;
     }
-    // print(request.headers);
+    // debugPrint(request.headers);
     final stream = await client.send(request);
 
     if (stream.statusCode == HttpStatus.movedTemporarily ||
@@ -220,13 +221,13 @@ class WebAnalyzer {
         }
         count++;
         client.close();
-        // print("Redirect ====> $url");
+        // debugPrint("Redirect ====> $url");
         return _requestUrl(url, count: count, cookie: cookie);
       }
     } else if (stream.statusCode == HttpStatus.ok) {
       res = await Response.fromStream(stream);
       if (uri.host == "m.tb.cn") {
-        final match = RegExp(r"var url = \'(.*)\'").firstMatch(res.body);
+        final match = RegExp(r"String url = \'(.*)\'").firstMatch(res.body);
         if (match != null) {
           final newUrl = match.group(1);
           if (newUrl != null) {
@@ -236,8 +237,8 @@ class WebAnalyzer {
       }
     }
     client.close();
-    if (res == null) print("Get web info empty($url)");
-    return res;
+    if (res == null) return res;
+    return null;
   }
 
   static Future<InfoBase?> _getWebInfo(
@@ -250,12 +251,11 @@ class WebAnalyzer {
         try {
           html = gbk.decode(response.bodyBytes);
         } catch (e) {
-          print("Web page resolution failure from:$url Error:$e");
+          // debugPrint("Error $e");
         }
       }
 
       if (html == null) {
-        print("Web page resolution failure from:$url");
         return null;
       }
 
@@ -263,7 +263,7 @@ class WebAnalyzer {
       // final start = DateTime.now();
       final headHtml = _getHeadHtml(html);
       final document = parser.parse(headHtml);
-      // print("dom cost ${DateTime.now().difference(start).inMilliseconds}");
+      // debugPrint("dom cost ${DateTime.now().difference(start).inMilliseconds}");
       final uri = Uri.parse(url);
 
       // get image or video
@@ -299,11 +299,11 @@ class WebAnalyzer {
     html = html.replaceFirst(_bodyReg, "<body></body>");
     final matchs = _metaReg.allMatches(html);
     final StringBuffer head = StringBuffer("<html><head>");
-    if (matchs != null) {
-      matchs.forEach((element) {
+    if (matchs.isNotEmpty) {
+      for (var element in matchs) {
         final String str = element.group(0)!;
         if (str.contains(_titleReg)) head.writeln(str);
-      });
+      }
     }
     head.writeln("</head></html>");
     return head.toString();
@@ -344,7 +344,7 @@ class WebAnalyzer {
     final list = document.head!.getElementsByTagName("title");
     if (list.isNotEmpty) {
       final tagTitle = list.first.text;
-      if (tagTitle != null) return tagTitle.trim();
+      if (tagTitle.isNotEmpty) return tagTitle.trim();
     }
     return "";
   }
@@ -363,7 +363,7 @@ class WebAnalyzer {
       if (body.length > 300) {
         body = body.substring(0, 300);
       }
-      // print("html cost ${DateTime.now().difference(start).inMilliseconds}");
+      // debugPrint("html cost ${DateTime.now().difference(start).inMilliseconds}");
       return body;
     }
     return description;
@@ -376,9 +376,6 @@ class WebAnalyzer {
     Element? metaIcon;
 
     for (int i = 0; i < meta.length; i++) {
-      print('META ----> ${meta[i]}');
-      print('META ----> ${meta[i].attributes}');
-
       final rel = (meta[i].attributes["rel"] ?? "").toLowerCase();
       if (rel == "icon") {
         icon = meta[i].attributes["href"];
@@ -397,7 +394,6 @@ class WebAnalyzer {
         }
       }
     }
-    print('META ICON ----> $metaIcon');
     if (metaIcon != null) {
       icon = metaIcon.attributes["href"];
     } else {

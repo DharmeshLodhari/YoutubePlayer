@@ -4,20 +4,16 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 
 class PaymentOptions extends StatefulWidget {
+  const PaymentOptions({super.key});
+
   @override
-  _PaymentOptionsState createState() => _PaymentOptionsState();
+  State<PaymentOptions> createState() => _PaymentOptionsState();
 }
 
 class _PaymentOptionsState extends State<PaymentOptions> {
   bool isSearchingForDriver = false;
-
-  MapController? mapController;
-
-  LatLng mapPoint = LatLng(6.605874, 3.349149);
 
   bool isPaymentLoading = false;
   bool isPaymentRetry = false;
@@ -34,7 +30,7 @@ class _PaymentOptionsState extends State<PaymentOptions> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [
@@ -45,7 +41,7 @@ class _PaymentOptionsState extends State<PaymentOptions> {
             //   fit: BoxFit.fill,
             // ),
 
-            MapUI(),
+            const MapUI(),
 
             // FlutterMap(
             //   mapController: mapController,
@@ -83,6 +79,7 @@ class _PaymentOptionsState extends State<PaymentOptions> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -115,14 +112,14 @@ class _PaymentOptionsState extends State<PaymentOptions> {
           shadowColor: dividerColor,
           color: Colors.white,
           margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),
@@ -131,47 +128,48 @@ class _PaymentOptionsState extends State<PaymentOptions> {
               ),
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 40,
                   ),
-                  isPaymentLoading
-                      ? Column(
-                          children: [
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Center(
-                              child: CircularLoadingIndicator(),
-                            ),
-                            SizedBox(
-                              height: 30,
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 40),
-                              child: Text(
-                                "Retrying payment.\n It may take a few seconds...",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 40,
-                            ),
-                          ],
-                        )
-                      : Column(
-                          children: [
-                            getDriverInfo(),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            getPayButton(),
-                          ],
+                  if (isPaymentLoading)
+                    Column(
+                      children: [
+                        const SizedBox(
+                          height: 10,
                         ),
-                  SizedBox(
+                        Center(
+                          child: CircularLoadingIndicator(),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: Text(
+                            "Retrying payment.\n It may take a few seconds...",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                      ],
+                    )
+                  else
+                    Column(
+                      children: [
+                        getDriverInfo(),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        getPayButton(),
+                      ],
+                    ),
+                  const SizedBox(
                     height: 30,
                   ),
                 ],
@@ -191,7 +189,7 @@ class _PaymentOptionsState extends State<PaymentOptions> {
           } else {
             isPaymentLoading = true;
             if (mounted) setState(() {});
-            Future.delayed(Duration(seconds: 3)).then((value) {
+            Future.delayed(const Duration(seconds: 3)).then((value) {
               isPaymentLoading = false;
               isPaymentRetry = true;
               if (mounted) setState(() {});
@@ -204,7 +202,7 @@ class _PaymentOptionsState extends State<PaymentOptions> {
 
   Widget getDriverInfo() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -215,7 +213,7 @@ class _PaymentOptionsState extends State<PaymentOptions> {
             style: TextStyle(
                 color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Row(

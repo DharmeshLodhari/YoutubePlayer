@@ -2,21 +2,21 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ListCategoryProduct extends StatefulWidget {
-  final String nextUrl;
+  final String? nextUrl;
   final String categoryName;
 
   const ListCategoryProduct({
     required this.nextUrl,
     required this.categoryName,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<ListCategoryProduct> createState() => _ListCategoryProductState();
@@ -24,78 +24,117 @@ class ListCategoryProduct extends StatefulWidget {
 
 class _ListCategoryProductState extends State<ListCategoryProduct> {
   String? nextUrl = "";
+  String? productPrevious = "";
+  bool productEmpty = false;
   int? productCount = 0;
-  dynamic categoryId = null;
+  dynamic categoryId;
   List<Product> productList = [];
   bool isProductLoading = false;
+  final ScrollController _productScrollController = ScrollController();
 
   @override
   void initState() {
-    nextUrl = widget.nextUrl;
-    fetchFirstList();
+    loadUrl();
+    getProducts();
+    _productScrollController.addListener(() {
+      if (_productScrollController.position.pixels ==
+              _productScrollController.position.maxScrollExtent &&
+          _productScrollController.position.pixels != 0) {
+        getProducts();
+      }
+    });
     super.initState();
   }
 
-  Future<void> fetchFirstList() async {
-    isProductLoading = true;
-    setState(() {});
-    await getProducts();
-    isProductLoading = false;
-    setState(() {});
+  void loadUrl() {
+    if (widget.nextUrl != null && widget.nextUrl != "") {
+      nextUrl = widget.nextUrl;
+    }
   }
 
-  Future<List<Product>> getProducts() async {
-    if (nextUrl != null) {
-      Map<String, dynamic>? result = await ShoppingAuthService()
-          .listOfProduct(nextUrl, "", "", false, otherDeals: false);
+  void getProducts() async {
+    // if (nextUrl != null) {
+    //   Map<String, dynamic>? result = await ShoppingAuthService()
+    //       .listOfProduct(nextUrl, "", "", false, otherDeals: false);
+    //
+    //   var tempList = result!['results'];
+    //
+    //   nextUrl = result['next'];
+    //   productCount = result['count'];
+    //
+    //   productList.addAll(tempList);
+    // }
+    // return productList;
+    if (!isProductLoading) {
+      if (nextUrl != null && !isProductLoading) {
+        isProductLoading = true;
+        if (mounted) setState(() {});
 
-      var tempList = result!['results'];
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfProduct(nextUrl, productPrevious, "", false,
+                otherDeals: false);
 
-      nextUrl = result!['next'];
-      productCount = result!['count'];
+        if (result == null) {
+          productEmpty = true;
+          isProductLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
 
-      productList.addAll(tempList);
+        nextUrl = result['next'];
+        productCount = result['count'];
+        productPrevious = result['previous'];
+        final tempList = result['results'];
+
+        productEmpty = false;
+        isProductLoading = false;
+        productList.addAll(tempList);
+
+        if (mounted) setState(() {});
+      }
+      if (productList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            productEmpty = true;
+          });
+        }
+      }
     }
-    return productList;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isProductLoading) {
+    if (isProductLoading && productList.isEmpty) {
       return buildShimmer();
     }
 
     if (productList.isEmpty) {
       return _buildNoItem();
+    } else {
+      return CustomPagination(
+          onScrollEnd: () async {
+            getProducts();
+            setState(() {});
+          },
+          child: ListView(children: [superStoreProducts()]));
     }
-
-    return CustomPagination(
-        onScrollEnd: () async {
-          await getProducts();
-          setState(() {});
-        },
-        child: ListView(children: [superStoreProducts()]));
   }
 
   Widget superStoreProducts() {
-    if (productList.isEmpty) {
-      return const SizedBox.shrink();
-    }
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          productList.isEmpty
-              ? const SizedBox.shrink()
-              : const SizedBox(height: 16),
           if (productList.isNotEmpty)
             Container(
               margin: const EdgeInsets.only(bottom: 15.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Found ${productCount} ${widget.categoryName}",
+                  "Found $productCount ${widget.categoryName}",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -105,22 +144,95 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
                 ),
               ),
             ),
-          GridView.builder(
+          CustomScrollView(
+            physics: const ScrollPhysics(),
+            controller: _productScrollController,
             shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisSpacing: 22,
-              mainAxisExtent: 274,
-              crossAxisSpacing: 15,
-              maxCrossAxisExtent: 200,
-            ),
-            itemCount: productList.length,
-            itemBuilder: (context, index) {
-              return SuperStoreSingleCard(
-                product: productList[index],
-              );
-            },
+            slivers: <Widget>[
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    // Calculate indices for the row items
+                    final int startIndex = index * 2;
+                    final int endIndex = startIndex + 2;
+
+                    // Get the items for this row
+                    final List<Product> rowItems = productList.sublist(
+                      startIndex,
+                      endIndex > productList.length
+                          ? productList.length
+                          : endIndex,
+                    );
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // First Item
+                          Expanded(
+                            child: SuperStoreSingleCard(
+                              product: rowItems[0],
+                            ),
+                          ),
+                          const SizedBox(width: 10.0),
+                          // Second Item
+                          if (rowItems.length == 2)
+                            Expanded(
+                              child: SuperStoreSingleCard(
+                                product: rowItems[1],
+                              ),
+                            ),
+                          // Add an empty widget if there is only one item
+                          if (rowItems.length == 1)
+                            const Expanded(
+                              child: SizedBox.shrink(),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                  childCount: (productList.length / 2).ceil(), // Number of rows
+                ),
+              ),
+              // SliverGrid(
+              //   delegate: SliverChildBuilderDelegate(
+              //     (c, i) => SizedBox(
+              //       child: SuperStoreSingleCard(
+              //         product: productList[i],
+              //       ),
+              //     ),
+              //     childCount: productList.length,
+              //   ),
+              //   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              //     mainAxisSpacing: 8,
+              //     mainAxisExtent: 280,
+              //     crossAxisSpacing: 8,
+              //     maxCrossAxisExtent: 300,
+              //   ),
+              // ),
+              SliverToBoxAdapter(
+                child:
+                    buildJumpingLoadingIndicator(isLoading: isProductLoading),
+              ),
+            ],
           ),
+          // GridView.builder(
+          //   shrinkWrap: true,
+          //   physics: const NeverScrollableScrollPhysics(),
+          //   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          //     mainAxisSpacing: 22,
+          //     mainAxisExtent: 274,
+          //     crossAxisSpacing: 15,
+          //     maxCrossAxisExtent: 200,
+          //   ),
+          //   itemCount: productList.length,
+          //   itemBuilder: (context, index) {
+          //     return SuperStoreSingleCard(
+          //       product: productList[index],
+          //     );
+          //   },
+          // ),
         ],
       ),
     );

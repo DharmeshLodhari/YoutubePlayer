@@ -1,17 +1,17 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'event_auth.dart';
-import 'models/PartialEventItem.dart';
+import 'models/partial_event_item.dart';
 
 class SpecificCategoryEventList extends StatefulWidget {
+  const SpecificCategoryEventList({super.key});
+
   @override
-  _SpecificCategoryEventListState createState() =>
+  State<SpecificCategoryEventList> createState() =>
       _SpecificCategoryEventListState();
 }
 
@@ -19,7 +19,7 @@ class _SpecificCategoryEventListState extends State<SpecificCategoryEventList> {
   List<PartialEventItem> eventList = [];
 
   bool isLoading = false;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   void getResult() async {
@@ -40,20 +40,12 @@ class _SpecificCategoryEventListState extends State<SpecificCategoryEventList> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -63,7 +55,7 @@ class _SpecificCategoryEventListState extends State<SpecificCategoryEventList> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: isLoading
             ? Center(
@@ -79,12 +71,13 @@ class _SpecificCategoryEventListState extends State<SpecificCategoryEventList> {
                 onRefresh: _onRefresh,
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: eventList
                           .map(
                             (element) => Container(
-                                padding: EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: EventTileWithHeart(
                                   partialEvent: element,
                                 )),
@@ -100,6 +93,7 @@ class _SpecificCategoryEventListState extends State<SpecificCategoryEventList> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

@@ -6,24 +6,34 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/main_socket_message_handler.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/settings/general_setting.dart';
 import 'package:Slydo/screens/super_store/super_store_home.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
+import 'package:Slydo/screens/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
+import 'package:Slydo/services/logout_helper.dart';
 import 'package:Slydo/services/share_manager.dart';
+import 'package:Slydo/services/uni_links_service.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
@@ -32,37 +42,29 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import '../services/logout_helper.dart';
-import '../utils/navigation_util.dart';
-import '../widget/rounded_background_icon.dart';
 import 'connection_module/connections_dashboard.dart';
 import 'home.dart';
+import 'moments/moments_auth.dart';
 import 'moments/screens/moment_detail/moment_detail_page.dart';
-import 'moments/screens/moments_service.dart';
-import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
-import 'more_apps/settings/general_setting.dart';
-import 'more_apps/yarn/yarn_auth.dart';
-import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  Dashboard({this.arguments});
+  const Dashboard({super.key, this.arguments});
 
   @override
-  _DashboardState createState() => _DashboardState(arguments: arguments);
+  State<Dashboard> createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
   //newUI Variables
   late DashboardBloc _dashboardBloc;
-  DatabaseHelper _db = DatabaseHelper();
+  final DatabaseHelper _db = DatabaseHelper();
 
   int _currentIndex = 0;
-  var arguments;
   List<Widget>? screens;
+  late UserBloc userBloc;
   late BasketBloc basketBloc;
   late YarnDashboardBloc yarnDashboardBloc;
 
@@ -80,27 +82,29 @@ class _DashboardState extends State<Dashboard> {
     'home/settings',
   ];
 
-  var list = ['Home', 'Store', 'Chat', 'Settings'];
-
-  final List<Widget> _pages = [
-    KeepAlivePage(wantKeepAlive: false, child: Home()),
-    SuperStoreHome(),
-    KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
-    GeneralSettingScreen(),
-  ];
-
-  _DashboardState({this.arguments});
+  List<String> list = ['Home', 'Store', 'Chat', 'Settings'];
+  List<Widget> _pages = [Container(), Container(), Container(), Container()];
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ShareManager().initializeShareManager();
+    UniLinksService.init();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      // ShareManager().initializeShareManager();
+
+      _pages = const [
+        KeepAlivePage(wantKeepAlive: false, child: Home()),
+        SuperStoreHome(),
+        KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
+        GeneralSettingScreen(),
+      ];
+      setState(() {});
     });
+
     if (mounted) MainSocketMessageHandler().dispose();
     if (mounted) {
       setState(() {
-        if (arguments != null) {
-          int? indexFromRoute = arguments['dashboardIndex'];
+        if (widget.arguments != null) {
+          final int? indexFromRoute = widget.arguments['dashboardIndex'];
 
           if (indexFromRoute != null) {
             setState(() {
@@ -110,7 +114,6 @@ class _DashboardState extends State<Dashboard> {
         }
       });
     }
-    super.initState();
 
     getAllCategories();
     // getProductCategories(); // not in use
@@ -124,11 +127,14 @@ class _DashboardState extends State<Dashboard> {
     // checkNotificationToNavigate();
     MyGlobals.notificationStream?.cancel();
     listenNotificationTap();
+
+    super.initState();
   }
 
   /// Handles fetching of all categories
   void getAllCategories() async {
-    Map<String, dynamic>? result = await YarnAuth().getAllCategories("", "");
+    final Map<String, dynamic>? result =
+        await YarnAuth().getAllCategories("", "");
 
     if (result != null && mounted) {
       yarnDashboardBloc.addCategories(result['results']);
@@ -136,7 +142,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void getProductCategories() async {
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await YarnAuth().getProductCategories("", "");
     if (result != null && mounted) {
       yarnDashboardBloc.addProductCategories(result['results']);
@@ -144,24 +150,24 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void fetchConnections() async {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        myGlobals.navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(myGlobals.navigationKey.currentContext!,
+            listen: false);
 
-    BackgroundFetchStopBloc backgroundFetchStopBloc =
+    final BackgroundFetchStopBloc backgroundFetchStopBloc =
         Provider.of<BackgroundFetchStopBloc>(
             myGlobals.navigationKey.currentContext!);
 
     /// to show updating Messaging in connection list
     ChatMessageSynchronizer().updateFetchStream(isFetching: true);
 
-    int result = await connectionListBloc.getConnectionsCount();
-    debugPrint("CONNECTION LIST LENGTH:- $result");
+    final int result = await connectionListBloc.getConnectionsCount();
+    // debugPrint("CONNECTION LIST LENGTH:- $result");
     if (result == 0) {
       await ConnectionSynchronizer().fetch(isRefresh: true);
 
-      int result = await connectionListBloc.getConnectionsCount();
-      debugPrint("CONNECTION LIST LENGTH:- $result");
+      final int result = await connectionListBloc.getConnectionsCount();
+      // debugPrint("CONNECTION LIST LENGTH:- $result");
 
       for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
         if (backgroundFetchStopBloc.isAllowed) {
@@ -191,13 +197,13 @@ class _DashboardState extends State<Dashboard> {
     MyGlobals.notificationStream = AwesomeNotificationService()
         .notificationActionStream!
         .listen((receivedNotification) async {
-      debugPrint("action:-  ${receivedNotification.buttonKeyPressed}");
-      debugPrint("data:-  ${receivedNotification.payload}");
+      // debugPrint("action:-  ${receivedNotification.buttonKeyPressed}");
+      // debugPrint("data:-  ${receivedNotification.payload}");
 
-      Map<String, dynamic>? payload = receivedNotification.payload;
+      final Map<String, dynamic>? payload = receivedNotification.payload;
 
       if (receivedNotification.buttonKeyPressed == "reject_nudge") {
-        Map<String, dynamic> data = {
+        final Map<String, dynamic> data = {
           "check_id": const Uuid().v4(),
           "conversation_id": payload!['conversation_id'],
           "author": payload['recipient'],
@@ -218,7 +224,7 @@ class _DashboardState extends State<Dashboard> {
           navigateToNotification(receivedNotification.toMap());
         });
       } else {
-        debugPrint("===> ${receivedNotification.toMap()}");
+        // debugPrint("===> ${receivedNotification.toMap()}");
 
         // saveNotification(payload);
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -266,26 +272,26 @@ class _DashboardState extends State<Dashboard> {
     /// dismissedLifeCycle: null,
     /// buttonKeyPressed: null, buttonKeyInput: null}
     ///
-    debugPrint('NOTIFICAITON TYPE --> $data');
+    // debugPrint('NOTIFICAITON TYPE --> $data');
 
-    Map<String, dynamic> notification = data['payload'] is String
+    final Map<String, dynamic> notification = data['payload'] is String
         ? jsonDecode(data['payload'])
         : data['payload'];
 
-    debugPrint('NOTIFICAITON TYPE --> ${notification['type']}');
+    // debugPrint('NOTIFICAITON TYPE --> ${notification['type']}');
 
     if (notification['type'] == "chatroom_message" ||
         notification['type'] == "nudge_user") {
-      String? recipientUsername =
+      final String? recipientUsername =
           notification['actions'].replaceAll("/chat-screen/", "");
-      print("Recipient user name = $recipientUsername");
+      // debugPrint("Recipient user name = $recipientUsername");
 
       if (recipientUsername != null) {
         showDialog(
             context: MyGlobals().navigationKey.currentContext!,
             builder: (context) => Center(child: CircularLoadingIndicator()));
 
-        ChatConversation chatConversation =
+        final ChatConversation chatConversation =
             await UserAuth().fetchContactProfile(recipientUsername);
 
         Navigator.of(MyGlobals().navigationKey.currentContext!)
@@ -307,7 +313,7 @@ class _DashboardState extends State<Dashboard> {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .pushNamed(Routes.TRANSACTIONS);
+          .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
     } else if (notification['type'] == "connection-request") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
@@ -316,11 +322,12 @@ class _DashboardState extends State<Dashboard> {
     } else if (notification['type'] == "friends-dashboard") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
+
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
     } else if (notification['type'] == "detail_message") {
       //this variable will fetch the id of message from the response
-      String? idOfMessage =
+      final String? idOfMessage =
           notification['actions'].replaceAll("/detail_message/", "");
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
@@ -330,9 +337,9 @@ class _DashboardState extends State<Dashboard> {
       });
     } else if (notification['type'].toString().contains("orders-list")) {
       Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
-      Navigator.of(context).pushNamed(Routes.ORDERS_LIST);
+      Navigator.of(context).pushNamed(Routes.ORDER_LIST);
     } else if (notification['type'].toString().contains("order-detail-page")) {
-      Order order = Order.fromJson(notification["data"] is String
+      final Order order = Order.fromJson(notification["data"] is String
           ? jsonDecode(notification["data"])
           : notification["data"]);
 
@@ -344,7 +351,7 @@ class _DashboardState extends State<Dashboard> {
       showDialog(
           context: context,
           builder: (context) => Center(child: CircularLoadingIndicator()));
-      MomentsService()
+      MomentsAuthService()
           .getSingleMoment(
               momentId: notification['type'].toString().split('moment/')[1])
           .then((momentsModelList) {
@@ -364,6 +371,12 @@ class _DashboardState extends State<Dashboard> {
         debugPrint('ERROR M -> $e');
         showToast(message: 'ERROR -> $e');
       });
+    } else if (notification['type'].toString().contains("accounts")) {
+      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.pushNamed(context, Routes.ACCOUNTS);
+    } else if (notification['type'].toString().contains("shopping-cart")) {
+      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.pushNamed(context, Routes.SHOPPING_CART);
     }
   }
 
@@ -395,7 +408,7 @@ class _DashboardState extends State<Dashboard> {
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding: basketBloc.items.length == 0
+        padding: basketBloc.basketItems.isEmpty
             ? const EdgeInsets.all(0)
             : const EdgeInsets.all(4),
         elevation: 0,
@@ -411,7 +424,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.items.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
@@ -425,17 +438,18 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  int getBadgeCount() {
+  String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
-    });
-    return totalItem;
+    for (var element in basketBloc.basketItems) {
+      totalItem = totalItem + int.parse(element.qty.toString());
+    }
+    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
   @override
   Widget build(BuildContext context) {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     appLocalization = AppLocalization.of(context)!;
     _dashboardBloc = Provider.of<DashboardBloc>(context);
@@ -450,7 +464,7 @@ class _DashboardState extends State<Dashboard> {
     return WillPopScope(
       onWillPop: () async {
         if (_dashboardBloc.index == 0) {
-          bool? result = await showDialogBox(
+          final bool? result = await showDialogBox(
             context: context,
             actionOneBgColor: mateRed,
             actionOneTextColor: Colors.white,
@@ -477,14 +491,17 @@ class _DashboardState extends State<Dashboard> {
       },
       child: Scaffold(
         key: myGlobals.scaffoldKey,
-        backgroundColor: whiteBackground,
+        backgroundColor: lightGrey,
         extendBody: true,
         body: SafeArea(
-            maintainBottomViewPadding: true, child: _pages[_bottomNavIndex]),
+          maintainBottomViewPadding: true,
+          child: _pages[_bottomNavIndex],
+        ),
         floatingActionButton: SizedBox(
           width: 70,
           height: 70,
           child: GestureDetector(
+            key: tutorialSlydoKey,
             onLongPress: () {
               logoutDialog(context);
             },
@@ -496,6 +513,10 @@ class _DashboardState extends State<Dashboard> {
               },
               mini: false,
               heroTag: null,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                    50.0), // Set the border radius to create a circle
+              ),
               // child: Icon(
               //   Icons.add,
               //   color: white,
@@ -560,19 +581,21 @@ class _DashboardState extends State<Dashboard> {
         tabBuilder: (int index, bool isActive) {
           final color = isActive ? navyBlue : darkGreyYarn;
           return Column(
+            key: getKeysForTutorial(index),
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Stack(
                 children: [
-                  iconList[index] == 'home/super_store'
-                      ? Icon(Icons.shopping_basket, color: color)
-                      : SvgPicture.asset(
-                          iconList[index].toSVG(),
-                          color: color,
-                          width: 28,
-                          height: 28,
-                        ),
+                  if (iconList[index] == 'home/super_store')
+                    Icon(Icons.shopping_basket, color: color)
+                  else
+                    SvgPicture.asset(
+                      iconList[index].toSVG(),
+                      color: color,
+                      width: 28,
+                      height: 28,
+                    ),
                   if (list[index] == 'Chat') // Only show badge for Chat icon
                     Positioned(
                       top: 0, // Adjust the top value as needed
@@ -649,11 +672,16 @@ class _DashboardState extends State<Dashboard> {
         onTap: (index) {
           setState(() {
             // Unfocus the keyboard
-            FocusScope.of(context).requestFocus(new FocusNode());
-            _bottomNavIndex = index;
+            FocusScope.of(context).requestFocus(FocusNode());
+            if (userBloc.user.staff != null && index == 2) {
+              showToast(message: AppLocalization.of(context)?.doNotPermission);
+              return;
+            } else {
+              _bottomNavIndex = index;
+            }
           });
         },
-        shadow: BoxShadow(
+        shadow: const BoxShadow(
           offset: Offset(0, 0),
           blurRadius: 0,
           spreadRadius: 0.5,
@@ -661,6 +689,19 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
+  }
+
+  GlobalKey getKeysForTutorial(int index) {
+    if (list[index] == 'Store') {
+      return tutorialHomeSuperStoreKey;
+    }
+    if (list[index] == 'Chat') {
+      return tutorialChatKey;
+    }
+    if (list[index] == 'Settings') {
+      return tutorialHomeSettingsKey;
+    }
+    return GlobalKey();
   }
 
   @override

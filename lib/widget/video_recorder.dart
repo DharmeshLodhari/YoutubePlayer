@@ -10,12 +10,12 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class VideoRecorder extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  VideoRecorder({this.arguments});
+  const VideoRecorder({super.key, this.arguments});
 
   @override
-  _VideoRecorderState createState() {
+  State<VideoRecorder> createState() {
     return _VideoRecorderState();
   }
 }
@@ -55,7 +55,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
     availableCameras().then((availableCameras) {
       cameras = availableCameras;
 
-      if (cameras!.length > 0) {
+      if (cameras!.isNotEmpty) {
         setState(() {
           selectedCameraIdx = 0;
         });
@@ -63,18 +63,19 @@ class _VideoRecorderState extends State<VideoRecorder> {
         _onCameraSwitched(cameras![selectedCameraIdx!]).then((void v) {});
       }
     }).catchError((err) {
-      print('Error: $err.code\nError Message: $err.message');
+      debugPrint('Error: $err.code\nError Message: $err.message');
     });
   }
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.transparent,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
       leading: IconButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.keyboard_arrow_left,
           color: Colors.white,
           size: 28,
@@ -100,19 +101,14 @@ class _VideoRecorderState extends State<VideoRecorder> {
         key: _scaffoldKey,
         // appBar: appBar(),
         body: OrientationBuilder(builder: (context, orientation) {
-          debugPrint("=> ${orientation.index}");
+          // debugPrint("=> ${orientation.index}");
           if (orientation == Orientation.portrait) {
             return Stack(
               children: <Widget>[
-                Container(
-                  child: Center(
-                    child: _cameraPreviewWidget(),
-                  ),
+                Center(
+                  child: _cameraPreviewWidget(),
                 ),
                 Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(1.0),
-                  ),
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
@@ -125,6 +121,9 @@ class _VideoRecorderState extends State<VideoRecorder> {
                       width: 1.0,
                     ),
                   ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(1.0),
+                  ),
                 ),
                 Positioned(
                   bottom: 0,
@@ -132,16 +131,16 @@ class _VideoRecorderState extends State<VideoRecorder> {
                     children: [
                       Text(
                         getTimerDuration(timerService.currentDuration),
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white,
                             fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         width: MediaQuery.of(context).size.width,
                         color: Colors.black45,
                         child: Row(
@@ -161,15 +160,10 @@ class _VideoRecorderState extends State<VideoRecorder> {
           }
           return Stack(
             children: <Widget>[
-              Container(
-                child: Center(
-                  child: _cameraPreviewWidget(),
-                ),
+              Center(
+                child: _cameraPreviewWidget(),
               ),
               Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(1.0),
-                ),
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
@@ -182,6 +176,9 @@ class _VideoRecorderState extends State<VideoRecorder> {
                     width: 1.0,
                   ),
                 ),
+                child: const Padding(
+                  padding: EdgeInsets.all(1.0),
+                ),
               ),
               Positioned(
                 bottom: 0,
@@ -189,16 +186,16 @@ class _VideoRecorderState extends State<VideoRecorder> {
                   children: [
                     Text(
                       getTimerDuration(timerService.currentDuration),
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 16,
                           color: Colors.white,
                           fontWeight: FontWeight.w600),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       width: MediaQuery.of(context).size.width,
                       color: Colors.black45,
                       child: Row(
@@ -222,8 +219,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
   String getTimerDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    final String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    final String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
@@ -237,7 +234,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
           timerService.reset();
           Navigator.pop(context);
         },
-        child: Icon(
+        child: const Icon(
           Icons.close_rounded,
           color: Colors.white,
         ),
@@ -284,11 +281,11 @@ class _VideoRecorderState extends State<VideoRecorder> {
   /// Display a row of toggle to select the camera (or a message if no camera is available).
   Widget _cameraTogglesRowWidget() {
     if (cameras == null) {
-      return Row();
+      return const Row();
     }
 
-    CameraDescription selectedCamera = cameras![selectedCameraIdx!];
-    CameraLensDirection lensDirection = selectedCamera.lensDirection;
+    final CameraDescription selectedCamera = cameras![selectedCameraIdx!];
+    final CameraLensDirection lensDirection = selectedCamera.lensDirection;
 
     return Expanded(
         child: Align(
@@ -320,12 +317,12 @@ class _VideoRecorderState extends State<VideoRecorder> {
                   : null,
               child: ClipOval(
                 child: AnimatedSwitcher(
-                  child: recordingButton,
                   transitionBuilder: (child, animation) => ScaleTransition(
                     scale: animation,
                     child: child,
                   ),
-                  duration: Duration(microseconds: 500),
+                  duration: const Duration(microseconds: 500),
+                  child: recordingButton,
                 ),
               ),
             ),
@@ -354,7 +351,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
           borderRadius: BorderRadius.circular(50),
           border: Border.all(color: Colors.white, width: 1.5),
         ),
-        child: Icon(
+        child: const Icon(
           Icons.stop,
           color: Colors.red,
         ),
@@ -385,7 +382,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
     // If the controller is updated then update the UI.
     controller!.addListener(() {
-      debugPrint("===>> ${controller!.value.aspectRatio} ");
+      // debugPrint("===>> ${controller!.value.aspectRatio} ");
 
       if (mounted) {
         setState(() {});
@@ -411,7 +408,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
   void _onSwitchCamera() {
     selectedCameraIdx =
         selectedCameraIdx! < cameras!.length - 1 ? selectedCameraIdx! + 1 : 0;
-    CameraDescription selectedCamera = cameras![selectedCameraIdx!];
+    final CameraDescription selectedCamera = cameras![selectedCameraIdx!];
 
     _onCameraSwitched(selectedCamera);
 
@@ -487,7 +484,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
     }
 
     try {
-      XFile file = await controller!.stopVideoRecording();
+      final XFile file = await controller!.stopVideoRecording();
       videoPath = file.path;
     } on CameraException catch (e) {
       _showCameraException(e);
@@ -496,11 +493,13 @@ class _VideoRecorderState extends State<VideoRecorder> {
   }
 
   void _showCameraException(CameraException e) {
-    String errorText = 'Error: ${e.code}\nError Message: ${e.description}';
-    print(errorText);
+    final String errorText =
+        'Error: ${e.code}\nError Message: ${e.description}';
+    debugPrint(errorText);
     showToast(message: 'Error: ${e.code}\n${e.description}');
   }
 
+  @override
   void dispose() {
     timer?.cancel();
     timerService.stop();

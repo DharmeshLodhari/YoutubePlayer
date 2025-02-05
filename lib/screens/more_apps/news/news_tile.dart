@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/news/models/NewsListItem.dart';
-import 'package:Slydo/screens/more_apps/news/models/SubscriptionItem.dart';
+import 'package:Slydo/screens/more_apps/news/models/news_list_item.dart';
+import 'package:Slydo/screens/more_apps/news/models/subscription_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,10 +11,10 @@ import 'package:flutter/material.dart';
 class NewsTile extends StatefulWidget {
   final NewsListItem? newsListItem;
 
-  const NewsTile({Key? key, this.newsListItem}) : super(key: key);
+  const NewsTile({super.key, this.newsListItem});
 
   @override
-  _NewsTileState createState() => _NewsTileState();
+  State<NewsTile> createState() => _NewsTileState();
 }
 
 class _NewsTileState extends State<NewsTile> {
@@ -28,75 +28,74 @@ class _NewsTileState extends State<NewsTile> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Container(
           decoration: decorateBox(),
-          child: Container(
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
-                      child: CachedNetworkImage(
-                        height: 150,
-                        width: double.infinity,
-                        fit: BoxFit.fill,
-                        errorWidget: imageErrorWidget,
-                        imageUrl: widget.newsListItem?.image ?? "",
-                      ),
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10)),
+                    child: CachedNetworkImage(
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.fill,
+                      errorWidget: imageErrorWidget,
+                      imageUrl: widget.newsListItem?.image ?? "",
                     ),
-                    Positioned(
-                      right: 0,
-                      top: -5,
-                      child: IconButton(
-                        icon: Icon(
-                          isSelected
-                              ? SlydoAppIcon.heart_1
-                              : SlydoAppIcon.heart_empty,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          isSelected = !isSelected;
-                          setState(() {});
-                        },
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: -5,
+                    child: IconButton(
+                      icon: Icon(
+                        isSelected
+                            ? SlydoAppIcon.heart_1
+                            : SlydoAppIcon.heartEmpty,
+                        color: Colors.white,
+                        size: 20,
                       ),
+                      onPressed: () {
+                        isSelected = !isSelected;
+                        setState(() {});
+                      },
+                    ),
+                  )
+                ],
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.newsListItem?.title ?? "",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                      maxLines: 2,
+                      softWrap: true,
+                      overflow: TextOverflow.clip,
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      widget.newsListItem?.description ?? "",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: darkGrey),
+                      maxLines: 2,
+                      softWrap: true,
+                      overflow: TextOverflow.clip,
                     )
                   ],
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.newsListItem?.title ?? "",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: blackFont),
-                        maxLines: 2,
-                        softWrap: true,
-                        overflow: TextOverflow.clip,
-                      ),
-                      SizedBox(
-                        height: 4,
-                      ),
-                      Text(
-                        widget.newsListItem?.description ?? "",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: darkGrey),
-                        maxLines: 2,
-                        softWrap: true,
-                        overflow: TextOverflow.clip,
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ));
   }
@@ -105,11 +104,11 @@ class _NewsTileState extends State<NewsTile> {
 class SubscriptionTile extends StatelessWidget {
   final SubscriptionItem? subscriptionItem;
 
-  const SubscriptionTile({Key? key, this.subscriptionItem}) : super(key: key);
+  const SubscriptionTile({super.key, this.subscriptionItem});
 
   @override
   Widget build(BuildContext context) {
-    Widget avatarImage = Container(
+    final Widget avatarImage = SizedBox(
         height: 48,
         width: 48,
         child: ClipOval(
@@ -122,15 +121,16 @@ class SubscriptionTile extends StatelessWidget {
           ),
         ));
 
-    Widget tile = Card(
+    final Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           title: Text(
             subscriptionItem?.name ?? "",
             maxLines: 1,

@@ -1,15 +1,13 @@
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class FormAddOnTile extends StatelessWidget {
-  FormAddOnTile(
+  const FormAddOnTile(
       {required this.productAddOnsList, required this.index, super.key});
 
-  List<AddOns> productAddOnsList;
-  int index;
+  final List<AddOns> productAddOnsList;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +18,7 @@ class FormAddOnTile extends StatelessWidget {
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
-        padding: EdgeInsets.symmetric(vertical: 7.0),
+        padding: const EdgeInsets.symmetric(vertical: 7.0),
         child: ListTile(
           dense: true,
           title: Column(
@@ -34,7 +32,7 @@ class FormAddOnTile extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     fontSize: 14),
               ),
-              SizedBox(height: 3.0),
+              const SizedBox(height: 3.0),
               Text(
                 '${productAddOnsList[index].options!.length} items',
                 maxLines: 1,

@@ -1,9 +1,8 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/music/models/PartialMusicItem.dart';
 import 'package:Slydo/screens/more_apps/music/models/music_album.dart'
     as musicAlbum;
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/more_apps/music/models/partial_music_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
@@ -11,13 +10,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
-import '../messaging/chat/utils.dart';
 import 'music_player.dart';
 
 // ignore: must_be_immutable
 class MusicTile extends StatelessWidget {
   String? imageUrl;
-  MusicTile({this.imageUrl});
+  MusicTile({super.key, this.imageUrl});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -27,7 +25,7 @@ class MusicTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -41,11 +39,11 @@ class MusicTile extends StatelessWidget {
                     errorWidget: imageErrorWidget,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 16,
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 86,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,10 +94,10 @@ class MusicTile extends StatelessWidget {
 class MusicTileWithHeart extends StatefulWidget {
   final PartialMusicItem? musicItem;
 
-  const MusicTileWithHeart({Key? key, this.musicItem}) : super(key: key);
+  const MusicTileWithHeart({super.key, this.musicItem});
 
   @override
-  _MusicTileWithHeartState createState() => _MusicTileWithHeartState();
+  State<MusicTileWithHeart> createState() => _MusicTileWithHeartState();
 }
 
 class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
@@ -114,8 +112,9 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -170,7 +169,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
             ),
             trailing: IconButton(
               icon: Icon(
-                isChange ? SlydoAppIcon.heart_empty : SlydoAppIcon.heart_1,
+                isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
                 color: isChange ? blackFont : navyBlue,
                 size: 20,
               ),
@@ -188,10 +187,10 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
 class MusicTileGeneral extends StatefulWidget {
   final PartialMusicItem? partialMusicItem;
 
-  const MusicTileGeneral({Key? key, this.partialMusicItem}) : super(key: key);
+  const MusicTileGeneral({super.key, this.partialMusicItem});
 
   @override
-  _MusicTileGeneralState createState() => _MusicTileGeneralState();
+  State<MusicTileGeneral> createState() => _MusicTileGeneralState();
 }
 
 class _MusicTileGeneralState extends State<MusicTileGeneral> {
@@ -208,8 +207,9 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -247,9 +247,9 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
             trailing: IconButton(
               icon: Icon(
                 isDownloaded
-                    ? SlydoAppIcon.music_play
+                    ? SlydoAppIcon.musicPlay
                     : isChange
-                        ? SlydoAppIcon.heart_empty
+                        ? SlydoAppIcon.heartEmpty
                         : SlydoAppIcon.heart_1,
                 color: isDownloaded
                     ? navyBlue
@@ -274,10 +274,11 @@ class AlbumSongTile extends StatefulWidget {
   musicAlbum.Audio? audio;
   int? count;
   int? index;
-  AlbumSongTile({this.audio, this.count, this.musicPlayer, this.index});
+  AlbumSongTile(
+      {super.key, this.audio, this.count, this.musicPlayer, this.index});
 
   @override
-  _AlbumSongTileState createState() => _AlbumSongTileState();
+  State<AlbumSongTile> createState() => _AlbumSongTileState();
 }
 
 class _AlbumSongTileState extends State<AlbumSongTile> {
@@ -293,7 +294,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           StreamBuilder<RealtimePlayingInfos>(
@@ -330,7 +331,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
                               widget.musicPlayer!.audioPlayer.stop();
                             },
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                         ],
@@ -374,7 +375,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
                   overflow: TextOverflow.fade,
                   maxLines: 1,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -398,11 +399,11 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
               color: blackFont,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
           Container(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: navyBlue.withOpacity(0.08),
@@ -422,7 +423,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
           Column(
@@ -430,9 +431,9 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
               InkWell(
                 child: Icon(
                   isDownloaded
-                      ? SlydoAppIcon.music_play
+                      ? SlydoAppIcon.musicPlay
                       : isChange
-                          ? SlydoAppIcon.heart_empty
+                          ? SlydoAppIcon.heartEmpty
                           : SlydoAppIcon.heart_1,
                   color: isDownloaded
                       ? navyBlue

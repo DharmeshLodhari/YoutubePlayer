@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MovieDashboard extends StatefulWidget {
+  const MovieDashboard({super.key});
+
   @override
-  _MovieDashboardState createState() => _MovieDashboardState();
+  State<MovieDashboard> createState() => _MovieDashboardState();
 }
 
 class _MovieDashboardState extends State<MovieDashboard> {
@@ -28,7 +30,7 @@ class _MovieDashboardState extends State<MovieDashboard> {
           onPageChanged: (index) {
             _movieDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             MovieExploreScreen(),
             MyMoviesScreen(),
           ],
@@ -74,7 +76,7 @@ class _MovieDashboardState extends State<MovieDashboard> {
   BottomNavigationBarItem bottomNavigationBarItem(
       {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: SizedBox(
         height: 50,
         width: 108,
         child: Icon(
@@ -99,7 +101,7 @@ class _MovieDashboardState extends State<MovieDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
@@ -109,13 +111,13 @@ class _MovieDashboardState extends State<MovieDashboard> {
                 size: 16,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.w700),

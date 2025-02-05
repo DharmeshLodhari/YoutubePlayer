@@ -1,6 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -9,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TrainExploreScreen extends StatefulWidget {
+  const TrainExploreScreen({super.key});
+
   @override
-  _TrainExploreScreenState createState() => _TrainExploreScreenState();
+  State<TrainExploreScreen> createState() => _TrainExploreScreenState();
 }
 
 class _TrainExploreScreenState extends State<TrainExploreScreen> {
@@ -18,21 +19,21 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
   List<String> toPlace = ["Abuja"];
   List<String> classes = ["A", "B"];
 
-  var selectedFromPlace;
-  var selectedToPlace;
-  var selectedClass;
+  String? selectedFromPlace = "";
+  String? selectedToPlace = "";
+  String? selectedClass = "";
 
   DateTime departureDate = DateTime.now();
   DateTime arrivalDate = DateTime.now();
 
   late TrainDashboardBloc _trainDashboardBloc;
 
-  var selectedTripType = "One way";
+  String selectedTripType = "One way";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
@@ -41,6 +42,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -70,7 +72,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
         child: Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Card(
             elevation: 2,
             margin: EdgeInsets.zero,
@@ -83,30 +85,30 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: iconBtnGrey, width: 1)),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     getTripType(),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     getFromPlaceDropDown(),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     getToPlaceDropDown(),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     getDateField(),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     getClassDropDown(),
-                    SizedBox(
+                    const SizedBox(
                       height: 40,
                     ),
                   ],
@@ -115,7 +117,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
         Padding(
@@ -143,7 +145,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                           ? navyBlue
                           : dividerColor,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -178,7 +180,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                           ? navyBlue
                           : dividerColor,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -228,19 +230,67 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
             },
             child: CustomizedDropDownField(
               title: "Departure date",
-              child: Container(
+              child: ListTile(
+                dense: true,
+                title: Text(
+                  formatDateInDigit(departureDate),
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    fontFamily: "Inter",
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                ),
+                trailing: Icon(
+                  SlydoAppIcon.date,
+                  size: 16,
+                  color: darkGrey,
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (selectedTripType == "Round trip")
+          const SizedBox(
+            width: 10,
+          )
+        else
+          Container(),
+        if (selectedTripType == "Round trip")
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                showDatePicker(
+                  builder: customThemeBuilder,
+                  context: context,
+                  initialDate: DateTime(DateTime.now().year,
+                      DateTime.now().month, DateTime.now().day),
+                  firstDate: DateTime(DateTime.now().year, DateTime.now().month,
+                      DateTime.now().day),
+                  lastDate: DateTime(2101),
+                ).then((value) {
+                  arrivalDate = DateTime(value!.year, value.month, value.day);
+                  setState(() {});
+                }).catchError((error) {});
+              },
+              child: CustomizedDropDownField(
+                title: "Arrival date",
                 child: ListTile(
                   dense: true,
                   title: Text(
-                    formatDateInDigit(departureDate),
+                    formatDateInDigit(arrivalDate),
                     style: TextStyle(
                       color: blackFont,
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
+                      fontFamily: "Inter",
                     ),
+                    maxLines: 1,
                     overflow: TextOverflow.fade,
                     softWrap: false,
-                    maxLines: 1,
                   ),
                   trailing: Icon(
                     SlydoAppIcon.date,
@@ -250,71 +300,22 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                 ),
               ),
             ),
-          ),
-        ),
-        selectedTripType == "Round trip"
-            ? SizedBox(
-                width: 10,
-              )
-            : Container(),
-        selectedTripType == "Round trip"
-            ? Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    showDatePicker(
-                      builder: customThemeBuilder,
-                      context: context,
-                      initialDate: DateTime(DateTime.now().year,
-                          DateTime.now().month, DateTime.now().day),
-                      firstDate: DateTime(DateTime.now().year,
-                          DateTime.now().month, DateTime.now().day),
-                      lastDate: DateTime(2101),
-                    ).then((value) {
-                      arrivalDate =
-                          DateTime(value!.year, value.month, value.day);
-                      setState(() {});
-                    }).catchError((error) {});
-                  },
-                  child: CustomizedDropDownField(
-                    title: "Arrival date",
-                    child: Container(
-                      child: ListTile(
-                        dense: true,
-                        title: Text(
-                          formatDateInDigit(arrivalDate),
-                          style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                          overflow: TextOverflow.fade,
-                          softWrap: false,
-                          maxLines: 1,
-                        ),
-                        trailing: Icon(
-                          SlydoAppIcon.date,
-                          size: 16,
-                          color: darkGrey,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            : Container(),
+          )
+        else
+          Container(),
       ],
     );
   }
 
   Widget getFromPlace() {
     return Card(
-      margin: EdgeInsets.all(0),
+      margin: const EdgeInsets.all(0),
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         width: double.infinity,
         child: DropdownButton<String>(
           isExpanded: true,
-          underline: Divider(
+          underline: const Divider(
             color: Colors.transparent,
           ),
           hint: Row(
@@ -345,7 +346,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                 padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
                 child: Text(
                   category,
-                  style: TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black),
                 ),
               ),
             );
@@ -363,7 +364,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
           "From",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -372,12 +373,12 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
             title: Text(
-              selectedFromPlace != null ? selectedFromPlace : "",
+              selectedFromPlace != null ? selectedFromPlace ?? "" : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -401,11 +402,13 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -474,13 +477,13 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
 
   Widget getToPlace() {
     return Card(
-      margin: EdgeInsets.all(0),
+      margin: const EdgeInsets.all(0),
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         width: double.infinity,
         child: DropdownButton<String>(
           isExpanded: true,
-          underline: Divider(
+          underline: const Divider(
             color: Colors.transparent,
           ),
           hint: Row(
@@ -511,7 +514,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                 padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
                 child: Text(
                   category,
-                  style: TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black),
                 ),
               ),
             );
@@ -529,7 +532,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
           "To",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -538,12 +541,12 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
             title: Text(
-              selectedToPlace != null ? selectedToPlace : "",
+              selectedToPlace != null ? selectedToPlace ?? "" : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -567,11 +570,13 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -640,13 +645,13 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
 
   Widget getClass() {
     return Card(
-      margin: EdgeInsets.all(0),
+      margin: const EdgeInsets.all(0),
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         width: double.infinity,
         child: DropdownButton<String>(
           isExpanded: true,
-          underline: Divider(
+          underline: const Divider(
             color: Colors.transparent,
           ),
           hint: Row(
@@ -677,7 +682,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                 padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
                 child: Text(
                   category,
-                  style: TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black),
                 ),
               ),
             );
@@ -695,7 +700,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
           "Class service",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -704,12 +709,12 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
             title: Text(
-              selectedClass != null ? selectedClass : "",
+              selectedClass != null ? selectedClass ?? "" : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -744,11 +749,13 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

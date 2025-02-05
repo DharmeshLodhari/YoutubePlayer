@@ -1,3 +1,4 @@
+// google-site-verification=7F5fP39kRK4Yb751jM0E9CKaUnQOPs1rPxjB3Xgi1XM
 class Routes {
   static const String SELECT_CABLE_PLAN_AND_DECODER_NUMBER =
       "/select-cable-plan-and-decoder-number";
@@ -21,6 +22,7 @@ class Routes {
   static const String TRANSACTIONS = "/transactions";
   static const String TRANSACTION_GRAPH = "/transaction-graph";
   static const String TRANSACTION_DETAIL = "/transaction-detail";
+  static const String PAYMENT_REQUEST_DETAIL = "/paymnet-request-detail";
   static const String ADD_ACCOUNT = "/add-account";
   static const String SEND_PAYMENT = "/send-payment";
   static const String REQUEST_PAYMENT = "/request-payment";
@@ -30,10 +32,13 @@ class Routes {
   static const String CHOOSE_SUBSCRIPTIONS = "/choose-subscriptions";
   static const String USER_PRODUCT_AND_SERVICE_SEARCH =
       "/user-product-and-service-search";
-  static const String PRODUCT = "/product";
+  static const String PRODUCT_DETAIL_PAGE = "/product";
+  static const String ADD_EDIT_PRODUCT = "/add-edit-product";
   static const String ADD_PRODUCT = "/add-product";
   static const String EDIT_PRODUCT = "/edit-product";
+  // static const String PRODUCT_ADVANCED_OPTIONS = "/product-advanced-options";
   static const String SERVICE_DETAIL = "/service-detail";
+  static const String ADD_EDIT_SERVICE = "/add-edit-service";
   static const String ADD_SERVICE = "/add-service";
   static const String EDIT_SERVICE = "/edit-service";
   static const String MESSAGE_LIST = "/message-list";
@@ -43,14 +48,18 @@ class Routes {
   static const String ADD_BANK_ACCOUNT = "/add-bank-account";
   static const String BANK_ACCOUNT_LIST = "/bank-account-list";
   static const String SCAN_QR = "/scan-qr";
+  static const String SCAN_PRODUCT_QR = "/scan-product-qr";
   static const String PAYOUT = "/payout";
   static const String PAYOUT_LIST = "/payout-list";
   static const String FORGOT_PASSWORD = "/forgot-password";
   static const String RESET_PASSWORD = "/reset-password";
   static const String CHANGE_PASSWORD = "/change-password";
   static const String SHOPPING_CART = "/shopping-cart";
-  static const String ORDERS_LIST = "/orders-list";
+  static const String ORDER_LIST = "/order-list";
+  static const String ORDER_UPDATED = "/order-updated";
   static const String ORDER_DETAIL_PAGE = "/order-detail-page";
+  static const String TRACK_ORDER = "/track-order";
+  static const String WRITE_REVIEW_PAGE = "/write-review-page";
   static const String CARD_PAYMENT_PAGE = "/card-payment-page";
   static const String USER_ADDRESS = "/user-address";
   static const String FRIENDS_DASHBOARD = "/friends-dashboard";
@@ -74,6 +83,7 @@ class Routes {
   static const String CREDIT_CARD_LIST = "/credit-card-list";
   static const String CREDIT_CARD_OPTION_SELECTION =
       "/credit-card-option-selection";
+  static const String PAYMENT_LINK = "/payment-link";
   static const String ENTER_PIN = "/enter-pin";
   static const String UPGRADE_ACCOUNT = "/upgrade-account";
   static const String ADD_MONEY_TO_SLYDO_ONE = "/add-money-to-slydo-one";
@@ -177,6 +187,7 @@ class Routes {
   static const String EDIT_SHIPPING_OPTIONS = "/edit-shipping-Option";
   static const String NEAR_BY_LIST_SCREEN = "/near-by-list-screen";
   static const String PRODUCT_VARIANT_LIST = "/product-variant-list";
+  static const String ADD_EDIT_VARIANT = "/add-edit-variant";
   static const String PRODUCT_NEW_OPTION = "/product-new-option";
   static const String PRODUCT_VARIANT_UPDATE = "/product-variant-update";
   static const String VIRTUAL_CARD_HOME = "/virtual-card-home";
@@ -192,18 +203,25 @@ class Routes {
   static const String PRE_ACCOUNT_UPGRADE = "/pre-account-upgrade";
   static const String PRODUCT_ADD_ON_LIST = "/product-add-on-list";
   static const String ADD_ON_OPTION_LIST = "/add-on-option-list";
+  static const String ADD_EDIT_ADD_ON_OPTION = "/add-edit-add-on-option";
   static const String PRODUCT_ADD_ON_OPTION_CREATE =
       "/product-add-on-option-create";
   static const String PRODUCT_ADD_ON_OPTION_UPDATE =
       "/product-add-on-option-update";
+  static const String ADD_EDIT_ADD_ON = "/add-edit-add-on";
   static const String NEW_ADD_ON = "/new-add-on";
   static const String UPDATE_ADD_ON = "/update-add-on";
   static const String FLASH_TAG_LIST = "/flash-tag-list";
   static const String DISCOUNT_LIST = "/discount-list";
   static const String CUSTOM_CATEGORY = "/custom-Category";
+  static const String DISPATCH = "/dispatch";
   static const String DISPATCH_ADDRESS = "/dispatch-address";
-  static const String RIDER_DASHBOARD = "/rider-dashboard";
-  static const String RIDER_JOB_DETAILS = "/job-details";
+  static const String DELIVERY_DETAILS = "/delivery-details";
+  static const String PAYMENT_OPTION = "/payment-option";
+  static const String RIDER_JOB_DETAILS = "/rider-job-details";
+  static const String TAKE_DELIVERY_PROOF = "/take-delivery-proof";
+  static const String PREVIEW_DELIVERY_PROOF_SCREEN =
+      "/preview-delivery-proof-screen";
   // static const String TAKE_PICTURE = "/take-picture";
   static const String CONFIRM_ORDER = "/confirm-order";
   static const String DELIVERY_OPTION = "/delivery-option";
@@ -215,6 +233,37 @@ class Routes {
   static const String TAKE_PROOF_PHOTO = "/take-proof-photo";
   static const String PREVIEW_SCREEN = "/preview-screen";
   static const String COMPLETED_UPLOAD_PHOTO = "/completed-upload-photo";
+  static const String VIEW_COMPLETED_DELIVERY = "/view-completed-delivery";
+  static const String DELIVERY_COMPLETED = "/delivery-completed";
+  static const String RESPONSE_RECEIVED = "/response-received";
+  static const String SHARE_EXPERIENCE = "/share-experience";
+  static const String RIDER_DASHBOARD = "/rider-dashboard";
+  static const String RIDER_EARNING_WEEKLY_LIST = "/rider-earning-weekly-list";
+  static const String EARNING_LIST = "/earning-list";
+  static const String DELIVERY_HISTORY = "/delivery-history";
   static const String RIDERS_UPDATE = "/riders-update";
   static const String ADD_TAGS = "/add-tags";
+  static const String SHARED_CARD_DETAILS = "/shared-card-details";
+  static const String SHARED_CART_MEMBERS = "/shared-card-members";
+  static const String SHARED_CART_PAYMENT = "/send-cart-payment";
+
+  static const String RIDER_MAP_STATUS = "/rider-map-status";
+  static const String CANCELLATION = "/cancellation";
+  static const String YOU_TRIP_END = "/your-trip-end";
+  static const String ORDER_PREVIEW = "/order-preview";
+  static const String DISCOUNT_PRODUCT_AND_SERVICE_SEARCH =
+      "/discount-product-and-service-search";
+  static const String PRODUCT_AND_SERVICE_SOCIAL_MEDIA =
+      "/product-and-service-social-media";
+  static const String CURRENCY_LIST = "/currency-list";
+  static const String PAYMENT_CONFIRMATION = "/payment-confirmation";
+  static const String SEARCH_RIDER = "/search-rider";
+  static const String SLYDER_ARRIVING = "/slyder-arriving";
+  static const String DISPATCH_DONE = "/dispatch-done";
+  static const String SEARCH_ADDRESS = "/search-address";
+  static const String DISPATCH_HISTORY = "/dispatch-history";
+  static const String FIND_VEHICLE = "/find-vehicle";
+  static const String ADD_NEW_ADDRESS = "/add-new-address";
+  static const String DISPATCH_CANCEL = "/dispatch-cancel";
+  static const String TRIP_DETAILS = "/trip-details";
 }

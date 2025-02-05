@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -11,19 +10,19 @@ import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class MapUI extends StatefulWidget {
-  MapUI({
-    Key? key,
+  const MapUI({
+    super.key,
     this.showRideToStartingPointPolyline = false,
     this.showStartingPointToDestinationPolyline = false,
     this.startRide = false,
-  }) : super(key: key);
+  });
 
   final bool showStartingPointToDestinationPolyline;
   final bool showRideToStartingPointPolyline;
   final bool startRide;
 
   @override
-  _MapUIState createState() => _MapUIState();
+  State<MapUI> createState() => _MapUIState();
 }
 
 class _MapUIState extends State<MapUI> {
@@ -37,7 +36,7 @@ class _MapUIState extends State<MapUI> {
   late TaxiBloc taxiBloc;
 
   StreamSubscription? _locationSubscription;
-  Location _locationTracker = Location();
+  final Location _locationTracker = Location();
   Marker? _riderMarker;
   Circle? _rideAccuracyCircle;
 
@@ -45,16 +44,16 @@ class _MapUIState extends State<MapUI> {
 
   @override
   void initState() {
-    TaxiBloc taxiBloc = Provider.of<TaxiBloc>(
+    final TaxiBloc taxiBloc = Provider.of<TaxiBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
     _initialCameraPosition =
-        CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
+        const CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
 
     if (taxiBloc.startingPoint != null) {
       _startingLocation = Marker(
-        markerId: MarkerId('Starting Point'),
+        markerId: const MarkerId('Starting Point'),
         infoWindow: const InfoWindow(title: 'Pickup Point'),
         icon: BitmapDescriptor.defaultMarkerWithHue(0),
         position: LatLng(taxiBloc.startingPoint!.geometry!.location!.lat!,
@@ -63,7 +62,7 @@ class _MapUIState extends State<MapUI> {
     }
     if (taxiBloc.destinationPoint != null) {
       _destinationLocation = Marker(
-        markerId: MarkerId('Destination'),
+        markerId: const MarkerId('Destination'),
         infoWindow: const InfoWindow(title: 'Destination'),
         icon: BitmapDescriptor.defaultMarkerWithHue(250),
         position: LatLng(taxiBloc.destinationPoint!.geometry!.location!.lat!,
@@ -107,8 +106,8 @@ class _MapUIState extends State<MapUI> {
               taxiBloc.startingPoint!.geometry!.location!.lng!),
           zoom: 14.5);
 
-      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-        Future.delayed(Duration(seconds: 1)).then((value) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        Future.delayed(const Duration(seconds: 1)).then((value) {
           if (mounted) {
             googleMapController!.animateCamera(CameraUpdate.newLatLngBounds(
                 LatLngBounds(
@@ -176,7 +175,7 @@ class _MapUIState extends State<MapUI> {
       if (taxiBloc.startingPointToDestinationDirections != null &&
           widget.showStartingPointToDestinationPolyline)
         Polyline(
-          polylineId: PolylineId('startingPointToDestination'),
+          polylineId: const PolylineId('startingPointToDestination'),
           color: navyBlue,
           width: 5,
           points: taxiBloc.startingPointToDestinationDirections!.polylinePoints
@@ -198,25 +197,26 @@ class _MapUIState extends State<MapUI> {
 
   Future<Uint8List> getRiderMarker() async {
     debugPrint("rider => $rideMarkerImage");
-    ByteData byteData =
+    final ByteData byteData =
         await DefaultAssetBundle.of(context).load(rideMarkerImage);
     return byteData.buffer.asUint8List();
   }
 
   void updateMarkerAndCircle(LocationData newLocalData, Uint8List imageData) {
-    LatLng latlng = LatLng(newLocalData.latitude!, newLocalData.longitude!);
-    this.setState(() {
+    final LatLng latlng =
+        LatLng(newLocalData.latitude!, newLocalData.longitude!);
+    setState(() {
       _riderMarker = Marker(
-          markerId: MarkerId("home"),
+          markerId: const MarkerId("home"),
           position: latlng,
           rotation: newLocalData.heading! + 40,
           draggable: false,
           zIndex: 2,
           flat: true,
-          anchor: Offset(0.5, 0.5),
+          anchor: const Offset(0.5, 0.5),
           icon: BitmapDescriptor.fromBytes(imageData));
       _rideAccuracyCircle = Circle(
-          circleId: CircleId("car"),
+          circleId: const CircleId("car"),
           radius: newLocalData.accuracy!,
           zIndex: 1,
           strokeColor: Colors.blue,
@@ -227,8 +227,8 @@ class _MapUIState extends State<MapUI> {
 
   void getCurrentLocation() async {
     try {
-      Uint8List imageData = await getRiderMarker();
-      var location = await _locationTracker.getLocation();
+      final Uint8List imageData = await getRiderMarker();
+      final location = await _locationTracker.getLocation();
 
       updateMarkerAndCircle(location, imageData);
 
@@ -244,7 +244,7 @@ class _MapUIState extends State<MapUI> {
 
         if (googleMapController != null) {
           googleMapController!.animateCamera(CameraUpdate.newCameraPosition(
-              new CameraPosition(
+              CameraPosition(
                   bearing: newLocalData.heading!,
                   target:
                       LatLng(newLocalData.latitude!, newLocalData.longitude!),

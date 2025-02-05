@@ -1,7 +1,4 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -9,18 +6,20 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'hotel_auth.dart';
 import 'hotel_dashboard_bloc.dart';
 import 'hotel_tile.dart';
-import 'models/HotelRoomItem.dart';
+import 'models/hotel_room_item.dart';
 
 class MyHotelList extends StatefulWidget {
+  const MyHotelList({super.key});
+
   @override
-  _MyHotelListState createState() => _MyHotelListState();
+  State<MyHotelList> createState() => _MyHotelListState();
 }
 
 class _MyHotelListState extends State<MyHotelList> {
   List<HotelRoomItem> hotelRooms = [];
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -41,19 +40,12 @@ class _MyHotelListState extends State<MyHotelList> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   late HotelDashboardBloc _hotelDashboardBloc;
@@ -67,7 +59,7 @@ class _MyHotelListState extends State<MyHotelList> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(
@@ -78,12 +70,12 @@ class _MyHotelListState extends State<MyHotelList> {
           onRefresh: _onRefresh,
           child: SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: hotelRooms
                     .map(
                       (element) => Container(
-                          padding: EdgeInsets.symmetric(vertical: 8),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
                           child: HotelRoomImagesTile(
                             hotelRoom: element,
                           )),

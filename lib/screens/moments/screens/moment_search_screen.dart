@@ -12,14 +12,14 @@ import 'package:shimmer/shimmer.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/util.dart';
 import '../../../widget/customized_textform_field.dart';
+import '../moments_auth.dart';
 import 'moment_detail/moment_detail_page.dart';
-import 'moments_service.dart';
 
 class MomentSearchScreen extends StatefulWidget {
-  const MomentSearchScreen({Key? key}) : super(key: key);
+  const MomentSearchScreen({super.key});
 
   @override
-  _MomentSearchScreenState createState() => _MomentSearchScreenState();
+  State<MomentSearchScreen> createState() => _MomentSearchScreenState();
 }
 
 class _MomentSearchScreenState extends State<MomentSearchScreen> {
@@ -31,7 +31,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
   bool searchMomentLoading = false;
   List<SearchMomentModel> searchMomentModelList = [];
   List<SearchMomentModel> tempSearchMomentModelList = [];
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool noItemInList = false;
 
   @override
@@ -50,7 +50,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
   }
 
   // We intend to call getMoments after every 1 second that the user typed in something.
-  _onChanged(String value) {
+  void _onChanged(String value) {
     /*To prevent the changed function to be called when keyboard dismisses, we have this check here.  */
     if (value.isNotEmpty && lastInputValue != value) {
       lastInputValue = value;
@@ -58,14 +58,14 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
       if (typingTimer != null) {
         setState(() => typingTimer!.cancel()); // clear timer
       }
-      typingTimer = new Timer(
+      typingTimer = Timer(
         duration,
         () => getMoments(value),
       );
     }
   }
 
-  getMoments(String value) {
+  void getMoments(String value) {
     nextPage = null;
     userSearchedText = value;
     searchMomentModelList.clear();
@@ -77,6 +77,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       centerTitle: false,
       elevation: 0,
       backgroundColor: Colors.white,
@@ -103,8 +104,8 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
     );
   }
 
-  _getSearchedMoments({String? searchedText}) {
-    MomentsService()
+  void _getSearchedMoments({String? searchedText}) {
+    MomentsAuthService()
         .searchMoment(nextPage: nextPage, searchText: searchedText)
         .then((value) {
       tempSearchMomentModelList.clear();
@@ -118,11 +119,11 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
       }
 
       searchMomentModelList.clear();
-      tempSearchMomentModelList.forEach((element) {
+      for (var element in tempSearchMomentModelList) {
         if (!(searchMomentModelList.contains(element))) {
           searchMomentModelList.add(element);
         }
-      });
+      }
 
       nextPage = value.next;
       searchMomentLoading = false;
@@ -139,7 +140,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
 
@@ -159,14 +160,14 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: CustomizedTextFormField(
                     hintText: 'Search',
                     autoFocus: true,
                     onChanged: _onChanged,
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Expanded(child: _buildResultList()),
               ],
             ),
@@ -187,14 +188,14 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
                 controller: _scrollController,
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisExtent: 300,
                   maxCrossAxisExtent: 200,
                 ),
                 itemCount: searchMomentModelList.length,
                 itemBuilder: (context, index) {
                   if (searchMomentModelList.isEmpty) {
-                    return Text(
+                    return const Text(
                       'Search for a moment',
                       style: TextStyle(
                         fontSize: 18,
@@ -218,11 +219,11 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
               );
   }
 
-  searchMomentSingleWidgetOnTap(SearchMomentModel searchMomentModel) {
+  void searchMomentSingleWidgetOnTap(SearchMomentModel searchMomentModel) {
     if (_isLoading == true) return;
     if (mounted) setState(() {});
     _isLoading = true;
-    MomentsService()
+    MomentsAuthService()
         .getSingleMoment(momentId: searchMomentModel.id!)
         .then((momentsModelList) {
       if (mounted) setState(() {});
@@ -248,11 +249,10 @@ class SearchMomentSingleWidget extends StatefulWidget {
   final String userTextToSearch;
   final SearchMomentModel searchMomentModel;
   const SearchMomentSingleWidget(
-      {Key? key,
+      {super.key,
       required this.onTap,
       required this.userTextToSearch,
-      required this.searchMomentModel})
-      : super(key: key);
+      required this.searchMomentModel});
 
   @override
   State<SearchMomentSingleWidget> createState() =>
@@ -288,19 +288,20 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                 ),
               ),
             ),
-            isLoading
-                ? Align(
-                    alignment: Alignment.topRight,
-                    child: SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 8),
-                          child: CircularLoadingIndicator(),
-                        )),
-                  )
-                : SizedBox.shrink(),
+            if (isLoading)
+              Align(
+                alignment: Alignment.topRight,
+                child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 8),
+                      child: CircularLoadingIndicator(),
+                    )),
+              )
+            else
+              const SizedBox.shrink(),
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
@@ -319,14 +320,14 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                           Shadow(
                             blurRadius: 4.0,
                             color: blackFont,
-                            offset: Offset(0.0, 0),
+                            offset: const Offset(0.0, 0),
                           ),
                         ],
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    SizedBox(height: 3),
+                    const SizedBox(height: 3),
                     SizedBox(
                       width: 100,
                       child: Text(
@@ -341,7 +342,7 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                               Shadow(
                                 blurRadius: 4.0,
                                 color: blackFont,
-                                offset: Offset(0.0, 0),
+                                offset: const Offset(0.0, 0),
                               ),
                             ],
                             overflow: TextOverflow.ellipsis),
@@ -484,9 +485,9 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
 
   // Padding(
   List<Widget> getSubtitleTextWidget({required String userTextToSearch}) {
-    List<Widget> widgets = [];
+    final List<Widget> widgets = [];
 
-    widget.searchMomentModel.tags!.forEach((tag) {
+    for (var tag in widget.searchMomentModel.tags!) {
       widgets.add(
         Text(
           '#$tag ',
@@ -499,7 +500,7 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                   : FontWeight.normal),
         ),
       );
-    });
+    }
     return widgets.take(3).toList();
   }
 }
@@ -510,8 +511,8 @@ Widget shimmerGridview() {
     highlightColor: greyBorderColor,
     child: GridView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 200,
         mainAxisExtent: 300,
       ),

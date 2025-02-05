@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TrainDashboard extends StatefulWidget {
+  const TrainDashboard({super.key});
+
   @override
-  _TrainDashboardState createState() => _TrainDashboardState();
+  State<TrainDashboard> createState() => _TrainDashboardState();
 }
 
 class _TrainDashboardState extends State<TrainDashboard> {
@@ -18,18 +20,21 @@ class _TrainDashboardState extends State<TrainDashboard> {
   @override
   Widget build(BuildContext context) {
     _trainDashboardBloc = Provider.of<TrainDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        _trainDashboardBloc.index = 0;
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          _trainDashboardBloc.index = 0;
+          return;
+        }
       },
       child: Scaffold(
+        backgroundColor: lightGrey,
         body: PageView(
           controller: _trainDashboardBloc.pageController,
           onPageChanged: (index) {
             _trainDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             TrainExploreScreen(),
             MyTrainTicketList(),
           ],
@@ -75,7 +80,7 @@ class _TrainDashboardState extends State<TrainDashboard> {
   BottomNavigationBarItem bottomNavigationBarItem(
       {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: SizedBox(
         height: 50,
         width: 108,
         child: Icon(
@@ -100,7 +105,7 @@ class _TrainDashboardState extends State<TrainDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
@@ -110,13 +115,13 @@ class _TrainDashboardState extends State<TrainDashboard> {
                 size: 16,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.w700),

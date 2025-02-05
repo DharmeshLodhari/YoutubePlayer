@@ -4,7 +4,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/cupertino.dart';
 
 class MusicPlayer extends ChangeNotifier {
-  AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer.withId(
+  final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer.withId(
     "musicPlayer",
   );
 

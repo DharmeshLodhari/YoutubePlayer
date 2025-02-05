@@ -1,39 +1,38 @@
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/screens/messaging/chat/models/gif_model/gif_model.dart';
+import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
+import 'package:Slydo/screens/moments/tiles/moment_comment_tile.dart';
 import 'package:Slydo/screens/moments/widgets/moment_comment_textfield.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/yarn/models/Topics/comment_details.dart';
+import 'package:Slydo/screens/yarn/models/Topics/yarn_model.dart';
+import 'package:Slydo/screens/yarn/models/share_as_yarn_model.dart';
+import 'package:Slydo/screens/yarn/widgets/yarn_shimmer.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import '../../../../data/state_notifier.dart';
-import '../../../../locale/app_localization.dart';
-import '../../../more_apps/messaging/chat/models/gif_model/GIFModel.dart';
-import '../../../more_apps/shopping/models/store.dart';
-import '../../../more_apps/yarn/models/Topics/CommentDetails.dart';
-import '../../../more_apps/yarn/models/Topics/yarn_model.dart';
-import '../../../more_apps/yarn/models/share_as_yarn_model.dart';
-import '../../../more_apps/yarn/widgets/yarn_shimmer.dart';
-import '../../../more_apps/yarn/yarn_dashboard_bloc.dart';
-import '../../models/moments_model.dart';
-import '../../tiles/moment_comment_tile.dart';
-import '../moments_service.dart';
-
 
 //reply to comment for moment, full screen
 class MomentCommentScreen extends StatefulWidget {
-  MomentCommentScreen(
-      {Key? key, this.yarnComment, this.momentId,
-        this.addedSelectedMedia, this.minusComment,
-        this.callbackUpdateCommentCount,
-        this.onDeleteComment})
-      : super(key: key);
-  YarnComment? yarnComment;
-  String? momentId;
-  Function(List<MomentMedia>)? addedSelectedMedia;
-  Function(bool)? minusComment;
+  const MomentCommentScreen(
+      {super.key,
+      this.yarnComment,
+      this.momentId,
+      this.addedSelectedMedia,
+      this.minusComment,
+      this.callbackUpdateCommentCount,
+      this.onDeleteComment});
+
+  final YarnComment? yarnComment;
+  final String? momentId;
+  final Function(List<MomentMedia>)? addedSelectedMedia;
+  final Function(bool)? minusComment;
   final Function(YarnComment)? onDeleteComment;
   final Function(bool)? callbackUpdateCommentCount;
-
 
   @override
   State<MomentCommentScreen> createState() => _MomentCommentScreenState();
@@ -65,7 +64,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
       GlobalKey<MomentCommentTextFieldState>();
   bool? enableComment = false, enablePayment = false;
   bool? enableAdult = false, viewerAdvice = false;
-  var ageRating;
+  int? ageRating;
 
   ScrollController scrollController = ScrollController();
   List<YarnMedia> selectedMedia = [];
@@ -87,8 +86,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
     super.initState();
   }
 
-  Widget commentListWidget(
-      {avatar, username, comment, createAt, YarnComment? yarnComment}) {
+  Widget commentListWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -115,7 +113,6 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
 
   // this is the main comment at the top of the comment detail screen
   Widget _buildCommentDescriptionMain() {
-
     return Column(
       children: [
         Container(
@@ -125,25 +122,25 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
             momentId: widget.momentId,
             openReply: false,
             isCommentDetail: false,
-            minusComment: (bool value){
-              if(value == false){
+            minusComment: (bool value) {
+              if (value == false) {
                 //if false add 1 to comment count
                 widget.yarnComment!.replyCount! + 1;
-                if(mounted)setState(() {});
-              }else if(value == true){
+                if (mounted) setState(() {});
+              } else if (value == true) {
                 //if true subtract 1 to comment count
-                widget.yarnComment!.replyCount != 0 ? widget.yarnComment!.replyCount! - 1 : 0;
-                if(mounted)setState(() {});
+                widget.yarnComment!.replyCount != 0
+                    ? widget.yarnComment!.replyCount! - 1
+                    : 0;
+                if (mounted) setState(() {});
               }
             },
             onDeleteComment: (YarnComment yarnCmt) {
-
               // widget.onDeleteComment!(yarnCmt);
               // Navigator.pop(context);
               // Navigator.pop(context);
               // if(mounted)setState(() {});
             },
-
           ),
         ),
         const SizedBox(
@@ -174,45 +171,46 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
                           isCommentDetail: false,
                           onDeleteComment: (YarnComment yarnCmt) {
                             //delete the comment from the list and reduce comment count at the top
-                            yarnComments.removeWhere((comment) => comment.id == yarnCmt.id);
+                            yarnComments.removeWhere(
+                                (comment) => comment.id == yarnCmt.id);
 
                             //this reduces the count on the 3/4 comment screen and the page is updated silently
                             widget.minusComment!(true);
                             if (mounted) setState(() {});
                           },
-                          minusComment: (bool value){
-                            if(value == false){
+                          minusComment: (bool value) {
+                            if (value == false) {
                               //if false add 1 to comment count
                               yarnComment.replyCount! + 1;
                               widget.minusComment!(false);
 
-                              if(mounted)setState(() {});
-                            }
-                            else if(value == true){
+                              if (mounted) setState(() {});
+                            } else if (value == true) {
                               //if true subtract 1 to comment count
-                              yarnComment.replyCount != 0 ? yarnComment.replyCount! - 1 : 0;
+                              yarnComment.replyCount != 0
+                                  ? yarnComment.replyCount! - 1
+                                  : 0;
                               widget.minusComment!(true);
 
-                              if(mounted)setState(() {});
+                              if (mounted) setState(() {});
                             }
                           },
                           onCommentUpdate: (YarnComment yarnCmt, bool val) {
                             //this will update the list of comments and set the selected comment to pinned
-                            final modelIndex = yarnComments.indexWhere((model) => model.id == yarnCmt.id);
+                            final modelIndex = yarnComments
+                                .indexWhere((model) => model.id == yarnCmt.id);
                             if (modelIndex != -1) {
                               final model = yarnComments.removeAt(modelIndex);
                               model.pinned = val;
                               yarnComments.insert(0, model);
                               if (mounted) setState(() {});
                             }
-
                           },
-                          callbackUpdateCommentCount: (value){
-                            if(value == true){
+                          callbackUpdateCommentCount: (value) {
+                            if (value == true) {
                               //increase the count by for the single moment detail + 1
                               widget.callbackUpdateCommentCount!(true);
                             }
-
                           },
                         ),
                       ),
@@ -237,11 +235,12 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
     //   isLoading = true;
 
     if (!isLoading) {
-      if (next != null && !isLoading) {
+      if (!isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await MomentsService().getAllComments(
+        final Map<String, dynamic>? result =
+            await MomentsAuthService().getAllComments(
           widget.yarnComment!.id!,
         );
 
@@ -256,9 +255,9 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
         }
 
         count = result['count'];
-        next = result['next'] != null ? result['next'] : "";
-        previous = result['previous'] != null ? result['previous'] : "";
-        var tempList = result['results'];
+        next = result['next'] ?? "";
+        previous = result['previous'] ?? "";
+        final tempList = result['results'];
 
         yarnComments = [];
         if (mounted) {
@@ -287,7 +286,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
     return ColorfulSafeArea(
       color: Colors.white,
       child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: _buildAppBar(),
           body: _buildBody()),
     );
@@ -295,6 +294,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         "Replies ${widget.yarnComment?.replyCount}",
@@ -372,7 +372,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
   }
 
   Future addReplyComment() async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "comment": controller.text,
       "author_username": getLoggedInUserName(context),
       "is_reply": true,
@@ -390,7 +390,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
 
     //create multipart request for POST or PATCH method
     try {
-      YarnComment? yarnComment = await MomentsService()
+      final YarnComment? yarnComment = await MomentsAuthService()
           .addReplyToComment(widget.yarnComment!.id!, data);
       if (yarnComment != null) {
         //update the comment count from previous page
@@ -435,10 +435,11 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
         selectedMedia = value;
         setState(() {});
       },
-      addedSelectedGif: (value){
+      addedSelectedGif: (value) {
         //retrieve the selected gif
         selectedGif = value;
-        debugPrint('Fola gif full view:::: ${selectedGif!.images!.original!.url}');
+        // debugPrint(
+        //     'Fola gif full view:::: ${selectedGif!.images!.original!.url}');
 
         setState(() {});
       },
@@ -477,22 +478,15 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
   }
 
   void _onPostRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        yarnCommentScreenKey = GlobalKey<ScaffoldState>();
-        setState(() {
-          _postRefreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        setState(() {
-          _postRefreshController.refreshCompleted();
-        });
-      }
-    });
+    if (await checkConnection(context)) {
+      yarnCommentScreenKey = GlobalKey<ScaffoldState>();
+      setState(() {
+        _postRefreshController.refreshCompleted();
+      });
+    } else {
+      setState(() {
+        _postRefreshController.refreshCompleted();
+      });
+    }
   }
 }

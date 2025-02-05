@@ -21,11 +21,11 @@ class Circle extends StatelessWidget {
   double extraSize = 0;
 
   Circle(
-      {Key? key,
+      {super.key,
       this.filled = false,
       required this.circleUIConfig,
       this.extraSize = 0})
-      : super(key: key);
+     ;
 
   @override
   Widget build(BuildContext context) {

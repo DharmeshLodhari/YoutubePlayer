@@ -1,8 +1,9 @@
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/connection_module/widget/custom_slydo_channel_card.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/messaging/chat/models/channel_model.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
+import 'package:Slydo/screens/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -10,11 +11,9 @@ import '../../locale/app_localization.dart';
 import '../../utils/slydo_app_icon_icons.dart';
 import '../../widget/no_item_in_list.dart';
 import '../moments/models/comment_model.dart';
-import '../more_apps/messaging/chat/models/channel_model.dart';
-import '../more_apps/yarn/utils/yarn_enum.dart';
 
 class ChatChannels extends StatefulWidget {
-  ChatChannels();
+  const ChatChannels({super.key});
   @override
   State<ChatChannels> createState() => _ChatChannelsState();
 }
@@ -25,8 +24,9 @@ class _ChatChannelsState extends State<ChatChannels> {
   bool isFirstTime = true;
   bool noItemInList = false;
   List<ChannelModel> channelModelList = [];
-  ScrollController _scrollCtrl = ScrollController();
-  RefreshController _refreshCtrl = RefreshController(initialRefresh: false);
+  final ScrollController _scrollCtrl = ScrollController();
+  final RefreshController _refreshCtrl =
+      RefreshController(initialRefresh: false);
   BasePaginationModel<List<ChannelModel>>? basePaginationModel;
   TextEditingController searchTextCtrl = TextEditingController();
 
@@ -84,7 +84,7 @@ class _ChatChannelsState extends State<ChatChannels> {
     });
   }
 
-  _onRefresh() {
+  void _onRefresh() {
     isFirstTime = true;
     channelModelList.clear();
     nextPageUrl = null;
@@ -111,39 +111,44 @@ class _ChatChannelsState extends State<ChatChannels> {
         child: Column(
           children: [
             searchBox(),
-            SizedBox(height: 6),
-            noItemInList
-                ? Expanded(
-                    child: NoItemInList(
-                        msg: AppLocalization.of(context)!.noChannels))
-                : Expanded(
-                    child: ListView.builder(
-                      physics: ClampingScrollPhysics(),
-                      controller: _scrollCtrl,
-                      itemCount: channelModelList.length + 1,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index == channelModelList.length) {
-                          return buildLoadingIndicator(isLoading: _isLoading);
-                        } else {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, Routes.USER_PROFILE,
-                                  arguments: {
-                                    "searchedUserName":
-                                        channelModelList[index].id,
-                                    "channel":
-                                        channelModelList[index].groupName,
-                                  });
-                            },
-                            child: CustomSlydoChannelCard(
-                              channelModel: channelModelList[index],
-                              tileRenderPlace: TileRenderPlace.Thiny,
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  ),
+            const SizedBox(height: 6),
+            if (noItemInList)
+              Expanded(
+                  child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noChannels))
+            else
+              Expanded(
+                child: _isLoading && channelModelList.isEmpty
+                    ? buildLoadingIndicator(isLoading: _isLoading)
+                    : ListView.builder(
+                        physics: const ClampingScrollPhysics(),
+                        controller: _scrollCtrl,
+                        itemCount: channelModelList.length + 1,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == channelModelList.length) {
+                            return buildJumpingLoadingIndicator(
+                                isLoading: _isLoading);
+                          } else {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, Routes.USER_PROFILE,
+                                    arguments: {
+                                      "searchedUserName":
+                                          channelModelList[index].id,
+                                      "channel":
+                                          channelModelList[index].groupName,
+                                    });
+                              },
+                              child: CustomSlydoChannelCard(
+                                channelModel: channelModelList[index],
+                                tileRenderPlace: TileRenderPlace.Thiny,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+              ),
           ],
         ),
       ),
@@ -153,7 +158,7 @@ class _ChatChannelsState extends State<ChatChannels> {
   Widget searchBox() {
     try {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Theme(
           data: Theme.of(context).copyWith(
             textSelectionTheme: TextSelectionThemeData(
@@ -174,7 +179,7 @@ class _ChatChannelsState extends State<ChatChannels> {
             onChanged: (value) {
               if (value.length >= 3) {
                 _onRefresh();
-              } else if (value.length == 0) {
+              } else if (value.isEmpty) {
                 setState(() {
                   _onRefresh();
                 });
@@ -184,8 +189,8 @@ class _ChatChannelsState extends State<ChatChannels> {
               hintText: 'Search...',
               fillColor: Colors.white,
               filled: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
-              prefix: Padding(
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
                 padding: EdgeInsets.only(left: 12),
               ),
               suffixIcon: searchIcon(),

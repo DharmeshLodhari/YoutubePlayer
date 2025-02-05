@@ -1,6 +1,5 @@
 import 'package:Slydo/screens/more_apps/music/models/music_album.dart'
     as MusicAlbum;
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -11,7 +10,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../messaging/chat/utils.dart';
 import 'music_auth.dart';
 import 'music_dashboard_bloc.dart';
 import 'music_player.dart';
@@ -19,12 +17,12 @@ import 'music_tile.dart';
 
 // ignore: must_be_immutable
 class AlbumDetailPage extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  AlbumDetailPage({this.arguments});
+  const AlbumDetailPage({super.key, this.arguments});
 
   @override
-  _AlbumDetailPageState createState() => _AlbumDetailPageState();
+  State<AlbumDetailPage> createState() => _AlbumDetailPageState();
 }
 
 class _AlbumDetailPageState extends State<AlbumDetailPage> {
@@ -94,7 +92,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
@@ -103,6 +101,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -124,11 +123,11 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
       ),
       actions: <Widget>[
         shareBtn(),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         addToCartBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -175,14 +174,14 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                 albumPoster(),
                 Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 24,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: albumDetail(),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 24,
                     ),
                     Divider(
@@ -190,12 +189,12 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                       thickness: 1,
                       color: dividerColor,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Row(
                       children: <Widget>[
-                        SizedBox(
+                        const SizedBox(
                           width: 58,
                         ),
                         Expanded(
@@ -207,7 +206,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                                 color: blackFont),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 24,
                         ),
                         Text(
@@ -217,7 +216,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                               fontWeight: FontWeight.w600,
                               color: blackFont),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 24,
                         ),
                         Text(
@@ -227,12 +226,12 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                               fontWeight: FontWeight.w600,
                               color: blackFont),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 75,
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Divider(
@@ -241,7 +240,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                       color: dividerColor,
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 20, left: 10),
+                      padding: const EdgeInsets.only(right: 20, left: 10),
                       child: Column(
                         children: musicAlbum.audio!
                             .asMap()
@@ -270,7 +269,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                             .toList(),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                   ],
@@ -281,7 +280,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
   }
 
   Widget albumPoster() {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.width,
       width: MediaQuery.of(context).size.width,
       child: Stack(
@@ -298,7 +297,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
             top: 12,
             child: InkWell(
               child: Icon(
-                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
+                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heartEmpty,
                 color: Colors.white,
                 size: 22,
               ),
@@ -341,7 +340,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         Row(
@@ -356,7 +355,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                       fontWeight: FontWeight.w400,
                       color: blackFont),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Row(
@@ -366,7 +365,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                       color: starYellow,
                       size: 11,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
@@ -377,7 +376,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                 ),
               ],
             ),
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width / 3,
               child: buyAlbumButton(),
             )

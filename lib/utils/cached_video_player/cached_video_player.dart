@@ -348,13 +348,13 @@ class CachedVideoPlayerController
           break;
         case VideoEventType.unknown:
           break;
+        case VideoEventType.isPlayingStateUpdate:
+          break;
       }
     }
 
     if (closedCaptionFile != null) {
-      if (_closedCaptionFile == null) {
-        _closedCaptionFile = await closedCaptionFile;
-      }
+      _closedCaptionFile ??= await closedCaptionFile;
       value = value.copyWith(caption: _getCaptionAt(value.position));
     }
 
@@ -388,7 +388,9 @@ class CachedVideoPlayerController
     _isDisposed = true;
     try {
       super.dispose();
-    } catch (error) {}
+    } catch (error) {
+      debugPrint("Error $error");
+    }
   }
 
   /// Starts playing the video.
@@ -582,7 +584,7 @@ class _CachedVideoAppLifeCycleObserver extends Object
   final CachedVideoPlayerController _controller;
 
   void initialize() {
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -602,21 +604,21 @@ class _CachedVideoAppLifeCycleObserver extends Object
   }
 
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
   }
 }
 
 /// Widget that displays the video controlled by [controller].
 class CachedVideoPlayer extends StatefulWidget {
   /// Uses the given [controller] for all video rendered in this widget.
-  CachedVideoPlayer(this.controller, {Key? key}) : super(key: key);
+  const CachedVideoPlayer(this.controller, {super.key});
 
   /// The [CachedVideoPlayerController] responsible for the video being rendered in
   /// this widget.
   final CachedVideoPlayerController controller;
 
   @override
-  _CachedVideoPlayerState createState() => _CachedVideoPlayerState();
+  State<CachedVideoPlayer> createState() => _CachedVideoPlayerState();
 }
 
 class _CachedVideoPlayerState extends State<CachedVideoPlayer> {
@@ -709,7 +711,7 @@ class VideoProgressColors {
 }
 
 class _VideoScrubber extends StatefulWidget {
-  _VideoScrubber({
+  const _VideoScrubber({
     required this.child,
     required this.controller,
   });
@@ -783,8 +785,9 @@ class VideoProgressIndicator extends StatefulWidget {
   /// Defaults will be used for everything except [controller] if they're not
   /// provided. [allowScrubbing] defaults to false, and [padding] will default
   /// to `top: 5.0`.
-  VideoProgressIndicator(
+  const VideoProgressIndicator(
     this.controller, {
+    super.key,
     this.colors = const VideoProgressColors(),
     required this.allowScrubbing,
     this.padding = const EdgeInsets.only(top: 5.0),
@@ -812,7 +815,7 @@ class VideoProgressIndicator extends StatefulWidget {
   final EdgeInsets padding;
 
   @override
-  _VideoProgressIndicatorState createState() => _VideoProgressIndicatorState();
+  State<VideoProgressIndicator> createState() => _VideoProgressIndicatorState();
 }
 
 class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
@@ -886,8 +889,8 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
     );
     if (widget.allowScrubbing) {
       return _VideoScrubber(
-        child: paddedProgressIndicator,
         controller: controller,
+        child: paddedProgressIndicator,
       );
     } else {
       return paddedProgressIndicator;
@@ -918,7 +921,7 @@ class ClosedCaption extends StatelessWidget {
   /// [CachedVideoPlayerValue.caption].
   ///
   /// If [text] is null, nothing will be displayed.
-  const ClosedCaption({Key? key, this.text, this.textStyle}) : super(key: key);
+  const ClosedCaption({super.key, this.text, this.textStyle});
 
   /// The text that will be shown in the closed caption, or null if no caption
   /// should be shown.
@@ -939,20 +942,20 @@ class ClosedCaption extends StatelessWidget {
             );
 
     if (text == null) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
-        padding: EdgeInsets.only(bottom: 24.0),
+        padding: const EdgeInsets.only(bottom: 24.0),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: Color(0xB8000000),
+            color: const Color(0xB8000000),
             borderRadius: BorderRadius.circular(2.0),
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2.0),
+            padding: const EdgeInsets.symmetric(horizontal: 2.0),
             child: Text(text!, style: effectiveTextStyle),
           ),
         ),

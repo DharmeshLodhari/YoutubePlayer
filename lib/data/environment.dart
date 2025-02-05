@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 /// This File is use to set environment SERVER Urls of the app
@@ -25,7 +24,7 @@ class AppConfig {
   static void initialize() {
     const BUILD_TYPE =
         String.fromEnvironment('BUILD_TYPE', defaultValue: 'PRODUCTION');
-    debugPrint("BUILD_TYPE:- $BUILD_TYPE");
+    // debugPrint("BUILD_TYPE:- $BUILD_TYPE");
     if (BUILD_TYPE == "PRODUCTION") {
       appType = AppType.PRODUCTION;
     } else if (BUILD_TYPE == "DEVELOPMENT") {
@@ -43,7 +42,8 @@ class AppConfig {
       gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
       socketUrl = "wss://devchat.slydo.co/ws/main";
       chatUrl = "https://devchat.slydo.co";
-      googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
+      // googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
+      googleMapApiKey = "AIzaSyAs0AD96236ASgq_7l8u4q9OHW0bOuESV8";
       termsAndCondition = "https://slydo.co/terms";
       privacyPolicy = "https://slydo.co/privacy-policy";
     } else if (appType == AppType.PRODUCTION) {
@@ -53,7 +53,8 @@ class AppConfig {
       gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
       socketUrl = "wss://chat.slydo.co/ws/main";
       chatUrl = "https://chat.slydo.co";
-      googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
+      // googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
+      googleMapApiKey = "AIzaSyAs0AD96236ASgq_7l8u4q9OHW0bOuESV8";
       termsAndCondition = "https://slydo.co/terms";
       privacyPolicy = "https://slydo.co/privacy-policy";
     }

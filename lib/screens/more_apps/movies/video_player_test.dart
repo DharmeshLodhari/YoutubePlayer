@@ -1,10 +1,9 @@
 import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class ChewieDemo extends StatefulWidget {
-  ChewieDemo({this.title = 'Chewie Demo'});
+  const ChewieDemo({super.key, this.title = 'Chewie Demo'});
 
   final String title;
 
@@ -80,7 +79,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
               onPressed: () {
                 _chewieController.enterFullScreen();
               },
-              child: Text('Fullscreen'),
+              child: const Text('Fullscreen'),
             ),
             Row(
               children: <Widget>[
@@ -90,7 +89,8 @@ class _ChewieDemoState extends State<ChewieDemo> {
                       setState(() {
                         _chewieController.dispose();
                         _videoPlayerController2.pause();
-                        _videoPlayerController2.seekTo(Duration(seconds: 0));
+                        _videoPlayerController2
+                            .seekTo(const Duration(seconds: 0));
                         _chewieController = ChewieController(
                           videoPlayerController: _videoPlayerController1,
                           aspectRatio: 3 / 2,
@@ -99,9 +99,9 @@ class _ChewieDemoState extends State<ChewieDemo> {
                         );
                       });
                     },
-                    child: Padding(
-                      child: Text("Video 1"),
+                    child: const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text("Video 1"),
                     ),
                   ),
                 ),
@@ -111,7 +111,8 @@ class _ChewieDemoState extends State<ChewieDemo> {
                       setState(() {
                         _chewieController.dispose();
                         _videoPlayerController1.pause();
-                        _videoPlayerController1.seekTo(Duration(seconds: 0));
+                        _videoPlayerController1
+                            .seekTo(const Duration(seconds: 0));
                         _chewieController = ChewieController(
                           videoPlayerController: _videoPlayerController2,
                           aspectRatio: 3 / 2,
@@ -120,7 +121,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
                         );
                       });
                     },
-                    child: Padding(
+                    child: const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16.0),
                       child: Text("Error Video"),
                     ),
@@ -137,9 +138,9 @@ class _ChewieDemoState extends State<ChewieDemo> {
                         _platform = TargetPlatform.android;
                       });
                     },
-                    child: Padding(
-                      child: Text("Android controls"),
+                    child: const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text("Android controls"),
                     ),
                   ),
                 ),
@@ -150,7 +151,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
                         _platform = TargetPlatform.iOS;
                       });
                     },
-                    child: Padding(
+                    child: const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16.0),
                       child: Text("iOS controls"),
                     ),

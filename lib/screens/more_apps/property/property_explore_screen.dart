@@ -1,26 +1,25 @@
 import 'dart:math';
 
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/CityData.dart';
-import 'models/PartialPropertyItem.dart';
-import 'models/PropertyItem.dart';
+import 'models/city_data.dart';
+import 'models/partial_property_item.dart';
+import 'models/property_item.dart';
 import 'property_auth.dart';
 import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
 class PropertyExploreScreen extends StatefulWidget {
+  const PropertyExploreScreen({super.key});
+
   @override
-  _PropertyExploreScreenState createState() => _PropertyExploreScreenState();
+  State<PropertyExploreScreen> createState() => _PropertyExploreScreenState();
 }
 
 class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
@@ -33,7 +32,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   List<CityData> listOfCity = [];
   bool isExploreByCityLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   PropertyFilterBloc? _propertyFilterBloc;
@@ -84,26 +83,19 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     _propertyFilterBloc = Provider.of<PropertyFilterBloc>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
@@ -112,6 +104,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -136,7 +129,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
       ),
       actions: [
         locationChip(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         )
       ],
@@ -145,8 +138,8 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
 
   Widget locationChip() {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(60),
           color: navyBlue.withOpacity(0.1)),
@@ -157,7 +150,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
             color: blackFont,
             size: 14,
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Text(
@@ -182,16 +175,16 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 6,
             ),
             searchBox(),
-            SizedBox(
+            const SizedBox(
               height: 32,
             ),
             nearByYou(),
             mostRecentDiscoveryList(),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             exploreByCity(
@@ -200,7 +193,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                   "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
               movieName: "The Cloud Of Northland Thunder",
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           ],
@@ -211,7 +204,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -251,8 +244,8 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -292,129 +285,125 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   }
 
   Widget mostRecentDiscoveryList() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Most recent discovery",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Most recent discovery",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/property-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/property-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            height: 210,
-            color: Colors.white,
-            child: isMostRecentDiscoveryLoading
-                ? Center(
-                    child: CircularLoadingIndicator(),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: mostRecentDiscovery
-                            .map(
-                              (property) => Container(
-                                margin: EdgeInsets.only(right: 12),
-                                child: PartialPropertyItemTile(
-                                  property: property,
-                                ),
+        ),
+        Container(
+          height: 210,
+          color: Colors.white,
+          child: isMostRecentDiscoveryLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: mostRecentDiscovery
+                          .map(
+                            (property) => Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: PartialPropertyItemTile(
+                                property: property,
                               ),
-                            )
-                            .toList(),
-                      ),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 
   Widget exploreByCity(
       {required String categoryName, String? movieName, String? moviePoster}) {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  categoryName,
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                categoryName,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/property-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/property-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            height: 210,
-            color: Colors.white,
-            child: isExploreByCityLoading
-                ? Center(
-                    child: CircularLoadingIndicator(),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: listOfCity
-                            .map(
-                              (city) => Container(
-                                margin: EdgeInsets.only(right: 12),
-                                child: CityItemCard(
-                                  city: city,
-                                ),
+        ),
+        Container(
+          height: 210,
+          color: Colors.white,
+          child: isExploreByCityLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: listOfCity
+                          .map(
+                            (city) => Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: CityItemCard(
+                                city: city,
                               ),
-                            )
-                            .toList(),
-                      ),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 
@@ -430,7 +419,8 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -445,7 +435,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                     color: blackFont,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 ClipRRect(
@@ -466,80 +456,78 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   }
 
   Widget nearByYou() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Nearby you",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Nearby you",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/property-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/property-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: isNearByItemLoading
-                ? Container(
-                    height: 220,
-                    width: double.infinity,
-                    child: Center(
-                      child: CircularLoadingIndicator(),
+        ),
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: isNearByItemLoading
+              ? SizedBox(
+                  height: 220,
+                  width: double.infinity,
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      bottom: 12,
                     ),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: EdgeInsets.only(
-                        left: 16,
-                        bottom: 12,
-                      ),
-                      child: Row(
-                        children: nearByItem
-                            .map((element) => Container(
-                                  margin: EdgeInsets.only(right: 16),
-                                  child: RentPropertyTile(
-                                    property: element,
-                                  ),
-                                ))
-                            .toList(),
-                      ),
+                    child: Row(
+                      children: nearByItem
+                          .map((element) => Container(
+                                margin: const EdgeInsets.only(right: 16),
+                                child: RentPropertyTile(
+                                  property: element,
+                                ),
+                              ))
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 
   Widget eventPoster(String url) {
-    bool temp = Random().nextBool();
+    final bool temp = Random().nextBool();
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/property-detail");
       },
-      child: Container(
+      child: SizedBox(
         height: 132,
         width: 218,
         child: Stack(
@@ -559,7 +547,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
               alignment: Alignment.center,
               child: Text(
                 temp ? "Beach event" : "Mongola",
-                style: TextStyle(
+                style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Colors.white),

@@ -1,24 +1,23 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_auth.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/MovieItem.dart';
+import 'models/movie_item.dart';
 
 class SpecificCategoryMovieList extends StatefulWidget {
+  const SpecificCategoryMovieList({super.key});
+
   @override
-  _SpecificCategoryMovieListState createState() =>
+  State<SpecificCategoryMovieList> createState() =>
       _SpecificCategoryMovieListState();
 }
 
 class _SpecificCategoryMovieListState extends State<SpecificCategoryMovieList> {
   List<MovieItem> movieItem = [];
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
 
@@ -40,20 +39,12 @@ class _SpecificCategoryMovieListState extends State<SpecificCategoryMovieList> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -63,7 +54,7 @@ class _SpecificCategoryMovieListState extends State<SpecificCategoryMovieList> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: isLoading
             ? Center(
@@ -79,12 +70,13 @@ class _SpecificCategoryMovieListState extends State<SpecificCategoryMovieList> {
                 onRefresh: _onRefresh,
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: movieItem
                           .map(
                             (movie) => Container(
-                                padding: EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: MovieTileGeneral(movieItem: movie)),
                           )
                           .toList(),
@@ -98,6 +90,7 @@ class _SpecificCategoryMovieListState extends State<SpecificCategoryMovieList> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

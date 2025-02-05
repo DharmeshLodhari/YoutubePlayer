@@ -9,6 +9,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,12 +18,12 @@ import '../../../../../routes/route_constants.dart';
 import '../../shopping_auth.dart';
 
 class UpdateAddOn extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  UpdateAddOn({this.arguments, Key? key}) : super(key: key);
+  const UpdateAddOn({this.arguments, super.key});
 
   @override
-  _UpdateAddOnState createState() => _UpdateAddOnState();
+  State<UpdateAddOn> createState() => _UpdateAddOnState();
 }
 
 class _UpdateAddOnState extends State<UpdateAddOn> {
@@ -35,7 +36,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
   bool isRequired = false;
   bool isLoading = false;
   bool isAPILoading = false;
-  var typeList = ['Single', 'Multiple'];
+  List<String> typeList = ['Single', 'Multiple'];
   String selectedType = "";
   String name = "";
   String description = "";
@@ -62,15 +63,15 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
     addOns = widget.arguments["addOns"];
 
     id = addOns.id!;
-    nameController.text = addOns.name!.toString();
-    descriptionController.text = addOns.description!.toString();
+    nameController.text = addOns.name.toString();
+    descriptionController.text = addOns.description.toString();
     isRequired = addOns.isRequired!;
 
     productAddOnOptionList = addOns.options!;
 
     name = addOns.name!.toString();
     description = addOns.description!.toString();
-    selectedType = capitalizeFirstLetter(addOns.selectType!.toString());
+    selectedType = capitalizeFirstLetter(addOns.selectType.toString());
 
     super.initState();
   }
@@ -84,10 +85,10 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        return await getExitDialog(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
@@ -97,6 +98,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -108,8 +110,8 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
-          Navigator.pop(context);
+        onPressed: () async {
+          await getExitDialog(context);
         },
       ),
       title: Text(
@@ -117,6 +119,19 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
+    );
+  }
+
+  dynamic getExitDialog(BuildContext context) async {
+    await showExitDialogBackButton(
+      context: context,
+      leftButtonOnPressed: () {
+        Navigator.pop(context);
+      },
+      rightButtonOnPressed: () async {
+        FocusScope.of(context).unfocus();
+        await addNewAddOns();
+      },
     );
   }
 
@@ -147,13 +162,13 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
                         'Check this box to make this add-ons compulsory',
                         maxLines: 1,
                         style: TextStyle(
-                            color: black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12),
+                          color: black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
                       ),
                       const SizedBox(height: 30),
-                      if (productAddOnOptionList == null ||
-                          productAddOnOptionList.isEmpty) ...[
+                      if (productAddOnOptionList.isEmpty) ...[
                         getAddOns(),
                         const SizedBox(height: 30),
                         selectFromAddOns(),
@@ -181,22 +196,20 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
   }
 
   Widget getDescription() {
-    return Container(
-      child: CustomizedTextFormField(
-        maxLines: 3,
-        labelText: "Description",
-        textCapitalization: TextCapitalization.sentences,
-        controller: descriptionController,
-        validator: (val) {
-          if (val.isNotEmpty) {
-            return null;
-          }
-          return AppLocalization.of(context)!.descriptionMustNotEmpty;
-        },
-        onChanged: (val) {
-          description = val;
-        },
-      ),
+    return CustomizedTextFormField(
+      maxLines: 3,
+      labelText: "Description",
+      textCapitalization: TextCapitalization.sentences,
+      controller: descriptionController,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.descriptionMustNotEmpty;
+      },
+      onChanged: (val) {
+        description = val;
+      },
     );
   }
 
@@ -217,7 +230,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
   }
 
   bool validateDropdown() {
-    if (selectedType != null && selectedType != '') {
+    if (selectedType.isNotEmpty && selectedType != '') {
       return true;
     } else {
       showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
@@ -242,7 +255,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedType != null ? selectedType : "",
+          selectedType.isNotEmpty ? selectedType : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -279,7 +292,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
                     shrinkWrap: true,
                     itemCount: typeList.length,
                     itemBuilder: (context, index) {
-                      var category = typeList[index];
+                      final category = typeList[index];
                       if (selectedType == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -340,7 +353,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
       onTap: () async {
         //disable click if add-on option is not empty
         final result = await Navigator.of(context)
-            .pushNamed(Routes.PRODUCT_ADD_ON_OPTION_CREATE, arguments: {
+            .pushNamed(Routes.ADD_EDIT_ADD_ON_OPTION, arguments: {
           'productId': widget.arguments['productId'],
         });
         // final result = await Navigator.of(context).pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
@@ -354,23 +367,21 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
           if (mounted) setState(() {});
         }
       },
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Add Options',
-              maxLines: 1,
-              style: TextStyle(
-                  color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
-            ),
-            Icon(
-              SlydoAppIcon.add,
-              size: 16,
-              color: blackFont,
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add Options',
+            maxLines: 1,
+            style: TextStyle(
+                color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          Icon(
+            SlydoAppIcon.add,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
       ),
     );
   }
@@ -391,45 +402,46 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
           if (mounted) setState(() {});
         }
       },
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Select from available options',
-              maxLines: 1,
-              style: TextStyle(
-                  color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: blackFont,
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Select from available options',
+            maxLines: 1,
+            style: TextStyle(
+                color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
       ),
     );
   }
 
   Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: isAPILoading
-          ? () {}
-          : () async {
-              FocusScope.of(context).unfocus();
-              isAPILoading = true;
-              if (mounted) setState(() {});
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: CurvedButton(
+        onPressed: isAPILoading
+            ? () {}
+            : () async {
+                FocusScope.of(context).unfocus();
+                isAPILoading = true;
+                if (mounted) setState(() {});
 
-              await addNewAddOns();
+                await addNewAddOns();
 
-              isAPILoading = false;
-              if (mounted) setState(() {});
-            },
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "Save",
-      isLoading: isAPILoading,
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              },
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Save",
+        isLoading: isAPILoading,
+      ),
     );
   }
 
@@ -472,7 +484,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
               onTap: () async {
                 //disable click if add-on option is not empty
                 final result = await Navigator.of(context)
-                    .pushNamed(Routes.PRODUCT_ADD_ON_OPTION_CREATE, arguments: {
+                    .pushNamed(Routes.ADD_EDIT_ADD_ON_OPTION, arguments: {
                   'productId': widget.arguments['productId'],
                 });
 
@@ -491,14 +503,15 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
             ),
           ],
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         _buildAddOnOptionList(),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         GestureDetector(
           onTap: () async {
             //disable click if add-on option is not empty
             final result = await Navigator.of(context)
                 .pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
+              'options': productAddOnOptionList,
               'productId': widget.arguments['productId'],
             });
 
@@ -525,24 +538,27 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
   }
 
   Widget _buildAddOnOptionList() {
-    return Container(
-      height: 80 * productAddOnOptionList.length.toDouble(),
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        //+1 for progressbar
-        itemCount: productAddOnOptionList.length + 1,
-        controller: scrollControllerAddOnOption,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == productAddOnOptionList.length) {
-            return buildLoadingIndicator(isLoading: isLoading);
-          } else {
-            return AddOnOptionTile(
-              addOnOption: productAddOnOptionList[index],
-            );
-          }
-        },
-      ),
-    );
+    return isLoading && productAddOnOptionList.isEmpty
+        ? buildLoadingIndicator(isLoading: isLoading)
+        : SizedBox(
+            height: 80 * productAddOnOptionList.length.toDouble(),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              physics: const NeverScrollableScrollPhysics(),
+              //+1 for progressbar
+              itemCount: productAddOnOptionList.length + 1,
+              controller: scrollControllerAddOnOption,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == productAddOnOptionList.length) {
+                  return buildJumpingLoadingIndicator(isLoading: isLoading);
+                } else {
+                  return AddOnOptionTile(
+                    addOnOption: productAddOnOptionList[index],
+                  );
+                }
+              },
+            ),
+          );
   }
 
   @override

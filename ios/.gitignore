@@ -10,6 +10,7 @@
 **/DerivedData/
 Icon?
 **/Pods/
+**/dgph
 **/.symlinks/
 profile
 xcuserdata
@@ -30,3 +31,8 @@ Runner/GeneratedPluginRegistrant.*
 !default.mode2v3
 !default.pbxuser
 !default.perspectivev3
+
+ios/build*
+ios/Podfile.lock
+ios/Pods
+devtools_options.yaml

@@ -1,26 +1,18 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
+import 'package:Slydo/screens/yarn/models/ask_categories_model.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/navigation_util.dart';
-import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:Slydo/widget/tab_selection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 
 import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
-import '../more_apps/yarn/yarn_dashboard_bloc.dart';
+import '../yarn/yarn_dashboard_bloc.dart';
 
 class ShopCategoryScreen extends StatefulWidget {
-  ProductCategory? productCategories;
-  ShopCategoryScreen({this.productCategories});
+  final ProductCategory? productCategories;
+  const ShopCategoryScreen({super.key, this.productCategories});
 
   @override
   State<ShopCategoryScreen> createState() => _ShopCategoryScreenState();
@@ -64,7 +56,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
         isProductLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(productNext, productPrevious,
                 widget.productCategories!.name, false,
                 otherDeals: true);
@@ -82,7 +74,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noProductInList = false;
@@ -98,7 +90,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
           });
         }
       } else if (productNext == null && productList.length > 6) {
-        // _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        // _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
         //   content:
         //   Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         //   duration: Duration(milliseconds: 500),
@@ -107,22 +99,22 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
     }
   }
 
-  Future<UsersCategories?> getUserCategories() async {
-    // Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
-    // setState(() {
-    //   usersCategory = result!['results'];
-    // });
-    // return usersCategory!;
-  }
+  // Future<UsersCategories?> getUserCategories() async {
+  // Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
+  // setState(() {
+  //   usersCategory = result!['results'];
+  // });
+  // return usersCategory!;
+  // }
 
-  Future<UsersCategories?> saveUserCategories(String categoryId) async {
-    // Map<String, dynamic>? result =
-    // await YarnAuth().saveUsersSingleCategories(categoryId);
-    // setState(() {
-    //   usersCategory = result!['results'];
-    // });
-    // return usersCategory!;
-  }
+  // Future<UsersCategories?> saveUserCategories(String categoryId) async {
+  // Map<String, dynamic>? result =
+  // await YarnAuth().saveUsersSingleCategories(categoryId);
+  // setState(() {
+  //   usersCategory = result!['results'];
+  // });
+  // return usersCategory!;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +123,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar(),
       body: _buildBody(),
     );
@@ -139,7 +131,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
+      preferredSize: const Size.fromHeight(50.0),
       child: AppBar(
         backgroundColor: Colors.white,
         titleSpacing: 0,
@@ -158,7 +150,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
             ),
           ],
         ),
-        actions: [
+        actions: const [
           // Row(
           //   children: [
           //     InkWell(
@@ -257,7 +249,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
       },
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           _buildCategoryAndTabs(),
@@ -271,7 +263,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
     return Column(
       children: [
         if (_tabsVisible) ...[
-          YarnTabSelection(
+          TabSelection(
             onTap: (index) {
               currentAskTapOnHome = index;
               _pageViewCtrl.jumpToPage(currentAskTapOnHome);
@@ -281,7 +273,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
             firstTab: 'Latest',
             secondTab: 'Trending',
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Divider(
@@ -301,7 +293,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
           updateCurrentAskTapOnHome(index: currentPage);
         },
         controller: _pageViewCtrl,
-        children: [
+        children: const [
           // YarnListScreen(
           //   key: topicViewStateKey,
           //   selectedCategory: widget.askCategories!.id,
@@ -339,7 +331,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
     return InkWell(
       onTap: () => onPageTap!(),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:ui' as ui show Codec;
+import 'dart:ui' as ui;
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 
 /// cache gif fetched image
 class GifCache {
-  final Map<String, List<ImageInfo>?> caches = Map();
+  final Map<String, List<ImageInfo>?> caches = {};
 
   void clear() {
     caches.clear();
@@ -45,7 +45,8 @@ class GifController extends AnimationController {
 }
 
 class GifImage extends StatefulWidget {
-  GifImage({
+  const GifImage({
+    super.key,
     required this.image,
     required this.controller,
     this.semanticLabel,
@@ -80,7 +81,7 @@ class GifImage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return new GifImageState();
+    return GifImageState();
   }
 
   static GifCache cache = GifCache();
@@ -112,7 +113,7 @@ class GifImageState extends State<GifImage> {
     super.didUpdateWidget(oldWidget);
     if (widget.image != oldWidget.image) {
       fetchGif(widget.image).then((imageInfors) {
-        if (mounted)
+        if (mounted) {
           setState(() {
             _infos = imageInfors;
             _fetchComplete = true;
@@ -121,6 +122,7 @@ class GifImageState extends State<GifImage> {
               widget.onFetchCompleted!();
             }
           });
+        }
       });
     }
     if (widget.controller != oldWidget.controller) {
@@ -131,10 +133,11 @@ class GifImageState extends State<GifImage> {
 
   void _listener() {
     if (_curIndex != widget.controller!.value && _fetchComplete) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _curIndex = widget.controller!.value.toInt();
         });
+      }
     }
   }
 
@@ -143,7 +146,7 @@ class GifImageState extends State<GifImage> {
     super.didChangeDependencies();
     if (_infos == null) {
       fetchGif(widget.image).then((imageInfors) {
-        if (mounted)
+        if (mounted) {
           setState(() {
             _infos = imageInfors;
             _fetchComplete = true;
@@ -152,13 +155,14 @@ class GifImageState extends State<GifImage> {
               widget.onFetchCompleted!();
             }
           });
+        }
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final RawImage image = new RawImage(
+    final RawImage image = RawImage(
       image: _imageInfo?.image,
       width: widget.width,
       height: widget.height,
@@ -172,10 +176,10 @@ class GifImageState extends State<GifImage> {
       matchTextDirection: widget.matchTextDirection,
     );
     if (widget.excludeFromSemantics) return image;
-    return new Semantics(
+    return Semantics(
       container: widget.semanticLabel != null,
       image: true,
-      label: widget.semanticLabel == null ? '' : widget.semanticLabel,
+      label: widget.semanticLabel ?? '',
       child: image,
     );
   }
@@ -186,8 +190,9 @@ final HttpClient _sharedHttpClient = HttpClient()..autoUncompress = false;
 HttpClient get _httpClient {
   HttpClient client = _sharedHttpClient;
   assert(() {
-    if (debugNetworkImageHttpClientProvider != null)
+    if (debugNetworkImageHttpClientProvider != null) {
       client = debugNetworkImageHttpClientProvider!();
+    }
     return true;
   }());
   return client;
@@ -196,7 +201,7 @@ HttpClient get _httpClient {
 Future<List<ImageInfo>?> fetchGif(ImageProvider provider) async {
   List<ImageInfo>? infos = [];
   late dynamic data;
-  String key = provider is NetworkImage
+  final String key = provider is NetworkImage
       ? provider.url
       : provider is AssetImage
           ? provider.assetName
@@ -218,7 +223,8 @@ Future<List<ImageInfo>?> fetchGif(ImageProvider provider) async {
       response,
     );
   } else if (provider is AssetImage) {
-    AssetBundleImageKey key = await provider.obtainKey(ImageConfiguration());
+    final AssetBundleImageKey key =
+        await provider.obtainKey(const ImageConfiguration());
     data = await key.bundle.load(key.name);
   } else if (provider is FileImage) {
     data = await provider.file.readAsBytes();
@@ -226,11 +232,13 @@ Future<List<ImageInfo>?> fetchGif(ImageProvider provider) async {
     data = provider.bytes;
   }
 
-  ui.Codec codec = await PaintingBinding.instance!
-      .instantiateImageCodec(data.buffer.asUint8List());
+  // final ui.Codec codec = await PaintingBinding.instance
+  //     .instantiateImageCodec(data.buffer.asUint8List());
+  final ui.Codec codec =
+      await ui.instantiateImageCodec(data.buffer.asUint8List());
   infos = [];
   for (int i = 0; i < codec.frameCount; i++) {
-    FrameInfo frameInfo = await codec.getNextFrame();
+    final FrameInfo frameInfo = await codec.getNextFrame();
     //scale ??
     infos.add(ImageInfo(image: frameInfo.image));
   }

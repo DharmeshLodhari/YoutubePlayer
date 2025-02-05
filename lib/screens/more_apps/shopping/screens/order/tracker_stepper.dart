@@ -81,11 +81,11 @@ class ControlsDetails {
 typedef ControlsWidgetBuilder = Widget Function(
     BuildContext context, ControlsDetails details);
 
-TextStyle _kStepStyle = TextStyle(
+TextStyle _kStepStyle = const TextStyle(
   fontSize: 12.0,
   color: Colors.white,
 );
-TextStyle _kStepErrorStyle = TextStyle(
+TextStyle _kStepErrorStyle = const TextStyle(
   fontSize: 14.0,
   color: Colors.white,
 );
@@ -94,7 +94,7 @@ Color _kErrorLight = Colors.red;
 final Color _kErrorDark = Colors.red.shade400;
 Color _kCircleActiveLight = Colors.white;
 Color _kCircleActiveDark = Colors.black87;
-Color _kPendingActive = Colors.yellow;
+// Color _kPendingActive = Colors.yellow;
 Color _kDisabledLight = Colors.black38;
 Color _kDisabledDark = Colors.white38;
 double _kStepSize = 24.0;
@@ -113,9 +113,7 @@ class Step {
     this.state = StepState.indexed,
     this.isActive = false,
     this.label,
-  })  : assert(title != null),
-        assert(content != null),
-        assert(state != null);
+  });
 
   /// The title of the step that typically describes it.
   final Widget title;
@@ -187,6 +185,7 @@ class OrderTrackerStepper extends StatefulWidget {
   final EdgeInsetsGeometry? margin;
 
   const OrderTrackerStepper({
+    super.key,
     required this.steps,
     this.physics,
     this.type = StepperType.vertical,
@@ -197,10 +196,7 @@ class OrderTrackerStepper extends StatefulWidget {
     this.controlsBuilder,
     this.elevation,
     this.margin,
-  })  : assert(steps != null),
-        assert(type != null),
-        assert(currentStep != null),
-        assert(0 <= currentStep && currentStep < steps.length);
+  }) : assert(0 <= currentStep && currentStep < steps.length);
 
   @override
   State<OrderTrackerStepper> createState() => _OrderTrackerStepperState();
@@ -262,7 +258,7 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
   Widget _buildLine(bool visible) {
     return Container(
       width: visible ? 1.0 : 0.0,
-      height: 20.0,
+      height: 30.0,
       color: navyBlue,
     );
   }
@@ -271,7 +267,6 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
     final StepState state =
         oldState ? _oldStates[index]! : widget.steps[index].state;
     final bool isDarkActive = _isDark() && widget.steps[index].isActive;
-    assert(state != null);
     switch (state) {
       case StepState.indexed:
       case StepState.disabled:
@@ -305,9 +300,7 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
           ? navyBlue
           : colorScheme.onSurface.withOpacity(0.38);
     } else {
-      return widget.steps[index].isActive
-          ? navyBlue
-          : colorScheme.background;
+      return widget.steps[index].isActive ? navyBlue : colorScheme.background;
     }
   }
 
@@ -339,7 +332,7 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
       child: AnimatedContainer(
         curve: Curves.fastOutSlowIn,
         duration: kThemeAnimationDuration,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.red,
           shape: BoxShape.circle,
         ),
@@ -465,7 +458,7 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
               child: TextButton(
                 onPressed: widget.onStepCancel,
                 style: TextButton.styleFrom(
-                  primary: cancelColor,
+                  foregroundColor: cancelColor,
                   padding: buttonPadding,
                   shape: buttonShape,
                 ),
@@ -482,18 +475,17 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
     final ThemeData themeData = Theme.of(context);
     final TextTheme textTheme = themeData.textTheme;
 
-    assert(widget.steps[index].state != null);
     switch (widget.steps[index].state) {
       case StepState.indexed:
       case StepState.editing:
       case StepState.complete:
-        return textTheme.bodyText1!;
+        return textTheme.bodyLarge!;
       case StepState.disabled:
-        return textTheme.bodyText1!.copyWith(
+        return textTheme.bodyLarge!.copyWith(
           color: _isDark() ? _kDisabledDark : _kDisabledLight,
         );
       case StepState.error:
-        return textTheme.bodyText1!.copyWith(
+        return textTheme.bodyLarge!.copyWith(
           color: _isDark() ? _kErrorDark : _kErrorLight,
         );
     }
@@ -503,18 +495,17 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
     final ThemeData themeData = Theme.of(context);
     final TextTheme textTheme = themeData.textTheme;
 
-    assert(widget.steps[index].state != null);
     switch (widget.steps[index].state) {
       case StepState.indexed:
       case StepState.editing:
       case StepState.complete:
-        return textTheme.caption!;
+        return textTheme.bodySmall!;
       case StepState.disabled:
-        return textTheme.caption!.copyWith(
+        return textTheme.bodySmall!.copyWith(
           color: _isDark() ? _kDisabledDark : _kDisabledLight,
         );
       case StepState.error:
-        return textTheme.caption!.copyWith(
+        return textTheme.bodySmall!.copyWith(
           color: _isDark() ? _kErrorDark : _kErrorLight,
         );
     }
@@ -524,18 +515,17 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
     final ThemeData themeData = Theme.of(context);
     final TextTheme textTheme = themeData.textTheme;
 
-    assert(widget.steps[index].state != null);
     switch (widget.steps[index].state) {
       case StepState.indexed:
       case StepState.editing:
       case StepState.complete:
-        return textTheme.bodyText1!;
+        return textTheme.bodyLarge!;
       case StepState.disabled:
-        return textTheme.bodyText1!.copyWith(
+        return textTheme.bodyLarge!.copyWith(
           color: _isDark() ? _kDisabledDark : _kDisabledLight,
         );
       case StepState.error:
-        return textTheme.bodyText1!.copyWith(
+        return textTheme.bodyLarge!.copyWith(
           color: _isDark() ? _kErrorDark : _kErrorLight,
         );
     }
@@ -787,7 +777,6 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
       }
       return true;
     }());
-    assert(widget.type != null);
     switch (widget.type) {
       case StepperType.vertical:
         return _buildVertical();

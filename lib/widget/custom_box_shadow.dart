@@ -11,6 +11,7 @@ class CustomBoxShadow extends StatelessWidget {
   double borderRadius;
 
   CustomBoxShadow({
+    super.key,
     required this.child,
     this.blurRadius = 7.0,
     this.borderRadius = 12,
@@ -22,7 +23,7 @@ class CustomBoxShadow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: new BoxDecoration(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: [
           BoxShadow(

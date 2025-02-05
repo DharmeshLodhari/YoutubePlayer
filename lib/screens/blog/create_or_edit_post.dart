@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/blog/quill/custom_quill_embed.dart';
-import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
+import 'package:Slydo/screens/blog/user_post/models/user_post.dart';
+import 'package:Slydo/screens/blog/user_post/user_post_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -13,7 +13,9 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
+import 'package:flutter/src/widgets/text.dart' as flutterText;
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -22,22 +24,20 @@ import '../../locale/app_localization.dart';
 import '../../utils/video_player_controller/chewie_player.dart';
 import '../../utils/video_player_controller/chewie_progress_colors.dart';
 import '../../widget/loading_indicator.dart';
-import '../more_apps/user_post/models/user_post.dart';
-import '../more_apps/yarn/utils/utils.dart';
-import '../more_apps/yarn/widgets/ask_mention_view.dart';
+import '../yarn/utils/utils.dart';
+import '../yarn/widgets/ask_mention_view.dart';
 
-class CreateorEditPostScreen extends StatefulWidget {
+class CreateOrEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
-  String? channel;
+  final String? channel;
 
-  CreateorEditPostScreen({Key? key, this.userPost, this.channel})
-      : super(key: key);
+  const CreateOrEditPostScreen({super.key, this.userPost, this.channel});
 
   @override
-  State<CreateorEditPostScreen> createState() => _CreateOrEditPostScreenState();
+  State<CreateOrEditPostScreen> createState() => _CreateOrEditPostScreenState();
 }
 
-class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
+class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
   String? blogId;
   String? _imagePath;
   String? _videoPath;
@@ -52,8 +52,9 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   VideoPlayerController? _mainVideoController;
   late FocusNode textEditorTextFieldFocusNode;
   late ScrollController _textEditorScrollController;
-  flutterQuill.QuillController _quillBodyTextController =
-      flutterQuill.QuillController.basic();
+  // flutterQuill.QuillController _quillBodyTextController =
+  //     flutterQuill.QuillController.basic();
+  QuillController _quillBodyTextController = QuillController.basic();
   ChewieController? pickedVideoChewieMainController;
   ChewieController? videoFromServerChewieMainController;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -102,7 +103,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     super.dispose();
   }
 
-  initializeUserPostVariables() {
+  void initializeUserPostVariables() {
     isImagePicked = _imagePath != null;
     _imagePath = widget.userPost!.image;
     _videoPath = widget.userPost!.video;
@@ -143,10 +144,12 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     try {
       blogBodyTextJson =
           jsonDecode(messageDecoderWithEmoji(widget.userPost!.text!)!);
-      _quillBodyTextController = flutterQuill.QuillController(
-          document: flutterQuill.Document.fromJson(blogBodyTextJson),
-          selection: TextSelection.collapsed(offset: 0));
-    } catch (e) {}
+      _quillBodyTextController = QuillController(
+          document: Document.fromJson(blogBodyTextJson),
+          selection: const TextSelection.collapsed(offset: 0));
+    } catch (e) {
+      debugPrint('Error : $e');
+    }
   }
 
   @override
@@ -168,7 +171,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
               enableMargin: false,
               width: 90,
               height: 90,
-              image: Icon(SlydoAppIcon.remove),
+              image: const Icon(SlydoAppIcon.remove),
             ),
             leftButtonOnPressed: () {
               Navigator.pop(context);
@@ -199,28 +202,29 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
+        resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: _scaffoldBody(),
       ),
     );
   }
 
-  _scaffoldBody() {
+  Widget _scaffoldBody() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Form(
         key: formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Visibility(
                 visible: headerMediaIsVisible,
                 child: _videoPath != null && _videoPath!.isNotEmpty
                     ? getHeaderVideo()
                     : getHeaderImage()),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             CustomizedTextFormField(
               hintText: 'Title',
               hasBorder: false,
@@ -257,34 +261,36 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
                           ),
                         ),
                       ),
-                      _imagePath != null && _imagePath!.isNotEmpty
-                          ? InkWell(
-                              onTap: () {
-                                _pickBlogImage();
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Icon(
-                                  Icons.image,
-                                  size: 20,
-                                  color: navyBlue,
-                                ),
-                              ),
-                            )
-                          : SizedBox.shrink(),
-                      _videoPath != null && _videoPath!.isNotEmpty
-                          ? InkWell(
-                              onTap: () {
-                                _pickBlogVideo();
-                              },
-                              child: Icon(
-                                Icons.video_call,
-                                size: 24,
-                                color: navyBlue,
-                              ),
-                            )
-                          : SizedBox.shrink(),
+                      if (_imagePath != null && _imagePath!.isNotEmpty)
+                        InkWell(
+                          onTap: () {
+                            _pickBlogImage();
+                          },
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Icon(
+                              Icons.image,
+                              size: 20,
+                              color: navyBlue,
+                            ),
+                          ),
+                        )
+                      else
+                        const SizedBox.shrink(),
+                      if (_videoPath != null && _videoPath!.isNotEmpty)
+                        InkWell(
+                          onTap: () {
+                            _pickBlogVideo();
+                          },
+                          child: Icon(
+                            Icons.video_call,
+                            size: 24,
+                            color: navyBlue,
+                          ),
+                        )
+                      else
+                        const SizedBox.shrink(),
                     ],
                   ),
                 ],
@@ -294,7 +300,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
               visible: showMoreOptions,
               child: moreOptions(),
             ),
-            SizedBox(height: 3),
+            const SizedBox(height: 3),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(left: 16.0, bottom: 30),
@@ -312,14 +318,14 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   void onValueChange(String value) {
-    List<String> listOfWords = value.split(" ");
+    final List<String> listOfWords = value.split(" ");
 
     if (listOfWords.isNotEmpty) {
       if ((listOfWords.last.contains("@") &&
           !value.endsWith(" ") &&
           !value.endsWith("@"))) {
         isMentionName = true;
-        List<String> mentionString = getAllMentions(value);
+        final List<String> mentionString = getAllMentions(value);
 
         if (mentionString.isNotEmpty) {
           searchString = mentionString.last.substring(1);
@@ -359,6 +365,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -385,7 +392,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
                 enableMargin: false,
                 width: 90,
                 height: 90,
-                image: Icon(SlydoAppIcon.remove),
+                image: const Icon(SlydoAppIcon.remove),
               ),
               leftButtonOnPressed: () {
                 Navigator.pop(context);
@@ -407,7 +414,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
                 enableMargin: false,
                 width: 90,
                 height: 90,
-                image: Icon(SlydoAppIcon.remove),
+                image: const Icon(SlydoAppIcon.remove),
               ),
               leftButtonOnPressed: () {
                 Navigator.pop(context);
@@ -418,7 +425,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
           }
         },
       ),
-      title: Text(
+      title: flutterText.Text(
         widget.userPost == null
             ? AppLocalization.of(context)!.createPost
             : AppLocalization.of(context)!.editPost,
@@ -431,7 +438,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
           icon: Icon(Icons.arrow_upward_rounded,
               color: showScrollToTopArrow ? navyBlue : greyBorderColor),
         ),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         IconButton(
           onPressed: showSubmitButton() ? () => submitBlogPost() : null,
           icon: Icon(Icons.send,
@@ -442,30 +449,32 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   Widget getEditor() {
-    Widget editorWidget = flutterQuill.QuillToolbar.basic(
-      showDirection: false,
-      showHeaderStyle: false,
-      showInlineCode: false,
-      showCodeBlock: false,
-      showStrikeThrough: false,
-      showJustifyAlignment: false,
-      showBackgroundColorButton: false,
-      showClearFormat: false,
-      showDividers: false,
-      showIndent: false,
-      showListCheck: false,
-      showRedo: false,
-      showListBullets: false,
-      showListNumbers: false,
-      showAlignmentButtons: true,
-      controller: _quillBodyTextController,
+    final Widget editorWidget = QuillToolbar.simple(
+      configurations: QuillSimpleToolbarConfigurations(
+        showDirection: false,
+        showHeaderStyle: false,
+        showInlineCode: false,
+        showCodeBlock: false,
+        showStrikeThrough: false,
+        showJustifyAlignment: false,
+        showBackgroundColorButton: false,
+        showClearFormat: false,
+        showDividers: false,
+        showIndent: false,
+        showListCheck: false,
+        showRedo: false,
+        showListBullets: false,
+        showListNumbers: false,
+        showAlignmentButtons: true,
+        controller: _quillBodyTextController,
+      ),
     );
 
     if (widget.userPost != null) {
       if (blogBodyTextJson != null) {
         return editorWidget;
       } else {
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       }
     } else {
       return editorWidget;
@@ -526,19 +535,19 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     }
   }
 
-  createOrUpdateBlogPost() {
-    List<String>? newUserTags =
+  void createOrUpdateBlogPost() {
+    final List<String> newUserTags =
         []; // For replacing the # in a tag with an empty string.
 
-    userTags.forEach((tag) {
+    for (var tag in userTags) {
       if (tag.startsWith('#')) {
         newUserTags.add(tag.replaceAll("#", ''));
       } else {
         newUserTags.add(tag);
       }
-    });
+    }
 
-    var userBloc = Provider.of<UserBloc>(context, listen: false);
+    final userBloc = Provider.of<UserBloc>(context, listen: false);
     UserPostAuth()
         .createOrUpdateBlogPost(
             blogId: blogId,
@@ -596,8 +605,8 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   //   return file;
   // }
 
-  _pickBlogImage({Function(String image)? imagePickedCallBack}) async {
-    String? croppedImage = await getFile(context);
+  void _pickBlogImage({Function(String image)? imagePickedCallBack}) async {
+    final String? croppedImage = await getFile(context);
 
     if (imagePickedCallBack != null && croppedImage != null) {
       imagePickedCallBack(croppedImage);
@@ -606,22 +615,22 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
         setState(() {
           _imagePath = croppedImage;
           isImagePicked = true;
-          debugPrint('Fola cropped:::: ${croppedImage}');
-          debugPrint('Fola cropped 000:::: ${_imagePath}');
+          // debugPrint('Fola cropped:::: $croppedImage');
+          // debugPrint('Fola cropped 000:::: $_imagePath');
         });
       }
     }
   }
 
-  _pickBlogVideo({Function(String video)? videoPickedCallBack}) async {
-    String? videoPath = await getFile(context, fileType: MediaType.video);
+  void _pickBlogVideo({Function(String video)? videoPickedCallBack}) async {
+    final String? videoPath = await getFile(context, fileType: MediaType.video);
 
     if (videoPath != null) {
-      int sizeInBytes = File(videoPath).lengthSync();
+      final int sizeInBytes = File(videoPath).lengthSync();
 
-      int sizeInMb = (sizeInBytes / (1024 * 1024)).toInt();
+      final int sizeInMb = (sizeInBytes ~/ (1024 * 1024)).toInt();
 
-      debugPrint('SIZE IN MB --> $sizeInMb');
+      // debugPrint('SIZE IN MB --> $sizeInMb');
 
       if (sizeInMb <= maxVideoFileSize) {
         if (videoPickedCallBack != null) {
@@ -670,7 +679,8 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
             child: CircleAvatar(
               backgroundColor: navyBlue,
               child: InkWell(
-                  onTap: () => _pickBlogVideo(), child: Icon(Icons.video_call)),
+                  onTap: () => _pickBlogVideo(),
+                  child: const Icon(Icons.video_call)),
             ),
           ),
         ],
@@ -680,12 +690,12 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
         onTap: () => _pickBlogImage(),
         child: Container(
           height: 200,
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
               color: greyBorderColor,
               border: Border.all(color: greyBorderColor),
               borderRadius: BorderRadius.circular(20)),
-          child: Center(
+          child: const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -693,7 +703,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
                 //   Icons.add_circle,
                 //   size: 40,
                 // ),
-                Text('Tap here to add blog post header image')
+                flutterText.Text('Tap here to add blog post header image')
               ],
             ),
           ),
@@ -710,11 +720,12 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   Widget getHeaderVideo() {
-    bool videoFromServer = _videoPath!.startsWith('http');
+    final bool videoFromServer = _videoPath!.startsWith('http');
 
     if (_videoPath != null && _videoPath!.isNotEmpty) {
       if (!videoFromServer) {
-        var mainVideoController = VideoPlayerController.file(File(_videoPath!),
+        final mainVideoController = VideoPlayerController.file(
+            File(_videoPath!),
             videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
 
         pickedVideoChewieMainController = ChewieController(
@@ -765,7 +776,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
                 width: 90,
                 height: 90,
                 enableMargin: false,
-                image: Icon(SlydoAppIcon.remove),
+                image: const Icon(SlydoAppIcon.remove),
               ),
               rightButtonOnPressed: () {
                 if (videoFromServer) {
@@ -777,8 +788,8 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
               },
             );
           },
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
+          child: const Padding(
+            padding: EdgeInsets.all(4.0),
             child: CircleAvatar(
               radius: 20,
               backgroundColor: Colors.white,
@@ -800,24 +811,26 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   Widget getTextEditorWidget() {
-    flutterQuill.QuillEditor quillEditor = flutterQuill.QuillEditor(
-      autoFocus: false,
-      controller: _quillBodyTextController,
-      readOnly: false,
-      scrollable: true,
-      expands: false,
-      padding: EdgeInsets.zero,
-      placeholder: 'Tell your story...',
-      scrollController: _textEditorScrollController,
+    final QuillEditor quillEditor = QuillEditor(
       focusNode: textEditorTextFieldFocusNode,
-      scrollBottomInset: 20,
-      embedBuilders: CustomQuillEmbed.builders(),
+      scrollController: _textEditorScrollController,
+      configurations: QuillEditorConfigurations(
+        autoFocus: false,
+        controller: _quillBodyTextController,
+        // readOnly: false,
+        scrollable: true,
+        expands: false,
+        padding: EdgeInsets.zero,
+        placeholder: 'Tell your story...',
+        scrollBottomInset: 20,
+        embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+      ),
     );
     if (widget.userPost != null) {
       if (blogBodyTextJson != null) {
         return quillEditor;
       } else {
-        return Text(widget.userPost!.text!);
+        return flutterText.Text(widget.userPost!.text!);
       }
     } else {
       return quillEditor;
@@ -828,7 +841,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     return GestureDetector(
       onTap: () {
         showMoreOptions = !showMoreOptions;
-        print('SHOW MORE OPTIONS ::: $showMoreOptions');
+        // debugPrint('SHOW MORE OPTIONS ::: $showMoreOptions');
         if (showMoreOptions == true) {
           titleFocusNode.unfocus();
           headerMediaIsVisible = false;
@@ -836,19 +849,19 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
         } else {
           headerMediaIsVisible = true;
         }
-        print('HEADER IS VISIBLE :::: $headerMediaIsVisible');
+        // debugPrint('HEADER IS VISIBLE :::: $headerMediaIsVisible');
         if (mounted) setState(() {});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Row(
           children: [
-            Text(
+            flutterText.Text(
               showMoreOptions ? "Less options" : "More options",
               style: TextStyle(
                   color: darkGrey, fontSize: 14, fontWeight: FontWeight.w600),
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Icon(
@@ -923,9 +936,9 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
               hasSwitch: false,
               addElevation: false,
               trailingWidget: publishedDateTime != null
-                  ? Text(
+                  ? flutterText.Text(
                       DateFormat('yyyy-MM-dd H:m').format(publishedDateTime!))
-                  : Text(''),
+                  : const flutterText.Text(''),
               onTap: () async {
                 datePicked = await showDatePicker(
                     builder: customThemeBuilder,
@@ -947,7 +960,8 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
                       timePicked!.minute);
                 }
 
-                print('FINAL DATE TIME -----> ${publishedDateTime.toString()}');
+                // debugPrint(
+                //     'FINAL DATE TIME -----> ${publishedDateTime.toString()}');
                 setState(() => publishedDateTime = publishedDateTime);
                 // '2022-02-28T13:35:43.590377+01:00'
               },
@@ -955,7 +969,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
               description: 'Pick a date to publish your post',
               icon: Icon(Icons.event_outlined, color: blackFont),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Focus(
@@ -1075,7 +1089,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     });
   }
 
-  _showPickMediaDialogBox() {
+  void _showPickMediaDialogBox() {
     showDialogBox(
       context: context,
       actionOneText: 'VIDEO',
@@ -1111,11 +1125,9 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
                 ));
       },
     );
-
-    return true;
   }
 
-  sendMediaToServerAndAddToBlogPost(
+  void sendMediaToServerAndAddToBlogPost(
       {required MediaType mediaType, required String mediaFile}) {
     final index = _quillBodyTextController.selection.baseOffset;
     final length = _quillBodyTextController.selection.extentOffset - index;
@@ -1137,8 +1149,8 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
           index,
           length,
           mediaType == MediaType.picture
-              ? flutterQuill.BlockEmbed.image(response['media'])
-              : flutterQuill.BlockEmbed.video(response['media']),
+              ? BlockEmbed.image(response['media'])
+              : BlockEmbed.video(response['media']),
           null,
         );
         blogPostInlineMediaIds.add(response['id']);
@@ -1163,8 +1175,7 @@ class ChooseOptionsCard extends StatelessWidget {
   final IconData iconData;
 
   const ChooseOptionsCard(
-      {Key? key, required this.iconData, required this.onTap})
-      : super(key: key);
+      {super.key, required this.iconData, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -1176,7 +1187,7 @@ class ChooseOptionsCard extends StatelessWidget {
         decoration: BoxDecoration(
             border: Border.all(color: greyBorderColor),
             borderRadius: BorderRadius.circular(12)),
-        padding: EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         child: Icon(iconData, size: 30),
       ),
     );

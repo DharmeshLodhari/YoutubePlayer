@@ -3,22 +3,36 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/shopping/widget/product_detail_shimmer.dart';
+import 'package:Slydo/screens/payment_and_banking/models/virtual_account.dart';
+import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/qr_code_page.dart';
+import 'package:Slydo/screens/user_profile/widgets/user_profile_shimmer.dart';
+import 'package:Slydo/screens/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
+import 'package:Slydo/utils/enums.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crypto/crypto.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
+import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:jumping_dot/jumping_dot.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -27,11 +41,11 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import '../data/currency.dart';
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
-import '../screens/more_apps/messaging/chat/utils.dart';
-import '../screens/more_apps/payment_and_banking/models/transactions.dart';
-import '../screens/more_apps/user_profile/models/user.dart';
-import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../screens/more_apps/user_profile/user_auth.dart';
+import '../screens/messaging/chat/utils.dart';
+import '../screens/payment_and_banking/models/transactions.dart';
+import '../screens/user_profile/models/user.dart';
+import '../screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../screens/user_profile/user_auth.dart';
 import '../widget/dialog.dart';
 import '../widget/image_crop.dart';
 import '../widget/loading_indicator.dart';
@@ -49,6 +63,19 @@ int amountLimit =
 
 enum MediaType { picture, video }
 
+String decryptPassword(String encodedPassword) {
+  // Decode the Base64 string to the original password
+  return utf8.decode(base64Decode(encodedPassword));
+}
+
+String encryptPassword(String password) {
+  // Convert password string to Base64 encoding
+  return base64Encode(utf8.encode(password));
+  // final bytes = utf8.encode(password);
+  // final hash = sha256.convert(bytes);
+  // return hash.toString();
+}
+
 Future<String?> getFile(BuildContext context,
     {MediaType fileType = MediaType.picture}) async {
   String? videoPath;
@@ -57,6 +84,7 @@ Future<String?> getFile(BuildContext context,
   final fileSource = await showDialog<ImageSource>(
     context: context,
     builder: (context) => AlertDialog(
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       title: Text(
         fileType == MediaType.picture
@@ -105,11 +133,33 @@ Future<String?> getFile(BuildContext context,
   return fileType == MediaType.picture ? croppedImage : videoPath;
 }
 
+Future<void> exitAppDialog(BuildContext context) async {
+  final bool? result = await showDialogBox(
+    context: context,
+    actionOneBgColor: mateRed,
+    actionOneTextColor: Colors.white,
+    actionTwoBgColor: greyBorderColor,
+    actionTwoTextColor: blackFont,
+    title: "Exit app",
+    description: "Are you sure want to exit app?",
+    actionOneText: AppLocalization.of(context)!.exit,
+    actionTwoText: AppLocalization.of(context)!.cancel,
+  );
+  if (result != null && result) {
+    if (Platform.isAndroid) {
+      SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+    } else if (Platform.isIOS) {
+      exit(0); // Not recommended as it forces the app to crash
+    }
+  }
+}
+
 Future<String?> getCroppedImage(BuildContext context) async {
   String? croppedImage;
   final imageSource = await showDialog<ImageSource>(
     context: context,
     builder: (context) => AlertDialog(
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       title: Text(
         AppLocalization.of(context)!.selectTheImageSource,
@@ -155,10 +205,10 @@ Widget imageFrameBuilder(BuildContext context, Widget child, int? frame,
     return child;
   }
   return AnimatedOpacity(
-    child: child,
     opacity: frame == null ? 0 : 1,
     duration: const Duration(milliseconds: 100),
     curve: Curves.easeOut,
+    child: child,
   );
 }
 
@@ -208,7 +258,7 @@ Widget wallpaperErrorWidget(BuildContext context, String url, dynamic error) =>
       filterQuality: FilterQuality.high,
     );
 
-getLoggedInUserName(BuildContext context) {
+String? getLoggedInUserName(BuildContext context) {
   return Provider.of<UserBloc>(context, listen: false).user.userName;
 }
 
@@ -270,8 +320,8 @@ Future<String?> generateThumbNailFromVideo({required String videoPath}) async {
 
   if (videoInUnit8List != null) {
     final tempDir = await getTemporaryDirectory();
-    String uniqueId = const Uuid().v4();
-    File file = await File('${tempDir.path}/$uniqueId.jpg').create();
+    final String uniqueId = const Uuid().v4();
+    final File file = await File('${tempDir.path}/$uniqueId.jpg').create();
     //Example of file => File: '/data/user/0/com.slydo.slydo/cache/954e542e-c217-46d8-867c-cfcb8d2636ba.png'
     file.writeAsBytesSync(videoInUnit8List);
     return file.path;
@@ -288,8 +338,8 @@ Future<File?> generateThumbnailFromVideo({required String videoPath}) async {
 
   if (videoInUnit8List != null) {
     final tempDir = await getTemporaryDirectory();
-    String uniqueId = const Uuid().v4();
-    File file = await File('${tempDir.path}/$uniqueId.jpg').create();
+    final String uniqueId = const Uuid().v4();
+    final File file = await File('${tempDir.path}/$uniqueId.jpg').create();
     //Example of file => File: '/data/user/0/com.slydo.slydo/cache/954e542e-c217-46d8-867c-cfcb8d2636ba.png'
     file.writeAsBytesSync(videoInUnit8List);
     return file;
@@ -397,18 +447,16 @@ BoxDecoration decorateBox(
       Radius.circular(borderRadius),
     ),
     border: Border.all(
-        color: borderColor != null ? borderColor : lightGrey,
-        width: 1.0,
-        style: BorderStyle.solid),
+        color: borderColor ?? lightGrey, width: 1.0, style: BorderStyle.solid),
   );
 }
 
-void androidBottomSheet(
+Future<dynamic> androidBottomSheet(
     {required BuildContext context,
     required Widget child,
     bool enableDrag = true,
-    bool isDismissible = true}) {
-  showModalBottomSheet<void>(
+    bool isDismissible = true}) async {
+  final result = await showModalBottomSheet(
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     context: context,
@@ -429,39 +477,38 @@ void androidBottomSheet(
       );
     },
   );
+  return result;
 }
 
 Widget transactionOrKycDetailTile(IconData icon, String title, String subtitle,
     {Transaction? transaction,
     Widget? trailingWidget,
     TextStyle? subtitleTextStyle}) {
-  debugPrint("==>$subtitle");
-  return Container(
-    child: ListTile(
-      dense: true,
-      leading: RoundedBackgroundIcon(
-        icon: Icon(icon, color: blackFont, size: 18),
-        backgroundColor: iconBtnGrey,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: blackFont,
-          fontSize: 14,
-        ),
-      ),
-      subtitle: Text(
-        getCurrency(subtitle, transaction?.currency),
-        style: subtitleTextStyle ??
-            TextStyle(
-              color: blackFont,
-              fontSize: 14,
-              fontFamily: "Inter",
-            ),
-      ),
-      trailing: trailingWidget,
+  // debugPrint("==>$subtitle");
+  return ListTile(
+    dense: true,
+    leading: RoundedBackgroundIcon(
+      icon: Icon(icon, color: blackFont, size: 18),
+      backgroundColor: iconBtnGrey,
     ),
+    title: Text(
+      title,
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        color: blackFont,
+        fontSize: 14,
+      ),
+    ),
+    subtitle: Text(
+      getCurrency(subtitle, transaction?.currency),
+      style: subtitleTextStyle ??
+          TextStyle(
+            color: blackFont,
+            fontSize: 14,
+            fontFamily: "Inter",
+          ),
+    ),
+    trailing: trailingWidget,
   );
 }
 
@@ -469,7 +516,8 @@ Widget transactionOrPayoutTile(
     String path, String title, String subtitle, bool val,
     {Transaction? transaction,
     Widget? trailingWidget,
-    TextStyle? subtitleTextStyle}) {
+    TextStyle? subtitleTextStyle,
+    BuildContext? context}) {
   // debugPrint("Fola ==>$subtitle");
 
   String? status = "";
@@ -481,61 +529,86 @@ Widget transactionOrPayoutTile(
     status = 'cancel';
   }
 
-  return Container(
-    child: ListTile(
-      dense: true,
-      leading: Container(
-        padding: const EdgeInsets.all(10.0),
-        margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: navyBlueLight.withOpacity(0.1),
-        ),
-        child: SvgPicture.asset(
-          path,
-          width: 14,
-          height: 14,
-          color: blackFont,
-        ),
+  return ListTile(
+    dense: true,
+    leading: Container(
+      padding: const EdgeInsets.all(10.0),
+      margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.0),
+        color: navyBlueLight.withOpacity(0.1),
       ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: blackFont,
-          fontSize: 14,
-        ),
+      child: SvgPicture.asset(
+        path,
+        width: 14,
+        height: 14,
+        color: blackFont,
       ),
-      subtitle: Row(
-        children: [
-          Container(
-            padding: status != ""
-                ? const EdgeInsets.only(
-                    left: 10.0, right: 10, top: 3.0, bottom: 3.0)
-                : const EdgeInsets.all(0.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: checkStatusBgColor(status),
-            ),
-            child: Text(
-              getCurrency(subtitle, transaction?.currency),
-              style: subtitleTextStyle ??
-                  TextStyle(
-                    color: checkStatusForColor(status),
-                    fontSize: 14,
-                    fontFamily: "Inter",
-                  ),
-            ),
-          ),
-          Container(),
-        ],
-      ),
-      trailing: trailingWidget,
     ),
+    title: Text(
+      title,
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        color: blackFont,
+        fontSize: 14,
+      ),
+    ),
+    subtitle: Row(
+      children: [
+        Container(
+          padding: status != ""
+              ? const EdgeInsets.only(
+                  left: 10.0, right: 10, top: 3.0, bottom: 3.0)
+              : const EdgeInsets.all(0.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5.0),
+            color: checkStatusBgColor(status),
+          ),
+          child: getDisplayContent(
+              subtitle, transaction, subtitleTextStyle, status, context),
+        ),
+        Container(),
+      ],
+    ),
+    trailing: trailingWidget,
   );
 }
 
-checkStatusBgColor(String status) {
+Widget getDisplayContent(String subtitle, Transaction? transaction,
+    TextStyle? subtitleTextStyle, String status, BuildContext? context) {
+  Color color = checkStatusForColor(status);
+  if (subtitle.contains('Order Ref:')) {
+    final String orderId =
+        subtitle.replaceAll('Order Ref:', '').replaceAll(' ', '');
+    color = checkStatusForColor('null');
+    return GestureDetector(
+      onTap: () async {
+        await Navigator.pushNamed(context!, Routes.ORDER_DETAIL_PAGE,
+            arguments: {"orderId": orderId});
+      },
+      child: Text(
+        getCurrency(subtitle, transaction?.currency),
+        style: subtitleTextStyle ??
+            TextStyle(
+              color: color,
+              fontSize: 14,
+              fontFamily: "Inter",
+            ),
+      ),
+    );
+  }
+  return Text(
+    getCurrency(subtitle, transaction?.currency),
+    style: subtitleTextStyle ??
+        TextStyle(
+          color: color,
+          fontSize: 14,
+          fontFamily: "Inter",
+        ),
+  );
+}
+
+Color checkStatusBgColor(String status) {
   if (status == 'done') {
     return naturalGreen.withOpacity(0.1);
   } else if (status == 'processing') {
@@ -545,9 +618,31 @@ checkStatusBgColor(String status) {
   } else if (status == "") {
     return Colors.transparent;
   }
+  return navyBlue;
 }
 
-checkStatusForColor(String status) {
+//PDF Color
+
+PdfColor checkStatusTextPdfColor(String status) {
+  final PdfColor green = PdfColor.fromHex('#0F973D');
+  final PdfColor yellow = PdfColor.fromHex("#F5B546");
+  final PdfColor red = PdfColor.fromHex("#DD524D");
+  final PdfColor navyBlue = PdfColor.fromHex("#3F61DB");
+
+  if (status == 'done') {
+    return green;
+  } else if (status == 'processing') {
+    return yellow;
+  } else if (status == 'cancel') {
+    return red;
+  } else if (status == "") {
+    return PdfColors.black;
+  }
+
+  return navyBlue;
+}
+
+Color checkStatusForColor(String status) {
   if (status == 'done') {
     return naturalGreen;
   } else if (status == 'processing') {
@@ -557,6 +652,7 @@ checkStatusForColor(String status) {
   } else if (status == "") {
     return blackFont;
   }
+  return navyBlue;
 }
 
 Widget getSettingTile(
@@ -624,13 +720,53 @@ Widget getChatSettingTitle() {
   );
 }
 
+Widget buildShimmerLoadingIndicator({required bool isLoading}) {
+  return Opacity(
+    opacity: isLoading ? 1.0 : 00,
+    child: isLoading ? const YarnShimmer() : Container(),
+  );
+}
+
+Widget buildProductShimmerLoadingIndicator({required bool isLoading}) {
+  return Opacity(
+    opacity: isLoading ? 1.0 : 00,
+    child: isLoading ? const ProductDetailShimmer() : Container(),
+  );
+}
+// Book Cameraman today and earm 70% off!
+// Don’t Miss the sales, 20% off on all, 10” wigs
+Widget buildProfileShimmerLoadingIndicator({required bool isLoading}) {
+  return Opacity(
+    opacity: isLoading ? 1.0 : 00,
+    child: isLoading ? const UserProfileShimmer() : Container(),
+  );
+}
+
 Widget buildLoadingIndicator({required bool isLoading}) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Center(
       child: Opacity(
         opacity: isLoading ? 1.0 : 00,
-        child: CircularLoadingIndicator(),
+        child: isLoading ? CircularLoadingIndicator() : Container(),
+      ),
+    ),
+  );
+}
+
+Widget buildJumpingLoadingIndicator({required bool isLoading}) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 15.0, bottom: 30.0),
+    child: Center(
+      child: Opacity(
+        opacity: isLoading ? 1.0 : 00,
+        child: isLoading
+            ? JumpingDots(
+                color: navyBlue,
+                radius: 15,
+                numberOfDots: 3,
+              )
+            : Container(),
       ),
     ),
   );
@@ -638,6 +774,7 @@ Widget buildLoadingIndicator({required bool isLoading}) {
 
 Widget customAppBar({required BuildContext context, required String title}) {
   return AppBar(
+    surfaceTintColor: Colors.transparent,
     elevation: 0,
     titleSpacing: 0,
     backgroundColor: Colors.white,
@@ -663,8 +800,8 @@ Widget customAppBar({required BuildContext context, required String title}) {
 
 Widget getColoredLabeledWidget({required String text, required Color color}) {
   return Container(
-    margin: const EdgeInsets.only(left: 8.0),
-    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+    margin: const EdgeInsets.only(left: 5.0),
+    padding: const EdgeInsets.symmetric(horizontal: 5.0),
     decoration: BoxDecoration(
       color: color,
       borderRadius: BorderRadius.circular(6),
@@ -691,7 +828,7 @@ Widget flexibleSpace({int flex = 1}) {
   );
 }
 
-showSnackbar(BuildContext context,
+void showSnackbar(BuildContext context,
     {required String message, int duration = 500}) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(message),
@@ -728,31 +865,75 @@ String getDayName({required int day}) {
 }
 
 String formatTime(String date) {
-  DateTime dateTime = DateTime.parse(date).toLocal();
+  final DateTime dateTime = DateTime.parse(date).toLocal();
 
-  String time = DateFormat("hh:mm a").format(dateTime);
+  final String time = DateFormat("hh:mm a").format(dateTime);
 
   return time;
+}
+
+bool isTimeAfter(DateTime startTime, DateTime endTime) {
+  final TimeOfDay start = TimeOfDay.fromDateTime(startTime);
+  final TimeOfDay end = TimeOfDay.fromDateTime(endTime);
+
+  if (start.hour < end.hour) {
+    return true;
+  } else if (start.hour == end.hour && start.minute < end.minute) {
+    return true;
+  }
+  return false;
+}
+
+String formatTime24hrs(DateTime? date) {
+  if (date == null) {
+    return '';
+  }
+  return DateFormat("HH:mm").format(date);
+}
+
+bool isMidnight(DateTime dateTime) {
+  return dateTime.hour == 0 && dateTime.minute == 0 && dateTime.second == 0;
+}
+
+String formatDateTime(DateTime dateTime) {
+  return '${formatDateForOrder(dateTime)} ${formatTime24hrs(dateTime)}';
 }
 
 String formatDate(DateTime? dateTime) {
   if (dateTime == null) {
     return '';
   }
-  String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+  final String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+
+  return date;
+}
+
+String formatDate1(DateTime? dateTime) {
+  if (dateTime == null) {
+    return '';
+  }
+  final DateFormat formatter = DateFormat('dd/MM/yyyy');
+  return formatter.format(dateTime);
+}
+
+String formatDateForOrder(DateTime? dateTime) {
+  if (dateTime == null) {
+    return '';
+  }
+  final String date = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
 
   return date;
 }
 
 String formatDateInTwoDigit(DateTime dateTime) {
-  String date =
+  final String date =
       "${dateTime.day.toString().padLeft(2, '0')} ${monthName[dateTime.month - 1]}, ${dateTime.year}";
 
   return date;
 }
 
 String formatDateInDigit(DateTime dateTime) {
-  String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+  final String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
   return date;
 }
@@ -769,8 +950,8 @@ String formatDurationInSeconds({Duration? duration}) {
 }
 
 String dateToString(DateTime date) {
-  var formatter = DateFormat('yyyy-MM-dd');
-  var formatted = formatter.format(date);
+  final formatter = DateFormat('yyyy-MM-dd');
+  final formatted = formatter.format(date);
   return formatted;
 }
 
@@ -780,9 +961,9 @@ String durationToString(Duration duration) {
     return "0$n";
   }
 
-  String twoDigitMinutes =
+  final String twoDigitMinutes =
       twoDigits(duration.inMinutes.remainder(Duration.minutesPerHour));
-  String twoDigitSeconds =
+  final String twoDigitSeconds =
       twoDigits(duration.inSeconds.remainder(Duration.secondsPerMinute));
   return "$twoDigitMinutes:$twoDigitSeconds";
 }
@@ -808,7 +989,7 @@ List<String> errorImageList = [
   "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/me.jpeg"
 ];
 
-Widget getAmount(amount, currency, {double fontSize = 14}) {
+Widget getAmount(int? amount, String? currency, {double fontSize = 14}) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: <Widget>[
@@ -830,10 +1011,10 @@ Widget getAmount(amount, currency, {double fontSize = 14}) {
 }
 
 Widget getDateTime(BuildContext context, String dateTime,
-    {double fontSize = 10, color}) {
-  DateTime transactionTime = DateTime.parse(dateTime).toLocal();
-  String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-  String time = DateFormat("hh:mm a").format(transactionTime);
+    {double fontSize = 10}) {
+  final DateTime transactionTime = DateTime.parse(dateTime).toLocal();
+  final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+  final String time = DateFormat("hh:mm a").format(transactionTime);
   return Text(
     "$date • $time",
     softWrap: false,
@@ -853,13 +1034,13 @@ void apiErrorHandler({String? error, BuildContext? context, int duration = 1}) {
 }
 
 int moneyInputNormalizer(String amount) {
-  double value = double.parse(amount) * 100;
+  final double value = double.parse(amount) * 100;
   // Format the money into integer as server store money in integer
   return value.toInt();
 }
 
 int moneyInputNormalizer2(String amount) {
-  double value = double.parse(amount) / 100;
+  final double value = double.parse(amount) / 100;
   // Format the money into integer as server store money in integer
   return value.toInt();
 }
@@ -869,9 +1050,9 @@ String moneyDisplayNormalizer(int? amount) {
   // amount = 1050500;
 
   if (amount.toString().length >= 3) {
-    int amountLength = amount.toString().length;
+    final int amountLength = amount.toString().length;
 
-    int getLastTwoDigit =
+    final int getLastTwoDigit =
         int.parse(amount.toString().substring(amountLength - 2, amountLength));
 
     if (getLastTwoDigit > 0) {
@@ -901,7 +1082,8 @@ int moneyDisplayNormalizerForGraph(int? amount) {
   // Format the money into double as server returns money in integer
   // amount = 1050500;
 
-  int formattedAmount = (double.parse(amount.toString()) / 100).truncate();
+  final int formattedAmount =
+      (double.parse(amount.toString()) / 100).truncate();
   return formattedAmount;
 }
 
@@ -921,7 +1103,7 @@ Future<String> saveImage(BuildContext context, Image image) {
   image.image
       .resolve(const ImageConfiguration())
       .addListener(ImageStreamListener((imageInfo, _) async {
-    ByteData? byteData =
+    final ByteData? byteData =
         await imageInfo.image.toByteData(format: ImageByteFormat.png);
     if (byteData == null) return Future.error("ERROR while saving image");
     final pngBytes = byteData.buffer.asUint8List();
@@ -944,14 +1126,14 @@ String generateHashedMessage(String input) {
 }
 
 Future<double> getAccountBalance() async {
-  Map<String, dynamic>? data =
+  final Map<String, dynamic>? data =
       await PaymentAndBankingAuth().getAccountBalance();
   if (data == null) return 0.0;
 
-  int spendableBalance = data["spendable_balance"];
+  final int spendableBalance = data["spendable_balance"];
 
-  double accountBalanceConverted = spendableBalance / 100;
-  debugPrint("ACCOUNT BALANCE:- $accountBalanceConverted");
+  final double accountBalanceConverted = spendableBalance / 100;
+  // debugPrint("ACCOUNT BALANCE:- $accountBalanceConverted");
 
   return accountBalanceConverted;
 }
@@ -975,8 +1157,8 @@ void showToast({BuildContext? context, String? message}) {
 }
 
 String? validateSlydoName(String userInput) {
-  String lowerCaseInput = userInput.toLowerCase();
-  String cleanName = lowerCaseInput
+  final String lowerCaseInput = userInput.toLowerCase();
+  final String cleanName = lowerCaseInput
       .replaceAll(".", "")
       .replaceAll(" ", "")
       .replaceAll("_", "")
@@ -1007,7 +1189,7 @@ Widget userNameWithVerifiedIcon({
             fontSize: 15,
           ),
       text: truncateString(
-        str: messageDecoderWithEmoji(name)!,
+        str: messageDecoderWithEmoji(name) ?? "",
         lengthToTruncateAt: lengthToTruncateAt,
       ),
       children: [
@@ -1036,7 +1218,7 @@ String truncateString(
 
   return showEllipsis
       ? '${str.substring(0, lengthToTruncateAt)}...'
-      : '${str.substring(0, lengthToTruncateAt)}';
+      : str.substring(0, lengthToTruncateAt);
 }
 
 String slydoNameMsg = 'You can not use slydo in name';
@@ -1045,33 +1227,32 @@ String? checkSlydoName(String name) {
   String? result;
 
   if (name.isNotEmpty && name != "") {
-    String lowerCaseInput = name.trim().toLowerCase();
+    final String lowerCaseInput = name.trim().toLowerCase();
 
-    debugPrint("ERROR lowerCaseInput:- $lowerCaseInput");
+    // debugPrint("ERROR lowerCaseInput:- $lowerCaseInput");
 
-    String cleanName = lowerCaseInput
+    final String cleanName = lowerCaseInput
         .replaceAll(".", "")
         .replaceAll(" ", "")
         .replaceAll("_", "")
         .replaceAll("-", "");
 
-    debugPrint("ERROR cleanName:- $cleanName");
+    // debugPrint("ERROR cleanName:- $cleanName");
 
     if (cleanName.contains('slydo')) {
       result = slydoNameMsg;
     }
 
-    debugPrint("ERROR:- $result");
+    // debugPrint("ERROR:- $result");
   }
   return result;
 }
 
 String getFormattedAccountNumber({String accountNumber = "0000000000"}) {
   if (accountNumber.length != 10) {
-    accountNumber = '0000' + accountNumber;
+    accountNumber = '0000$accountNumber';
   }
-  return '******' +
-      accountNumber.substring(accountNumber.length - 5, accountNumber.length);
+  return '******${accountNumber.substring(accountNumber.length - 5, accountNumber.length)}';
 }
 
 double formatRating(double rating) {
@@ -1091,7 +1272,8 @@ class BlogSettingsTitles extends StatefulWidget {
   final Function(bool isSwitched)? onChanged;
 
   BlogSettingsTitles(
-      {this.isEnabled = true,
+      {super.key,
+      this.isEnabled = true,
       required this.icon,
       required this.title,
       this.onChanged,
@@ -1100,9 +1282,7 @@ class BlogSettingsTitles extends StatefulWidget {
       required this.description,
       this.hasSwitch = true,
       this.trailingWidget,
-      this.addElevation = true,
-      Key? key})
-      : super(key: key);
+      this.addElevation = true});
 
   @override
   State<BlogSettingsTitles> createState() => _BlogSettingsTitlesState();
@@ -1160,12 +1340,15 @@ class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
 }
 
 Widget getClickableRatingBar(
-    {required double initialRating, required Function(double) onRatingUpdate}) {
+    {required double initialRating,
+    required Function(double) onRatingUpdate,
+    required double starSize}) {
   return RatingBar.builder(
     initialRating: initialRating,
     minRating: 1,
     direction: Axis.horizontal,
     allowHalfRating: false,
+    itemSize: starSize,
     itemCount: 5,
     itemPadding: const EdgeInsets.symmetric(horizontal: 8),
     itemBuilder: (context, _) => Icon(
@@ -1178,13 +1361,13 @@ Widget getClickableRatingBar(
   );
 }
 
-Widget getRating({required int? numberOfRating, double starSize = 11}) {
-  List<Widget> widgets = [];
+Widget getRating({required int? numberOfRating, double starSize = 12}) {
+  final List<Widget> widgets = [];
 
   for (int i = 1; i < 6; i++) {
     widgets.add(
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 1.0),
+        padding: const EdgeInsets.symmetric(horizontal: 0.5),
         child: Icon(
           SlydoAppIcon.star,
           color: getRatingColor(numberOfRating, i),
@@ -1207,7 +1390,7 @@ Color getRatingColor(int? numberOfRating, int i) {
       : Colors.grey;
 }
 
-String enumToString(mEnum) {
+String enumToString(UtilitiesProvidersEnum mEnum) {
   //UtilitiesProvidersEnum.Electricity
 
   return mEnum.toString().split('.')[1].replaceAll('_', ' ');
@@ -1221,31 +1404,31 @@ Future<bool> doesFileExist(String filePath) async {
 // file already exists in the user's file system, so that each file name will
 // be unique.
 Future<String> makeFileName(String path, String fileName) async {
-  bool fileExists = await File('$path/$fileName').exists();
+  final bool fileExists = await File('$path/$fileName').exists();
 
   if (fileExists) {
     int counter = 1;
-    List newFileExt = fileName.split('.');
-    String ext = newFileExt[1]; // refers to the file extension.
+    final List newFileExt = fileName.split('.');
+    final String ext = newFileExt[1]; // refers to the file extension.
 
-    String fName = newFileExt[0];
+    final String fName = newFileExt[0];
 
     String newFileName = '$fName($counter).$ext';
 
     bool newFileExists = await File('$path/$newFileName').exists();
 
     while (newFileExists) {
-      List newFileExt = fileName.split('.');
+      final List newFileExt = fileName.split('.');
 
-      String ext = newFileExt[1];
+      final String ext = newFileExt[1];
 
       String fName = newFileExt[0];
 
       /// The regex here is used to get the last occurrence of something like this: (1)
       /// (opening and closing bracket with digit(s) inside). The reason for this is that
       /// it may happen that a file name itself contains (something like this) "(1)"
-      RegExp regExp = RegExp(r'\([0-9]+\)$');
-      String? stringMatch = regExp.stringMatch(fName);
+      final RegExp regExp = RegExp(r'\([0-9]+\)$');
+      final String? stringMatch = regExp.stringMatch(fName);
 
       if (stringMatch != null) {
         fName = fName.replaceAll(regExp, "(${counter + 1})");
@@ -1280,21 +1463,21 @@ Future<String> getLocalPathToSaveDownloads(
 
     return path;
   } else {
-    var directory = await pathProvider.getApplicationDocumentsDirectory();
+    final directory = await pathProvider.getApplicationDocumentsDirectory();
 
     return '${directory.path}/$uniqueFileName';
   }
 }
 
 Future<bool> checkStoragePermission() async {
-  var status = await Permission.storage.status;
+  final status = await Permission.storage.status;
 
   if (status.isGranted) {
     return true;
   } else if (status.isPermanentlyDenied) {
     openAppSettings();
   } else {
-    Map<Permission, PermissionStatus> permissions =
+    final Map<Permission, PermissionStatus> permissions =
         await [Permission.storage].request();
 
     if (permissions[Permission.storage] == PermissionStatus.granted) {
@@ -1343,7 +1526,7 @@ String? toTimeAgoLabel({required DateTime dateTime}) {
   //check for days
   if (inDays >= 1) {
     // return inDays.toString();
-    String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
+    final String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
     return convertedDate;
   }
 
@@ -1366,7 +1549,7 @@ String? toTimeAgoLabel({required DateTime dateTime}) {
         : 'just now';
   }
 
-  debugPrint('IN MINUTES --> $inMinutes');
+  // debugPrint('IN MINUTES --> $inMinutes');
 }
 
 String elapsedTime({required DateTime dateTime}) {
@@ -1397,7 +1580,7 @@ String toTimeAgoLabelYarn({required DateTime dateTime}) {
   final inDays = durationSinceNow.inDays;
   if (inDays >= 1) {
     // return inDays.toString();
-    String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
+    final String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
     return convertedDate;
   }
 
@@ -1407,7 +1590,7 @@ String toTimeAgoLabelYarn({required DateTime dateTime}) {
   }
 
   final inMinutes = durationSinceNow.inMinutes;
-  debugPrint('IN MINUTES --> $inMinutes');
+  // debugPrint('IN MINUTES --> $inMinutes');
 
   if (inMinutes >= 2) {
     return inHours >= 2
@@ -1575,7 +1758,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Gamawa",
       "Ganjuwa",
       "Giade",
-      "Itas\/Gadau",
+      "Itas/Gadau",
       "Jama'Are",
       "Katagum",
       "Kirfi",
@@ -1632,7 +1815,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Hawul",
       "Jere",
       "Kaga",
-      "Kala\/Balge",
+      "Kala/Balge",
       "Konduga",
       "Kukawa",
       "Kwaya-Kusar",
@@ -1652,7 +1835,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
     "lgas": [
       "Brass",
       "Ekeremor",
-      "Kolokuma\/Opokuma",
+      "Kolokuma/Opokuma",
       "Nembe",
       "Ogbia",
       "Sagbama",
@@ -1769,7 +1952,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Ikere",
       "Ikole",
       "Ilejemeje",
-      "Irepodun\/Ifelodun",
+      "Irepodun/Ifelodun",
       "Ise-Orun",
       "Moba",
       "Oye"
@@ -1814,7 +1997,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Kwami",
       "Nafada",
       "Shongom",
-      "Yamaltu\/Deba"
+      "Yamaltu/Deba"
     ]
   },
   {
@@ -1826,7 +2009,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Ezinihitte",
       "Ideato-North",
       "Ideato-South",
-      "Ihitte\/Uboma",
+      "Ihitte/Uboma",
       "Ikeduru",
       "Isiala-Mbano",
       "Isu",
@@ -1994,12 +2177,12 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Idah",
       "Igalamela-Odolu",
       "Ijumu",
-      "Kabba\/Bunu",
+      "Kabba/Bunu",
       "Kogi",
       "Lokoja",
       "Mopa-Muro",
       "Ofu",
-      "Ogori\/Magongo",
+      "Ogori/Magongo",
       "Okehi",
       "Okene",
       "Olamaboro",
@@ -2146,7 +2329,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
     "lgas": [
       "Abeokuta-North",
       "Abeokuta-South",
-      "Ado-Odo\/Ota",
+      "Ado-Odo/Ota",
       "Ewekoro",
       "Ifo",
       "Ijebu-East",
@@ -2286,7 +2469,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
   {
     "state": "Rivers",
     "lgas": [
-      "Abua\/Odual",
+      "Abua/Odual",
       "Ahoada-East",
       "Ahoada-West",
       "Akuku Toru",
@@ -2300,13 +2483,13 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Gokana",
       "Ikwerre",
       "Khana",
-      "Obio\/Akpor",
+      "Obio/Akpor",
       "Ogba-Egbema-Ndoni",
-      "Ogba\/Egbema\/Ndoni",
-      "Ogu\/Bolo",
+      "Ogba/Egbema/Ndoni",
+      "Ogu/Bolo",
       "Okrika",
       "Omuma",
-      "Opobo\/Nkoro",
+      "Opobo/Nkoro",
       "Oyigbo",
       "Port-Harcourt",
       "Tai"
@@ -2412,11 +2595,11 @@ List<String> expiresList = [
 ];
 
 List<String> getAllStates() {
-  List<String> states = [];
+  final List<String> states = [];
 
-  nigeriaStateAndLg.forEach((element) {
+  for (var element in nigeriaStateAndLg) {
     states.add(element['state']);
-  });
+  }
 
   return states;
 }
@@ -2426,7 +2609,7 @@ List<String> getLgs({required String? state}) {
     return [];
   }
 
-  List<String> lgs = [];
+  final List<String> lgs = [];
   for (int i = 0; i < nigeriaStateAndLg.length; i++) {
     if (nigeriaStateAndLg[i]['state'] == state) {
       lgs.addAll(nigeriaStateAndLg[i]['lgas']);
@@ -2441,7 +2624,7 @@ List<String> getLga({required List<String>? states}) {
     return [];
   }
 
-  List<String> lgs = [];
+  final List<String> lgs = [];
   for (int i = 0; i < nigeriaStateAndLg.length; i++) {
     if (states.contains(nigeriaStateAndLg[i]['state'])) {
       lgs.addAll(nigeriaStateAndLg[i]['lgas']);
@@ -2462,8 +2645,8 @@ extension StringCasingExtension on String {
 }
 
 bool canCashOut(int amount, int accountBalance) {
-  int payoutCharge = 2500; //transaction charges in kobo
-  int minimumAccountBalance =
+  const int payoutCharge = 2500; //transaction charges in kobo
+  const int minimumAccountBalance =
       1000; //the minimum a user's account can have at any time in kobo
   int totalDeduction = 0;
   int balanceAfterTransaction = 0;
@@ -2480,8 +2663,8 @@ bool canCashOut(int amount, int accountBalance) {
 }
 
 int displayPossibleCashOutAmount(int accountBalance) {
-  int payoutCharge = 2500; //transaction charges in kobo
-  int minimumAccountBalance =
+  const int payoutCharge = 2500; //transaction charges in kobo
+  const int minimumAccountBalance =
       1000; //the minimum a user's account can have at any time in kobo
   int possibleSendOutAmount = 0;
 
@@ -2512,8 +2695,8 @@ Widget userImageUserInitialsPic(
       ),
     );
   } else {
-    String? url = image;
-    String imageUrl = url.replaceAll('https//', 'https://');
+    final String url = image;
+    final String imageUrl = url.replaceAll('https//', 'https://');
 
     return Container(
       width: imageWidth,
@@ -2535,11 +2718,11 @@ Widget userImageUserInitialsPic(
 
 bool canSendMoney(int? amount, String? limit) {
   // virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!
-  return amount! <= int.parse("500000" ?? "0");
+  return amount! <= int.parse("500000");
 }
 
 Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
-  bool? result = await showDialogBox(
+  final bool? result = await showDialogBox(
     context: context,
     roundedBackgroundIcon: RoundedBackgroundIcon(
       backgroundColor: mateRed.withOpacity(0.08),
@@ -2558,19 +2741,19 @@ Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
     actionTwoBgColor: greyBorderColor,
     actionTwoTextColor: blackFont,
     title: AppLocalization.of(context)!.block,
-    description: AppLocalization.of(context)!.areYouSureWantToBlock +
-        " ${user.displayName()}",
+    description:
+        "${AppLocalization.of(context)!.areYouSureWantToBlock} ${user.displayName()}",
     actionOneText: AppLocalization.of(context)!.block,
     actionTwoText: AppLocalization.of(context)!.cancel,
     // rightButtonOnPressed: Navigator.pop(context),
   );
   if (result != null && result) {
-    bool done = await UserAuth().blockUser(user);
+    final bool done = await UserAuth().blockUser(user);
 
     if (done) {
       showSnackbar(context,
-          message: "${user.displayName()} " +
-              AppLocalization.of(context)!.isBlockedSuccessfully);
+          message:
+              "${user.displayName()} ${AppLocalization.of(context)!.isBlockedSuccessfully}");
       return true;
     } else {
       showSnackbar(context, message: AppLocalization.of(context)!.error);
@@ -2578,4 +2761,249 @@ Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
     }
   }
   return null;
+}
+
+Future<XFile?> selectSingleImageVideo() async {
+  final XFile? file = await ImagePicker().pickMedia(
+    maxWidth: 1800,
+    maxHeight: 1800,
+  );
+  return file;
+}
+
+Future<List<XFile>> selectMultipleImageVideo() async {
+  final List<XFile> file = await ImagePicker().pickMultipleMedia(
+    limit: 4,
+    maxWidth: 1800,
+    maxHeight: 1800,
+  );
+  return file;
+}
+
+Response handleServerErrors(dynamic response) {
+  var message = "Server Error";
+
+  if (response.statusCode >= 200 && response.statusCode < 300) {
+    return response;
+  } else {
+    final jsonResponse = jsonDecode(response.body);
+    if (jsonResponse.containsKey('error')) {
+      message = jsonResponse['error'];
+    } else if (jsonResponse.containsKey('detail')) {
+      message = jsonResponse['detail'];
+    }
+    showToast(message: message);
+  }
+  throw message;
+}
+
+Future<bool> checkConnection(BuildContext context) async {
+  final List<ConnectivityResult> connectivityResult =
+      await (Connectivity().checkConnectivity());
+
+  if (connectivityResult.contains(ConnectivityResult.wifi) ||
+      connectivityResult.contains(ConnectivityResult.ethernet) ||
+      connectivityResult.contains(ConnectivityResult.mobile)) {
+    return true;
+  } else {
+    showToast(
+        message: AppLocalization.of(context)!.internetConnectionNotAvailable);
+    return false;
+  }
+}
+
+Map<String, String> getFormattedDateTime(String? dateTimeString) {
+  try {
+    final parsedDateTime = DateTime.parse(dateTimeString ?? "");
+
+    final dateTime = DateTime(
+      parsedDateTime.year,
+      parsedDateTime.month,
+      parsedDateTime.day,
+      parsedDateTime.hour,
+      parsedDateTime.minute,
+      parsedDateTime.second,
+      parsedDateTime.millisecond,
+      parsedDateTime.microsecond,
+    ).add(const Duration(hours: 1));
+
+    final DateFormat dateFormatter = DateFormat('MMMM dd, yyyy');
+    final DateFormat timeFormatter = DateFormat('h:mm a');
+
+    // Format the date and time
+    final String formattedDate = dateFormatter.format(dateTime);
+    final String formattedTime = timeFormatter.format(dateTime);
+
+    return {
+      'date': formattedDate,
+      'time': formattedTime,
+    };
+  } catch (e) {
+    debugPrint("Error parsing date: $e");
+    return {
+      'date': '-',
+      'time': '-',
+    };
+  }
+}
+
+String formatPickupDateTime(String? pickupDateTimeString) {
+  if (pickupDateTimeString == null || pickupDateTimeString.isEmpty) {
+    return "";
+  }
+
+  try {
+    final String cleanedDateTimeString = pickupDateTimeString.split('.').first;
+
+    final DateTime dateTime = DateTime.parse(cleanedDateTimeString);
+
+    final DateFormat dateFormatter = DateFormat('MMMM dd, yyyy');
+    final DateFormat timeFormatter = DateFormat('h:mm a');
+
+    final String formattedDate = dateFormatter.format(dateTime);
+    final String formattedTime = timeFormatter.format(dateTime);
+
+    return '$formattedDate, $formattedTime';
+  } catch (e) {
+    debugPrint("Error parsing date: $e");
+    return "";
+  }
+}
+
+Widget qrCodeIcon(BuildContext context, Map<String, dynamic> navigationData,
+    Map<String, dynamic> accountData) {
+  return GestureDetector(
+    onTap: () async {
+      //get the account detail of clicked user
+      final VirtualAccount virtualAccount = VirtualAccount(
+        accountName: accountData["accountName"],
+        accountNumber: accountData["accountNumber"],
+        financialInstitution: accountData["financialInstitution"],
+        customerUsername: accountData["customerUsername"],
+        note: accountData["note"],
+      );
+
+      navigationData["virtualAccount"] = virtualAccount;
+      NavigationUtil.push(context,
+          screen: QrCodePage(arguments: navigationData));
+    },
+    child: Container(
+      padding: const EdgeInsets.all(3.0),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+        color: lightGrey.withOpacity(0.1),
+        border: Border.all(
+          color: blackFont,
+          width: 1.0,
+        ),
+      ), //
+      child: Row(
+        children: [
+          Icon(
+            SlydoAppIcon.qrCode,
+            size: 15,
+            color: blackFont,
+          ),
+          const SizedBox(width: 5),
+          Text(
+            'QR',
+            style: TextStyle(
+              fontSize: 15,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w700,
+              color: blackFont,
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget displayQuillFormattedText(BuildContext context, String formattedText,
+    Color? fontColor, double? fontSize, FontWeight? fontWeight) {
+  late flutterQuill.QuillController quillController;
+  dynamic jsonDecodedText;
+
+  try {
+    jsonDecodedText = jsonDecode(messageDecoderWithEmoji(formattedText) ?? "");
+
+    quillController = flutterQuill.QuillController(
+      document: flutterQuill.Document.fromJson(jsonDecodedText),
+      selection: const TextSelection.collapsed(offset: 0),
+    );
+
+    if (quillController.document.length > 0) {
+      quillController.formatTextStyle(
+        0,
+        quillController.document.length,
+        flutterQuill.Style.fromJson({
+          'color':
+              '#${fontColor?.value.toRadixString(16).padLeft(6, '0').toUpperCase()}',
+          'size': fontSize ?? 14.0,
+        }),
+      );
+    }
+  } catch (e) {
+    debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
+  }
+
+  if (jsonDecodedText != null) {
+    return flutterQuill.QuillEditor.basic(
+      configurations: flutterQuill.QuillEditorConfigurations(
+        controller: quillController,
+        readOnlyMouseCursor: SystemMouseCursors.basic,
+        showCursor: false,
+        enableInteractiveSelection: false,
+        embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+      ),
+    );
+  } else {
+    return Text(
+      messageDecoderWithEmoji(formattedText) ?? "",
+      style: TextStyle(
+        fontWeight: fontWeight ?? FontWeight.w400,
+        fontSize: fontSize ?? 14,
+        color: fontColor ?? lightBlackFont,
+      ),
+      textAlign: TextAlign.justify,
+    );
+  }
+}
+
+Widget getUserCurrencySymbol(BuildContext context,
+    {Color? color, double? fontSize}) {
+  final UserBloc userBloc = Provider.of<UserBloc>(context);
+
+  return Text(
+    worldCurrencies[userBloc.user.currency!]!,
+    style: TextStyle(
+      color: color ?? navyBlue,
+      fontSize: fontSize ?? 16,
+      fontFamily: "Inter",
+      fontWeight: FontWeight.w500,
+    ),
+  );
+}
+
+String currencyNameAndSymbol(String? currencyCode) {
+  if (currencyCode != null && (currencyCode.isNotEmpty)) {
+    return '$currencyCode (${worldCurrencies[currencyCode]})';
+  }
+  return '';
+}
+
+String? commaSeparatedListToJson(List? words) {
+  if (words?.isNotEmpty ?? false) {
+    return jsonEncode(words);
+  }
+  return null;
+}
+
+String mapToJson(Map<String, dynamic>? obj) {
+  if (obj?.isNotEmpty ?? false) {
+    return jsonEncode(obj);
+  }
+  return '{}';
 }

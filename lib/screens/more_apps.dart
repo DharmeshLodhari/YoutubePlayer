@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import '../routes/route_constants.dart';
 
 class MoreApps extends StatefulWidget {
+  const MoreApps({super.key});
+
   @override
-  _MoreAppsState createState() => _MoreAppsState();
+  State<MoreApps> createState() => _MoreAppsState();
 }
 
 class _MoreAppsState extends State<MoreApps> {
@@ -25,7 +27,7 @@ class _MoreAppsState extends State<MoreApps> {
   void initializeDashBoardItem() {
     dashboardItems.addAll([
       UserDashboardItemTile(
-        icon: SlydoAppIcon.movies_moreapps,
+        icon: SlydoAppIcon.moviesMoreApps,
         title: "Movies",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.MOVIES);
@@ -34,7 +36,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.music_moreapps,
+        icon: SlydoAppIcon.musicMoreApps,
         title: "Music",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.MUSICS);
@@ -43,7 +45,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.events_moreapps,
+        icon: SlydoAppIcon.eventsMoreApps,
         title: "Events",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.EVENTS);
@@ -52,7 +54,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.hotels_moreapps,
+        icon: SlydoAppIcon.hotelsMoreApps,
         title: "Hotels",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.HOTELS);
@@ -61,7 +63,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.property_moreapps,
+        icon: SlydoAppIcon.propertyMoreApps,
         title: "Property",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.PROPERTY);
@@ -70,7 +72,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.transport_category,
+        icon: SlydoAppIcon.transportCategory,
         title: "Bus",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.BUS);
@@ -79,7 +81,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.train_moreapps,
+        icon: SlydoAppIcon.trainMoreApps,
         title: "Train",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.TRAIN);
@@ -88,7 +90,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.flight_moreapps,
+        icon: SlydoAppIcon.flightMoreApps,
         title: "Flight",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.FLIGHT);
@@ -106,14 +108,14 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.eatingout_category,
+        icon: SlydoAppIcon.eatingoutCategory,
         title: "Eat out",
         onTap: () {},
         iconColor: HexColor("#F35B46"),
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.shopping_category,
+        icon: SlydoAppIcon.shoppingCategory,
         title: "Shopping",
         onTap: () {
           Navigator.of(context).pushNamed(Routes.SUPER_STORE);
@@ -122,7 +124,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.news_moreapps,
+        icon: SlydoAppIcon.newsMoreApps,
         title: "News",
         onTap: () {
           showDialog(
@@ -137,7 +139,7 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.wealth_moreapps,
+        icon: SlydoAppIcon.wealthMoreApps,
         title: "Wealth",
         onTap: () {},
         iconColor: HexColor("#FFC42E"),
@@ -149,7 +151,7 @@ class _MoreAppsState extends State<MoreApps> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: foregroundScreen(),
     );
@@ -157,7 +159,7 @@ class _MoreAppsState extends State<MoreApps> {
 
   Widget foregroundScreen() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 20),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
       child: SingleChildScrollView(
         child: Column(
           children: getUserDashboardItem(),
@@ -168,6 +170,7 @@ class _MoreAppsState extends State<MoreApps> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
       elevation: 0,
@@ -191,7 +194,7 @@ class _MoreAppsState extends State<MoreApps> {
   }
 
   List<Widget> getUserDashboardItem() {
-    List<Widget> items = [];
+    final List<Widget> items = [];
 
     for (int i = 0; i < dashboardItems.length; i = i + 3) {
       items.add(Column(
@@ -199,7 +202,7 @@ class _MoreAppsState extends State<MoreApps> {
           Row(
             children: [
               Expanded(child: dashboardItems[i]),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Expanded(
@@ -208,7 +211,7 @@ class _MoreAppsState extends State<MoreApps> {
                       : Container(
                           height: GRID_ITEM_HEIGHT,
                         )),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Expanded(
@@ -219,7 +222,7 @@ class _MoreAppsState extends State<MoreApps> {
                         )),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
         ],

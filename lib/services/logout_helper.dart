@@ -1,7 +1,8 @@
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/main_socket_message_handler.dart';
+import 'package:Slydo/screens/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/secure_storage.dart';
@@ -13,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LogoutHelper {
   Future<void> logoutUser() async {
-    BackgroundFetchStopBloc backgroundFetchBloc =
+    final BackgroundFetchStopBloc backgroundFetchBloc =
         Provider.of<BackgroundFetchStopBloc>(
             myGlobals.navigationKey.currentContext!,
             listen: false);
@@ -21,19 +22,19 @@ class LogoutHelper {
     backgroundFetchBloc.isAllowed = false;
 
     emptyBasketCart();
-    SharedPreferences _sharedPreferences;
+    SharedPreferences sharedPreferences;
 
     MainSocketMessageHandler().dispose();
 
-    print("logout===>start");
+    // debugPrint("logout===>start");
     await AuthService().logOut().catchError((error) {
       debugPrint("ERROR:- while logging out the user");
     });
-    print("logout===>stop");
+    // debugPrint("logout===>stop");
 
     CacheManager().deleteCache(clearAll: true);
 
-    MainSocketProvider socketProvider = Provider.of<MainSocketProvider>(
+    final MainSocketProvider socketProvider = Provider.of<MainSocketProvider>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
@@ -41,22 +42,22 @@ class LogoutHelper {
 
     PushNotificationService().logout();
 
-    BankAccountBloc bankAccountBlocPart = Provider.of<BankAccountBloc>(
+    final BankAccountBloc bankAccountBlocPart = Provider.of<BankAccountBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
-    DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
+    final DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
     bankAccountBlocPart.bankAccount = BankAccount();
     // dashboardBloc.index = 0;
-    _sharedPreferences = await SharedPreferences.getInstance();
-    _sharedPreferences.setBool('isLoggedOut', true);
-    _sharedPreferences.setBool('isAppTutorialDone', true);
+    sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setBool('isLoggedOut', true);
+    sharedPreferences.setBool('isAppTutorialDone', true);
 
     /// clearing all data when user is logout
-    if (!_sharedPreferences.getBool("isChecked")!) {
-      debugPrint("WorkManager cancel");
+    if (!sharedPreferences.getBool("isChecked")!) {
+      // debugPrint("WorkManager cancel");
       // Workmanager().cancelAll();
       await SecureStorage().clear();
     }
@@ -66,11 +67,11 @@ class LogoutHelper {
     );
 
     Navigator.of(myGlobals.navigationKey.currentContext!)
-        .pushNamed("/index", arguments: {'isIntroDone': true});
+        .pushNamed(Routes.LOGIN, arguments: {"isLoginOut": true});
   }
 
   void emptyBasketCart() {
-    BasketBloc basketBloc = Provider.of<BasketBloc>(
+    final BasketBloc basketBloc = Provider.of<BasketBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 

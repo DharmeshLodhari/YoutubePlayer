@@ -16,24 +16,26 @@ class DialogButton extends StatelessWidget {
   final Function onPressed;
   final Color? textColor;
   final String? text;
+  final double? fontSize;
 
   /// DialogButton constructor
-  DialogButton({
-    Key? key,
+  const DialogButton({
+    super.key,
     this.backgroundColor,
     this.text,
     this.textColor,
+    this.fontSize,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   /// Creates alert buttons based on constructor params
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 42,
       child: Material(
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(7))),
         color: backgroundColor,
         child: InkWell(
@@ -43,7 +45,7 @@ class DialogButton extends StatelessWidget {
               text!,
               style: TextStyle(
                   color: textColor,
-                  fontSize: 16,
+                  fontSize: fontSize ?? 16,
                   fontWeight: FontWeight.w700,
                   fontFamily: "Inter"),
             ),

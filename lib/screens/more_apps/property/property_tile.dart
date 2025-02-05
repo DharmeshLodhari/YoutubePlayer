@@ -1,25 +1,24 @@
 import 'dart:math';
 
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 
-import 'models/CityData.dart';
-import 'models/PartialPropertyItem.dart';
-import 'models/PropertyItem.dart';
+import 'models/city_data.dart';
+import 'models/partial_property_item.dart';
+import 'models/property_item.dart';
 
 // ignore: must_be_immutable
 class PropertyTileWithHeart extends StatefulWidget {
   String? imageUrl;
-  PropertyTileWithHeart({this.imageUrl});
+  PropertyTileWithHeart({super.key, this.imageUrl});
 
   @override
-  _PropertyTileWithHeartState createState() => _PropertyTileWithHeartState();
+  State<PropertyTileWithHeart> createState() => _PropertyTileWithHeartState();
 }
 
 class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
@@ -39,182 +38,180 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          child: CustomBoxShadow(
-            child: Card(
-                elevation: 3,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                margin: EdgeInsets.zero,
-                shadowColor: boxShadowTwo,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Column(
-                    children: <Widget>[
-                      Stack(
-                        children: [
-                          CarouselSlider(
-                            options: CarouselOptions(
-                                viewportFraction: 1.0,
-                                enlargeCenterPage: true,
-                                autoPlay: false,
-                                aspectRatio: 2,
-                                onPageChanged: (index, _) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _current = index;
-                                    });
-                                  }
-                                }),
-                            items: hotelImgList
-                                .map(
-                                  (image) => InkWell(
-                                    child: CachedNetworkImage(
-                                      width: double.infinity,
-                                      imageUrl: image,
-                                      fit: BoxFit.fill,
-                                    ),
-                                    onTap: () {
-                                      Navigator.of(context)
-                                          .pushNamed("/hotel-detail");
-                                    },
+        CustomBoxShadow(
+          child: Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              margin: EdgeInsets.zero,
+              shadowColor: boxShadowTwo,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Column(
+                  children: <Widget>[
+                    Stack(
+                      children: [
+                        cs.CarouselSlider(
+                          options: cs.CarouselOptions(
+                              viewportFraction: 1.0,
+                              enlargeCenterPage: true,
+                              autoPlay: false,
+                              aspectRatio: 2,
+                              onPageChanged: (index, _) {
+                                if (mounted) {
+                                  setState(() {
+                                    _current = index;
+                                  });
+                                }
+                              }),
+                          items: hotelImgList
+                              .map(
+                                (image) => InkWell(
+                                  child: CachedNetworkImage(
+                                    width: double.infinity,
+                                    imageUrl: image,
+                                    fit: BoxFit.fill,
                                   ),
-                                )
-                                .toList(),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            left: MediaQuery.of(context).size.width / 2 -
-                                ((5 * hotelImgList.length) + 16),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: hotelImgList.map((url) {
-                                int index = hotelImgList.indexOf(url);
-                                return Container(
-                                  width: 5.0,
-                                  height: 5.0,
-                                  margin: EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 2.0),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: _current == index
-                                        ? Colors.white
-                                        : Colors.white30,
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          )
-                        ],
-                      ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "House 1 for rent",
-                                  softWrap: false,
-                                  overflow: TextOverflow.fade,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                    color: blackFont,
-                                  ),
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .pushNamed("/hotel-detail");
+                                  },
                                 ),
-                                Row(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "₦",
-                                          softWrap: false,
-                                          overflow: TextOverflow.fade,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 14,
-                                              color: navyBlue,
-                                              fontFamily: "Roborto"),
-                                        ),
-                                        Text(
-                                          "34.00",
-                                          softWrap: false,
-                                          overflow: TextOverflow.fade,
-                                          style: TextStyle(
+                              )
+                              .toList(),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: MediaQuery.of(context).size.width / 2 -
+                              ((5 * hotelImgList.length) + 16),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: hotelImgList.map((url) {
+                              final int index = hotelImgList.indexOf(url);
+                              return Container(
+                                width: 5.0,
+                                height: 5.0,
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 2.0),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _current == index
+                                      ? Colors.white
+                                      : Colors.white30,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        )
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "House 1 for rent",
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: blackFont,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "₦",
+                                        softWrap: false,
+                                        overflow: TextOverflow.fade,
+                                        style: TextStyle(
                                             fontWeight: FontWeight.w700,
                                             fontSize: 14,
                                             color: navyBlue,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      "/ month",
-                                      softWrap: false,
-                                      overflow: TextOverflow.fade,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 12,
-                                        color: darkGrey,
+                                            fontFamily: "Roborto"),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Old Ken road, London SE15",
-                                  softWrap: false,
-                                  overflow: TextOverflow.fade,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                    color: darkGrey,
+                                      Text(
+                                        "34.00",
+                                        softWrap: false,
+                                        overflow: TextOverflow.fade,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 14,
+                                          color: navyBlue,
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                  Text(
+                                    "/ month",
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12,
+                                      color: darkGrey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Old Ken road, London SE15",
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  color: darkGrey,
                                 ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      SlydoAppIcon.star,
-                                      color: starYellow,
-                                      size: 11,
-                                    ),
-                                    SizedBox(
-                                      width: 4,
-                                    ),
-                                    Text(
-                                      "7.8",
-                                      style: TextStyle(
-                                          fontSize: 14, color: blackFont),
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                )),
-          ),
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    SlydoAppIcon.star,
+                                    color: starYellow,
+                                    size: 11,
+                                  ),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    "7.8",
+                                    style: TextStyle(
+                                        fontSize: 14, color: blackFont),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              )),
         ),
         Positioned(
           right: 10,
           child: IconButton(
             icon: Icon(
-              isChange ? SlydoAppIcon.heart_empty : SlydoAppIcon.heart_1,
+              isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
               color: Colors.white,
               size: 20,
             ),
@@ -232,10 +229,10 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
 class PropertyImagesTile extends StatefulWidget {
   final PropertyItem? property;
 
-  PropertyImagesTile({this.property});
+  const PropertyImagesTile({super.key, this.property});
 
   @override
-  _PropertyImagesTileState createState() => _PropertyImagesTileState();
+  State<PropertyImagesTile> createState() => _PropertyImagesTileState();
 }
 
 class _PropertyImagesTileState extends State<PropertyImagesTile> {
@@ -243,7 +240,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width - 40,
       child: CustomBoxShadow(
         child: Card(
@@ -258,8 +255,8 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                 children: <Widget>[
                   Stack(
                     children: [
-                      CarouselSlider(
-                        options: CarouselOptions(
+                      cs.CarouselSlider(
+                        options: cs.CarouselOptions(
                             viewportFraction: 1.0,
                             enlargeCenterPage: true,
                             autoPlay: false,
@@ -296,11 +293,12 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: widget.property!.images!.map((url) {
-                            int index = widget.property!.images!.indexOf(url);
+                            final int index =
+                                widget.property!.images!.indexOf(url);
                             return Container(
                               width: 5.0,
                               height: 5.0,
-                              margin: EdgeInsets.symmetric(
+                              margin: const EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 2.0),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
@@ -315,7 +313,8 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                     ],
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -362,16 +361,14 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 4,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              widget.property!.address1! +
-                                  ", " +
-                                  widget.property!.address2!,
+                              "${widget.property!.address1!}, ${widget.property!.address2!}",
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -387,7 +384,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                                   color: starYellow,
                                   size: 11,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 4,
                                 ),
                                 Text(
@@ -413,10 +410,10 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
 class RentPropertyTile extends StatefulWidget {
   final PropertyItem? property;
 
-  RentPropertyTile({this.property});
+  const RentPropertyTile({super.key, this.property});
 
   @override
-  _RentPropertyTileState createState() => _RentPropertyTileState();
+  State<RentPropertyTile> createState() => _RentPropertyTileState();
 }
 
 class _RentPropertyTileState extends State<RentPropertyTile> {
@@ -433,7 +430,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
       },
       child: Stack(
         children: [
-          Container(
+          SizedBox(
             width: MediaQuery.of(context).size.width - 40,
             child: CustomBoxShadow(
               child: Card(
@@ -448,8 +445,8 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                       children: <Widget>[
                         Stack(
                           children: [
-                            CarouselSlider(
-                              options: CarouselOptions(
+                            cs.CarouselSlider(
+                              options: cs.CarouselOptions(
                                   viewportFraction: 1.0,
                                   enlargeCenterPage: true,
                                   autoPlay: false,
@@ -480,12 +477,12 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: widget.property!.images!.map((url) {
-                                  int index =
+                                  final int index =
                                       widget.property!.images!.indexOf(url);
                                   return Container(
                                     width: 5.0,
                                     height: 5.0,
-                                    margin: EdgeInsets.symmetric(
+                                    margin: const EdgeInsets.symmetric(
                                         vertical: 10.0, horizontal: 2.0),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
@@ -501,7 +498,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                               left: 16,
                               top: 8,
                               child: Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(4),
@@ -513,7 +510,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                     )),
                                 child: Text(
                                   isAvailable ? "Just added" : "Featured",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -522,7 +519,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                           ],
                         ),
                         Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -555,7 +552,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                       ),
                                     ],
                                   ),
-                                  Container(
+                                  SizedBox(
                                     height: 30,
                                     width: 30,
                                     child: ClipOval(
@@ -570,7 +567,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                   ),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 4,
                               ),
                               Text(
@@ -584,7 +581,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                   color: blackFont,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 4,
                               ),
                               Row(
@@ -592,9 +589,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    widget.property!.address1! +
-                                        ", " +
-                                        widget.property!.address2!,
+                                    "${widget.property!.address1!}, ${widget.property!.address2!}",
                                     softWrap: false,
                                     overflow: TextOverflow.fade,
                                     style: TextStyle(
@@ -610,7 +605,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                         color: starYellow,
                                         size: 11,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 4,
                                       ),
                                       Text(
@@ -622,7 +617,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                   )
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Divider(
@@ -630,7 +625,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                 height: 0,
                                 thickness: 1,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Row(
@@ -651,7 +646,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -677,7 +672,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -703,7 +698,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -756,7 +751,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -796,7 +791,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                   // ),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Divider(
@@ -804,7 +799,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                 height: 0,
                                 thickness: 1,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Row(
@@ -821,7 +816,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                       color: blackFont,
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 8,
                                   ),
                                   Text(
@@ -847,7 +842,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
             right: 10,
             child: IconButton(
               icon: Icon(
-                isChange ? SlydoAppIcon.heart_empty : SlydoAppIcon.heart_1,
+                isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
                 color: Colors.white,
                 size: 20,
               ),
@@ -866,10 +861,10 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
 class RentPropertyTileWithoutHeart extends StatefulWidget {
   final PropertyItem? property;
 
-  RentPropertyTileWithoutHeart({this.property});
+  const RentPropertyTileWithoutHeart({super.key, this.property});
 
   @override
-  _RentPropertyTileWithoutHeartState createState() =>
+  State<RentPropertyTileWithoutHeart> createState() =>
       _RentPropertyTileWithoutHeartState();
 }
 
@@ -888,7 +883,7 @@ class _RentPropertyTileWithoutHeartState
       },
       child: Stack(
         children: [
-          Container(
+          SizedBox(
             width: MediaQuery.of(context).size.width - 40,
             child: CustomBoxShadow(
               child: Card(
@@ -903,8 +898,8 @@ class _RentPropertyTileWithoutHeartState
                       children: <Widget>[
                         Stack(
                           children: [
-                            CarouselSlider(
-                              options: CarouselOptions(
+                            cs.CarouselSlider(
+                              options: cs.CarouselOptions(
                                   viewportFraction: 1.0,
                                   enlargeCenterPage: true,
                                   autoPlay: false,
@@ -935,12 +930,12 @@ class _RentPropertyTileWithoutHeartState
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: widget.property!.images!.map((url) {
-                                  int index =
+                                  final int index =
                                       widget.property!.images!.indexOf(url);
                                   return Container(
                                     width: 5.0,
                                     height: 5.0,
-                                    margin: EdgeInsets.symmetric(
+                                    margin: const EdgeInsets.symmetric(
                                         vertical: 10.0, horizontal: 2.0),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
@@ -956,7 +951,7 @@ class _RentPropertyTileWithoutHeartState
                               left: 16,
                               top: 8,
                               child: Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(4),
@@ -968,7 +963,7 @@ class _RentPropertyTileWithoutHeartState
                                     )),
                                 child: Text(
                                   isAvailable ? "Just added" : "Featured",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -977,7 +972,7 @@ class _RentPropertyTileWithoutHeartState
                           ],
                         ),
                         Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1010,7 +1005,7 @@ class _RentPropertyTileWithoutHeartState
                                       ),
                                     ],
                                   ),
-                                  Container(
+                                  SizedBox(
                                     height: 30,
                                     width: 30,
                                     child: ClipOval(
@@ -1025,7 +1020,7 @@ class _RentPropertyTileWithoutHeartState
                                   ),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 4,
                               ),
                               Text(
@@ -1039,7 +1034,7 @@ class _RentPropertyTileWithoutHeartState
                                   color: blackFont,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 4,
                               ),
                               Row(
@@ -1047,9 +1042,7 @@ class _RentPropertyTileWithoutHeartState
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    widget.property!.address1! +
-                                        ", " +
-                                        widget.property!.address2!,
+                                    "${widget.property!.address1!}, ${widget.property!.address2!}",
                                     softWrap: false,
                                     overflow: TextOverflow.fade,
                                     style: TextStyle(
@@ -1065,7 +1058,7 @@ class _RentPropertyTileWithoutHeartState
                                         color: starYellow,
                                         size: 11,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 4,
                                       ),
                                       Text(
@@ -1077,7 +1070,7 @@ class _RentPropertyTileWithoutHeartState
                                   )
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Divider(
@@ -1085,7 +1078,7 @@ class _RentPropertyTileWithoutHeartState
                                 height: 0,
                                 thickness: 1,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Row(
@@ -1106,7 +1099,7 @@ class _RentPropertyTileWithoutHeartState
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -1132,7 +1125,7 @@ class _RentPropertyTileWithoutHeartState
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -1158,7 +1151,7 @@ class _RentPropertyTileWithoutHeartState
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -1184,7 +1177,7 @@ class _RentPropertyTileWithoutHeartState
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -1198,7 +1191,7 @@ class _RentPropertyTileWithoutHeartState
                                   ),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Divider(
@@ -1206,7 +1199,7 @@ class _RentPropertyTileWithoutHeartState
                                 height: 0,
                                 thickness: 1,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Row(
@@ -1223,7 +1216,7 @@ class _RentPropertyTileWithoutHeartState
                                       color: blackFont,
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 8,
                                   ),
                                   Text(
@@ -1272,7 +1265,7 @@ class _RentPropertyTileWithoutHeartState
 class PartialPropertyItemTile extends StatelessWidget {
   final PartialPropertyItem? property;
 
-  PartialPropertyItemTile({this.property});
+  const PartialPropertyItemTile({super.key, this.property});
 
   @override
   Widget build(BuildContext context) {
@@ -1287,7 +1280,8 @@ class PartialPropertyItemTile extends StatelessWidget {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1301,7 +1295,7 @@ class PartialPropertyItemTile extends StatelessWidget {
                     fit: BoxFit.fill,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Column(
@@ -1371,7 +1365,7 @@ class PartialPropertyItemTile extends StatelessWidget {
 class CityItemCard extends StatelessWidget {
   final CityData? city;
 
-  CityItemCard({this.city});
+  const CityItemCard({super.key, this.city});
 
   @override
   Widget build(BuildContext context) {
@@ -1386,7 +1380,8 @@ class CityItemCard extends StatelessWidget {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1401,7 +1396,7 @@ class CityItemCard extends StatelessWidget {
                     color: blackFont,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 ClipRRect(
@@ -1423,190 +1418,190 @@ class CityItemCard extends StatelessWidget {
 }
 
 class ReviewTile extends StatelessWidget {
+  const ReviewTile({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 20,
-                    width: 20,
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
-                        fit: BoxFit.fill,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
+                      fit: BoxFit.fill,
+                      width: double.infinity,
+                      height: double.infinity,
                     ),
                   ),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  Text(
-                    "Jamé Smith",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont),
-                  )
-                ],
-              ),
-              Text(
-                "20 Aug",
-                style: TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w400, color: darkGrey),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 16,
-          ),
-          Row(
-            children: [
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: greyBorderColor,
-                size: 11,
-              ),
-              SizedBox(
-                width: 4,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          Text(
-            "Very knowledgeable about all the history, really friendly, always smile, and always up for a chat.",
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
-            textAlign: TextAlign.justify,
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          Divider(
-            thickness: 1,
-            height: 4,
-            color: dividerColor,
-          ),
-        ],
-      ),
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
+                Text(
+                  "Jamé Smith",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: blackFont),
+                )
+              ],
+            ),
+            Text(
+              "20 Aug",
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w400, color: darkGrey),
+            )
+          ],
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Row(
+          children: [
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: greyBorderColor,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Text(
+          "Very knowledgeable about all the history, really friendly, always smile, and always up for a chat.",
+          style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
+          textAlign: TextAlign.justify,
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Divider(
+          thickness: 1,
+          height: 4,
+          color: dividerColor,
+        ),
+      ],
     );
   }
 }
 
 class PartnerTile extends StatelessWidget {
+  const PartnerTile({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          Container(
-            height: 32,
-            width: 32,
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl:
-                    "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
-                fit: BoxFit.fill,
-                width: double.infinity,
-                height: double.infinity,
-              ),
+    return Row(
+      children: [
+        SizedBox(
+          height: 32,
+          width: 32,
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl:
+                  "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
+              fit: BoxFit.fill,
+              width: double.infinity,
+              height: double.infinity,
             ),
           ),
-          SizedBox(
-            width: 16,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "Bond street dojo",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: blackFont),
-                ),
-                SizedBox(
-                  width: 8,
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      SlydoAppIcon.star,
-                      color: starYellow,
-                      size: 11,
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Text(
-                      "7.8 • Renter Friendly",
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: blackFont,
-                          fontWeight: FontWeight.w400),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: 16,
-          ),
-          Column(
+        ),
+        const SizedBox(
+          width: 16,
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: navyBlue,
-                size: 16,
-              )
+              Text(
+                "Bond street dojo",
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont),
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              Row(
+                children: [
+                  Icon(
+                    SlydoAppIcon.star,
+                    color: starYellow,
+                    size: 11,
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  Text(
+                    "7.8 • Renter Friendly",
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: blackFont,
+                        fontWeight: FontWeight.w400),
+                  )
+                ],
+              ),
             ],
           ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          width: 16,
+        ),
+        Column(
+          children: <Widget>[
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: navyBlue,
+              size: 16,
+            )
+          ],
+        ),
+      ],
     );
   }
 }

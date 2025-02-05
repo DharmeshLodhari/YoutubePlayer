@@ -1,23 +1,25 @@
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
-import 'package:Slydo/screens/more_apps/rider_registration/models/rider_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_message_settings.dart';
+import 'package:Slydo/screens/rider_registration/models/rider_model.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/models/user_about.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class UserBloc extends ChangeNotifier {
   // This block notify the change in user status and pass it round the app.
   User _user = User(
-      rider: null,
-      uuid: null,
-      url: null,
-      phoneNumber: null,
-      fullName: null,
-      userName: null,
-      avatar: null,
-      qrCode: null,
-      password: null,
-      currency: null);
+    rider: null,
+    uuid: null,
+    url: null,
+    phoneNumber: null,
+    fullName: null,
+    userName: null,
+    avatar: null,
+    qrCode: null,
+    password: null,
+    currency: null,
+    defaultAddress: null,
+  );
 
   ChatMessageSettings _chatMessageSettings = ChatMessageSettings();
 
@@ -25,14 +27,6 @@ class UserBloc extends ChangeNotifier {
 
   set chatMessageSettings(ChatMessageSettings val) {
     _chatMessageSettings = val;
-    notifyListeners();
-  }
-
-  bool get shouldReloadPostPage => _shouldReloadPostPage;
-  bool _shouldReloadPostPage = false;
-
-  set shouldReloadPostPage(bool shouldReload) {
-    _shouldReloadPostPage = shouldReload;
     notifyListeners();
   }
 
@@ -72,7 +66,7 @@ class UserBloc extends ChangeNotifier {
 
   void removeProfileCover() {
     _user.wallpaper = "";
-    _user.userAbout!.wallpaper = "";
+    _user.userAbout?.wallpaper = "";
     notifyListeners();
   }
 

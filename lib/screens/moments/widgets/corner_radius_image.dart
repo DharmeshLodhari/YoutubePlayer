@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class CornerRadiusImage extends StatelessWidget {
@@ -7,8 +8,9 @@ class CornerRadiusImage extends StatelessWidget {
   final bool isVideo;
   final Widget? widget;
 
-  CornerRadiusImage(
-      {required this.imagePath,
+  const CornerRadiusImage(
+      {super.key,
+      required this.imagePath,
       this.cornerRadius = 10.0,
       this.isVideo = false,
       this.widget});
@@ -31,7 +33,7 @@ class CornerRadiusVideo extends StatelessWidget {
   final double cornerRadius;
   final Widget? widget;
 
-  CornerRadiusVideo({this.cornerRadius = 10.0, this.widget});
+  const CornerRadiusVideo({super.key, this.cornerRadius = 10.0, this.widget});
 
   @override
   Widget build(BuildContext context) {

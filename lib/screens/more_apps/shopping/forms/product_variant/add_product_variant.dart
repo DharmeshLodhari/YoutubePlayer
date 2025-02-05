@@ -1,0 +1,1331 @@
+import 'dart:io';
+
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/utils.dart';
+import 'package:Slydo/screens/user_profile/models/currency_model.dart';
+import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/screens/currency/add_edit_currency.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
+import 'package:Slydo/utils/cache_manager.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
+import 'package:Slydo/widget/customized_checkbox_field.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/customized_textform_field_for_foreign_currency.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/image_crop.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../../widget/rounded_background_icon.dart';
+import '../../shopping_auth.dart';
+
+class AddProductVariant extends StatefulWidget {
+  final dynamic arguments;
+
+  const AddProductVariant({this.arguments, super.key});
+
+  @override
+  State<AddProductVariant> createState() => _AddProductVariantState();
+}
+
+class _AddProductVariantState extends State<AddProductVariant> {
+  final _auth = ShoppingAuthService();
+  final _formKey = GlobalKey<FormState>();
+
+  UserBloc? userBloc;
+
+  int imageCount = 5;
+  final ScrollController _scrollController = ScrollController();
+  TextEditingController inventoryController = TextEditingController();
+  List<PickedFile> productImages = [];
+  List<String> croppedImageList = [];
+  String size = "";
+  String variantPrice = "";
+  String foreignPrice = "";
+  String color = "";
+  String? value = "";
+  bool productIsAvailable = false;
+  bool inventoryIsAvailable = false;
+  bool trackInventory = false;
+  DateTime todayDate = DateTime.now();
+  String? productAvailableFrom;
+  bool isLoading = false;
+  bool isAPILoading = false;
+  int inventoryCount = 1;
+  bool isDiscountAvailable = false;
+  DiscountModel? pressedDiscount;
+  DiscountModel? selectedDiscount;
+  List<DiscountModel> discountList = [];
+  List<DiscountModel> discountListCopy = [];
+  String discountName = "";
+  bool isDiscountLoading = false;
+  String? discountNext = "";
+  String? discountPrevious = "";
+  int? discountItemCount = 0;
+  bool noItemInList = false;
+  List<VariantTypes> typeList = [
+    VariantTypes.Size,
+    VariantTypes.Color,
+    VariantTypes.ColorAndSize
+  ];
+  VariantTypes? selectedType;
+  String? title;
+
+  String? optionOnWhatToDo;
+
+  List<CurrencyModel>? currencyList;
+  List<CurrencyModel>? currencyListCopy;
+  int? currencyItemCount = 0;
+  String? currencyNext = "";
+  String? currencyPrevious = "";
+  final TextEditingController amountController = TextEditingController();
+  final TextEditingController foreignController = TextEditingController();
+  String? selectedCurrency;
+  String? selectedCurrencyId;
+  int? selectedCurrencyRate;
+  String? pressedCurrency;
+  ForeignPrice? foreignPriceModel;
+  bool currencyView = false;
+
+  final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
+      GlobalKey<ScaffoldMessengerState>();
+
+  @override
+  void deactivate() {
+    CacheManager().deleteCache();
+    super.deactivate();
+  }
+
+  @override
+  void initState() {
+    //get value if its form edit or add product
+    optionOnWhatToDo = widget.arguments["option"];
+    productAvailableFrom = DateFormat('yyyy-MM-dd').format(todayDate);
+    getCurrencyList();
+    getDiscountList();
+    inventoryController.text = "1";
+    super.initState();
+  }
+
+  Future<void> getCurrencyList() async {
+    final Map<String, dynamic> result =
+        await UserAuth().getCurrency(currencyNext, currencyPrevious);
+    if (result == null) {
+      isLoading = false;
+      noItemInList = true;
+      return;
+    }
+
+    currencyList = [];
+    currencyItemCount = result['count'];
+    currencyNext = result['next'];
+    currencyPrevious = result['previous'];
+    final tempList = result['results'];
+
+    currencyList?.addAll(tempList);
+    currencyListCopy = currencyList;
+    if (currencyList?.isNotEmpty ?? false) {
+      selectedCurrency = currencyList?[0].currency;
+      selectedCurrencyId = currencyList?[0].id;
+      selectedCurrencyRate = currencyList?[0].rate;
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        noItemInList = false;
+      });
+    }
+
+    if (currencyList?.isEmpty ?? false) {
+      if (mounted) {
+        setState(() {
+          noItemInList = true;
+          currencyList = [];
+          currencyListCopy = [];
+        });
+      }
+    } else if (currencyNext == null && currencyList!.length > 6) {
+      _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+        content:
+            Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        duration: const Duration(milliseconds: 500),
+      ));
+    }
+  }
+
+  void getDiscountList() async {
+    if (!isDiscountLoading) {
+      if (discountNext != null && !isDiscountLoading) {
+        isDiscountLoading = true;
+        if (mounted) setState(() {});
+
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfDiscounts(discountNext, discountPrevious);
+
+        if (result == null) {
+          isDiscountLoading = false;
+          noItemInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        discountItemCount = result['count'];
+        discountNext = result['next'];
+        discountPrevious = result['previous'];
+        final tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noItemInList = false;
+            isDiscountLoading = false;
+            discountList.addAll(tempList);
+
+            discountListCopy = discountList;
+          });
+        }
+      }
+      if (discountList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
+      } else if (discountNext == null && discountList.length > 6) {
+        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        resizeToAvoidBottomInset: true,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      centerTitle: false,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        AppLocalization.of(context)!.newVariant,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget scaffoldBody() {
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Center(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(height: 10),
+                      addImages(),
+                      const SizedBox(height: 10),
+                      addTitleField(),
+                      const SizedBox(height: 10),
+                      getTypeField(),
+                      if (selectedType == VariantTypes.Size) ...[
+                        const SizedBox(height: 10),
+                        addSizeField(),
+                      ],
+                      if (selectedType == VariantTypes.Color) ...[
+                        const SizedBox(height: 10),
+                        getColorField(),
+                      ],
+                      if (selectedType == VariantTypes.ColorAndSize) ...[
+                        const SizedBox(height: 10),
+                        getColorField(),
+                        const SizedBox(height: 10),
+                        addSizeField(),
+                      ],
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      getAmountField(),
+                      const SizedBox(height: 10),
+                      getForeignCurrencyFieldAndInfo(),
+                      if (currencyView) ...[
+                        const SizedBox(height: 10),
+                        getForeignCurrencyPriceField(),
+                        const SizedBox(height: 5),
+                        addNewCurrencyRate(),
+                      ],
+                      const SizedBox(height: 16),
+                      getDiscountField(),
+                      const SizedBox(height: 16),
+                      if (isDiscountAvailable == true) ...[
+                        getDiscountListField(),
+                        const SizedBox(height: 16),
+                      ],
+                      getIsAvailableField(),
+                      const SizedBox(height: 16),
+                      if (productIsAvailable == true) ...[
+                        getAvailableFromField(),
+                        const SizedBox(height: 16),
+                      ],
+                      getInventoryFormField(),
+                      const SizedBox(height: 16),
+                      getIsInventoryAvailableField(),
+                      const SizedBox(height: 30),
+                      getSubmitButton(),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+  }
+
+  Widget getDiscountListField() {
+    return CustomizedDropDownField(
+      title: 'Discount',
+      fontSize: 12,
+      titleColor: blackFont,
+      fontWeight: FontWeight.w400,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedDiscount != null
+              ? messageDecoderWithEmoji(
+                      getDiscountDisplayName(selectedDiscount)) ??
+                  selectedDiscount?.merchant ??
+                  ""
+              : "",
+          style: TextStyle(
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          discountAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  Widget getForeignCurrencyFieldAndInfo() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: getForeignCurrencyField(),
+        ),
+        getCurrencyInfo(),
+      ],
+    );
+  }
+
+  Widget getCurrencyInfo() {
+    return GestureDetector(
+      onTap: () async {
+        await showInfoDialog(
+          context: context,
+          title: 'Why set currency rate ?',
+          description:
+              'Setting a currency rate allows you to offer products in different currencies while ensuring accurate and up-to-date pricing.',
+        );
+      },
+      child: Icon(
+        Icons.info_outline_rounded,
+        color: blackFont,
+        size: 20,
+      ),
+    );
+  }
+
+  Widget addNewCurrencyRate() {
+    return GestureDetector(
+      onTap: () async {
+        final result = await NavigationUtil.push(
+          context,
+          screen: AddEditCurrency(
+            currencyList: currencyList,
+          ),
+        );
+        if (result != null && result == true) {
+          await getCurrencyList();
+        }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add New Currency Rate',
+            style: TextStyle(
+              fontSize: 12,
+              color: navyBlue,
+              fontWeight: FontWeight.w500,
+              fontFamily: "Inter",
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void discountAndroidSheet() {
+    discountList = discountListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search discount',
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      discountList = discountListCopy
+                          .where((element) =>
+                              (messageDecoderWithEmoji(element.name) ??
+                                      element.merchant ??
+                                      "")
+                                  .toLowerCase()
+                                  .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      discountList = discountListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: discountList.isNotEmpty
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: discountList.length,
+                          itemBuilder: (context, index) {
+                            final DiscountModel discount = discountList[index];
+                            if (selectedDiscount == discount) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    messageDecoderWithEmoji(
+                                            getDiscountDisplayName(discount)) ??
+                                        discount.merchant ??
+                                        "",
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontFamily: "Inter",
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedDiscount = discount;
+                                    Navigator.pop(context);
+                                    if (pressedDiscount != null) {
+                                      selectedDiscount = pressedDiscount;
+                                      discountName = messageDecoderWithEmoji(
+                                              selectedDiscount?.name) ??
+                                          selectedDiscount?.merchant ??
+                                          "";
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                messageDecoderWithEmoji(
+                                        getDiscountDisplayName(discount)) ??
+                                    discount.merchant ??
+                                    "",
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedDiscount = discount;
+                                Navigator.pop(context);
+                                if (pressedDiscount != null) {
+                                  selectedDiscount = pressedDiscount;
+                                  discountName = messageDecoderWithEmoji(
+                                          selectedDiscount?.name) ??
+                                      selectedDiscount?.merchant ??
+                                      "";
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : const Text("No Found Discount Data"),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget getForeignCurrencyField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        currencyView = !currencyView;
+        setState(() {});
+      },
+      isChecked: currencyView,
+      title: AppLocalization.of(context)!.setPriceWithForeignCurrency,
+    );
+  }
+
+  Widget getForeignCurrencyPriceField() {
+    return CustomizedTextFormFieldForForeignCurrency(
+      labelText: AppLocalization.of(context)!.priceForeignCurrency,
+      controller: foreignController,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      selectedCurrencySymbol:
+          selectedCurrency != null ? worldCurrencies[selectedCurrency] : "-",
+      onTapCurrency: () {
+        currencyAndroidSheet();
+      },
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            foreignPrice = double.parse(val.replaceAll(',', '')).toString();
+
+            final price = getForeignPrice(double.parse(val.replaceAll(',', '')),
+                    selectedCurrencyRate) ??
+                "";
+            variantPrice = price.replaceAll(',', '');
+            amountController.text = variantPrice;
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        } else {
+          amountController.clear();
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+
+  void currencyAndroidSheet() {
+    currencyList = currencyListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search currency',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      currencyList = currencyListCopy!
+                          .where((element) =>
+                              element.currency?.startsWith(value.toString()) ??
+                              false)
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      currencyList = currencyListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                if (currencyList?.isNotEmpty ?? false)
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: currencyList?.length,
+                      itemBuilder: (context, index) {
+                        final String currency =
+                            currencyList?[index].currency ?? "-";
+                        if (selectedCurrency == currency) {
+                          return Container(
+                            color: selectedListItemBackgroundBlue,
+                            child: ListTile(
+                              dense: true,
+                              title: Text(
+                                currencyNameAndSymbol(currency),
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                    color: navyBlue,
+                                    fontSize: 16,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              trailing: Icon(
+                                SlydoAppIcon.checked,
+                                color: navyBlue,
+                                size: 12,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                pressedCurrency = currency;
+                                if (pressedCurrency != null) {
+                                  amountController.clear();
+                                  foreignController.clear();
+                                  variantPrice = "";
+                                  foreignPrice = "";
+                                  selectedCurrency = pressedCurrency;
+                                  selectedCurrencyId = currencyList?[index].id;
+                                  selectedCurrencyRate =
+                                      currencyList?[index].rate;
+                                  setState(() {});
+                                }
+                              },
+                            ),
+                          );
+                        }
+                        return ListTile(
+                          title: Text(
+                            currencyNameAndSymbol(currency),
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400),
+                          ),
+                          dense: true,
+                          onTap: () {
+                            Navigator.pop(context);
+                            pressedCurrency = currency;
+                            if (pressedCurrency != null) {
+                              amountController.clear();
+                              foreignController.clear();
+                              variantPrice = "";
+                              foreignPrice = "";
+                              selectedCurrency = pressedCurrency;
+                              selectedCurrencyId = currencyList?[index].id;
+                              selectedCurrencyRate = currencyList?[index].rate;
+                              setState(() {});
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: NoItemInList(
+                      msg: 'No Rate Found',
+                      isButtonShow: true,
+                      buttonTitle: 'Add New Currency Rate',
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        final result = await NavigationUtil.push(
+                          context,
+                          screen: AddEditCurrency(
+                            currencyList: currencyList,
+                          ),
+                        );
+                        if (result != null && result == true) {
+                          await getCurrencyList();
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget getDiscountField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        isDiscountAvailable = !isDiscountAvailable;
+        setState(() {});
+      },
+      isChecked: isDiscountAvailable,
+      title: AppLocalization.of(context)!.discount,
+    );
+  }
+
+  Widget showBackArrow() {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back_ios),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  Widget addImages() {
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: croppedImageList.length + 1,
+        itemBuilder: (context, index) => Container(
+          padding: const EdgeInsets.only(right: 6),
+          child: index != croppedImageList.length
+              ? showImage(index)
+              : croppedImageList.length != imageCount
+                  ? addImageButton()
+                  : null,
+        ),
+      ),
+    );
+  }
+
+  Widget addImageButton() {
+    return CustomBoxShadow(
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shadowColor: boxShadowTwo,
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        child: Container(
+          width: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: InkWell(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  SlydoAppIcon.addImage,
+                  color: darkGrey,
+                ),
+                const SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  AppLocalization.of(context)!.addImage,
+                  style: TextStyle(color: darkGrey, fontSize: 14),
+                ),
+              ],
+            ),
+            onTap: () {
+              pickImage();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void pickImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.gallery),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      ImagePicker().pickImage(source: imageSource).then((value) async {
+        if (value != null) {
+          /// for cropping the image
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
+          if (croppedImage == null) {
+            return;
+          }
+
+          // productImages.add(PickedFile(croppedImage));
+          croppedImageList.add(croppedImage);
+          if (mounted) setState(() {});
+        }
+      });
+    }
+  }
+
+  Widget showImage(int index) {
+    return SizedBox(
+      height: 100,
+      child: Stack(
+        children: <Widget>[
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            shadowColor: dividerColor,
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: SizedBox(
+              width: 100,
+              child: Image.file(
+                File(croppedImageList[index]),
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              padding: const EdgeInsets.only(right: 6, top: 6),
+              alignment: Alignment.topRight,
+              icon: Container(
+                padding: const EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  color: iconBtnGrey,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(
+                  SlydoAppIcon.remove,
+                  color: blackFont,
+                  size: 15,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  croppedImageList.removeAt(index);
+                });
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget addTitleField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.title,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.pleaseEnterTitle;
+      },
+      onChanged: (val) {
+        title = val;
+      },
+    );
+  }
+
+  Widget addSizeField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.size,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.pleaseEnterSize;
+      },
+      onChanged: (val) {
+        value = val;
+      },
+    );
+  }
+
+  Widget getColorField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.color,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.pleaseEnterColor;
+      },
+      onChanged: (val) {
+        color = val;
+      },
+    );
+  }
+
+  Widget getAmountField() {
+    return CustomizedTextFormField(
+      controller: amountController,
+      isReadOnly: currencyView ? true : false,
+      labelText: AppLocalization.of(context)!.priceLocalCurrency,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            variantPrice = double.parse(val.replaceAll(',', '')).toString();
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+
+  bool validateDropdown() {
+    if (selectedType != null) {
+      return true;
+    } else {
+      showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
+      return false;
+    }
+  }
+
+  Widget getIsAvailableField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        productIsAvailable = !productIsAvailable;
+        setState(() {});
+      },
+      isChecked: productIsAvailable,
+      title: "Available",
+    );
+  }
+
+  Widget getEnableInSuperStoreField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        trackInventory = !trackInventory;
+        setState(() {});
+      },
+      isChecked: trackInventory,
+      title: AppLocalization.of(context)!.enableInSuperStore,
+    );
+  }
+
+  Widget getAvailableFromField() {
+    return GestureDetector(
+      onTap: () {
+        showDatePicker(
+          builder: customThemeBuilder,
+          context: context,
+          initialDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          firstDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          lastDate: DateTime(2101),
+        ).then((value) {
+          final DateTime selectedDate =
+              DateTime(value!.year, value.month, value.day);
+
+          productAvailableFrom = DateFormat('yyyy-MM-dd').format(selectedDate);
+          setState(() {});
+        }).catchError((error) {});
+      },
+      child: CustomizedDropDownField(
+        title: "Available from",
+        child: ListTile(
+          dense: true,
+          title: Text(
+            productAvailableFrom ?? "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getInventoryFormField() {
+    return CustomizedDropDownField(
+      title: "Inventory (Available Quantity)",
+      child: ListTile(
+        dense: true,
+        title: Center(
+          child: SizedBox(
+            width: 50,
+            child: TextField(
+              controller: inventoryController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: const EdgeInsets.all(5),
+                border: const OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                  ),
+                ),
+              ),
+              onChanged: (value) {
+                // if (value.isEmpty) {
+                //   inventoryController.text = '1';
+                // }
+                inventoryCount = int.parse(inventoryController.text);
+              },
+            ),
+          ),
+        ),
+        trailing: Padding(
+          padding: const EdgeInsets.only(right: 30.0),
+          child: RoundedBackgroundIcon(
+              backgroundColor: greyBorderColor,
+              icon: Icon(
+                SlydoAppIcon.plus,
+                color: blackFont,
+                size: 14,
+              ),
+              onTap: () => addInventory()),
+        ),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 30.0),
+          child: RoundedBackgroundIcon(
+              backgroundColor: greyBorderColor,
+              icon: Icon(
+                SlydoAppIcon.minus,
+                color: blackFont,
+                size: 2,
+              ),
+              onTap: () => subtractInventory()),
+        ),
+      ),
+    );
+  }
+
+  void addInventory() {
+    setState(() {
+      inventoryCount++;
+      inventoryController.text = inventoryCount.toString();
+    });
+  }
+
+  void subtractInventory() {
+    if (inventoryCount > 0) {
+      setState(() {
+        inventoryCount--;
+        inventoryController.text = inventoryCount.toString();
+      });
+    }
+  }
+
+  Widget getIsInventoryAvailableField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        inventoryIsAvailable = !inventoryIsAvailable;
+        setState(() {});
+      },
+      isChecked: inventoryIsAvailable,
+      title:
+          "Checking this field will automatically update the quantity when the product is purchased.",
+      fontSize: 10.0,
+      maxLines: 2,
+    );
+  }
+
+  Widget getTypeField() {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.type,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedType != null ? selectedType?.toName() ?? "" : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          categoryAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  void categoryAndroidSheet() {
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.45,
+            child: Column(
+              children: [
+                Text(
+                  'Select Category',
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400),
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: typeList.length,
+                    itemBuilder: (context, index) {
+                      final category = typeList[index];
+                      if (selectedType == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category.toName(),
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              selectedType = category;
+                              Navigator.pop(context);
+                              setState(() {});
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category.toName(),
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          selectedType = category;
+                          Navigator.pop(context);
+                          setState(() {});
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget getSubmitButton() {
+    return CurvedButton(
+      onPressed: isAPILoading
+          ? () {}
+          : () async {
+              FocusScope.of(context).unfocus();
+              isAPILoading = true;
+              if (mounted) setState(() {});
+
+              await addVariant();
+
+              isAPILoading = false;
+              if (mounted) setState(() {});
+            },
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Save",
+      isLoading: isAPILoading,
+    );
+  }
+
+  Future<void> addVariant() async {
+    if (_formKey.currentState!.validate()) {
+      // if (croppedImageList.length >= 1) {
+      // if (productImages.length >= 1) {
+      if (validateDropdown()) {
+        final Variant variant = Variant();
+        // variant.localImages = productImages.map((file) => File(file.path)).toList();
+        variant.localImages =
+            croppedImageList.map((filePath) => File(filePath)).toList();
+        variant.title = title;
+        variant.colour = color;
+        variant.value = value;
+        variant.quantity = inventoryCount;
+        variant.type = selectedType;
+        variant.price = moneyInputNormalizer(variantPrice).toString();
+        // variant.discount = selectedDiscount;
+        if (isDiscountAvailable) {
+          variant.discountId = selectedDiscount?.id;
+        } else {
+          variant.discountId = "";
+        }
+        variant.isAvailable = productIsAvailable;
+        variant.availableFrom = productAvailableFrom;
+        variant.trackInventory = inventoryIsAvailable;
+        variant.currency = 'NGN';
+        if (optionOnWhatToDo == 'new') {
+          //send the variant detail back to the previous page
+          // debugPrint('file path::: ${variant.localImages}');
+
+          Navigator.pop(context, variant);
+        } else if (optionOnWhatToDo == 'edit') {
+          final String productId = widget.arguments["productId"];
+          //make api call to save the variant details
+          saveVariant(productId, variant);
+        }
+      }
+    } else {
+      isAPILoading = false;
+      if (mounted) setState(() {});
+      // showToast(message: AppLocalization.of(context)!.pleaseAddImage);
+    }
+    // }
+  }
+
+  Future<void> saveVariant(String productId, Variant item) async {
+    await _auth.addVariant(item, productId).then((value) {
+      Navigator.pop(context, item);
+      return true;
+    }).catchError((error) {
+      debugPrint(error.toString());
+      isAPILoading = false;
+      if (mounted) setState(() {});
+      showToast(message: error.toString());
+      // backValue = false;
+    });
+  }
+
+  String getDiscountDisplayName(DiscountModel? discount) {
+    String name = '';
+    if (discount?.type?.toValue() == "percentage") {
+      name = '${discount?.name} (${discount?.value}%)';
+    } else {
+      name =
+          '${discount?.name} (${worldCurrencies[userBloc?.user.currency]}${discount?.value})';
+    }
+    return name;
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    inventoryController.dispose();
+    super.dispose();
+  }
+}

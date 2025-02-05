@@ -1,0 +1,47 @@
+class Device {
+  String? firebaseToken;
+  String? type; // Android OR IOS
+  String? mode;
+  String? deviceId;
+  String? deviceName;
+
+  Device(
+      {this.firebaseToken,
+      this.type,
+      this.mode,
+      this.deviceId,
+      this.deviceName});
+}
+
+class Language {
+  const Language(this.name, this.languageCode);
+
+  final String name;
+  final String languageCode;
+}
+
+List<Language> languages = <Language>[
+  const Language('English', 'en'),
+//  Language('Spanish', 'es'),
+//  Language('French', 'fr'),
+//  Language('Portuguese', 'pt'),
+//  Language('Hausa', "ha"),
+//  Language('Yoruba', "yo"),
+//  Language('Zulu', 'zu'),
+//  Language('Swahili', "sw"),
+//  Language('Arabic', "ar"),
+//  Language('Amharic', "am"),
+];
+
+Language? getLanguageByLanguageCode(String? languageCode) {
+  Language? language;
+  for (var lang in languages) {
+    if (languageCode == lang.languageCode) {
+      language = lang;
+    }
+  }
+  if (language != null) {
+    return language;
+  }
+  return languages.first;
+}

@@ -10,11 +10,13 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 import 'event_auth.dart';
-import 'models/PartialEventItem.dart';
+import 'models/partial_event_item.dart';
 
 class SearchEvent extends StatefulWidget {
+  const SearchEvent({super.key});
+
   @override
-  _SearchEventState createState() => _SearchEventState();
+  State<SearchEvent> createState() => _SearchEventState();
 }
 
 class _SearchEventState extends State<SearchEvent> {
@@ -32,7 +34,7 @@ class _SearchEventState extends State<SearchEvent> {
   String? selectedMovieCategory;
   String? selectedMovieYear;
   int? selectedRating;
-  RangeValues selectedPriceValue = RangeValues(5, 56);
+  RangeValues selectedPriceValue = const RangeValues(5, 56);
 
   List<PartialEventItem> eventList = [];
 
@@ -75,7 +77,7 @@ class _SearchEventState extends State<SearchEvent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
@@ -83,6 +85,7 @@ class _SearchEventState extends State<SearchEvent> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -104,7 +107,7 @@ class _SearchEventState extends State<SearchEvent> {
       ),
       actions: <Widget>[
         filterMovieBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -129,42 +132,41 @@ class _SearchEventState extends State<SearchEvent> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 6,
-          ),
-          searchBox(),
-          SizedBox(
-            height: 12,
-          ),
-          isLoading
-              ? Expanded(
-                  child: Center(
-                    child: CircularLoadingIndicator(),
-                  ),
-                )
-              : eventList.isEmpty
-                  ? Expanded(child: searchBackground())
-                  : Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: eventList
-                              .map(
-                                (element) => Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 16),
-                                    child: EventTileWithHeart(
-                                      partialEvent: element,
-                                    )),
-                              )
-                              .toList(),
-                        ),
-                      ),
+    return Column(
+      children: [
+        const SizedBox(
+          height: 6,
+        ),
+        searchBox(),
+        const SizedBox(
+          height: 12,
+        ),
+        if (isLoading)
+          Expanded(
+            child: Center(
+              child: CircularLoadingIndicator(),
+            ),
+          )
+        else
+          eventList.isEmpty
+              ? Expanded(child: searchBackground())
+              : Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: eventList
+                          .map(
+                            (element) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
+                                child: EventTileWithHeart(
+                                  partialEvent: element,
+                                )),
+                          )
+                          .toList(),
                     ),
-        ],
-      ),
+                  ),
+                ),
+      ],
     );
   }
 
@@ -177,7 +179,7 @@ class _SearchEventState extends State<SearchEvent> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -213,8 +215,8 @@ class _SearchEventState extends State<SearchEvent> {
             hintText: "Search",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(
@@ -260,7 +262,7 @@ class _SearchEventState extends State<SearchEvent> {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter bottomSheetSetState) =>
                 Card(
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20)),
@@ -268,8 +270,8 @@ class _SearchEventState extends State<SearchEvent> {
                     color: Colors.white,
                     margin: EdgeInsets.zero,
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 20),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
@@ -280,27 +282,27 @@ class _SearchEventState extends State<SearchEvent> {
                                 fontWeight: FontWeight.w700,
                                 color: blackFont),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 40,
                           ),
                           getMovieCategoryDropDown(bottomSheetSetState),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           getMovieYearDropDown(bottomSheetSetState),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           getMovieRatingSelection(bottomSheetSetState),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           getPriceSelection(bottomSheetSetState),
-                          SizedBox(
+                          const SizedBox(
                             height: 50,
                           ),
                           getFilerSubmitButton(),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                         ],
@@ -318,7 +320,7 @@ class _SearchEventState extends State<SearchEvent> {
           AppLocalization.of(context)!.category,
           style: TextStyle(color: blackFont, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -327,7 +329,7 @@ class _SearchEventState extends State<SearchEvent> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -359,11 +361,13 @@ class _SearchEventState extends State<SearchEvent> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -438,7 +442,7 @@ class _SearchEventState extends State<SearchEvent> {
           "Year",
           style: TextStyle(color: blackFont, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -447,7 +451,7 @@ class _SearchEventState extends State<SearchEvent> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -479,11 +483,13 @@ class _SearchEventState extends State<SearchEvent> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -559,7 +565,7 @@ class _SearchEventState extends State<SearchEvent> {
           style: TextStyle(
               color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         Row(
@@ -597,7 +603,7 @@ class _SearchEventState extends State<SearchEvent> {
       {bool isSelected = false, required int index}) {
     return GestureDetector(
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color:
@@ -612,7 +618,7 @@ class _SearchEventState extends State<SearchEvent> {
                   fontSize: 14,
                   fontWeight: FontWeight.w600),
             ),
-            SizedBox(
+            const SizedBox(
               width: 2,
             ),
             Icon(
@@ -630,14 +636,14 @@ class _SearchEventState extends State<SearchEvent> {
     );
   }
 
-  Widget getPriceSelection(bottomSheetSetState) {
+  Widget getPriceSelection(StateSetter bottomSheetSetState) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Price",
         style: TextStyle(
             color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
       ),
-      SizedBox(
+      const SizedBox(
         height: 16,
       ),
       SliderTheme(
@@ -645,7 +651,7 @@ class _SearchEventState extends State<SearchEvent> {
           trackHeight: 1,
           rangeThumbShape: CustomRangeThumbShapeForMovie(
               selectedPriceValue.start.toInt(), selectedPriceValue.end.toInt()),
-          overlayShape: RoundSliderOverlayShape(overlayRadius: 12.0),
+          overlayShape: const RoundSliderOverlayShape(overlayRadius: 12.0),
           minThumbSeparation: 30,
         ),
         child: RangeSlider(

@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class FlightDashboard extends StatefulWidget {
+  const FlightDashboard({super.key});
+
   @override
-  _FlightDashboardState createState() => _FlightDashboardState();
+  State<FlightDashboard> createState() => _FlightDashboardState();
 }
 
 class _FlightDashboardState extends State<FlightDashboard> {
@@ -29,7 +31,7 @@ class _FlightDashboardState extends State<FlightDashboard> {
           onPageChanged: (index) {
             _flightDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             FlightExploreScreen(),
             MyFlightTicketList(),
           ],
@@ -75,7 +77,7 @@ class _FlightDashboardState extends State<FlightDashboard> {
   BottomNavigationBarItem bottomNavigationBarItem(
       {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: SizedBox(
         height: 50,
         width: 108,
         child: Icon(
@@ -100,7 +102,7 @@ class _FlightDashboardState extends State<FlightDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
@@ -110,13 +112,13 @@ class _FlightDashboardState extends State<FlightDashboard> {
                 size: 16,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.w700),

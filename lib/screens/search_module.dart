@@ -1,12 +1,13 @@
-/**/
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/moments/models/comment_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -26,21 +27,20 @@ import '../services/app_config_bloc.dart';
 import '../widget/custom_slydo_usercard.dart';
 import '../widget/dialog.dart';
 import '../widget/rounded_background_icon.dart';
+import '../widget/tab_selection.dart';
 import 'connection_module/channels.dart';
-import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
-import 'more_apps/user_profile/user_auth.dart';
-import 'more_apps/yarn/widgets/yarn_tab_selection.dart';
 
 class SearchModule extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
-  SearchModule({this.arguments});
+  const SearchModule({super.key, this.arguments});
 
   @override
-  _SearchModuleState createState() => _SearchModuleState();
+  State<SearchModule> createState() => _SearchModuleState();
 }
 
-class _SearchModuleState extends State<SearchModule> {
+class _SearchModuleState extends State<SearchModule>
+    with SingleTickerProviderStateMixin {
   bool isValidSearch = false;
   bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";
@@ -51,28 +51,26 @@ class _SearchModuleState extends State<SearchModule> {
   static String hint = "Search...";
 
   final _auth = AuthService();
-  SlidableController? slidableController;
-  SlidableController? slidableController1;
-  SlidableController? slidableController2;
 
   List<Widget> results = [];
 
   GlobalKey textFormField = GlobalKey();
   TextEditingController searchItemTextController = TextEditingController();
 
-  GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
-  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+  final GlobalKey<ScaffoldState> _scaffoldSearchKey =
+      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
       GlobalKey<ScaffoldMessengerState>();
 
   //pagination variables
   int? count = 0;
   String? next = "";
   String? previous = "";
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
   bool noItemInList = false;
 
-  GlobalKey _key = LabeledGlobalKey("searchTypeSelectionKey");
+  final GlobalKey _key = LabeledGlobalKey("searchTypeSelectionKey");
   late CustomizedPopUpMenu searchTypeSelectionMenu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -88,8 +86,9 @@ class _SearchModuleState extends State<SearchModule> {
   bool noItemInSuggestionList = false;
   List<CustomerProfile> suggestionsList = [];
   BasePaginationModel<List<CustomerProfile>>? basePaginationModel;
-  ScrollController _scrollCtrl = ScrollController();
-  RefreshController _refreshCtrl = RefreshController(initialRefresh: false);
+  final ScrollController _scrollCtrl = ScrollController();
+  final RefreshController _refreshCtrl =
+      RefreshController(initialRefresh: false);
   bool isSuggestion = true;
 
   void _showTabs(bool visible) {
@@ -110,18 +109,6 @@ class _SearchModuleState extends State<SearchModule> {
       usingOutsideOfDashboard = widget.arguments["show_back_button"] ?? false;
     }
 
-    slidableController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
-    slidableController1 = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged1,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged1,
-    );
-    slidableController2 = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged2,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged2,
-    );
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -169,12 +156,23 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 20,
       centerTitle: false,
       automaticallyImplyLeading: true,
       iconTheme: IconThemeData(color: blackFont),
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
       title: Text(
         getTabTitle(),
         style: TextStyle(
@@ -195,7 +193,7 @@ class _SearchModuleState extends State<SearchModule> {
           Divider(
             color: darkGrey.withOpacity(.5),
           ),
-          YarnTabSelection(
+          TabSelection(
             onTap: (index) {
               currentIndex = index;
               _showTabs(true);
@@ -245,7 +243,7 @@ class _SearchModuleState extends State<SearchModule> {
         child: Scaffold(
           key: _scaffoldSearchKey,
           resizeToAvoidBottomInset: true,
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),
@@ -262,7 +260,7 @@ class _SearchModuleState extends State<SearchModule> {
       index: currentIndex,
       children: [
         searchTab(),
-        ChatChannels(),
+        const ChatChannels(),
       ],
     );
   }
@@ -270,9 +268,9 @@ class _SearchModuleState extends State<SearchModule> {
   Widget searchTab() {
     return Column(
       children: [
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         searchBox(),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Expanded(
           child: _buildResultList(),
         ),
@@ -283,7 +281,7 @@ class _SearchModuleState extends State<SearchModule> {
   Widget searchBox() {
     try {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Theme(
           data: Theme.of(context).copyWith(
             textSelectionTheme: TextSelectionThemeData(
@@ -296,28 +294,28 @@ class _SearchModuleState extends State<SearchModule> {
             controller: searchItemTextController,
             style: TextStyle(
               fontSize: 16,
+              fontFamily: "Inter",
               color: blackFont,
               fontWeight: FontWeight.w600,
             ),
             cursorWidth: 1.5,
             cursorColor: navyBlue,
-            onChanged: (value) {
+            onChanged: (value) async {
               if (value.length >= 3) {
                 autoCompleteSearchText = value;
+                count = 0;
+                next = "";
+                previous = "";
 
-                setState(() {
-                  count = 0;
-                  next = "";
-                  previous = "";
+                results.clear();
+                isLoading = false;
+                noItemInList = false;
+                if (mounted) setState(() {});
 
-                  results.clear();
-                  isLoading = false;
-                  noItemInList = false;
-                  getSearchUserList();
-                });
+                await getSearchUserList();
 
                 if (results.isNotEmpty ||
-                    searchItemTextController.text.length != 0) {
+                    searchItemTextController.text.isNotEmpty) {
                   if (mounted) {
                     setState(() {
                       isSearchIsEmpty = false;
@@ -332,8 +330,9 @@ class _SearchModuleState extends State<SearchModule> {
                     });
                   }
                 }
-              } else if (value.length == 0) {
+              } else if (value.isEmpty) {
                 setState(() {
+                  results.clear();
                   autoCompleteSearchText = value;
                   isSuggestion = true;
                 });
@@ -343,8 +342,8 @@ class _SearchModuleState extends State<SearchModule> {
               hintText: hint,
               fillColor: Colors.white,
               filled: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
-              prefix: Padding(
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
                 padding: EdgeInsets.only(left: 12),
               ),
               suffixIcon: searchIcon(),
@@ -386,9 +385,11 @@ class _SearchModuleState extends State<SearchModule> {
                 noItemInList = false;
                 isLoading = false;
 
-                setState(() {});
-                getSearchUserList();
-                FocusScope.of(context).unfocus();
+                if (val.length >= 3) {
+                  setState(() {});
+                  getSearchUserList();
+                  FocusScope.of(context).unfocus();
+                }
               }
             },
           ),
@@ -402,7 +403,7 @@ class _SearchModuleState extends State<SearchModule> {
   Widget searchTypeSelection() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
         color: navyBlue,
       ),
@@ -458,30 +459,37 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget _buildResultList() {
-    if (isSuggestion && results.isEmpty && autoCompleteSearchText.length == 0) {
-      return SmartRefresher(
-        enablePullDown: true,
-        header: WaterDropHeader(
-          complete: Container(),
-          waterDropColor: navyBlue,
+    if (isSuggestion && results.isEmpty && autoCompleteSearchText.isEmpty) {
+      return SlidableAutoCloseBehavior(
+        closeWhenOpened: true,
+        child: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _refreshCtrl,
+          onRefresh: _onRefresh,
+          child: noItemInSuggestionList
+              ? NoItemInList(msg: AppLocalization.of(context)!.noSuggestions)
+              : isSuggestionLoading && suggestionsList.isEmpty
+                  ? buildLoadingIndicator(isLoading: isSuggestionLoading)
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      physics: const ClampingScrollPhysics(),
+                      controller: _scrollCtrl,
+                      itemCount: suggestionsList.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == suggestionsList.length) {
+                          return buildJumpingLoadingIndicator(
+                              isLoading: isSuggestionLoading);
+                        } else {
+                          return CustomSlydoUserCard(
+                              user: suggestionsList[index]);
+                        }
+                      },
+                    ),
         ),
-        controller: _refreshCtrl,
-        onRefresh: _onRefresh,
-        child: noItemInSuggestionList
-            ? NoItemInList(msg: AppLocalization.of(context)!.noSuggestions)
-            : ListView.builder(
-                physics: ClampingScrollPhysics(),
-                controller: _scrollCtrl,
-                itemCount: suggestionsList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == suggestionsList.length) {
-                    return buildLoadingIndicator(
-                        isLoading: isSuggestionLoading);
-                  } else {
-                    return CustomSlydoUserCard(user: suggestionsList[index]);
-                  }
-                },
-              ),
       );
     } else {
       return isSearchIsEmpty
@@ -493,40 +501,26 @@ class _SearchModuleState extends State<SearchModule> {
               ? NoItemInList(
                   msg: AppLocalization.of(context)!.noResultFound,
                 )
-              : Container(
-                  child: ListView.builder(
-                    //+1 for progressbar
-                    itemCount: results.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == results.length) {
-                        return _buildIndicator();
-                      } else {
-                        try {
-                          debugPrint(' SHOW RESULT ->');
-
-                          return results[index];
-                        } catch (error) {
-                          debugPrint('ERROR RESULT -> ${error.toString()}');
-                        }
-                      }
-                      return _buildIndicator();
-                    },
-                    controller: _scrollController,
-                  ),
-                );
+              : isLoading && results.isEmpty
+                  ? buildLoadingIndicator(isLoading: isLoading)
+                  : SlidableAutoCloseBehavior(
+                      closeWhenOpened: true,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        //+1 for progressbar
+                        itemCount: results.length + 1,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == results.length) {
+                            return buildJumpingLoadingIndicator(
+                                isLoading: isLoading);
+                          } else {
+                            return results[index];
+                          }
+                        },
+                        controller: _scrollController,
+                      ),
+                    );
     }
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
   }
 
   void getListOfSuggestions() {
@@ -542,7 +536,7 @@ class _SearchModuleState extends State<SearchModule> {
       suggestionsList.addAll(value.result);
       nextPageUrl = basePaginationModel!.next;
       isFirstTime = false;
-      debugPrint('NEXT PAGE URL -> ${basePaginationModel!.next}');
+      // debugPrint('NEXT PAGE URL -> ${basePaginationModel!.next}');
 
       if (suggestionsList.isEmpty) {
         if (mounted) setState(() => noItemInSuggestionList = true);
@@ -566,9 +560,9 @@ class _SearchModuleState extends State<SearchModule> {
     _refreshCtrl.refreshCompleted();
   }
 
-  void getSearchUserList() async {
+  Future<void> getSearchUserList() async {
     if (!isLoading) {
-      debugPrint('GET LIST ---------->');
+      // debugPrint('GET LIST ---------->');
 
       if (next != null && !isLoading) {
         if (mounted) {
@@ -576,7 +570,7 @@ class _SearchModuleState extends State<SearchModule> {
           setState(() {});
         }
 
-        Map<String, dynamic>? result = await _auth
+        final Map<String, dynamic>? result = await _auth
             .searchEndpointPagination(
                 getSearchUrl(autoCompleteSearchText), next, previous)
             .catchError((error) {
@@ -591,19 +585,19 @@ class _SearchModuleState extends State<SearchModule> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List? tempList = result['results'];
+        final List? tempList = result['results'];
 
-        debugPrint('RESULT ::: $tempList');
+        // debugPrint('RESULT ::: $tempList');
 
         if (mounted) {
           isLoading = false;
           results.clear();
 
           try {
-            tempList!.forEach((result) {
+            for (var result in tempList!) {
               results.add(getResultTile(result));
-            });
-            debugPrint('FINAL RESULT-> ${results}');
+            }
+            // debugPrint('FINAL RESULT-> $results');
           } catch (e) {
             debugPrint('CANNOT SHOW SEARCH RESULT -> ${e.toString()}');
           }
@@ -620,17 +614,17 @@ class _SearchModuleState extends State<SearchModule> {
           setState(() {});
         }
       } else if (next == null && results.length > 6) {
-        _scaffoldMessengerSearchKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerSearchKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
         // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         //   content:
         //   Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         //   duration: Duration(milliseconds: 500),
         // ));
-        // _scaffoldSearchKey.currentState!.showSnackBar(SnackBar(
+        // _scaffoldSearchKey.currentState?.showSnackBar(SnackBar(
         //   content:
         //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         //   duration: Duration(milliseconds: 500),
@@ -643,7 +637,7 @@ class _SearchModuleState extends State<SearchModule> {
   Widget getResultTile(var result) {
     switch (selectedMenuItemIndex) {
       case 0:
-        debugPrint('RESULT OKAY->');
+        // debugPrint('RESULT OKAY->');
         return getUserTile(result);
 
       case 1:
@@ -659,26 +653,18 @@ class _SearchModuleState extends State<SearchModule> {
   String getSearchUrl(String searchedText) {
     switch (selectedMenuItemIndex) {
       case 0:
-        return AppConfig.baseUrl +
-            "/api/v1/search/users/?search=" +
-            searchedText;
+        return "${AppConfig.baseUrl}/api/v1/search/users/?search=$searchedText";
       case 1:
-        return AppConfig.baseUrl +
-            "/api/v1/search/products/?search=" +
-            searchedText;
+        return "${AppConfig.baseUrl}/api/v1/search/products/?search=$searchedText";
       case 2:
-        return AppConfig.baseUrl +
-            "/api/v1/search/services/?search=" +
-            searchedText;
+        return "${AppConfig.baseUrl}/api/v1/search/services/?search=$searchedText";
       default:
-        return AppConfig.baseUrl +
-            "/api/v1/search/users/?search=" +
-            searchedText;
+        return "${AppConfig.baseUrl}/api/v1/search/users/?search=$searchedText";
     }
   }
 
   Widget getUserTile(var object) {
-    CustomerProfile user = CustomerProfile.fromJson(object);
+    final CustomerProfile user = CustomerProfile.fromJson(object);
 
     // if (user.userName.toString().toLowerCase() == "slydo" ||
     //     user.userName.toString().toLowerCase() == "slydo_envelope") {
@@ -694,7 +680,7 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget userCard(CustomerProfile user) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -705,7 +691,7 @@ class _SearchModuleState extends State<SearchModule> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   title: userNameWithVerifiedIcon(
@@ -728,7 +714,7 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    String imageUrl = user.avatar != ""
+    final String imageUrl = user.avatar != ""
         ? user.avatar!
         : getInitials(user.fullName!).toString().toUpperCase();
 
@@ -742,7 +728,7 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget getUserProfilePic(CustomerProfile user) {
-    Color borderColor = getUserTypeColor(user: user);
+    final Color borderColor = getUserTypeColor(user: user);
 
     if (user.avatar == "" ||
         user.avatar ==
@@ -785,14 +771,14 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget getProductTile(var object) {
-    Product product = Product();
+    final Product product = Product();
     product.name = object['name'];
     product.id = object['id'];
     product.shortDescription = object['short_description'];
     product.description = "";
     product.condition = object['condition'];
     product.currency = object['currency'];
-    product.price = object['price'].toString();
+    product.price = object['price'];
     product.availableFrom = DateTime.parse(object['available_from']);
     product.isAvailable = object['is_available'];
     product.qrCode = object['qr_code'];
@@ -806,7 +792,7 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget productCard(Product product, var object) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -817,7 +803,7 @@ class _SearchModuleState extends State<SearchModule> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   leading: getLeading(product, object),
@@ -827,7 +813,7 @@ class _SearchModuleState extends State<SearchModule> {
                       : getTrailingProduct(product),
                   subtitle: getSubtitleProduct(product),
                   onTap: () {
-                    Navigator.pushNamed(context, Routes.PRODUCT,
+                    Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
                         arguments: {"product": product});
                   },
                 ),
@@ -844,7 +830,9 @@ class _SearchModuleState extends State<SearchModule> {
 
     try {
       imageUrl = object["cover"];
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error : $e');
+    }
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
@@ -859,8 +847,9 @@ class _SearchModuleState extends State<SearchModule> {
           fit: BoxFit.fill,
           filterQuality: FilterQuality.high,
           errorWidget: productAndServiceErrorWidget,
-          placeholder: (context, url) =>
-              imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator(),
+          placeholder: (context, url) => imageUrl == ""
+              ? const Icon(Icons.person)
+              : CircularLoadingIndicator(),
         ),
       ),
     );
@@ -868,7 +857,7 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget getTitle(Product product) {
     return Text(
-      "${product.name}",
+      messageDecoderWithEmoji(product.name) ?? "",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
@@ -900,20 +889,21 @@ class _SearchModuleState extends State<SearchModule> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         Text(
-          "${product.shortDescription}",
+          messageDecoderWithEmoji(product.shortDescription) ?? "",
           maxLines: 1,
           style: TextStyle(color: darkGrey, fontSize: 12),
         ),
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
-        product.price.toString().length > 6
-            ? getTrailingProduct(product)
-            : Container(),
+        if (product.price.toString().length > 6)
+          getTrailingProduct(product)
+        else
+          Container(),
         getSellerNameProduct(product)
       ],
     );
@@ -932,7 +922,7 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget getServiceTile(var object) {
-    Service service = Service();
+    final Service service = Service();
     service.name = object['name'];
     service.id = object['id'];
     service.shortDescription = object['short_description'];
@@ -952,7 +942,7 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget getServiceCard(Service service, var object) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -963,7 +953,7 @@ class _SearchModuleState extends State<SearchModule> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   leading: getLeadingService(service, object),
@@ -996,7 +986,9 @@ class _SearchModuleState extends State<SearchModule> {
     var imageUrl;
     try {
       imageUrl = object["cover"];
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error : $e');
+    }
 
     return GestureDetector(
       onTap: () {
@@ -1013,7 +1005,7 @@ class _SearchModuleState extends State<SearchModule> {
             filterQuality: FilterQuality.high,
             errorWidget: productAndServiceErrorWidget,
             placeholder: (context, url) => imageUrl == ""
-                ? Icon(Icons.person)
+                ? const Icon(Icons.person)
                 : CircularLoadingIndicator()),
       ),
     );
@@ -1023,7 +1015,7 @@ class _SearchModuleState extends State<SearchModule> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         Text(
@@ -1031,12 +1023,13 @@ class _SearchModuleState extends State<SearchModule> {
           maxLines: 1,
           style: TextStyle(color: darkGrey, fontSize: 12),
         ),
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
-        service.price.toString().length > 6
-            ? getTrailingService(service)
-            : Container(),
+        if (service.price.toString().length > 6)
+          getTrailingService(service)
+        else
+          Container(),
         getProviderNameService(service)
       ],
     );
@@ -1078,7 +1071,7 @@ class _SearchModuleState extends State<SearchModule> {
   void loadUsers(List data) {
     switch (selectedMenuItemIndex) {
       case 0:
-        data.forEach((item) {
+        for (var item in data) {
           if (mounted) {
             setState(() {
               if (data.isNotEmpty) {
@@ -1087,10 +1080,10 @@ class _SearchModuleState extends State<SearchModule> {
               results.add(getUserTile(item));
             });
           }
-        });
+        }
         break;
       case 1:
-        data.forEach((item) {
+        for (var item in data) {
           if (mounted) {
             setState(() {
               if (data.isNotEmpty) {
@@ -1099,10 +1092,10 @@ class _SearchModuleState extends State<SearchModule> {
               results.add(getProductTile(item));
             });
           }
-        });
+        }
         break;
       case 2:
-        data.forEach((item) {
+        for (var item in data) {
           if (mounted) {
             setState(() {
               if (data.isNotEmpty) {
@@ -1111,7 +1104,7 @@ class _SearchModuleState extends State<SearchModule> {
               results.add(getServiceTile(item));
             });
           }
-        });
+        }
         break;
     }
   }
@@ -1164,27 +1157,33 @@ class _SearchModuleState extends State<SearchModule> {
   Widget _getSlidableWithLists(
       BuildContext context, Widget searchCard, CustomerProfile user) {
     return Slidable(
-      controller: slidableController,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      startActionPane: user.userName.toString().toLowerCase() == "slydo"
+          ? null
+          : ActionPane(
+              motion: const BehindMotion(),
+              extentRatio: 0.25,
+              children: listSecondaryActions(user),
+            ),
+      endActionPane: user.userName.toString().toLowerCase() == "slydo"
+          ? null
+          : ActionPane(
+              motion: const BehindMotion(),
+              extentRatio: 0.25,
+              children: listSecondaryActions(user),
+            ),
       child: VerticalListItem(searchCard, user),
-      actions: user.userName.toString().toLowerCase() == "slydo"
-          ? []
-          : listActionSlideActions(user),
-      secondaryActions: user.userName.toString().toLowerCase() == "slydo"
-          ? []
-          : listSecondaryActions(user),
     );
   }
 
   List<Widget> listActionSlideActions(CustomerProfile user) {
-    bool isNotCurrentUser = user.userName != userBloc!.user.userName;
+    final bool isNotCurrentUser = user.userName != userBloc!.user.userName;
     return [
       if (isNotCurrentUser)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: Icons.payments_rounded,
-          onTap: () async {
+          onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
               // customerProfileBloc.customer =
               //     await UserAuth().fetchCustomerProfile(user.userName);
@@ -1200,14 +1199,15 @@ class _SearchModuleState extends State<SearchModule> {
               showToast(message: 'Payment not available at the moment');
             }
           },
-          title: AppLocalization.of(context)!.request,
+          label: AppLocalization.of(context)!.request,
           backgroundColor: navyBlue,
-          slideController: slidableController,
         ),
       if (isNotCurrentUser)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: Icons.payments_rounded,
-          onTap: () async {
+          onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
               // customerProfileBloc.customer =
               //     await UserAuth().fetchCustomerProfile(user.userName);
@@ -1220,9 +1220,8 @@ class _SearchModuleState extends State<SearchModule> {
               showToast(message: 'Payment not available at the moment');
             }
           },
-          title: AppLocalization.of(context)!.send,
+          label: AppLocalization.of(context)!.send,
           backgroundColor: naturalGreen,
-          slideController: slidableController,
         ),
     ];
   }
@@ -1232,23 +1231,25 @@ class _SearchModuleState extends State<SearchModule> {
       if (!userConnectionNames.contains(user.userName) &&
           user.userName != userBloc!.user.userName)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: SlydoAppIcon.add,
-          onTap: () async {
+          onPressed: (con) async {
             connectUserAlert(user);
           },
-          title: 'Connect',
+          label: 'Connect',
           backgroundColor: naturalGreen,
-          slideController: slidableController,
         ),
       if (userBloc!.user.userName != user.userName)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: SlydoAppIcon.block,
-          onTap: () async {
+          onPressed: (con) async {
             blockUserAlert(user);
           },
-          title: 'Block',
+          label: 'Block',
           backgroundColor: mateRed,
-          slideController: slidableController,
         ),
     ];
   }
@@ -1256,29 +1257,34 @@ class _SearchModuleState extends State<SearchModule> {
   Widget _getSlidableWithLists1(
       BuildContext context, Widget searchCard, Product product) {
     return Slidable(
-      controller: slidableController1,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions1(product),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions1(product),
+      ),
       child: VerticalListItem1(searchCard, product),
-      actions: listActionSlideActions1(product),
-      secondaryActions: listSecondaryActions1(product),
     );
   }
 
   List<Widget> listSecondaryActions1(Product product) {
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         icon: SlydoAppIcon.cart,
-        onTap: () async {
+        onPressed: (con) async {
           customerProfileBloc.customer =
               await UserAuth().fetchCustomerProfile(product.seller);
           Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
               arguments: {'isFromProfile': false, 'product': product});
         },
-        title: AppLocalization.of(context)!.buy,
+        label: AppLocalization.of(context)!.buy,
         backgroundColor: naturalGreen,
-        slideController: slidableController1,
       ),
     ];
   }
@@ -1286,16 +1292,17 @@ class _SearchModuleState extends State<SearchModule> {
   List<Widget> listActionSlideActions1(Product product) {
     return [
       SlideActionButton(
-        icon: SlydoAppIcon.text_message,
-        onTap: () async {
+        borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
+        icon: SlydoAppIcon.textMessage,
+        onPressed: (con) async {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': product.seller,
             'subject': product.name,
           });
         },
-        title: "Message",
+        label: "Message",
         backgroundColor: navyBlue,
-        slideController: slidableController1,
       ),
     ];
   }
@@ -1303,24 +1310,29 @@ class _SearchModuleState extends State<SearchModule> {
   Widget _getSlidableWithLists2(
       BuildContext context, Widget searchCard, Service service) {
     return Slidable(
-      controller: slidableController2,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions2(service),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions2(service),
+      ),
       child: VerticalListItem2(searchCard, service),
-      actions: listActionSlideActions2(service),
-      secondaryActions: listSecondaryActions2(service),
     );
   }
 
   List<Widget> listSecondaryActions2(Service service) {
     return [
       SlideActionButton(
-          title: AppLocalization.of(context)!.buy,
+          borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
+          label: AppLocalization.of(context)!.buy,
           backgroundColor: naturalGreen,
-          slideController: slidableController2,
           icon: SlydoAppIcon.cart,
-          onTap: () async {
+          onPressed: (con) async {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(service.provider);
             Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
@@ -1332,11 +1344,12 @@ class _SearchModuleState extends State<SearchModule> {
   List<Widget> listActionSlideActions2(Service service) {
     return [
       SlideActionButton(
-        title: AppLocalization.of(context)!.message,
+        borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
+        label: AppLocalization.of(context)!.message,
         backgroundColor: navyBlue,
-        slideController: slidableController2,
-        icon: SlydoAppIcon.text_message,
-        onTap: () async {
+        icon: SlydoAppIcon.textMessage,
+        onPressed: (con) async {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': service.provider,
             'subject': service.name,
@@ -1346,20 +1359,8 @@ class _SearchModuleState extends State<SearchModule> {
     ];
   }
 
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
-
-  void handleSlideAnimationChanged1(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged1(bool? isOpen) {}
-
-  void handleSlideAnimationChanged2(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged2(bool? isOpen) {}
-
   void blockUserAlert(CustomerProfile user) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -1378,19 +1379,19 @@ class _SearchModuleState extends State<SearchModule> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.block,
-      description: AppLocalization.of(context)!.areYouSureWantToBlock +
-          " ${user.displayName()}",
+      description:
+          "${AppLocalization.of(context)!.areYouSureWantToBlock} ${user.displayName()}",
       actionOneText: AppLocalization.of(context)!.block,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await UserAuth().blockUser(user);
+      final bool done = await UserAuth().blockUser(user);
       if (done) {
         showSnackbar(context,
-            message: "${user.displayName()} " +
-                AppLocalization.of(context)!.isBlockedSuccessfully);
+            message:
+                "${user.displayName()} ${AppLocalization.of(context)!.isBlockedSuccessfully}");
 
-        ConnectionListBloc connectionListBloc =
+        final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: user.conversationId);
@@ -1406,7 +1407,7 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   void connectUserAlert(CustomerProfile user) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: navyBlue.withOpacity(0.08),
@@ -1457,7 +1458,7 @@ class _SearchModuleState extends State<SearchModule> {
 
 // ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child, this.user);
+  VerticalListItem(this.child, this.user, {super.key});
 
   final Widget child;
   CustomerProfile user;
@@ -1471,7 +1472,7 @@ class VerticalListItem extends StatelessWidget {
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );
@@ -1480,7 +1481,7 @@ class VerticalListItem extends StatelessWidget {
 
 // ignore: must_be_immutable
 class VerticalListItem1 extends StatelessWidget {
-  VerticalListItem1(this.child, this.product);
+  VerticalListItem1(this.child, this.product, {super.key});
 
   final Widget child;
   Product product;
@@ -1494,7 +1495,7 @@ class VerticalListItem1 extends StatelessWidget {
             arguments: {"product": product});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );
@@ -1503,7 +1504,7 @@ class VerticalListItem1 extends StatelessWidget {
 
 // ignore: must_be_immutable
 class VerticalListItem2 extends StatelessWidget {
-  VerticalListItem2(this.child, this.service);
+  VerticalListItem2(this.child, this.service, {super.key});
 
   final Widget child;
   Service service;
@@ -1517,7 +1518,7 @@ class VerticalListItem2 extends StatelessWidget {
             arguments: {"service": service});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );

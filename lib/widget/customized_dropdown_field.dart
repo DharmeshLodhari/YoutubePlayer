@@ -12,54 +12,53 @@ class CustomizedDropDownField extends StatefulWidget {
   FontWeight? fontWeight;
 
   CustomizedDropDownField(
-      {required this.child,
+      {super.key,
+      required this.child,
       required this.title,
       this.titleColor,
       this.borderWidth,
-      this.fontSize = 16,
-      this.height = 10,
+      this.fontSize = 14,
+      this.height = 7,
       this.fontWeight});
 
   @override
-  _CustomizedDropDownFieldState createState() =>
+  State<CustomizedDropDownField> createState() =>
       _CustomizedDropDownFieldState();
 }
 
 class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
   @override
   Widget build(BuildContext context) {
-    if (widget.titleColor == null) {
-      widget.titleColor = darkGrey;
-    }
-    if (widget.fontWeight == null) {
-      widget.fontWeight = FontWeight.normal;
-    }
+    widget.titleColor ??= darkGrey;
+    widget.fontWeight ??= FontWeight.w500;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        widget.title == ''
-            ? const SizedBox.shrink()
-            : Text(
-                widget.title,
-                style: TextStyle(
-                    color: widget.titleColor,
-                    fontSize: widget.fontSize,
-                    fontWeight: widget.fontWeight,
-                    fontFamily: "Inter"),
-              ),
+        if (widget.title == '')
+          const SizedBox.shrink()
+        else
+          Text(
+            widget.title,
+            style: TextStyle(
+              color: widget.titleColor,
+              fontSize: widget.fontSize,
+              fontWeight: widget.fontWeight,
+              fontFamily: "Inter",
+            ),
+          ),
         SizedBox(
           height: widget.height,
         ),
         Card(
           elevation: 0,
-          color: Colors.white,
+          color: Colors.transparent,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
               side: BorderSide(
                   color: greyBorderColor,
                   width:
                       widget.borderWidth != null ? widget.borderWidth! : 1.0)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: DropdownButtonHideUnderline(
             child: ButtonTheme(alignedDropdown: true, child: widget.child),

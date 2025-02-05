@@ -24,15 +24,16 @@ class BottomSheetPassCode {
     showModalBottomSheet(
         elevation: 2,
         backgroundColor: Colors.white,
+        // ignore: prefer_const_constructors
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topRight: Radius.circular(20),
             topLeft: Radius.circular(20),
           ),
         ),
         clipBehavior: Clip.hardEdge,
         context: context,
-        builder: (context) => Container(
+        builder: (context) => SizedBox(
               height: 375,
               child: CustomizedPassCodeScreen(
                 title: Text(
@@ -76,8 +77,7 @@ class BottomSheetPassCode {
             ));
   }
 
-  _onPassCodeEntered(String enteredPassCode) {
-    bool isValid = userBloc.user.password == enteredPassCode;
-    _verificationNotifier.add(isValid);
+  void _onPassCodeEntered(String enteredPassCode) {
+    _verificationNotifier.add(userBloc.user.isValidPassword(enteredPassCode));
   }
 }

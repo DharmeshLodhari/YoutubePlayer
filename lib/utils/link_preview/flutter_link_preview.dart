@@ -1,19 +1,20 @@
 import 'dart:async';
+
 import 'package:Slydo/utils/link_preview/web_analyzer.dart';
 import 'package:flutter/material.dart';
 
 /// Link Preview Widget
 class FlutterLinkPreview extends StatefulWidget {
   const FlutterLinkPreview({
-    Key? key,
+    super.key,
     required this.url,
     this.cache = const Duration(hours: 24),
     this.builder,
     this.titleStyle,
     this.bodyStyle,
     this.showMultimedia = true,
-    this.useMultithread = false,
-  }) : super(key: key);
+    this.useMultiThread = false,
+  });
 
   /// Web address, HTTP and HTTPS support
   final String url;
@@ -34,10 +35,10 @@ class FlutterLinkPreview extends StatefulWidget {
   final bool showMultimedia;
 
   /// Whether to use multi-threaded analysis of web pages
-  final bool useMultithread;
+  final bool useMultiThread;
 
   @override
-  _FlutterLinkPreviewState createState() => _FlutterLinkPreviewState();
+  State<FlutterLinkPreview> createState() => _FlutterLinkPreviewState();
 }
 
 class _FlutterLinkPreviewState extends State<FlutterLinkPreview> {
@@ -58,11 +59,11 @@ class _FlutterLinkPreviewState extends State<FlutterLinkPreview> {
         _url,
         cache: widget.cache,
         multimedia: widget.showMultimedia,
-        useMultithread: widget.useMultithread,
+        useMultithread: widget.useMultiThread,
       );
       if (mounted) setState(() {});
     } else {
-      print("Links don't start with http or https from : $_url");
+      debugPrint("Links don't start with http or https from : $_url");
     }
   }
 

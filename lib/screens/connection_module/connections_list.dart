@@ -1,23 +1,25 @@
 import 'dart:async';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile_for_connection.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_manager.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/tiles/user_tile_for_connection.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -31,21 +33,23 @@ import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
 
 class ConnectionList extends StatefulWidget {
+  const ConnectionList({super.key});
+
   @override
-  _ConnectionListState createState() => _ConnectionListState();
+  State<ConnectionList> createState() => _ConnectionListState();
 }
 
-class _ConnectionListState extends State<ConnectionList> {
+class _ConnectionListState extends State<ConnectionList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerContactsListKey =
-      new GlobalKey<ScaffoldMessengerState>();
-  SlidableController? _slideController;
+      GlobalKey<ScaffoldMessengerState>();
   int? count = 0;
   String? next = "";
   String? previous = "";
   List connectionsList = [];
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   bool isLoading = false;
   bool noItemInList = false;
@@ -58,11 +62,11 @@ class _ConnectionListState extends State<ConnectionList> {
   List<ChatConversation> searchedChatConnection = [];
 
   RefreshBlocForConnectionDashboard? _refreshBloc;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   AppConfigurationModel? appConfigurationModel;
 
-  @protected
+  @override
   void initState() {
     getList();
 
@@ -81,10 +85,7 @@ class _ConnectionListState extends State<ConnectionList> {
         getList();
       }
     });
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
+
     super.initState();
   }
 
@@ -106,20 +107,20 @@ class _ConnectionListState extends State<ConnectionList> {
   void getSearchedChatConnections() async {
     searchedChatConnection = await ConnectionListManager()
         .getSearchedConnectionsFromDB(
-            searchedText: searchChatConversation!.text.trim());
+            searchedText: searchChatConversation?.text.trim());
     if (mounted) setState(() {});
   }
 
   void fetchConnectionListFromDbIfAvailable() async {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        myGlobals.scaffoldKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(myGlobals.scaffoldKey.currentContext!,
+            listen: false);
 
     isLoading = true;
     if (mounted) setState(() {});
 
-    int result = await connectionListBloc.getConnectionsCount();
-    debugPrint("RESULT FROM CONNECTION LIST :- $result");
+    final int result = await connectionListBloc.getConnectionsCount();
+    // debugPrint("RESULT FROM CONNECTION LIST :- $result");
     if (result == 0) {
       isLoading = false;
       refreshList();
@@ -139,19 +140,20 @@ class _ConnectionListState extends State<ConnectionList> {
       key: _scaffoldMessengerContactsListKey,
       child: Scaffold(
         key: _scaffoldContactsListKey,
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: GestureDetector(
           onTap: () {
-            FocusScope.of(context).requestFocus(new FocusNode());
+            FocusScope.of(context).requestFocus(FocusNode());
           },
           child: Column(
             children: [
               getSearchTextField(),
-              isUserIsSearching
-                  ? Expanded(child: getSearchedUserListUI())
-                  : Expanded(
-                      child: getRefreshIndicator(),
-                    ),
+              if (isUserIsSearching)
+                Expanded(child: getSearchedUserListUI())
+              else
+                Expanded(
+                  child: getRefreshIndicator(),
+                ),
             ],
           ),
         ),
@@ -168,16 +170,19 @@ class _ConnectionListState extends State<ConnectionList> {
             children: [
               IgnorePointer(
                 ignoring: snapshot.data!,
-                child: SmartRefresher(
-                  enablePullDown: true,
-                  header: WaterDropHeader(
-                    complete: Container(),
-                    waterDropColor: navyBlue,
-                    refresh: CircularLoadingIndicator(),
+                child: SlidableAutoCloseBehavior(
+                  closeWhenOpened: true,
+                  child: SmartRefresher(
+                    enablePullDown: true,
+                    header: WaterDropHeader(
+                      complete: Container(),
+                      waterDropColor: navyBlue,
+                      refresh: CircularLoadingIndicator(),
+                    ),
+                    controller: _refreshController,
+                    onRefresh: refreshList,
+                    child: _buildConnectionsList(),
                   ),
-                  controller: _refreshController,
-                  onRefresh: refreshList,
-                  child: _buildConnectionsList(),
                 ),
               ),
               if (snapshot.data!) showFetchingMessageUI()
@@ -187,20 +192,20 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   Widget showFetchingMessageUI() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(18), color: navyBlue),
             child: JumpingText(
               'Syncing Messages ...',
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.w400),
@@ -228,31 +233,33 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   Widget getSearchedUserListUI() {
-    return searchedChatConnection.isEmpty
+    return noItemInList
         ? NoItemInList(
             msg: "No Result found",
             isResult: true,
           )
-        : Container(
-            child: ListView.builder(
-            shrinkWrap: true,
-            padding: EdgeInsets.symmetric(
-              vertical: 4,
-            ),
-            //+1 for progressbar
-            itemCount: searchedChatConnection.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _getSlidableWithLists(
-                  context, searchedChatConnection[index], index);
-            },
-            controller: _scrollController,
-          ));
+        : isLoading && searchedChatConnection.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(4),
+                  //+1 for progressbar
+                  itemCount: searchedChatConnection.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _getSlidableWithLists(
+                        context, searchedChatConnection[index], index);
+                  },
+                  controller: _scrollController,
+                ),
+              );
   }
 
   Widget getSearchTextField() {
     return Container(
       color: Colors.white,
-      padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 8),
       child: SearchTextField(
         hintText: "Search my contacts",
         hintStyle: TextStyle(
@@ -284,63 +291,69 @@ class _ConnectionListState extends State<ConnectionList> {
 
   Widget _buildConnectionsList() {
     try {
-      return _connectionListBloc.connectionUsers.length == 0
+      return noItemInList
           ? NoItemInList(msg: noContactMsg, isResult: true)
-          : ListView.builder(
-              shrinkWrap: true,
-              // padding: EdgeInsets.symmetric(vertical: 4),
-              padding: EdgeInsets.only(bottom: 80.0),
-              //+1 for progressbar
-              itemCount: getConnectionListItemCount(),
-              physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics()),
-              itemBuilder: (BuildContext context, int index) {
-                ChatConversation chatConversation =
-                    _connectionListBloc.connectionUsers[index];
+          : isLoading && _connectionListBloc.connectionUsers.isEmpty
+              ? buildLoadingIndicator(isLoading: isLoading)
+              : ListView.builder(
+                  shrinkWrap: true,
+                  // padding: EdgeInsets.symmetric(vertical: 4),
+                  padding:
+                      const EdgeInsets.only(bottom: 80.0, left: 4, right: 4),
+                  //+1 for progressbar
+                  itemCount: getConnectionListItemCount(),
+                  // physics: const BouncingScrollPhysics(
+                  //     parent: AlwaysScrollableScrollPhysics()),
+                  itemBuilder: (BuildContext context, int index) {
+                    final ChatConversation chatConversation =
+                        _connectionListBloc.connectionUsers[index];
 
-                if (appConfigurationModel?.enableGroupChat == false) {
-                  if (chatConversation.isGroupConversation!) {
-                    return SizedBox.shrink();
-                  }
-                }
-                return _getSlidableWithLists(
-                    context, _connectionListBloc.connectionUsers[index], index);
-              },
-              controller: _scrollController,
-            );
+                    if (appConfigurationModel?.enableGroupChat == false) {
+                      if (chatConversation.isGroupConversation!) {
+                        return const SizedBox.shrink();
+                      }
+                    }
+                    return _getSlidableWithLists(context,
+                        _connectionListBloc.connectionUsers[index], index);
+                  },
+                  controller: _scrollController,
+                );
     } catch (error) {
       debugPrint("ERROR building list =>:- $error");
-      return _connectionListBloc.connectionUsers.length == 0
+      return noItemInList
           ? NoItemInList(
               msg: noContactMsg,
               isResult: true,
             )
-          : ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.symmetric(vertical: 4),
-              //+1 for progressbar
-              itemCount: _connectionListBloc.connectionUsers.length,
-              // physics: const BouncingScrollPhysics(
-              //     parent: AlwaysScrollableScrollPhysics()),
-              itemBuilder: (BuildContext context, int index) {
-                return _getSlidableWithLists(
-                    context, _connectionListBloc.connectionUsers[index], index);
-              },
-              controller: _scrollController,
-            );
+          : isLoading && _connectionListBloc.connectionUsers.isEmpty
+              ? buildLoadingIndicator(isLoading: isLoading)
+              : ListView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(4),
+                  //+1 for progressbar
+                  itemCount: _connectionListBloc.connectionUsers.length,
+                  // physics: const BouncingScrollPhysics(
+                  //     parent: AlwaysScrollableScrollPhysics()),
+                  itemBuilder: (BuildContext context, int index) {
+                    return _getSlidableWithLists(context,
+                        _connectionListBloc.connectionUsers[index], index);
+                  },
+                  controller: _scrollController,
+                );
     }
   }
 
   void getList() async {
-    ConnectionListBloc connectionListBloc =
+    final ConnectionListBloc connectionListBloc =
         Provider.of<ConnectionListBloc>(context, listen: false);
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await UserAuth().contacts(next, previous);
         if (result == null) {
+          noItemInList = true;
           isLoading = false;
           return;
         }
@@ -348,20 +361,22 @@ class _ConnectionListState extends State<ConnectionList> {
         next = result['next'];
         previous = result['previous'];
 
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
-        debugPrint("List:- $tempList");
+        // debugPrint("List:- $tempList");
 
-        List<ChatConversation> users = [];
+        final List<ChatConversation> users = [];
 
-        tempList.forEach(
-            (element) => users.add(ChatConversation.fromJson(element)));
+        for (var element in tempList) {
+          users.add(ChatConversation.fromJson(element));
+        }
 
         // connectionsList.addAll(users);
-        debugPrint("List Length users:- ${users.length}");
+        // debugPrint("List Length users:- ${users.length}");
 
         connectionListBloc.setConnectionUsers(users: users);
 
+        noItemInList = false;
         isLoading = false;
         if (mounted) setState(() {});
 
@@ -377,55 +392,40 @@ class _ConnectionListState extends State<ConnectionList> {
         if (mounted) setState(() {});
       } else if (next == null &&
           connectionListBloc.connectionUsers.length > 6) {
-        _scaffoldMessengerContactsListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerContactsListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
   }
 
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
-
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldMessengerContactsListKey.currentState!
-        .showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldMessengerContactsListKey.currentState
+        ?.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(ChatConversation user, int index) {
-    if (user.userName.toString().toLowerCase() == 'slydo') {
-      return [];
-    }
-
-    if (user.isGroupConversation!) {
-      return [];
-    }
-    CustomerProfile customerProfile =
+    final CustomerProfile customerProfile =
         CustomerProfile.fromChatConversation(user);
 
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.block,
-        onTap: () {
+        onPressed: (con) {
           blockUserAlert(customerProfile);
         },
-        title: AppLocalization.of(context)!.block,
-        slideController: _slideController,
+        label: AppLocalization.of(context)!.block,
       ),
     ];
   }
 
   List<Widget> listActionSlideActions(
       ChatConversation chatConversation, int index) {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-
-    if (chatConversation.userName.toString().toLowerCase() == 'slydo') {
-      return [];
-    }
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
     if (chatConversation.isGroupConversation!) {
       if (userBloc.user.userName == chatConversation.owner) {
@@ -434,35 +434,35 @@ class _ConnectionListState extends State<ConnectionList> {
 
       return [
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
           backgroundColor: mateRed,
           icon: SlydoAppIcon.leave,
-          onTap: () {
+          onPressed: (con) {
             exitTheGroupAlert(chatConversation, index);
           },
-          title: "Exit",
-          slideController: _slideController,
+          label: "Exit",
+        ),
+      ];
+    } else {
+      final CustomerProfile customerProfile =
+          CustomerProfile.fromChatConversation(chatConversation);
+
+      return [
+        SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: mateRed,
+          icon: SlydoAppIcon.removeConnection,
+          onPressed: (con) {
+            removeFromConnectionUserAlert(customerProfile, index);
+          },
+          label: AppLocalization.of(context)!.remove,
         ),
       ];
     }
-
-    CustomerProfile customerProfile =
-        CustomerProfile.fromChatConversation(chatConversation);
-
-    return [
-      SlideActionButton(
-        backgroundColor: mateRed,
-        icon: SlydoAppIcon.remove_connection,
-        onTap: () {
-          removeFromConnectionUserAlert(customerProfile, index);
-        },
-        title: AppLocalization.of(context)!.remove,
-        slideController: _slideController,
-      ),
-    ];
   }
 
   void blockUserAlert(CustomerProfile user) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -481,20 +481,18 @@ class _ConnectionListState extends State<ConnectionList> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.block,
-      description: AppLocalization.of(context)!.areYouSureWantToBlock +
-          " ${user.displayName()}",
+      description:
+          "${AppLocalization.of(context)!.areYouSureWantToBlock} ${user.displayName()}",
       actionOneText: AppLocalization.of(context)!.block,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await UserAuth().blockUser(user);
+      final bool done = await UserAuth().blockUser(user);
       // done = true;
       if (done) {
-        _showSnackBar(
-            context,
-            "${user.displayName()} " +
-                AppLocalization.of(context)!.isBlockedSuccessfully);
-        ConnectionListBloc connectionListBloc =
+        _showSnackBar(context,
+            "${user.displayName()} ${AppLocalization.of(context)!.isBlockedSuccessfully}");
+        final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: user.conversationId);
@@ -511,7 +509,7 @@ class _ConnectionListState extends State<ConnectionList> {
 
   Future<void> exitTheGroupAlert(
       ChatConversation chatConversation, int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -535,12 +533,12 @@ class _ConnectionListState extends State<ConnectionList> {
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await MessageAuth()
+      final bool done = await MessageAuth()
           .exitFromGroup(conversationId: chatConversation.conversationId!);
       if (done) {
         _showSnackBar(context, "You left ${chatConversation.fullName}");
 
-        ConnectionListBloc connectionListBloc =
+        final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: chatConversation.conversationId);
@@ -554,7 +552,7 @@ class _ConnectionListState extends State<ConnectionList> {
 
   Future<void> removeFromConnectionUserAlert(
       CustomerProfile user, int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -573,21 +571,18 @@ class _ConnectionListState extends State<ConnectionList> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.delete,
-      description: AppLocalization.of(context)!.areYouSureWantToDelete +
-          " ${user.displayName()} " +
-          "From Your friends List",
+      description:
+          "${AppLocalization.of(context)!.areYouSureWantToDelete} ${user.displayName()} From Your friends List",
       actionOneText: AppLocalization.of(context)!.delete,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await UserAuth().removeFromContactList(user);
+      final bool done = await UserAuth().removeFromContactList(user);
       if (done) {
-        _showSnackBar(
-            context,
-            "${user.displayName()} " +
-                AppLocalization.of(context)!.isRemovedSuccessfully);
+        _showSnackBar(context,
+            "${user.displayName()} ${AppLocalization.of(context)!.isRemovedSuccessfully}");
 
-        ConnectionListBloc connectionListBloc =
+        final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: user.conversationId);
@@ -602,13 +597,21 @@ class _ConnectionListState extends State<ConnectionList> {
       BuildContext context, ChatConversation user, int index) {
     return Slidable(
       key: Key(user.userName ?? ''),
-      controller: _slideController,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      child: VerticalListItem(user),
-      actions: listActionSlideActions(user, index),
-      secondaryActions: listSecondaryActions(user, index),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio:
+            user.userName.toString().toLowerCase() == 'slydo' ? 0.0001 : 0.25,
+        children: listActionSlideActions(user, index),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: user.userName.toString().toLowerCase() == 'slydo' ||
+                user.isGroupConversation!
+            ? 0.0001
+            : 0.25,
+        children: listSecondaryActions(user, index),
+      ),
+      child: VerticalListItem(user: user),
     );
   }
 
@@ -621,12 +624,12 @@ class _ConnectionListState extends State<ConnectionList> {
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.user);
-
   final ChatConversation user;
 
+  const VerticalListItem({super.key, required this.user});
+
   @override
-  _VerticalListItemState createState() => _VerticalListItemState();
+  State<VerticalListItem> createState() => _VerticalListItemState();
 }
 
 class _VerticalListItemState extends State<VerticalListItem> {
@@ -642,9 +645,13 @@ class _VerticalListItemState extends State<VerticalListItem> {
 
         if (mounted) setState(() {});
       },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
-        child: UserTileForConnection(user: widget.user),
+      child: PermissionProtectionWidget(
+        permissionName: ProtectionPermission.chat,
+        isLockForRead: '1',
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: UserTileForConnection(user: widget.user),
+        ),
       ),
     );
   }

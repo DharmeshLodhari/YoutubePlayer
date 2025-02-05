@@ -1,4 +1,3 @@
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -8,11 +7,16 @@ class BottomSheetItemWithCheck extends StatelessWidget {
   final Function? onTap;
   final IconData? icon;
   final String? title;
-  bool? isLast;
+  final bool? isLast;
   final bool? isChecked;
 
-  BottomSheetItemWithCheck(
-      {this.onTap, this.icon, this.title, this.isLast = false, this.isChecked});
+  const BottomSheetItemWithCheck(
+      {super.key,
+      this.onTap,
+      this.icon,
+      this.title,
+      this.isLast = false,
+      this.isChecked});
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +35,7 @@ class BottomSheetItemWithCheck extends StatelessWidget {
       bool isLast = false,
       required bool isChecked}) {
     return GestureDetector(
+      onTap: onTap as void Function()?,
       child: Padding(
         padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
         child: Row(
@@ -45,7 +50,7 @@ class BottomSheetItemWithCheck extends StatelessWidget {
               width: 32,
               height: 32,
             ),
-            SizedBox(
+            const SizedBox(
               width: 16,
             ),
             Text(
@@ -53,17 +58,17 @@ class BottomSheetItemWithCheck extends StatelessWidget {
               style: TextStyle(fontSize: 16, color: blackFont),
             ),
             flexibleSpace(),
-            isChecked
-                ? Icon(
-                    SlydoAppIcon.checked,
-                    color: navyBlue,
-                    size: 14,
-                  )
-                : Container()
+            if (isChecked)
+              Icon(
+                SlydoAppIcon.checked,
+                color: navyBlue,
+                size: 14,
+              )
+            else
+              Container()
           ],
         ),
       ),
-      onTap: onTap as void Function()?,
     );
   }
 }

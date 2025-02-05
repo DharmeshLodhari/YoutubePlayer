@@ -1,7 +1,13 @@
 import 'dart:io';
 
-import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/data/state_notifiers/basket_bloc.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/picture_model.dart';
+import 'package:Slydo/screens/payment_and_banking/models/financial_institution.dart';
+import 'package:Slydo/screens/shipping_process/models/shared_cart_model.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
@@ -32,6 +38,7 @@ List<String> serviceCategoryList = [
   "Alarms – Security & Fire",
   "Appliance Repairs",
   "Architect",
+  "Barber",
   "Block laye",
   "Brick layer",
   "Builder - General",
@@ -73,6 +80,7 @@ List<String> serviceCategoryList = [
   "Removal & Storage",
   "Roofer",
   "Slabbing Contractor",
+  "Software Development",
   "Solar Panels",
   "Steel Erector",
   "Stone Mason",
@@ -207,34 +215,45 @@ List<ProductCondition> deliverTimeCondition = <ProductCondition>[
 ];
 
 List<PaymentCategory> paymentCategories = <PaymentCategory>[
-  PaymentCategory(
+  const PaymentCategory(
     'General',
   ),
-  PaymentCategory(
+  const PaymentCategory(
     'Groceries',
   ),
-  PaymentCategory(
+  const PaymentCategory(
     'Entertainment',
   ),
-  PaymentCategory(
+  const PaymentCategory(
     'Eating out',
   ),
-  PaymentCategory(
+  const PaymentCategory(
     'Bills',
   ),
-  PaymentCategory(
+  const PaymentCategory(
     'Shopping',
   ),
 ];
 
-class Product {
+class PurchasableItem {
   String? id;
+
+  bool get isProduct => this is Product;
+
+  bool get isService => this is Service;
+
+  PurchasableItem({this.id});
+}
+
+class Product extends PurchasableItem {
   String? name;
   String? type;
   String? webUrl;
   String? description;
   String? shortDescription;
-  String? price;
+  int? price;
+  ForeignPrice? foreignPrice;
+
   List<File>? localImages;
   List<String?>? serverImages;
   String? cover;
@@ -256,8 +275,11 @@ class Product {
   double? rating;
   bool? canRate;
   bool? enableInSuperStore;
+  int? reviewScore;
+
   // List<dynamic>? variant;
   List<Variant>? variantModels;
+
   // List<dynamic>? addOns;
   List<AddOns>? addOnsModels;
   double? weight;
@@ -267,18 +289,22 @@ class Product {
   double? width;
   String? widthSiUnit;
   bool? trackInventory;
-  DiscountModel? discount;
+
+  // DiscountModel? discount;
+  String? discountId;
   int? quantity;
   double? pricePercentageChange;
-  bool isSelected;
   int? discountValue;
   String? discountType;
   bool? discountIsActive;
-  int? discountedPrice;
+  dynamic discountedPrice;
   int? oldPrice;
   bool? isShippable;
   String? addressId;
-
+  List<String>? searchKeywords;
+  bool isChecked = false;
+  String? priceRange;
+  int? originalPrice;
   // DateTime? createdAt;
   // bool? enableInSuperstore;
   // String? createdBy;
@@ -287,12 +313,23 @@ class Product {
   // String? updatedBy;
   // String? updatedByFullname;
   // String? updatedByAvatar;
-  // ItemEdBy? itemAddedBy;
-  // ItemEdBy? itemUpdatedBy;
-  int? qty;
+  List<AddedBy>? itemAddedBy;
+
+  // UserFollowers? itemUpdatedBy;
+  // int? qty;
+
+  List<UserFollowers> convertToUserFollowersList() {
+    List<UserFollowers> userList = [];
+
+    userList =
+        (itemAddedBy?.map((e) => e.user?.toUserFollowerModel()).toList() ?? [])
+            .cast<UserFollowers>();
+
+    return userList;
+  }
 
   Product({
-    this.id,
+    super.id,
     this.name,
     this.type,
     this.webUrl,
@@ -300,6 +337,7 @@ class Product {
     this.description,
     this.shortDescription,
     this.price,
+    this.foreignPrice,
     this.localImages,
     this.serverImages,
     this.seller,
@@ -330,11 +368,10 @@ class Product {
     this.width = 0.0,
     this.widthSiUnit,
     this.trackInventory,
-    this.discount,
+    // this.discount,
     this.quantity,
     this.pricePercentageChange,
     this.canRate = false,
-    this.isSelected = false,
     this.discountValue,
     this.discountType,
     this.discountIsActive,
@@ -342,20 +379,27 @@ class Product {
     this.oldPrice,
     this.isShippable,
     this.addressId,
-    this.qty,
+    this.itemAddedBy,
+    this.searchKeywords,
+    this.isChecked = false,
+    this.priceRange,
+    this.originalPrice,
+    this.reviewScore,
+    // this.itemUpdatedBy,
+    // this.qty,
   });
 
-  Map toMap() {
-    var data = {
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> data = {
       "name": name,
       "description": description,
       "short_description":
           getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
-      "category": category!.id,
-      "sub_category": subCategory!.id,
-      "custom_category": customCategory!.id,
+      "category": category?.id,
+      "sub_category": subCategory?.id,
+      "custom_category": customCategory?.id,
       "tags": tags!.map((e) => e.id!).toList(),
       "cover": cover,
       "manufacturer": manufacturer,
@@ -364,10 +408,6 @@ class Product {
       "enable_in_superstore": enableInSuperStore,
       "seller_fullname": sellerFullName,
       "seller_avatar": sellerAvatar,
-      // "variants": variant,
-      "variants": variantModels,
-      // "add_ons": addOns,
-      "add_ons": addOnsModels,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,
@@ -377,22 +417,37 @@ class Product {
       'track_inventory': trackInventory,
       'quantity': quantity,
       'price_percentage_change': pricePercentageChange ?? 0.0,
-      "discount_value": discountValue,
-      "discount_type": discountType,
-      "discount_is_active": discountIsActive,
-      "discounted_price": discountedPrice,
+      "discount": discountId,
       'old_price': oldPrice,
       'is_shippable': isShippable,
       'address_id': addressId,
-      'qty': qty,
+      'added_by': itemAddedBy,
+      'is_checked': isChecked,
+      'review_score': reviewScore ?? 0,
+      // 'item_updated_by': itemUpdatedBy,
+      // 'qty': qty,
     };
     if (preparationTime != null && preparationTime! != 0) {
       data["preparation_time"] = preparationTime;
     }
+    if (variantModels != null && (variantModels?.isNotEmpty ?? false)) {
+      data["variants"] = variantModels;
+    }
+    if (addOnsModels != null && (addOnsModels?.isNotEmpty ?? false)) {
+      data["add_ons"] = addOnsModels;
+    }
+    if (foreignPrice != null) {
+      data["foreign_price"] = foreignPrice?.toJson();
+    }
+    if (searchKeywords != null &&
+        (searchKeywords?.isNotEmpty ?? false) &&
+        searchKeywords?[0] != "") {
+      data["search_keywords"] = searchKeywords;
+    }
     return data;
   }
 
-  Map toJson() {
+  Map<String, dynamic> toJson() {
     return {
       "id": id,
       "name": name,
@@ -400,11 +455,12 @@ class Product {
       "short_description":
           getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
+      "foreign_price": foreignPrice?.toJson(),
       "condition": condition,
-      "category": category!,
-      "sub_category": subCategory!,
-      "custom_category": customCategory!,
-      "tags": tags!.map((v) => v.toJson()).toList(),
+      "category": category,
+      "sub_category": subCategory,
+      "custom_category": customCategory,
+      "tags": tags?.map((v) => v.toJson()).toList() ?? [],
       "preparation_time": preparationTime,
       "manufacturer": manufacturer,
       "is_available": isAvailable,
@@ -418,7 +474,7 @@ class Product {
       // "variants": variant,
       "variants": variantModels,
       // "add_ons": addOns,
-      "add_ons": addOnsModels,
+      "add_ons": addOnsModels?.map((v) => v.toJson()).toList() ?? [],
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,
@@ -435,19 +491,115 @@ class Product {
       'old_price': oldPrice,
       'is_shippable': isShippable,
       'address_id': addressId,
-      'qty': qty,
+      "added_by": itemAddedBy?.map((v) => v.toJson()).toList(),
+      "search_keywords": searchKeywords == null
+          ? []
+          : List<String>.from(searchKeywords!.map((x) => x)),
+      'is_checked': isChecked,
+      'review_score': reviewScore ?? 0,
+      // "item_updated_by": itemUpdatedBy?.toJson(),
+      // 'qty': qty,
     };
   }
 
-  int getBuyNowProductPrice() {
-    int totalPrice = 0;
-    totalPrice = int.parse(price!);
+  // String getName() {
+  //   if (name == null || name == "") {
+  //     return "";
+  //   }
+  //   // The encoded string
+  //   String encodedString = name!;
+  //
+  //   // Decoding the string using utf8 decoding
+  //   String decodedString = utf8.decode(encodedString.runes.toList());
+  //
+  //   // Printing the decoded string
+  //   return decodedString;
+  // }
+
+  int? getBuyNowProductPrice() {
+    int? totalPrice = 0;
+    totalPrice = getProductRealPrice();
     return totalPrice;
+  }
+
+  bool checkProductDiscount() {
+    if (discountIsActive == true && discountedPrice != null) {
+      return true;
+    }
+    return false;
+  }
+
+  bool checkVariantDiscount(Variant? selectedVariant) {
+    if (selectedVariant?.discountIsActive == true &&
+        selectedVariant?.discountedPrice != null) {
+      return true;
+    }
+    return false;
+  }
+
+  int getProductRealPrice() {
+    if (discountedPrice != null || discountedPrice != 0) {
+      if (checkProductDiscount()) {
+        return discountedPrice ?? 0;
+      }
+    }
+    return price ?? 0;
+  }
+
+  String getPriceRange() {
+    final int realPrice = getProductRealPrice();
+    return realPrice.toString();
+  }
+
+  int? getDiscountedPrice(Variant? selectedVariant) {
+    if (selectedVariant != null) {
+      if (checkVariantDiscount(selectedVariant)) {
+        return selectedVariant.discountedPrice;
+      } else {
+        return int.tryParse(selectedVariant.price ?? "") ?? 0;
+      }
+      // if (selectedVariant.price != null) {
+      //   if (checkVariantDiscount(selectedVariant)) {
+      //     return selectedVariant.discountedPrice;
+      //   } else {
+      //     if (checkProductDiscount()) {
+      //       return getCalDiscountedPrice(
+      //         discountType,
+      //         discountValue,
+      //         int.tryParse(selectedVariant.price ?? "") ?? 0,
+      //       );
+      //     } else {
+      //       return int.tryParse(selectedVariant.price ?? "") ?? 0;
+      //     }
+      //   }
+      // } else {
+      //   if (checkVariantDiscount(selectedVariant)) {
+      //     return getCalDiscountedPrice(
+      //       selectedVariant.discountType,
+      //       selectedVariant.discountValue,
+      //       price ?? 0,
+      //     );
+      //   } else {
+      //     return getProductRealPrice();
+      //   }
+      // }
+    } else {
+      return getProductRealPrice();
+    }
+  }
+
+  int getCalDiscountedPrice(
+      String? discountType, int? discountValue, int price) {
+    if (discountType == "percentage") {
+      return (price * (discountValue ?? 0)) ~/ 100;
+    } else {
+      return price - (discountValue ?? 0);
+    }
   }
 
   factory Product.fromJson(object) {
     List<String> getProductImages(List? data) {
-      List<String> images = [];
+      final List<String> images = [];
 
       if (data != null) {
         for (int i = 0; i < data.length; i++) {
@@ -461,7 +613,7 @@ class Product {
 
     DateTime getProductDateTime(var date) {
       if (date != null) {
-        DateTime dateTime = DateTime.parse(date);
+        final DateTime dateTime = DateTime.parse(date);
         return dateTime;
       }
       return DateTime.now();
@@ -480,7 +632,10 @@ class Product {
       name: object["name"] ?? "",
       description: object["description"] ?? "",
       shortDescription: object["short_description"] ?? "",
-      price: object["price"].toString(),
+      price: object["price"],
+      foreignPrice: object["foreign_price"] is Map<String, dynamic>
+          ? ForeignPrice.fromJson(object["foreign_price"])
+          : null,
       enableInSuperStore: object["enable_in_superstore"] ?? false,
       localImages: object["localImages"] ?? [],
       serverImages: getProductImages(object["pictures"]),
@@ -534,8 +689,31 @@ class Product {
       discountedPrice: object['discounted_price'],
       oldPrice: object["old_price"],
       isShippable: object["is_shippable"],
-      qty: object["qty"],
+      itemAddedBy: object["added_by"] == null
+          ? []
+          : List<AddedBy>.from(
+              object["added_by"].map((x) => AddedBy.fromJson(x))),
+      searchKeywords: object["search_keywords"] == null
+          ? <String>[]
+          : List<String>.from(object["search_keywords"].map((x) => x)),
+      priceRange: object["price_range"] ?? "0",
+      originalPrice: object["original_price"] ?? 0,
+      reviewScore: object["review_score"] ?? 0,
+      // itemUpdatedBy: object["item_updated_by"] == null
+      //     ? null
+      //     : UserFollowers.fromJson(object["item_updated_by"]),
+      // qty: object["qty"],
     );
+  }
+
+  bool isProductAvailableNow() {
+    if ((isAvailable ?? false) &&
+        (quantity ?? 0) >= 1 &&
+        ((availableFrom?.isBefore(DateTime.now()) ?? false) ||
+            (availableFrom?.isAtSameMomentAs(DateTime.now()) ?? false))) {
+      return true;
+    }
+    return false;
   }
 
   String getShortDescription(String short, String long) {
@@ -544,16 +722,8 @@ class Product {
     return short;
   }
 
-  String? getMerchantUserName() {
-    return seller;
-  }
-
-  String? getMerchantName() {
-    return sellerFullName;
-  }
-
   List<String> getProductImages(List? data) {
-    List<String> images = [];
+    final List<String> images = [];
 
     if (data != null) {
       for (int i = 0; i < data.length; i++) {
@@ -565,9 +735,9 @@ class Product {
     return images;
   }
 
-  DateTime getProductDateTime(var date) {
+  DateTime getProductDateTime(String date) {
     if (date != null) {
-      DateTime dateTime = DateTime.parse(date);
+      final DateTime dateTime = DateTime.parse(date);
       return dateTime;
     }
     return DateTime.now();
@@ -575,7 +745,7 @@ class Product {
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
-    debugPrint("${serverImages}");
+    // debugPrint("$serverImages");
     for (var data in pictureMap!) {
       if (data.path == imageUrl) {
         return data.id.toString();
@@ -585,8 +755,8 @@ class Product {
   }
 
   List<String?> imageDataToList(List<dynamic> pictures) {
-    List<String?> imageLinks = [];
-    if (pictures.length > 0) {
+    final List<String?> imageLinks = [];
+    if (pictures.isNotEmpty) {
       for (var data in pictures) {
         imageLinks.add(data["file"]);
       }
@@ -597,178 +767,406 @@ class Product {
     return imageLinks;
   }
 
-  Product copyWith({required int quantity}) {
-    return Product(
-      id: this.id,
-      name: this.name ?? "",
-      description: this.description ?? "",
-      shortDescription: this.shortDescription ?? "",
-      price: this.price,
-      enableInSuperStore: this.enableInSuperStore ?? false,
-      localImages: this.localImages ?? [],
-      serverImages: this.serverImages,
-      cover: this.cover ?? "",
-      seller: this.seller ?? "",
-      sellerAvatar: this.sellerAvatar ?? "",
-      sellerFullName: this.sellerFullName ?? "",
-      qrCode: this.qrCode ?? "",
-      condition: this.condition ?? "",
-      category: this.category,
-      subCategory: this.subCategory,
-      customCategory: this.customCategory,
-      tags: this.tags ?? [],
-      preparationTime: this.preparationTime ?? 0,
-      manufacturer: this.manufacturer ?? "",
-      isAvailable: this.isAvailable ?? true,
-      availableFrom: this.availableFrom,
-      currency: this.currency ?? "NGN",
-      pictureMap: this.pictureMap ?? [],
-      rating: this.rating,
-      canRate: this.canRate ?? false,
+  Product copyWith({int? quantity, bool withSelectedAddOn = false}) {
+    final Product product = Product(
+      id: id,
+      name: name ?? "",
+      description: description ?? "",
+      shortDescription: shortDescription ?? "",
+      price: price,
+      foreignPrice: foreignPrice,
+      enableInSuperStore: enableInSuperStore ?? false,
+      localImages: localImages ?? [],
+      serverImages: serverImages,
+      cover: cover ?? "",
+      seller: seller ?? "",
+      sellerAvatar: sellerAvatar ?? "",
+      sellerFullName: sellerFullName ?? "",
+      qrCode: qrCode ?? "",
+      condition: condition ?? "",
+      category: category,
+      subCategory: subCategory,
+      customCategory: customCategory,
+      tags: tags ?? [],
+      preparationTime: preparationTime ?? 0,
+      manufacturer: manufacturer ?? "",
+      isAvailable: isAvailable ?? true,
+      availableFrom: availableFrom,
+      currency: currency ?? "NGN",
+      pictureMap: pictureMap ?? [],
+      rating: rating,
+      canRate: canRate ?? false,
       // variant: this.variant,
-      variantModels: this.variantModels,
+      variantModels: variantModels?.map((e) => e.copyWith()).toList(),
       // addOns: this.addOns,
-      addOnsModels: this.addOnsModels,
-      weight: this.weight,
-      weightSiUnit: this.widthSiUnit,
-      height: this.height,
-      heightSiUnit: this.heightSiUnit,
-      widthSiUnit: this.widthSiUnit,
-      trackInventory: this.trackInventory,
+      addOnsModels: addOnsModels?.map((e) => e.copyWith()).toList(),
+      weight: weight,
+      weightSiUnit: widthSiUnit,
+      height: height,
+      heightSiUnit: heightSiUnit,
+      widthSiUnit: widthSiUnit,
+      trackInventory: trackInventory,
       quantity: quantity ?? this.quantity,
-      pricePercentageChange: this.pricePercentageChange ?? 0.0,
-      // discountedPrice: object["discounted_price"],
-      // discountIsActive: object["discount_is_active"],
-      // discountType: object["discount_type"],
-      // discountValue: object["discount_value"],
-      oldPrice: this.oldPrice,
-      isShippable: this.isShippable,
+      pricePercentageChange: pricePercentageChange ?? 0.0,
+      // isSelected: this.isSelected ?? 0.0,
+      discountedPrice: discountedPrice,
+      discountIsActive: discountIsActive,
+      discountType: discountType,
+      discountValue: discountValue,
+      oldPrice: oldPrice,
+      isShippable: isShippable,
+      addressId: addressId,
+      itemAddedBy: itemAddedBy,
+      searchKeywords: searchKeywords,
+      // itemUpdatedBy: this.itemUpdatedBy,
+      // qty: qty ?? this.qty,
     );
+    if (withSelectedAddOn) {
+      product.addOnsModels =
+          getSelectedAddsOns(listOfAddonModel: product.addOnsModels);
+
+      for (AddOns addOns in product.addOnsModels ?? []) {
+        addOns.options = addOns.getSelectedAddsOnsOption(addOns);
+      }
+    }
+    return product;
+  }
+
+  Map<String, List<Variant>> getVariants(
+      {required VariantTypes variantType, String? selectedColor}) {
+    switch (variantType) {
+      case VariantTypes.Color:
+        return groupVariantsByColor();
+
+      case VariantTypes.Size:
+        return groupVariantsBySize();
+
+      case VariantTypes.ColorAndSize:
+        return groupVariantsBySizeForSelectedColor(selectedColor);
+    }
+  }
+
+  // Group variants by color
+  Map<String, List<Variant>> groupVariantsByColor() {
+    final Map<String, List<Variant>> groupedVariants = {};
+
+    for (var variant in variantModels ?? []) {
+      if (variant.colour != null && variant.colour!.isNotEmpty) {
+        if (!groupedVariants.containsKey(variant.colour!)) {
+          groupedVariants[variant.colour!] = [];
+        }
+        groupedVariants[variant.colour]!.add(variant);
+      }
+    }
+
+    return groupedVariants;
+  }
+
+  double? compareVariantPrice(String type) {
+    final List<double> variantPrices = [];
+
+    for (Variant variant in variantModels ?? []) {
+      variantPrices.add(double.parse(variant.price ?? "0"));
+    }
+    final double highestPrice = variantPrices.reduce((a, b) => a > b ? a : b);
+    final double lowestPrice = variantPrices.reduce((a, b) => a < b ? a : b);
+    if (type == "high") {
+      return highestPrice;
+    }
+
+    return lowestPrice;
+  }
+
+  // Group variants by size
+  Map<String, List<Variant>> groupVariantsBySize() {
+    final Map<String, List<Variant>> groupedVariants = {};
+
+    for (var variant in variantModels ?? []) {
+      if (variant.value != null && variant.value!.isNotEmpty) {
+        if (!groupedVariants.containsKey(variant.value)) {
+          groupedVariants[variant.value!] = [];
+        }
+        groupedVariants[variant.value]!.add(variant);
+      }
+    }
+
+    return groupedVariants;
+  }
+
+  String getUrl() {
+    return "https://slydo.co/api/v1/products/$id";
+  }
+
+  Map<String, dynamic> getQRCodeInfo() {
+    final Map<String, dynamic> accountData = {
+      "accountName": shortDescription,
+      "accountNumber": name,
+      "financialInstitution": FinancialInstitution.fromJson({}),
+      "customerUsername": seller,
+      "note": "",
+    };
+    return accountData;
+  }
+
+  Map<String, dynamic> getNavigationData() {
+    final Map<String, dynamic> navigationData = {
+      'isProfile': 'false',
+      'product': seller,
+      'productUrl': getUrl(),
+    };
+    return navigationData;
+  }
+
+  // Define a function to group variants by size for the selected color/image
+  Map<String, List<Variant>> groupVariantsBySizeForSelectedColor(
+      String? selectedColor) {
+    final Map<String, List<Variant>> sizeGroups = {};
+
+    // Filter variants that match the selected color
+    final List<Variant> selectedColorVariants = (variantModels ?? [])
+        .where((variant) => variant.colour == selectedColor)
+        .toList();
+
+    // Group the selected color variants by size, only if variant.value is not empty or null
+    for (var variant in selectedColorVariants) {
+      if (variant.value != null && variant.value!.isNotEmpty) {
+        if (!sizeGroups.containsKey(variant.value)) {
+          sizeGroups[variant.value!] = [];
+        }
+        sizeGroups[variant.value]!.add(variant);
+      }
+    }
+
+    return sizeGroups;
+  }
+
+  List<AddOns> getSelectedAddsOns(
+      {bool isRequired = false, List<AddOns>? listOfAddonModel}) {
+    final List<AddOns> selectedAddOnsList = [];
+
+    for (AddOns addOn in listOfAddonModel ?? addOnsModels ?? []) {
+      bool isSelected = false;
+
+      isSelected = addOn
+          .getSelectedAddsOnsOption(addOn)
+          .where((addOns) => addOns.isAddOnsSelected(addOn) == true)
+          .toList()
+          .isNotEmpty;
+
+      if (isSelected) selectedAddOnsList.add(addOn);
+    }
+    return selectedAddOnsList;
+  }
+
+  List<Variant> getAllVariantsWithImages() {
+    return variantModels!
+        .where((variant) => variant.serverImages?.isNotEmpty ?? false)
+        .toList();
+  }
+
+  bool isAllRequiredProductSelected() {
+    bool isAllSelected = false;
+    for (AddOns addOn in addOnsModels ?? []) {
+      bool isSelected = false;
+      if (addOn.isRequired == true) {
+        isSelected = addOn
+            .getSelectedAddsOnsOption(addOn)
+            .where((addOns) => addOns.isAddOnsSelected(addOn) == true)
+            .toList()
+            .isNotEmpty;
+      } else {
+        isSelected = true;
+      }
+
+      if (!isSelected) {
+        isAllSelected = false;
+        break;
+      }
+      isAllSelected = true;
+    }
+    return isAllSelected;
+  }
+
+  void getItemAddedByDetails(SharedCartMemberModel? currentUser,
+      {required BasketListModifierAction actionType}) {
+    bool isAlreadyPresent = false;
+
+    for (AddedBy addedBy in itemAddedBy ?? []) {
+      if (addedBy.user?.userName == currentUser?.userName) {
+        if (actionType == BasketListModifierAction.increaseQty) {
+          addedBy.quantity = (addedBy.quantity ?? 0) + 1;
+          isAlreadyPresent = true;
+          break;
+        } else if (actionType == BasketListModifierAction.decreaseQty) {
+          if ((addedBy.quantity ?? 0) > 0) {
+            addedBy.quantity = (addedBy.quantity ?? 0) - 1;
+            if (addedBy.quantity == 0) {
+              itemAddedBy?.removeWhere(
+                  (element) => element.user?.userName == currentUser?.userName);
+            }
+          }
+
+          isAlreadyPresent = true;
+          break;
+        }
+      }
+    }
+
+    if (isAlreadyPresent == false) {
+      if (actionType == BasketListModifierAction.increaseQty) {
+        itemAddedBy ??= [];
+        itemAddedBy?.add(AddedBy(user: currentUser, quantity: 1));
+      } else if (actionType == BasketListModifierAction.decreaseQty) {
+        if ((itemAddedBy?.first.quantity ?? 0) > 0) {
+          itemAddedBy?.first.quantity = (itemAddedBy?.first.quantity ?? 0) - 1;
+          if (itemAddedBy?.first.quantity == 0) {
+            itemAddedBy?.removeWhere(
+                (element) => element.user?.userName == currentUser?.userName);
+          }
+        }
+      }
+    }
+  }
+}
+
+enum VariantTypes { Color, Size, ColorAndSize }
+
+extension StringOperations on VariantTypes {
+  // 'Size', 'Color', 'Color n Size'
+  VariantTypes fromString(String type) {
+    if (type == 'Size') {
+      return VariantTypes.Size;
+    } else if (type == "Color") {
+      return VariantTypes.Color;
+    } else if (type == "Color n Size") {
+      return VariantTypes.ColorAndSize;
+    }
+    return VariantTypes.Size;
+  }
+
+  String toName() {
+    switch (this) {
+      case VariantTypes.Color:
+        return "Color";
+
+      case VariantTypes.Size:
+        return "Size";
+
+      case VariantTypes.ColorAndSize:
+        return "Color n Size";
+
+      default:
+        return "Size";
+    }
   }
 }
 
 class Variant {
   String? id;
   String? title;
-  String? size;
   String? colour;
-  String? type;
+  VariantTypes? type;
   String? price;
   String? value;
+  // DiscountModel? discount;
+  String? discountId;
   List<File>? localImages;
   List<String?>? serverImages;
   int? quantity;
   bool? isAvailable;
-  DateTime? availableFrom;
+  String? availableFrom;
   String? currency;
   bool? trackInventory;
-
-  // List<Pictures>? pictures;
+  List<AddedBy>? addedBy;
+  List<Picture>? pictures;
   // DateTime? createdAt;
   // String? merchant;
   // int? oldPrice;
-  // int? discountValue;
-  // String? discountType;
-  // bool? discountIsActive;
-  // int? discountedPrice;
+  int? discountValue;
+  String? discountType;
+  bool? discountIsActive;
+  int? discountedPrice;
+  int? originalPrice;
+  ForeignPrice? foreignPrice;
 
-  Variant(
-      {this.id,
-      this.title,
-      this.size,
-      this.colour,
-      this.trackInventory,
-      this.type,
-      this.price,
-      this.value,
-      this.quantity,
-      this.localImages,
-      this.serverImages,
-      this.isAvailable,
-      this.availableFrom,
-      this.currency});
-
-  // factory Variant.fromMap(Map<String, dynamic> map) {
-  //   return Variant(
-  //     id: map["id"],
-  //     title: map["title"],
-  //     size: map["size"],
-  //     colour: map["colour"], // or map["color"] based on your naming convention
-  //     trackInventory: map["trackInventory"],
-  //     type: map["type"],
-  //     price: map["price"],
-  //     value: map["value"],
-  //     quantity: map["quantity"],
-  //     localImages: map["localImages"],
-  //     serverImages: map["serverImages"],
-  //     isAvailable: map["isAvailable"],
-  //     availableFrom: map["availableFrom"],
-  //     currency: map["currency"],
-  //   );
-  // }
+  Variant({
+    this.id,
+    this.title,
+    this.colour,
+    this.trackInventory,
+    this.type,
+    this.price,
+    this.value,
+    // this.discount,
+    this.discountId,
+    this.quantity,
+    this.localImages,
+    this.serverImages,
+    this.isAvailable,
+    this.availableFrom,
+    this.currency,
+    this.addedBy,
+    this.pictures,
+    this.discountValue,
+    this.discountType,
+    this.discountIsActive,
+    this.discountedPrice,
+    this.originalPrice,
+    this.foreignPrice,
+  });
 
   Map toMap() {
-    return {
-      "id": id,
+    final Map<String, dynamic> data = {};
+
+    if (id != null && id != "") {
+      data.addAll({"id": id});
+    }
+    data.addAll({
       "title": title,
-      "size": size,
       "colour": colour,
       "price": price,
-      "type": type,
+      "type": type?.toName(),
       "value": value,
+      "discount": discountId,
       "quantity": quantity,
       "is_available": isAvailable,
       "available_from": availableFrom,
       "track_inventory": trackInventory,
-      "currency": currency
-    };
+      "currency": currency,
+      "added_by": "blackstriker",
+      "pictures": pictures,
+      "foreign_price": foreignPrice?.toJson(),
+    });
+    return data;
   }
 
   Map toJson() {
     return {
       "id": id,
       "title": title,
-      "size": size,
       "colour": colour,
       "price": price,
-      "type": type,
+      "type": type?.name,
       "value": value,
       "quantity": quantity,
       "is_available": isAvailable,
-      "available_from": availableFrom.toString(),
+      "available_from": availableFrom,
       "track_inventory": trackInventory,
       "currency": currency,
+      "added_by": addedBy,
+      "pictures": pictures,
+      "discount_value": discountValue,
+      "discount_type": discountType,
+      "discount_is_active": discountIsActive,
+      "discounted_price": discountedPrice,
+      "original_price": originalPrice,
+      "foreign_price": foreignPrice?.toJson(),
     };
   }
 
-  static List<Variant> convertToVariantList(List<dynamic> dataList) {
-    List<Variant> variantList = [];
-
-    for (var data in dataList) {
-      Variant variant = Variant(
-        id: data['id'].toString(),
-        title: data['title'],
-        quantity: data['quantity'],
-        colour: data["colour"] ?? "",
-        value: data["value"] ?? "",
-        type: data["type"] ?? "",
-        price: data["price"].toString(),
-        trackInventory: data["track_inventory"] ?? false,
-        localImages: data["localImages"] ?? [],
-        serverImages: getProductImages(data["pictures"]),
-        isAvailable: data["is_available"] ?? true,
-        availableFrom: getProductDateTime(data["available_from"]),
-        currency: data["currency"] ?? "NGN",
-      );
-      variantList.add(variant);
-    }
-
-    return variantList;
-  }
-
   factory Variant.fromJson(object) {
-    List<String> getProductImages(List? data) {
-      List<String> images = [];
+    List<String> getVariantImages(List? data) {
+      final List<String> images = [];
 
       if (data != null) {
         for (int i = 0; i < data.length; i++) {
@@ -782,10 +1180,21 @@ class Variant {
 
     DateTime getProductDateTime(var date) {
       if (date != null) {
-        DateTime dateTime = DateTime.parse(date);
+        final DateTime dateTime = DateTime.parse(date);
         return dateTime;
       }
       return DateTime.now();
+    }
+
+    int? cleanObjects(Map<String, dynamic> data, String key) {
+      final value = data[key] ?? 0;
+      // debugPrint("data: $data");
+      // debugPrint("type: ${value.runtimeType}");
+      if (value is bool) {
+        // debugPrint("bool: ${value.runtimeType}");
+        return 0;
+      }
+      return value;
     }
 
     return Variant(
@@ -797,15 +1206,82 @@ class Variant {
       price: object["price"].toString(),
       trackInventory: object["track_inventory"] ?? false,
       localImages: object["localImages"] ?? [],
-      serverImages: getProductImages(object["pictures"]),
+      serverImages: getVariantImages(object["pictures"]),
       isAvailable: object["is_available"] ?? true,
-      availableFrom: getProductDateTime(object["available_from"]),
+      availableFrom: object["available_from"],
       currency: object["currency"] ?? "NGN",
+      addedBy: object["added_by"] == null
+          ? []
+          : List<AddedBy>.from(
+              object["added_by"]!.map((x) => AddedBy.fromJson(x))),
+      pictures: object['pictures'] == null
+          ? []
+          : List<Picture>.from(
+              object['pictures'].map((i) => Picture.fromJson(i))),
+      type: getVariantType(object),
+      discountId: object['discount'],
+      discountValue: object['discount_value'],
+      discountType: object['discount_type'],
+      discountIsActive: object['discount_is_active'],
+      discountedPrice: cleanObjects(object, "discounted_price"),
+      originalPrice: cleanObjects(object, "original_price"),
+      foreignPrice: object["foreign_price"] is Map<String, dynamic>
+          ? ForeignPrice.fromJson(object["foreign_price"])
+          : null,
     );
   }
 
+  List<UserFollowers> convertToUserFollowersList() {
+    List<UserFollowers> userList = [];
+
+    userList =
+        (addedBy?.map((e) => e.user?.toUserFollowerModel()).toList() ?? [])
+            .cast<UserFollowers>();
+
+    return userList;
+  }
+
+  void getVariantAddedByDetails(SharedCartMemberModel? currentUser,
+      {required BasketListModifierAction actionType}) {
+    bool isAlreadyPresent = false;
+    for (AddedBy variantAddedBy in addedBy ?? []) {
+      if (variantAddedBy.user?.userName == currentUser?.userName) {
+        if (actionType == BasketListModifierAction.increaseQty) {
+          variantAddedBy.quantity = (variantAddedBy.quantity ?? 0) + 1;
+          isAlreadyPresent = true;
+          break;
+        } else if (actionType == BasketListModifierAction.decreaseQty) {
+          if ((variantAddedBy.quantity ?? 0) > 0) {
+            variantAddedBy.quantity = (variantAddedBy.quantity ?? 0) - 1;
+            if (variantAddedBy.quantity == 0) {
+              addedBy?.removeWhere(
+                  (element) => element.user?.userName == currentUser?.userName);
+            }
+          }
+          isAlreadyPresent = true;
+          break;
+        }
+      }
+    }
+
+    if (isAlreadyPresent == false) {
+      if (actionType == BasketListModifierAction.increaseQty) {
+        addedBy ??= [];
+        addedBy?.add(AddedBy(user: currentUser, quantity: 1));
+      } else if (actionType == BasketListModifierAction.decreaseQty) {
+        if ((addedBy?.first.quantity ?? 0) > 0) {
+          addedBy?.first.quantity = (addedBy?.first.quantity ?? 0) - 1;
+          if (addedBy?.first.quantity == 0) {
+            addedBy?.removeWhere(
+                (element) => element.user?.userName == currentUser?.userName);
+          }
+        }
+      }
+    }
+  }
+
   static List<String> getProductImages(List? data) {
-    List<String> images = [];
+    final List<String> images = [];
 
     if (data != null) {
       for (int i = 0; i < data.length; i++) {
@@ -819,7 +1295,7 @@ class Variant {
 
   static DateTime getProductDateTime(var date) {
     if (date != null) {
-      DateTime dateTime = DateTime.parse(date);
+      final DateTime dateTime = DateTime.parse(date);
       return dateTime;
     }
     return DateTime.now();
@@ -827,18 +1303,18 @@ class Variant {
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
-    debugPrint("${serverImages}");
-    // for (var data in this.pictureMap!) {
-    //   if (data['file'] == imageUrl) {
-    //     return data['id'].toString();
-    //   }
-    // }
+    // debugPrint("$serverImages");
+    for (Picture data in pictures ?? []) {
+      if (data.path == imageUrl) {
+        return data.id.toString();
+      }
+    }
     return "";
   }
 
   List<String?> imageDataToList(List<dynamic> pictures) {
-    List<String?> imageLinks = [];
-    if (pictures.length > 0) {
+    final List<String?> imageLinks = [];
+    if (pictures.isNotEmpty) {
       for (var data in pictures) {
         imageLinks.add(data["file"]);
       }
@@ -847,6 +1323,93 @@ class Variant {
           "https://borinhalbich.com/wp-content/uploads/2018/06/placeholder-250x300.png");
     }
     return imageLinks;
+  }
+
+  int getQuantity() {
+    if (quantity != null) {
+      return quantity ?? 0;
+    }
+    return 0;
+  }
+
+  String getSize() {
+    if (value != null && value != "") {
+      return messageDecoderWithEmoji(value) ?? "";
+    }
+    return "";
+  }
+
+  String getColor() {
+    if (colour != null && colour != "") {
+      return colour ?? "";
+    }
+    return "";
+  }
+
+  static VariantTypes? getVariantType(Map<String, dynamic> object) {
+    final String? color = object['colour'];
+    final String? size = object['value'];
+
+    if (color != null && color != "" && size != null && size != "") {
+      return VariantTypes.ColorAndSize;
+    } else if (color != null && color != "") {
+      return VariantTypes.Color;
+    } else if (size != null && size != "") {
+      return VariantTypes.Size;
+    }
+    return null;
+  }
+
+  Variant copyWith({
+    String? id,
+    String? title,
+    String? size,
+    String? colour,
+    VariantTypes? type,
+    String? price,
+    String? value,
+    List<File>? localImages,
+    List<String?>? serverImages,
+    int? quantity,
+    bool? isAvailable,
+    DateTime? availableFrom,
+    String? currency,
+    List<AddedBy>? addedBy,
+    bool? trackInventory,
+    int? discountValue,
+    String? discountType,
+    bool? discountIsActive,
+    int? discountedPrice,
+    ForeignPrice? foreignPrice,
+  }) {
+    return Variant(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      colour: colour ?? this.colour,
+      type: type ?? this.type,
+      price: price ?? this.price,
+      value: value ?? this.value,
+      localImages: localImages ?? this.localImages,
+      serverImages: serverImages ?? this.serverImages,
+      quantity: quantity ?? this.quantity,
+      isAvailable: isAvailable ?? this.isAvailable,
+      availableFrom: this.availableFrom,
+      currency: currency ?? this.currency,
+      addedBy: addedBy ?? this.addedBy,
+      trackInventory: trackInventory ?? this.trackInventory,
+      discountedPrice: discountedPrice ?? this.discountedPrice,
+      discountIsActive: discountIsActive ?? this.discountIsActive,
+      discountType: discountType ?? this.discountType,
+      discountValue: discountValue ?? this.discountValue,
+      foreignPrice: foreignPrice ?? this.foreignPrice,
+    );
+  }
+
+  String? getCoverImage() {
+    if (serverImages != null && serverImages!.isNotEmpty) {
+      return serverImages!.first;
+    }
+    return null;
   }
 }
 
@@ -860,9 +1423,12 @@ class AddOnOption {
   String? currency;
   String? price;
   bool? isAvailable;
-  bool isChecked = false;
-  DateTime? createdAt;
+  bool isSelected = false;
+  String? createdAt;
   int quantity = 0;
+  bool isChecked = false;
+  List<AddedBy>? addedBy;
+  ForeignPrice? foreignPrice;
 
   AddOnOption({
     this.id,
@@ -874,9 +1440,12 @@ class AddOnOption {
     this.currency,
     this.price,
     this.isAvailable,
-    this.isChecked = false,
+    this.isSelected = false,
     this.createdAt,
     this.quantity = 0,
+    this.isChecked = false,
+    this.addedBy,
+    this.foreignPrice,
   });
 
   AddOnOption.fromJson(Map<String, dynamic> json) {
@@ -889,33 +1458,137 @@ class AddOnOption {
     currency = json['currency'];
     price = json['price'].toString();
     isAvailable = json['is_available'];
-    isChecked = json['is_checked'] ?? false;
-    createdAt = getProductDateTime(json['created_at']);
+    isSelected = json['is_selected'] ?? false;
+    // createdAt = getProductDateTime(json['created_at']);
+    createdAt = json['created_at'];
     quantity = json['quantity'] ?? 0;
+    isChecked = json['is_checked'] ?? false;
+    addedBy = json['added_by'] == null
+        ? []
+        : List<AddedBy>.from(json['added_by'].map((x) => AddedBy.fromJson(x)));
+    foreignPrice:
+    json["foreign_price"] is Map<String, dynamic>
+        ? ForeignPrice.fromJson(json["foreign_price"])
+        : null;
+  }
+
+  AddOnOption copyWith({
+    int? id,
+    String? picture,
+    String? name,
+    String? description,
+    String? merchant,
+    String? selectType,
+    String? currency,
+    String? price,
+    bool? isAvailable,
+    bool? isSelected,
+    String? createdAt,
+    int? quantity,
+    bool? isChecked,
+    List<AddedBy>? addedBy,
+    ForeignPrice? foreignPrice,
+  }) {
+    return AddOnOption(
+      id: id ?? this.id,
+      picture: picture ?? this.picture,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      merchant: merchant ?? this.merchant,
+      selectType: selectType ?? this.selectType,
+      currency: currency ?? this.currency,
+      price: price ?? this.price,
+      isAvailable: isAvailable ?? this.isAvailable,
+      isSelected: isSelected ?? this.isSelected,
+      createdAt: createdAt ?? this.createdAt,
+      quantity: quantity ?? this.quantity,
+      isChecked: isChecked ?? this.isChecked,
+      addedBy: addedBy ?? this.addedBy,
+      foreignPrice: foreignPrice ?? this.foreignPrice,
+    );
   }
 
   static DateTime getProductDateTime(var date) {
     if (date != null) {
-      DateTime dateTime = DateTime.parse(date);
+      final DateTime dateTime = DateTime.parse(date);
       return dateTime;
     }
     return DateTime.now();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['picture'] = this.picture;
-    data['name'] = this.name;
-    data['description'] = this.description;
-    data['merchant'] = this.merchant;
-    data['select_type'] = this.selectType;
-    data['currency'] = this.currency;
-    data['price'] = this.price;
-    data['is_available'] = this.isAvailable;
-    data['created_at'] = this.createdAt;
-    data['quantity'] = this.quantity;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['picture'] = picture;
+    data['name'] = name;
+    data['description'] = description;
+    data['merchant'] = merchant;
+    data['select_type'] = selectType;
+    data['currency'] = currency;
+    data['price'] = price;
+    data['is_available'] = isAvailable;
+    data['created_at'] = createdAt;
+    data['quantity'] = quantity;
+    data['added_by'] = addedBy;
+    data['foreign_price'] = foreignPrice?.toJson();
     return data;
+  }
+
+  void getAddOnOptionAddedByDetails(SharedCartMemberModel? currentUser,
+      {required BasketListModifierAction actionType}) {
+    bool isAlreadyPresent = false;
+
+    for (AddedBy addOnsAddedBy in addedBy ?? []) {
+      if (addOnsAddedBy.user?.userName == currentUser?.userName) {
+        if (actionType == BasketListModifierAction.increaseQty) {
+          addOnsAddedBy.quantity = (addOnsAddedBy.quantity ?? 0) + 1;
+          isAlreadyPresent = true;
+          break;
+        } else if (actionType == BasketListModifierAction.decreaseQty) {
+          if ((addOnsAddedBy.quantity ?? 0) > 0) {
+            addOnsAddedBy.quantity = (addOnsAddedBy.quantity ?? 0) - 1;
+            if (addOnsAddedBy.quantity == 0) {
+              addedBy?.removeWhere(
+                  (element) => element.user?.userName == currentUser?.userName);
+            }
+          }
+          isAlreadyPresent = true;
+          break;
+        }
+      }
+    }
+
+    if (isAlreadyPresent == false) {
+      if (actionType == BasketListModifierAction.increaseQty) {
+        addedBy ??= [];
+        addedBy?.add(AddedBy(user: currentUser, quantity: 1));
+      } else if (actionType == BasketListModifierAction.decreaseQty) {
+        if ((addedBy?.first.quantity ?? 0) > 0) {
+          addedBy?.first.quantity = (addedBy?.first.quantity ?? 0) - 1;
+          if (addedBy?.first.quantity == 0) {
+            addedBy?.removeWhere(
+                (element) => element.user?.userName == currentUser?.userName);
+          }
+        }
+      }
+    }
+  }
+
+  bool isAddOnsSelected(AddOns addon) {
+    if (addon.inputType == "radio") {
+      if (name == addon.groupValue) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (addon.inputType == "checkbox") {
+      if (isChecked) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 }
 
@@ -929,7 +1602,7 @@ class AddOns {
   String? selectType;
   bool? isRequired;
   bool? isChecked;
-  DateTime? createdAt;
+  String? createdAt;
   String? groupValue;
 
   AddOns(
@@ -950,7 +1623,7 @@ class AddOns {
     if (json['options'] != null) {
       options = <AddOnOption>[];
       json['options'].forEach((v) {
-        options!.add(new AddOnOption.fromJson(v));
+        options!.add(AddOnOption.fromJson(v));
       });
     }
     merchant = json['merchant'];
@@ -960,41 +1633,80 @@ class AddOns {
     selectType = json['select_type'];
     isRequired = json['is_required'];
     isChecked = json['is_checked'] ?? false;
-    createdAt = getProductDateTime(json['created_at']);
+    createdAt = json['created_at'];
+    // createdAt = DateTime.parse(json['created_at']);
+    groupValue = json['group_value'];
+  }
+
+  AddOns copyWith({
+    int? id,
+    List<AddOnOption>? options,
+    String? merchant,
+    String? name,
+    String? description,
+    String? inputType,
+    String? selectType,
+    bool? isRequired,
+    bool? isChecked,
+    String? createdAt,
+    String? groupValue,
+  }) {
+    return AddOns(
+      id: id ?? this.id,
+      options: options ?? this.options?.map((e) => e.copyWith()).toList(),
+      merchant: merchant ?? this.merchant,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      inputType: inputType ?? this.inputType,
+      selectType: selectType ?? this.selectType,
+      isRequired: isRequired ?? this.isRequired,
+      isChecked: isChecked ?? this.isChecked,
+      createdAt: createdAt ?? this.createdAt,
+      groupValue: groupValue ?? this.groupValue,
+    );
+  }
+
+  List<AddOnOption> getSelectedAddsOnsOption(AddOns addOns) {
+    final List<AddOnOption> selectedAddOnsList = [];
+
+    for (AddOnOption addOn in options ?? []) {
+      if (addOn.isAddOnsSelected(addOns)) selectedAddOnsList.add(addOn);
+    }
+    return selectedAddOnsList;
   }
 
   static DateTime getProductDateTime(var date) {
     if (date != null) {
-      DateTime dateTime = DateTime.parse(date);
+      final DateTime dateTime = DateTime.parse(date);
       return dateTime;
     }
     return DateTime.now();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    if (this.options != null) {
-      data['options'] = this.options!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (options != null) {
+      data['options'] = options!.map((v) => v.toJson()).toList();
     }
-    data['merchant'] = this.merchant;
-    data['name'] = this.name;
-    data['description'] = this.description;
-    data['input_type'] = this.inputType;
-    data['select_type'] = this.selectType;
-    data['is_required'] = this.isRequired;
+    data['merchant'] = merchant;
+    data['name'] = name;
+    data['description'] = description;
+    data['input_type'] = inputType;
+    data['select_type'] = selectType;
+    data['is_required'] = isRequired;
     // if(data['is_checked'] == null){
     //   isRequired = data['is_checked'] ?? false;
     // }
-    data['created_at'] = this.createdAt;
+    data['created_at'] = createdAt;
     return data;
   }
 
   static List<AddOns> convertToAddOnList(List<dynamic> dataList) {
-    List<AddOns> addOnList = [];
+    final List<AddOns> addOnList = [];
 
     for (var data in dataList) {
-      AddOns addOns = AddOns(
+      final AddOns addOns = AddOns(
         id: data['id'],
         name: data['name'],
         description: data['description'],
@@ -1011,7 +1723,7 @@ class AddOns {
   }
 
   static List<AddOnOption> getAddOnOption(List? data) {
-    List<AddOnOption> addOnOption = [];
+    final List<AddOnOption> addOnOption = [];
 
     if (data != null) {
       for (int i = 0; i < data.length; i++) {
@@ -1044,9 +1756,9 @@ class Tags {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
     return data;
   }
 }
@@ -1107,8 +1819,7 @@ class CustomCategory {
   }
 }
 
-class Service {
-  String? id;
+class Service extends PurchasableItem {
   String? name;
   String? description;
   String? shortDescription;
@@ -1123,31 +1834,76 @@ class Service {
   String? category;
   bool? isAvailable;
   DateTime? availableFrom;
+  String? discountId;
+  bool? discountIsActive;
+  int? discountValue;
+  String? discountType;
+  int? discountedPrice;
+  double? pricePercentageChange;
   String? currency;
   List<dynamic>? pictureMap;
   double? rating;
   bool? canRate = false;
+  List<String>? searchKeywords;
+  bool isChecked = false;
+  int? reviewScore;
+  ForeignPrice? foreignPrice;
 
-  Service(
-      {this.id,
-      this.name,
-      this.description,
-      this.shortDescription,
-      this.price,
-      this.localImages,
-      this.serverImages,
-      this.cover = "",
-      this.provider,
-      this.providerAvatar,
-      this.providerFullName,
-      this.qrCode,
-      this.category,
-      this.isAvailable,
-      this.availableFrom,
-      this.currency,
-      this.pictureMap,
-      this.rating = 0.0,
-      this.canRate});
+  Service({
+    super.id,
+    this.name,
+    this.description,
+    this.shortDescription,
+    this.price,
+    this.localImages,
+    this.serverImages,
+    this.cover = "",
+    this.provider,
+    this.providerAvatar,
+    this.providerFullName,
+    this.qrCode,
+    this.category,
+    this.isAvailable,
+    this.availableFrom,
+    this.discountId,
+    this.discountIsActive,
+    this.discountValue,
+    this.discountType,
+    this.discountedPrice,
+    this.pricePercentageChange,
+    this.currency,
+    this.pictureMap,
+    this.rating = 0.0,
+    this.canRate,
+    this.searchKeywords,
+    this.isChecked = false,
+    this.reviewScore,
+    this.foreignPrice,
+  });
+
+  String getUrl() {
+    return "https://slydo.co/api/v1/services/$id";
+  }
+
+  Map<String, dynamic> getQRCodeInfo() {
+    final Map<String, dynamic> accountData = {
+      "accountName": shortDescription,
+      "accountNumber": name,
+      "financialInstitution": FinancialInstitution.fromJson({}),
+      "customerUsername": provider,
+      "note": "",
+    };
+    return accountData;
+  }
+
+  Map<String, dynamic> getNavigationData() {
+    final Map<String, dynamic> navigationData = {
+      'isProfile': 'false',
+      'service': provider,
+      'serviceUrl': getUrl(),
+    };
+    return navigationData;
+  }
 
   String? getMerchantUserName() {
     return provider;
@@ -1174,8 +1930,8 @@ class Service {
   }
 
   List<String?> imageDataToList(List<dynamic> pictures) {
-    List<String?> imageLinks = [];
-    if (pictures.length > 0) {
+    final List<String?> imageLinks = [];
+    if (pictures.isNotEmpty) {
       for (var data in pictures) {
         imageLinks.add(data["file"]);
       }
@@ -1187,7 +1943,7 @@ class Service {
   }
 
   Map toMap() {
-    return {
+    final data = {
       "name": name,
       "description": description,
       "short_description":
@@ -1196,13 +1952,28 @@ class Service {
       "category": category,
       "is_available": isAvailable,
       "available_from": availableFrom,
+      "discount": discountId,
+      "discount_is_active": discountIsActive,
+      "discounted_price": discountedPrice,
+      "discount_value": discountValue,
+      "discount_type": discountType,
+      "price_percentage_change": pricePercentageChange ?? 0.0,
       "provider_avatar": providerAvatar,
-      "provider_fullname": providerFullName
+      "provider_fullname": providerFullName,
+      "is_checked": isChecked,
+      "review_score": reviewScore,
+      "foreign_price": foreignPrice?.toJson(),
     };
+    if (searchKeywords != null &&
+        (searchKeywords?.isNotEmpty ?? false) &&
+        searchKeywords?[0] != "") {
+      data["search_keywords"] = searchKeywords;
+    }
+    return data;
   }
 
-  Map toJson() {
-    return {
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
       "id": id,
       "name": name,
       "description": description,
@@ -1212,12 +1983,23 @@ class Service {
       "category": category,
       "is_available": isAvailable,
       "available_from": availableFrom.toString(),
+      "discount_is_active": discountIsActive,
+      "discounted_price": discountedPrice,
+      "discount_value": discountValue,
+      "discount_type": discountType,
+      "price_percentage_change": pricePercentageChange ?? 0.0,
       "cover": cover,
       "provider": provider,
       "currency": currency,
       'rating': rating,
       "provider_avatar": providerAvatar,
-      "provider_fullname": providerFullName
+      "provider_fullname": providerFullName,
+      "search_keywords": searchKeywords == null
+          ? []
+          : List<String>.from(searchKeywords!.map((x) => x)),
+      "is_checked": isChecked,
+      "review_score": reviewScore,
+      "foreign_price": foreignPrice?.toJson(),
     };
   }
 
@@ -1237,14 +2019,53 @@ class Service {
     category = object["category"] ?? "";
     isAvailable = object["is_available"] ?? true;
     availableFrom = getServiceDateTime(object["available_from"]);
+    discountIsActive = object["discount_is_active"] ?? false;
+    discountValue = object["discoundiscount_valueted_price"];
+    discountType = object["discount_type"];
+    discountedPrice = object["discounted_price"];
+    pricePercentageChange = object["price_percentage_change"] ?? 0.0;
     currency = object["currency"] ?? "";
     pictureMap = object["pictureMap"] ?? [];
     rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));
     canRate = object["can_rate"] ?? false;
+    // searchKeywords = object["search_keywords"] ?? <String>[];
+    searchKeywords = object["search_keywords"] == null
+        ? <String>[]
+        : List<String>.from(object["search_keywords"].map((x) => x));
+    isChecked = object["is_checked"] ?? false;
+    reviewScore = object["review_score"] ?? 0;
+    foreignPrice = object["foreign_price"] is Map<String, dynamic>
+        ? ForeignPrice.fromJson(object["foreign_price"])
+        : null;
+  }
+
+  bool isServiceAvailableNow() {
+    if ((isAvailable ?? false) &&
+        ((availableFrom?.isBefore(DateTime.now()) ?? false) ||
+            (availableFrom?.isAtSameMomentAs(DateTime.now()) ?? false))) {
+      return true;
+    }
+    return false;
+  }
+
+  bool checkServiceDiscount() {
+    if (discountIsActive == true && discountedPrice != null) {
+      return true;
+    }
+    return false;
+  }
+
+  String getServiceRealPrice() {
+    if (discountedPrice != null || discountedPrice != 0) {
+      if (checkServiceDiscount()) {
+        return discountedPrice.toString();
+      }
+    }
+    return price ?? "0";
   }
 
   List<String> getServiceImages(List? data) {
-    List<String> images = [];
+    final List<String> images = [];
 
     if (data != null) {
       for (int i = 0; i < data.length; i++) {
@@ -1258,7 +2079,7 @@ class Service {
 
   DateTime getServiceDateTime(var date) {
     if (date != null) {
-      DateTime dateTime = DateTime.parse(date);
+      final DateTime dateTime = DateTime.parse(date);
       return dateTime;
     }
     return DateTime.now();
@@ -1276,7 +2097,30 @@ class ProductCategory {
 
   final String name;
   final dynamic id;
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "id": id,
+      };
 }
+
+// class ProductCategory {
+//   String? name;
+//   dynamic id;
+//
+//   ProductCategory(
+//     this.name, {this.id = ""});
+//
+//   ProductCategory.fromJson(object) {
+//     id = object["id"];
+//     name = object["name"];
+//   }
+//
+//   Map<String, dynamic> toJson() => {
+//     "name": name,
+//     "id": id,
+//   };
+// }
 
 class ServiceCategory {
   const ServiceCategory(this.name);
@@ -1284,11 +2128,35 @@ class ServiceCategory {
   final String name;
 }
 
+class AddedBy {
+  SharedCartMemberModel? user;
+  int? quantity;
+
+  AddedBy({
+    this.user,
+    this.quantity,
+  });
+
+  factory AddedBy.fromJson(Map<String, dynamic> json) => AddedBy(
+        user: json["user"] == null
+            ? null
+            : SharedCartMemberModel.fromJson(json["user"]),
+        quantity: json["quantity"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "user": user?.toJson(),
+        "quantity": quantity,
+      };
+}
+
 class Order {
   String? id;
   String? status;
   String? customerName;
+  String? customerFullName;
   String? merchant;
+  String? merchantFullName;
   String? customerAvatar;
   String? customerType;
   String? merchantAvatar;
@@ -1300,29 +2168,104 @@ class Order {
   int? totalPrice;
   String? currency;
   List<dynamic>? statusTimeStamp;
+  String? customer;
+  // ShippingAddress? deliveryAddress;
+  String? deliveryAddressId;
+  String? journeyId;
+  String? paymentType;
+  String? pickupAddressId;
+  String? pickupDateTime;
+  String? inStoreDateTime;
+  int? price;
+  String? rateId;
+  int? shippingOption;
+  String? shippingType;
+  int? shippingPrice;
+  DateTime? updatedAt;
+  DateTime? date;
+  List<OrderItem>? orderItems;
+  List<Map<String, dynamic>>? items;
+  bool hasReview = false;
+  String? refundPaymentRequestId;
+  String? refundPaymentId;
+  String? deliveryDatetime;
+  String? customerContactNumber;
+  List<String> orderConfirmState = [
+    "Complete",
+    "Payment Successful",
+    "Canceled",
+    "Processing",
+    "Order Placed",
+  ];
+  List<String> orderCancelledState = [
+    "Awaiting Payment",
+    "Payment Successful",
+    "Order Placed",
+  ];
+  List<String> shippedStatus = [
+    "Out For Delivery",
+    "Order Picked Up",
+    "Rider In Delivery Location",
+    "Order Arrived",
+    "Rider Picked Up Order"
+  ];
 
-  Order(
-      {this.id,
-      this.status,
-      this.customerName,
-      this.merchant,
-      this.customerAvatar,
-      this.customerType = "User",
-      this.merchantAvatar,
-      this.merchantType = "Business",
-      this.isPaid,
-      this.transactionId,
-      this.note,
-      this.createdAt,
-      this.totalPrice,
-      this.currency,
-      this.statusTimeStamp});
+  List<String> newOrderStatus = [
+    "New Order",
+    "Payment Successful",
+    "Order Placed",
+    "Payment Received"
+  ];
+  List<String> notAllowedStatusUpdate = ["Canceled", "Complete"];
+
+  Order({
+    this.id,
+    this.status,
+    this.customerName,
+    this.customerFullName,
+    this.merchant,
+    this.merchantFullName,
+    this.customerAvatar,
+    this.customerType = "User",
+    this.merchantAvatar,
+    this.merchantType = "Business",
+    this.isPaid,
+    this.transactionId,
+    this.note,
+    this.createdAt,
+    this.totalPrice,
+    this.currency,
+    this.statusTimeStamp,
+    this.customer,
+    // this.deliveryAddress,
+    this.deliveryAddressId,
+    this.journeyId,
+    this.paymentType,
+    this.pickupAddressId,
+    this.pickupDateTime,
+    this.price,
+    this.rateId,
+    this.shippingOption,
+    this.shippingType,
+    this.shippingPrice,
+    this.updatedAt,
+    this.date,
+    this.orderItems,
+    this.items,
+    this.hasReview = false,
+    this.refundPaymentRequestId,
+    this.refundPaymentId,
+    this.deliveryDatetime,
+    this.customerContactNumber,
+  });
 
   Order.fromJson(object) {
     id = object["id"].toString();
     status = object["status"];
     customerName = object["customer"];
+    customerFullName = object["customer_full_name"];
     merchant = object["merchant"];
+    merchantFullName = object["merchant_full_name"] ?? object['merchant'] ?? '';
     customerAvatar = object["customer_avatar"];
     customerType = object["customer_type"] ?? "User";
     merchantType = object["merchant_type"] ?? "Business";
@@ -1334,5 +2277,305 @@ class Order {
     totalPrice = object["total_price"];
     currency = object["currency"] ?? "NGN";
     statusTimeStamp = object["status_time_stamps"];
+
+    customer = object["customer"];
+    // deliveryAddress = object["delivery_address"] == null
+    //     ? null
+    //     : ShippingAddress.fromJson(object["delivery_address"]);
+    deliveryAddressId = object["delivery_address_id"];
+    journeyId = object["journey_id"];
+    paymentType = object["payment_type"];
+    pickupAddressId = object["pickup_address_id"];
+    pickupDateTime = object["pickup_datetime"];
+    price = object["price"];
+    rateId = object["rate_id"];
+    shippingOption = object["shipping_option"];
+    shippingType = object["shipping_type"];
+    shippingPrice = object["shipping_price"];
+    updatedAt = object["updated_at"] == null
+        ? null
+        : DateTime.parse(object["updated_at"]);
+    date = object["date"] == null ? null : DateTime.parse(object["date"]);
+    orderItems = orderItemFromJSON(object['order_items']);
+
+    if (object["item"] != null &&
+        object["item"] is Map &&
+        (object["item"] as Map).isNotEmpty) {
+      items ??= [];
+      if (object["item"].containsKey("manufacturer")) {
+        final product = Product.fromJson(object["item"]);
+        items?.add({
+          "type": "product",
+          "item": product,
+          "qty": int.parse(object["qty"]),
+        });
+      }
+      if (!object["item"].containsKey("manufacturer")) {
+        final service = Service.fromJson(object["item"]);
+        items?.add({
+          "type": "service",
+          "item": service,
+          "qty": int.parse(object["qty"]),
+        });
+      }
+    }
+    hasReview = object["has_review"] ?? false;
+    refundPaymentRequestId = object["refund_payment_request_id"];
+    refundPaymentId = object["refund_payment_id"];
+    deliveryDatetime = object["delivery_datetime"] ?? object["created_at"];
+    customerContactNumber = object["customer_contact_number"];
+  }
+
+  List<OrderItem> orderItemFromJSON(List ordersItemsList) {
+    final List<OrderItem> myListOfOrders = [];
+    for (var item in ordersItemsList) {
+      if (item['item']['variants'] != null &&
+          item['item']['variants'].isNotEmpty &&
+          item['item']['variants'].length > 1) {
+        for (var variant in item['item']['variants']) {
+          item['item']['variants'] = [variant];
+          item['qty'] = variant['quantity'];
+          final orderItem = OrderItem.fromJson(item);
+          myListOfOrders.add(orderItem);
+        }
+      } else {
+        final orderItem = OrderItem.fromJson(item);
+        myListOfOrders.add(orderItem);
+      }
+    }
+    return myListOfOrders;
+  }
+
+  String getOrderUrl() {
+    final String url = '${AppConfig.baseUrl}/api/v1/order/$id/';
+    return url;
+  }
+
+  // ToDO: take order item and add it to shopping cart
+  void recreateOrder(BasketBloc basketBloc, UserBloc userBloc) {
+    // loop though order items
+    // for each item and quantity add to shopping cart
+
+    for (var item in orderItems ?? []) {
+      if (item.item is Product) {
+        final Product orderedProduct = item.item;
+
+        const String type = "product";
+
+        final Product products =
+            orderedProduct.copyWith(quantity: 1, withSelectedAddOn: true);
+
+        Variant? variant;
+        if (orderedProduct.variantModels != null &&
+            (orderedProduct.variantModels?.isNotEmpty ?? false)) {
+          variant = orderedProduct.variantModels?.first.copyWith(quantity: 1);
+        }
+        basketBloc.addItemToCart(
+          item: products,
+          type: type,
+          variant: variant,
+          addOns: products.addOnsModels,
+          currentUser: userBloc.user.convertToUser(),
+        );
+      }
+    }
+  }
+
+  //todo: invetiget deprecating this function or delete this function
+  String? getCustomerOrMerchantName(String? userName) {
+    final customerOrMerchant =
+        customerName == userName ? merchant : customerName;
+    return customerOrMerchant;
+  }
+
+  bool isCompleted() {
+    if (status == 'Complete') {
+      return true;
+    }
+    return false;
+  }
+
+  bool? isMerchant(String? userName) {
+    if (merchant == userName) {
+      return true;
+    }
+    return false;
+  }
+
+  bool? isCustomer(String? userName) {
+    if (customerName == userName) {
+      return true;
+    }
+    return false;
+  }
+
+  bool canWriteReview() {
+    if (status == "Complete" && !hasReview) {
+      return true;
+    }
+    return false;
+  }
+
+  bool isShipped() {
+    if (shippedStatus.contains(status) == true) {
+      return true;
+    }
+    return false;
+  }
+
+  String? normalizeName(String? userName) {
+    if (userName == "__anonymous__") {
+      return "Anonymous User";
+    }
+    return userName;
+  }
+
+  String? isOrderStatus(String userName) {
+    if (refundPaymentId != null) {
+      return "Refund Successful";
+    } else if (refundPaymentRequestId != null) {
+      return "Pending Refund Request";
+    }
+    return shipmentType();
+  }
+
+  Color checkStatusForColor(String status) {
+    if (refundPaymentId != null) {
+      return naturalGreen;
+    } else if (refundPaymentRequestId != null) {
+      return starYellow;
+    }
+    return navyBlue;
+  }
+
+  Color checkOrderStatusBgColor(String userName) {
+    if (refundPaymentId != null) {
+      return naturalGreen.withOpacity(0.1);
+    } else if (refundPaymentRequestId != null) {
+      return starYellow.withOpacity(0.1);
+    }
+    return navyBlue.withOpacity(0.1);
+  }
+
+  String shipmentType() {
+    if (deliveryAddressId == null || deliveryAddressId == "") {
+      if (pickupDateTime == null || pickupDateTime == "") {
+        return "In Store/Eat In";
+      }
+      return "PickUp";
+    }
+    return "Delivery";
+  }
+
+  int getSubTotalAmount() {
+    int subTotal = 0;
+    int productActualPrice = 0;
+
+    for (OrderItem item in orderItems ?? []) {
+      if (item.item is Product) {
+        final Product product = item.item;
+        if (product.variantModels?.isNotEmpty ?? false) {
+          productActualPrice =
+              product.getDiscountedPrice(product.variantModels?.first) ?? 0;
+        } else {
+          productActualPrice = product.getProductRealPrice();
+        }
+      }
+      final int? orderItems = item.qty;
+      final int totalPrice = (productActualPrice * (orderItems ?? 0)).toInt();
+      subTotal += totalPrice;
+    }
+
+    return subTotal;
+  }
+
+  int? getShippingPrice() {
+    return int.tryParse(shippingPrice?.toString() ?? "0");
+  }
+
+  String getTaxAmount() {
+    return moneyDisplayNormalizer(0);
+  }
+
+  int? getServiceCharge() {
+    return int.tryParse("0");
+  }
+
+  int getTotalAmount() {
+    final int subTotal = getSubTotalAmount();
+    final int? shippingPrice = getShippingPrice();
+    final int taxAmount = int.tryParse(getTaxAmount()) ?? 0;
+
+    final int totalAmount = subTotal + (shippingPrice ?? 0) + taxAmount;
+    return totalAmount;
+  }
+
+  String getHasPaidStatus() {
+    for (var v in statusTimeStamp ?? []) {
+      if (v.containsKey('Payment Successful') ||
+          v.containsKey('Payment Received')) {
+        if ((v['Payment Successful'] != null &&
+                v['Payment Successful'] != '') ||
+            (v['Payment Received'] != null && v['Payment Received'] != '')) {
+          return 'Paid';
+        }
+      }
+    }
+    return 'Awaiting Payment';
   }
 }
+
+class OrderItem {
+  dynamic item; // Can be either Product or Service
+  int? qty;
+  double? price;
+  int? id;
+
+  OrderItem({
+    this.item,
+    this.qty,
+    this.price,
+    this.id,
+  });
+
+  factory OrderItem.fromJson(Map<String, dynamic> json) {
+    var item;
+    if (json['item']['type'] == 'product') {
+      item = Product.fromJson(json['item']);
+    } else if (json['item']['type'] == 'service') {
+      item = Service.fromJson(json['item']);
+    } else {
+      throw Exception('Unknown item type');
+    }
+
+    return OrderItem(
+      item: item,
+      qty: json['qty'],
+      price: json['price'].toDouble(),
+      id: json['id'],
+    );
+  }
+}
+
+class ForeignPrice {
+  int? price;
+  String? userCurrencyRate;
+
+  ForeignPrice({
+    this.price,
+    this.userCurrencyRate,
+  });
+
+  factory ForeignPrice.fromJson(Map<String, dynamic> json) => ForeignPrice(
+        price: json["price"],
+        userCurrencyRate: json["user_currency_rate"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "price": price,
+        "user_currency_rate": userCurrencyRate,
+      };
+}
+
+// Exchange rate -> {currency: "USD", rate: 1000}
+// Product -> foreignPrice {price: 100, user_currency_rate: {currency: "USD", rate: 1000}}

@@ -5,8 +5,7 @@ import 'package:Slydo/screens/super_store/shop_list_screen_with_tags.dart';
 import 'package:Slydo/screens/super_store/super_store.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:badges/badges.dart' as badges;
+import 'package:Slydo/widget/cart_with_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +18,7 @@ import '../../utils/util.dart';
 import '../../widget/rounded_background_icon.dart';
 
 class SuperStoreHome extends StatefulWidget {
-  const SuperStoreHome({Key? key}) : super(key: key);
+  const SuperStoreHome({super.key});
 
   @override
   State<SuperStoreHome> createState() => _SuperStoreHomeState();
@@ -28,7 +27,6 @@ class SuperStoreHome extends StatefulWidget {
 class _SuperStoreHomeState extends State<SuperStoreHome> {
   int? productCount = 0;
   late BasketBloc basketBloc;
-  late PageController _pageViewController;
   int currentAskTapOnHome = 0;
   bool _tabsVisible = true;
   String categoryName = '';
@@ -37,19 +35,17 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
 
   @override
   void initState() {
-    _pageViewController = PageController(initialPage: 0);
     getProductIndustries();
     super.initState();
   }
 
-  getProductIndustries() async {
+  void getProductIndustries() async {
     isLoading = true;
     if (mounted) setState(() {});
-    var result = await ShoppingAuthService().listOfIndustries();
-    setState(() {
-      industries = result!["product"];
-      isLoading = false;
-    });
+    final result = await ShoppingAuthService().listOfIndustries();
+    industries = result!["product"];
+    isLoading = false;
+    setState(() {});
   }
 
   void _showTabs(bool visible) {
@@ -65,7 +61,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     basketBloc = Provider.of<BasketBloc>(context);
 
     return Scaffold(
-      backgroundColor: whiteBackground,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: _buildBody(),
     );
@@ -73,6 +69,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         AppLocalization.of(context)!.superStore,
@@ -97,20 +94,21 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
   List<Widget> _buildAppBarActionsShopList() {
     return [
       RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
-            Navigator.of(context).pushNamed("/search-product");
-          },
-          height: 15,
-          width: 15,
-          icon: SvgPicture.asset(
-            "yarn/search".toSVG(),
-            height: 12,
-            width: 12,
-          )),
-      SizedBox(width: 20),
+        backgroundColor: Colors.transparent,
+        onTap: () {
+          Navigator.of(context).pushNamed("/search-product");
+        },
+        height: 16,
+        width: 16,
+        icon: SvgPicture.asset(
+          "yarn/search".toSVG(),
+          height: 12,
+          width: 12,
+        ),
+      ),
+      const SizedBox(width: 15),
       _cartBtn(),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
     ];
   }
 
@@ -128,7 +126,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 15),
+      const SizedBox(width: 15),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -144,7 +142,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
             height: 15,
             width: 15,
           )),
-      SizedBox(width: 15),
+      const SizedBox(width: 20),
 
       // RoundedBackgroundIcon(
       //     backgroundColor: Colors.transparent,
@@ -169,8 +167,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollNotification) {
         /// Check if the scroll direction is horizontal
-        if (scrollNotification is ScrollNotification &&
-            scrollNotification.metrics.axis == Axis.horizontal) {
+        if (scrollNotification.metrics.axis == Axis.horizontal) {
           // Disable horizontal scrolling
           return true;
         }
@@ -189,7 +186,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
       },
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           // _buildCategoryAndTabs(),
@@ -197,24 +194,25 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
             Container(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: isLoading
-                  ? Container(
+                  ? SizedBox(
                       height: 100.0,
                       child: Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.zero,
-                            itemCount: 6,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                color: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              );
-                            },
-                          )),
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: EdgeInsets.zero,
+                          itemCount: 6,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     )
                   : _displayShortcutButtons(industries),
             ),
@@ -225,7 +223,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
   }
 
   String getImagePath(String imgKey) {
-    Map<String, String> imagePathData = {
+    final Map<String, String> imagePathData = {
       'Restaurant': 'store/restaurant',
       'Drinks': 'store/drinks',
       'Groceries': 'store/groceries',
@@ -238,7 +236,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
   }
 
   Widget _displayShortcutButtons(List<ProductIndustryResults> industries) {
-    return Container(
+    return SizedBox(
       height: 80.0,
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -250,11 +248,12 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
               child: GestureDetector(
                   // key: showTutorial(shortcut['title']),
                   onTap: () {
-                    NavigationUtil.push(
+                    Navigator.push(
                       context,
-                      screen: SuperStore(
-                        arguments: {"industry": shortcut},
-                      ),
+                      MaterialPageRoute(
+                          builder: (context) => SuperStore(
+                                arguments: {"industry": shortcut},
+                              )),
                     );
                   },
                   child: shortcutView(shortcut)),
@@ -289,7 +288,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     return Container(
       width: 75,
       height: 75,
-      padding: EdgeInsets.all(5),
+      padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(5)),
       child: Column(
@@ -304,11 +303,13 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
           const SizedBox(height: 10),
           Text(
             title,
+            maxLines: 1,
             style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-                color: black),
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+              color: black,
+            ),
           ),
         ],
       ),
@@ -335,85 +336,15 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
   }
 
   Widget _cartBtn() {
-    return RoundedBackgroundIcon(
+    return CartWithBadge(
+      items: basketBloc.basketItems,
       height: 30,
       width: 30,
-      icon: badges.Badge(
-        badgeContent: getBadgeContent(),
-        badgeAnimation: badges.BadgeAnimation.rotation(
-          animationDuration: Duration(seconds: 1),
-          colorChangeAnimationDuration: Duration(seconds: 1),
-          loopAnimation: false,
-          curve: Curves.fastOutSlowIn,
-          colorChangeAnimationCurve: Curves.easeInCubic,
-        ),
-        badgeStyle: badges.BadgeStyle(
-          shape: badges.BadgeShape.circle,
-          badgeColor: naturalGreen,
-          padding: basketBloc.items.length == 0
-              ? EdgeInsets.all(0)
-              : EdgeInsets.only(
-                  left: getBadgeCount().length == 1 ? 6 : 8,
-                  right: 6,
-                  top: 4,
-                  bottom: 4),
-          elevation: 0,
-        ),
-        child: Center(
-          child: Icon(
-            SlydoAppIcon.cart,
-            size: 16,
-            color: blackFont,
-          ),
-        ),
-      ),
+      backgroundColor: transparent,
+      enableMargin: true,
       onTap: () {
         NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
       },
-      backgroundColor: blackFont.withOpacity(0.1),
-      enableMargin: true,
     );
-  }
-
-  Widget? getBadgeContent() {
-    if (basketBloc.items.length == 0) {
-      return null;
-    }
-    return Text(
-      getBadgeCount(),
-      style: TextStyle(
-          fontSize: 10,
-          fontFamily: "Inter",
-          color: Colors.white,
-          fontWeight: FontWeight.bold),
-    );
-  }
-
-  String getBadgeCount() {
-    int totalItem = 0;
-    basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
-    });
-    // for (var item in basketBloc.items) {
-    //
-    //   if (item['item'] is Product) {
-    //     var product = item['item'] as Product;
-    //
-    //     if (product.variant!.isEmpty && product.variant != null) {
-    //       // If the variant list is empty, add the quantity to the total
-    //       totalItem += int.parse(item['qty'].toString());
-    //     } else {
-    //       // If there are variants, calculate the total quantity from variants
-    //       for(var variant in product.variant!){
-    //         var vProduct = Variant.fromJson(variant);
-    //         totalItem += int.parse(vProduct.quantity.toString());
-    //       }
-    //     }
-    //
-    //   } else if (item['item'] is Service) {
-    //     totalItem += int.parse(item['qty'].toString());
-    //   }
-    // }
-    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 }

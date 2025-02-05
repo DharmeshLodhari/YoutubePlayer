@@ -1,14 +1,12 @@
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
-import '../messaging/chat/utils.dart';
-import 'models/Transport.dart';
+import 'models/transport_model.dart';
 
 class FlightTicketTile extends StatelessWidget {
   final Transport? transport;
 
-  const FlightTicketTile({Key? key, this.transport}) : super(key: key);
+  const FlightTicketTile({super.key, this.transport});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -16,12 +14,12 @@ class FlightTicketTile extends StatelessWidget {
       margin: EdgeInsets.zero,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: decorateBox(),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
                 height: 20,
                 width: 20,
                 child: ClipOval(
@@ -31,7 +29,7 @@ class FlightTicketTile extends StatelessWidget {
                     width: double.infinity,
                   ),
                 )),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             Expanded(
@@ -64,7 +62,7 @@ class FlightTicketTile extends StatelessWidget {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -80,7 +78,7 @@ class FlightTicketTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 Row(
@@ -104,7 +102,7 @@ class FlightTicketTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 Row(
@@ -120,7 +118,7 @@ class FlightTicketTile extends StatelessWidget {
                             color: darkGrey,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(
@@ -143,7 +141,7 @@ class FlightTicketTile extends StatelessWidget {
                             color: darkGrey,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(

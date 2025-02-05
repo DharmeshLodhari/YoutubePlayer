@@ -1,16 +1,13 @@
-import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/more_apps/events/models/partial_event_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../messaging/chat/utils.dart';
-
 class EventTile extends StatelessWidget {
   final PartialEventItem? partialEventItem;
 
-  const EventTile({Key? key, this.partialEventItem}) : super(key: key);
+  const EventTile({super.key, this.partialEventItem});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +18,7 @@ class EventTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -35,11 +32,11 @@ class EventTile extends StatelessWidget {
                     errorWidget: imageErrorWidget,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 16,
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 86,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,9 +87,9 @@ class EventTile extends StatelessWidget {
 class EventTileWithHeart extends StatefulWidget {
   final PartialEventItem? partialEvent;
 
-  const EventTileWithHeart({Key? key, this.partialEvent}) : super(key: key);
+  const EventTileWithHeart({super.key, this.partialEvent});
   @override
-  _EventTileWithHeartState createState() => _EventTileWithHeartState();
+  State<EventTileWithHeart> createState() => _EventTileWithHeartState();
 }
 
 class _EventTileWithHeartState extends State<EventTileWithHeart> {
@@ -107,7 +104,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
       child: Container(
         decoration: decorateBox(),
         child: Container(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -121,11 +118,11 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                   errorWidget: imageErrorWidget,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 16,
               ),
               Expanded(
-                child: Container(
+                child: SizedBox(
                   height: 86,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,14 +177,12 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                   ),
                 ),
               ),
-              Container(
+              SizedBox(
                 height: 86,
                 child: Center(
                   child: IconButton(
                     icon: Icon(
-                      isChange
-                          ? SlydoAppIcon.heart_empty
-                          : SlydoAppIcon.heart_1,
+                      isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
                       color: isChange ? blackFont : navyBlue,
                       size: 20,
                     ),

@@ -6,11 +6,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../messaging/chat/utils.dart';
-
 class EventTicketDetail extends StatefulWidget {
+  const EventTicketDetail({super.key});
+
   @override
-  _EventTicketDetailState createState() => _EventTicketDetailState();
+  State<EventTicketDetail> createState() => _EventTicketDetailState();
 }
 
 class _EventTicketDetailState extends State<EventTicketDetail> {
@@ -34,6 +34,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -65,57 +66,55 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
   }
 
   Widget ticketWithImage() {
-    return Container(
-      child: Stack(
-        children: [
-          Image.asset(
-            "assets/images/event_ticket_background.png",
+    return Stack(
+      children: [
+        Image.asset(
+          "assets/images/event_ticket_background.png",
+        ),
+        Container(
+          height: 570,
+          padding: const EdgeInsets.symmetric(horizontal: 36),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 40,
+              ),
+              bookingInfo(),
+              const SizedBox(
+                height: 24,
+              ),
+              MySeparator(color: dividerColor),
+              const SizedBox(
+                height: 28,
+              ),
+              placeInfo(),
+              const SizedBox(
+                height: 16,
+              ),
+              MySeparator(color: dividerColor),
+              const SizedBox(
+                height: 40,
+              ),
+              Center(
+                child: SizedBox(
+                  height: 214,
+                  width: 214,
+                  child: CachedNetworkImage(
+                      errorWidget: imageErrorWidget,
+                      imageUrl:
+                          "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"),
+                ),
+              )
+            ],
           ),
-          Container(
-            height: 570,
-            padding: EdgeInsets.symmetric(horizontal: 36),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 40,
-                ),
-                bookingInfo(),
-                SizedBox(
-                  height: 24,
-                ),
-                MySeparator(color: dividerColor),
-                SizedBox(
-                  height: 28,
-                ),
-                placeInfo(),
-                SizedBox(
-                  height: 16,
-                ),
-                MySeparator(color: dividerColor),
-                SizedBox(
-                  height: 40,
-                ),
-                Center(
-                  child: Container(
-                    height: 214,
-                    width: 214,
-                    child: CachedNetworkImage(
-                        errorWidget: imageErrorWidget,
-                        imageUrl:
-                            "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"),
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 
   Widget ticketWithOutImage() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       child: Card(
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -126,22 +125,22 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 bookingInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 MySeparator(color: dividerColor),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 placeInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Stack(
@@ -175,7 +174,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                   ],
                 ),
                 Container(
-                  padding: EdgeInsets.all(40),
+                  padding: const EdgeInsets.all(40),
                   child: CachedNetworkImage(
                       errorWidget: imageErrorWidget,
                       imageUrl:
@@ -220,7 +219,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Expanded(
@@ -237,7 +236,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -256,7 +255,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Expanded(
@@ -273,7 +272,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -287,12 +286,12 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                     height: 32,
                     width: 32,
                     icon: Icon(
-                      SlydoAppIcon.price_tag,
+                      SlydoAppIcon.priceTag,
                       size: 14,
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Row(
@@ -312,7 +311,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
       ],
@@ -324,17 +323,19 @@ class MySeparator extends StatelessWidget {
   final double height;
   final Color color;
 
-  const MySeparator({this.height = 1.5, this.color = Colors.black});
+  const MySeparator({super.key, this.height = 1.5, this.color = Colors.black});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final boxWidth = constraints.constrainWidth();
-        final dashWidth = 4.0;
+        const dashWidth = 4.0;
         final dashHeight = height;
         final dashCount = (boxWidth / (2 * dashWidth)).floor();
         return Flex(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          direction: Axis.horizontal,
           children: List.generate(dashCount, (_) {
             return SizedBox(
               width: dashWidth,
@@ -344,8 +345,6 @@ class MySeparator extends StatelessWidget {
               ),
             );
           }),
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          direction: Axis.horizontal,
         );
       },
     );

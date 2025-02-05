@@ -1,19 +1,18 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/shopping_product_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class MyWishList extends StatefulWidget {
+  const MyWishList({super.key});
+
   @override
-  _MyWishListState createState() => _MyWishListState();
+  State<MyWishList> createState() => _MyWishListState();
 }
 
 class _MyWishListState extends State<MyWishList> {
@@ -22,7 +21,7 @@ class _MyWishListState extends State<MyWishList> {
   List<ShoppingProduct> products = [];
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -43,19 +42,12 @@ class _MyWishListState extends State<MyWishList> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -78,7 +70,7 @@ class _MyWishListState extends State<MyWishList> {
               )
             : SingleChildScrollView(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: products
                         .map(
@@ -92,7 +84,8 @@ class _MyWishListState extends State<MyWishList> {
                               });
                             },
                             child: Container(
-                                padding: EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: ShoppingTileWithHeart(
                                   product: product,
                                 )),
@@ -108,6 +101,7 @@ class _MyWishListState extends State<MyWishList> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

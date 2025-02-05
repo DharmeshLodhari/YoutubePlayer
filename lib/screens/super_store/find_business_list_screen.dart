@@ -1,5 +1,7 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:Slydo/screens/super_store/widget/find_business_card.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/yarn/utils/yarn_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -7,21 +9,16 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/util.dart';
-import '../../widget/item_display_card.dart';
 import '../../widget/no_item_in_list.dart';
 import '../more_apps/shopping/shopping_auth.dart';
-import '../more_apps/user_profile/models/user.dart';
-import '../more_apps/yarn/utils/yarn_enum.dart';
-import '../more_apps/yarn/widgets/yarn_shimmer.dart';
 
 class FindBusinessListScreen extends StatefulWidget {
-  Function(bool)? onPageRefresh;
-  String? category;
+  final Function(bool)? onPageRefresh;
+  final String? category;
   final String? industry;
 
-  FindBusinessListScreen(
-      {Key? key, this.onPageRefresh, this.category, this.industry})
-      : super(key: key);
+  const FindBusinessListScreen(
+      {super.key, this.onPageRefresh, this.category, this.industry});
 
   @override
   State<FindBusinessListScreen> createState() => FindBusinessListScreenState();
@@ -103,7 +100,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         isNearbyLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfMerchant(nearByNext, nearByPrevious, _currentCategory,
                 nearBy: true);
 
@@ -120,7 +117,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         nearByCount = result['count'];
         nearByNext = result['next'];
         nearByPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noNearByInList = false;
@@ -140,7 +137,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
           });
         }
       } else if (nearByNext == null && customerProfileListNearBy.length > 6) {
-        _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _findBusinessScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
@@ -155,7 +152,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         isFindBusinessLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfMerchant(
                 findBusinessNext, findBusinessPrevious, _currentCategory,
                 nearBy: false);
@@ -173,7 +170,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         findBusinessCount = result['count'];
         findBusinessNext = result['next'];
         findBusinessPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noFindBusinessInList = false;
@@ -193,7 +190,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
           });
         }
       } else if (findBusinessNext == null && customerProfileList.length > 6) {
-        _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _findBusinessScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
@@ -203,22 +200,15 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refreshPage();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      _refreshPage();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     findBusinessNext = "";
     findBusinessCount = 0;
     findBusinessPrevious = "";
@@ -289,40 +279,31 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     );
   }
 
-  Widget _buildLoadingIndicator() {
-    return Opacity(
-      opacity: isFindBusinessLoading ? 1.0 : 00,
-      child: isFindBusinessLoading ? const YarnShimmer() : Container(),
-    );
-  }
-
   Widget bodyList() {
     if (isFindBusinessLoading && isNearbyLoading) {
-      return _buildLoadingIndicator();
+      return buildShimmerLoadingIndicator(isLoading: isFindBusinessLoading);
     } else {
       return SingleChildScrollView(
+        physics: const ScrollPhysics(),
         child: Column(
           children: [
             if (customerProfileList.isNotEmpty) ...[
               // const SizedBox(height: 10.0,),
-              Container(
-                margin: const EdgeInsets.only(left: 15.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    // "Found ${findBusinessCount} ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
-                    "Found ${findBusinessCount} ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                      fontFamily: "Inter",
-                      color: blackFont,
-                    ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  // "Found ${findBusinessCount} ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
+                  "Found $findBusinessCount ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    fontFamily: "Inter",
+                    color: blackFont,
                   ),
                 ),
               ),
               const SizedBox(
-                height: 20.0,
+                height: 15.0,
               ),
               suggestionBuildView(),
             ],
@@ -344,15 +325,14 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
   }
 
   Widget suggestionBuildView() {
-    return ListView.separated(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       // controller: _scrollController,
       itemCount: customerProfileList.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == customerProfileList.length) {
-          return _buildLoadingIndicator();
+          return buildShimmerLoadingIndicator(isLoading: isFindBusinessLoading);
         }
 
         return GestureDetector(
@@ -361,45 +341,48 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
               "searchedUserName": customerProfileList[index].userName
             });
           },
-          child: FindBusiness(
-            customerProfile: customerProfileList[index],
-            tileRenderPlace: TileRenderPlace.YarnProductService,
-            callback: (username, value) {
-              //create a list to edit
-              List<CustomerProfile> customerProfileListEdit =
-                  customerProfileList;
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 7.0),
+            child: FindBusiness(
+              customerProfile: customerProfileList[index],
+              tileRenderPlace: TileRenderPlace.YarnProductService,
+              callback: (username, value) {
+                //create a list to edit
+                final List<CustomerProfile> customerProfileListEdit =
+                    customerProfileList;
 
-              // modify customerProfileList for the username and refresh the list
-              // set the isFollowing for that particular user
-              for (var customer in customerProfileListEdit) {
-                if (customer.userName == username) {
-                  customer.isFollowing =
-                      value; // Modify the isFollowing property
+                // modify customerProfileList for the username and refresh the list
+                // set the isFollowing for that particular user
+                for (var customer in customerProfileListEdit) {
+                  if (customer.userName == username) {
+                    customer.isFollowing =
+                        value; // Modify the isFollowing property
+                  }
                 }
-              }
 
-              customerProfileList = [];
-              customerProfileList = customerProfileListEdit;
+                customerProfileList = [];
+                customerProfileList = customerProfileListEdit;
 
-              if (mounted) setState(() {});
-            },
+                if (mounted) setState(() {});
+              },
+            ),
           ),
         );
       },
-      separatorBuilder: (context, int) {
-        return Column(
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            Divider(
-              height: 0,
-              thickness: 0.5,
-              color: greySecondaryYarn,
-            ),
-          ],
-        );
-      },
+      // separatorBuilder: (context, int) {
+      //   return Column(
+      //     children: [
+      //       const SizedBox(
+      //         height: 20,
+      //       ),
+      //       Divider(
+      //         height: 0,
+      //         thickness: 0.5,
+      //         color: greySecondaryYarn,
+      //       ),
+      //     ],
+      //   );
+      // },
     );
   }
 }

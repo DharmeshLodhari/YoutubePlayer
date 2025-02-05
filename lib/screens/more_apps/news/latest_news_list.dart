@@ -1,26 +1,25 @@
-import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/blog/post_detail_page.dart';
 import 'package:Slydo/screens/more_apps/news/news_auth.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../utils/enums.dart';
-import '../../post_detail_page.dart';
-import 'models/NewsListItem.dart';
+import 'models/news_list_item.dart';
 import 'news_tile.dart';
 
 class LatestNewsList extends StatefulWidget {
+  const LatestNewsList({super.key});
+
   @override
-  _LatestNewsListState createState() => _LatestNewsListState();
+  State<LatestNewsList> createState() => _LatestNewsListState();
 }
 
 class _LatestNewsListState extends State<LatestNewsList> {
   List<NewsListItem> newsListItem = [];
   bool isLoading = false;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -45,25 +44,18 @@ class _LatestNewsListState extends State<LatestNewsList> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       body: scaffoldBody(),
     );
   }
@@ -83,16 +75,17 @@ class _LatestNewsListState extends State<LatestNewsList> {
             onRefresh: _onRefresh,
             child: SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.only(top: 32),
+                padding: const EdgeInsets.only(top: 32),
                 child: Column(
                     children: newsListItem
                         .map((news) => GestureDetector(
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
                                 child: Column(
                                   children: [
                                     NewsTile(newsListItem: news),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 16,
                                     )
                                   ],

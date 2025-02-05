@@ -1,8 +1,13 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/cutomized_alert/alert_style.dart';
+import 'package:Slydo/widget/cutomized_alert/border_dialog_button.dart';
 import 'package:Slydo/widget/cutomized_alert/customized_alert.dart';
+import 'package:Slydo/widget/cutomized_alert/customized_alert_column_button.dart';
+import 'package:Slydo/widget/cutomized_alert/customized_alert_verify_code.dart';
+import 'package:Slydo/widget/cutomized_alert/dailog_button_stateful.dart';
 import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
 import 'package:Slydo/widget/cutomized_alert/modified_customized_alert.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -56,19 +61,65 @@ import 'cutomized_alert/customized_alert_for_nudge.dart';
 //   ).show();
 // }
 //
-Future<bool?> showDialogBoxWithTitle(
+Future<bool?> showDialogBoxWithTitle({
+  Widget? content,
+  required BuildContext context,
+  String? title,
+  String? description,
+  bool firstActionPrimary = true,
+  Color? actionBgColor,
+  Color? actionTextColor,
+  Function()? buttonOnPressed,
+  required String actionText, // DialogButton's text
+  bool isOverlayTapDismiss = true,
+  RoundedBackgroundIcon? roundedBackgroundIcon,
+  double? descriptionPadding,
+}) {
+  return CustomizedAlert(
+    title: title,
+    content: content,
+    context: context,
+    desc: description,
+    descriptionPadding: descriptionPadding,
+    roundedBackgroundIcon: roundedBackgroundIcon,
+    style: AlertStyle(
+      isOverlayTapDismiss: isOverlayTapDismiss,
+      isCloseButton: false,
+    ),
+    buttons: [
+      DialogButton(
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? false : true);
+          if (buttonOnPressed != null) {
+            buttonOnPressed();
+          }
+        },
+        textColor: actionTextColor,
+        text: actionText,
+        backgroundColor: actionBgColor,
+      )
+    ],
+  ).show();
+}
+
+Future<bool?> showDialogBoxWithColumnButton(
     {Widget? content,
     required BuildContext context,
     String? title,
     String? description,
+    String? actionOne,
     bool firstActionPrimary = true,
-    Color? actionBgColor,
-    Color? actionTextColor,
-    Function()? ButtonOnPressed,
-    required String actionText, // DialogButton's text
+    String? image,
+    Color? actionOneBgColor,
+    Color? actionOneTextColor,
+    Color? actionTwoBgColor,
+    Color? actionTwoTextColor,
+    String? actionTwo,
+    Function()? ButtonOneOnPressed,
+    Function()? ButtonTwoOnPressed,
     bool isOverlayTapDismiss = true,
     RoundedBackgroundIcon? roundedBackgroundIcon}) {
-  return CustomizedAlert(
+  return CustomizedAlertColumnButton(
     title: title,
     content: content,
     context: context,
@@ -79,16 +130,29 @@ Future<bool?> showDialogBoxWithTitle(
       isCloseButton: false,
     ),
     buttons: [
-      DialogButton(
+      BorderDialogButton(
+        outlineBorder: true,
         onPressed: () {
           Navigator.pop(context, firstActionPrimary ? false : true);
-          if (ButtonOnPressed != null) {
-            ButtonOnPressed();
+          if (ButtonOneOnPressed != null) {
+            ButtonOneOnPressed();
           }
         },
-        textColor: actionTextColor,
-        text: actionText,
-        backgroundColor: actionBgColor,
+        textColor: actionOneTextColor,
+        text: actionOne,
+        backgroundColor: actionOneBgColor,
+      ),
+      BorderDialogButton(
+        outlineBorder: false,
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? false : true);
+          if (ButtonTwoOnPressed != null) {
+            ButtonTwoOnPressed();
+          }
+        },
+        textColor: actionTwoTextColor,
+        text: actionTwo,
+        backgroundColor: actionTwoBgColor,
       )
     ],
   ).show();
@@ -112,7 +176,7 @@ Future<bool?> showDialogBoxWithImage({
     title: title,
     desc: description,
     image: image,
-    style: AlertStyle(
+    style: const AlertStyle(
       isOverlayTapDismiss: true,
       isCloseButton: true,
     ),
@@ -149,7 +213,7 @@ Future<bool?> showDialogBoxWithImageWithOneAction({
     title: title,
     desc: description,
     image: image,
-    style: AlertStyle(
+    style: const AlertStyle(
       isOverlayTapDismiss: true,
       isCloseButton: true,
     ),
@@ -182,7 +246,7 @@ Future<bool?> showDialogBoxWithImageForNudge({
     title: title,
     desc: description,
     image: image,
-    style: AlertStyle(
+    style: const AlertStyle(
       isOverlayTapDismiss: true,
       isCloseButton: true,
     ),
@@ -227,6 +291,7 @@ Future<bool?> showDialogBox(
     Color? actionOneTextColor,
     Color? actionTwoBgColor,
     Color? actionTwoTextColor,
+    double? fontSize,
     Function()? leftButtonOnPressed,
     Function()? rightButtonOnPressed,
     required String actionTwoText, // DialogButton's text
@@ -252,6 +317,7 @@ Future<bool?> showDialogBox(
         },
         textColor: actionOneTextColor,
         text: actionOneText,
+        fontSize: fontSize,
         backgroundColor: actionOneBgColor,
       ),
       DialogButton(
@@ -263,6 +329,7 @@ Future<bool?> showDialogBox(
         },
         textColor: actionTwoTextColor,
         text: actionTwoText,
+        fontSize: fontSize,
         backgroundColor: actionTwoBgColor,
       )
     ],
@@ -280,6 +347,7 @@ Future<bool?> showDialogBoxWithInput(
     Color? actionOneBgColor,
     Color? actionOneTextColor,
     Color? actionTwoBgColor,
+    bool? isLoading,
     Color? actionTwoTextColor,
     Function()? leftButtonOnPressed,
     Function()? rightButtonOnPressed,
@@ -298,18 +366,20 @@ Future<bool?> showDialogBoxWithInput(
     ),
     buttons: [
       if (leftButtonOnPressed != null)
-        DialogButton(
-          onPressed: () {
-            leftButtonOnPressed();
+        DialogButtonStateFul(
+          onPressed: () async {
+            await leftButtonOnPressed();
+            return;
           },
           textColor: actionOneTextColor,
           text: actionOneText,
           backgroundColor: actionOneBgColor,
         ),
       if (rightButtonOnPressed != null)
-        DialogButton(
-          onPressed: () {
-            rightButtonOnPressed();
+        DialogButtonStateFul(
+          onPressed: () async {
+            await rightButtonOnPressed();
+            return;
           },
           textColor: actionTwoTextColor,
           text: actionTwoText ?? "",
@@ -355,19 +425,19 @@ Widget dropDownPickItemWidget(
           fontFamily: "Inter",
         ),
       ),
-      SizedBox(height: 5),
+      const SizedBox(height: 5),
       Card(
         elevation: 0,
         color: Colors.white,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(color: greyBorderColor)),
-        margin: EdgeInsets.all(0),
+        margin: const EdgeInsets.all(0),
         borderOnForeground: true,
         child: ListTile(
           dense: true,
           title: Text(
-            selectedItem != null ? selectedItem : "",
+            selectedItem ?? "",
             softWrap: false,
             overflow: TextOverflow.fade,
             style: TextStyle(
@@ -400,10 +470,11 @@ Future<T?> showPickItemDialog<T>({
   return await showDialog<T>(
     context: context,
     builder: (context) => AlertDialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      backgroundColor: Colors.white,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      content: Container(
+      content: SizedBox(
         width: MediaQuery.of(context).size.width - 40,
         child: Card(
           margin: EdgeInsets.zero,
@@ -473,14 +544,150 @@ Future<T?> showPickItemDialog<T>({
   );
 }
 
+Future<bool?> showInfoDialog({
+  required BuildContext context,
+  String? title,
+  String? description,
+}) {
+  return showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: Colors.white,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCloseIcon(ctx),
+          const SizedBox(height: 10),
+          Text(
+            title ?? "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w700,
+              fontFamily: "Inter",
+              fontSize: 16.0,
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
+      content: Text(
+        description ?? "",
+        style: TextStyle(
+          color: lightBlackFont,
+          fontSize: 12.0,
+          fontWeight: FontWeight.w400,
+          fontFamily: "Inter",
+        ),
+        textAlign: TextAlign.left,
+      ),
+    ),
+  );
+}
+
+Future<bool?> showExitDialogBackButton(
+    {required BuildContext context,
+    Function()? leftButtonOnPressed,
+    Function()? rightButtonOnPressed,
+    bool firstActionPrimary = true,
+    double? fontSize}) {
+  return showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: Colors.white,
+      title: Column(
+        children: [
+          _buildCloseIcon(ctx),
+          _buildExitDialogIcon(),
+          Text(
+            "Do you want to leave this page?",
+            style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w700,
+                fontFamily: "Inter",
+                fontSize: 16.0),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+      content: Text(
+        "You have unsaved changes that will be lost, Save your changes before exiting?",
+        style: TextStyle(
+            color: lightBlackFont,
+            fontSize: 12.0,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter"),
+        textAlign: TextAlign.center,
+      ),
+      actions: <Widget>[
+        Row(
+          children: [
+            Expanded(
+              child: DialogButton(
+                onPressed: () {
+                  Navigator.pop(context, firstActionPrimary ? true : false);
+                  if (leftButtonOnPressed != null) {
+                    leftButtonOnPressed();
+                  }
+                },
+                textColor: blackFont,
+                text: AppLocalization.of(context)!.leave,
+                fontSize: fontSize,
+                backgroundColor: greyBorderColor,
+              ),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: DialogButton(
+                onPressed: () {
+                  Navigator.pop(context, firstActionPrimary ? false : true);
+                  if (rightButtonOnPressed != null) {
+                    rightButtonOnPressed();
+                  }
+                },
+                textColor: Colors.white,
+                text: AppLocalization.of(context)!.saveAndLeave,
+                fontSize: fontSize,
+                backgroundColor: Colors.green,
+              ),
+            )
+          ],
+        )
+      ],
+    ),
+  );
+}
+
+Widget _buildCloseIcon(BuildContext context) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: const Icon(Icons.close),
+      ),
+    ],
+  );
+}
+
+Widget _buildExitDialogIcon() {
+  return Image.asset(
+    "assets/images/exit_dialog_icon.png",
+    height: 85,
+    width: 85,
+  );
+}
+
 void showSwipeHintCard({required BuildContext context}) {
   showDialog(
     barrierDismissible: true,
     context: context,
     builder: (context) => Dialog(
       elevation: 0,
-      insetPadding: EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Image.asset(
           "assets/images/card_swipe_hint.png",
@@ -496,8 +703,8 @@ void showHoldHintCard({required BuildContext context}) {
     context: context,
     builder: (context) => Dialog(
       elevation: 0,
-      insetPadding: EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Image.asset(
           "assets/images/card_hold_hint.png",
@@ -508,7 +715,7 @@ void showHoldHintCard({required BuildContext context}) {
 }
 
 void showUserLogoutCard({required BuildContext context}) {
-  debugPrint("WorkManager cancel");
+  // debugPrint("WorkManager cancel");
   // Workmanager().cancelAll();
   showDialog(
     barrierDismissible: true,
@@ -521,7 +728,7 @@ void showUserLogoutCard({required BuildContext context}) {
       child: Dialog(
         elevation: 0,
         child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -532,7 +739,7 @@ void showUserLogoutCard({required BuildContext context}) {
                       fontWeight: FontWeight.bold,
                       fontSize: 25),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Text(
@@ -542,7 +749,7 @@ void showUserLogoutCard({required BuildContext context}) {
                       fontWeight: FontWeight.bold,
                       fontSize: 15),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 CurvedButton(
@@ -561,9 +768,52 @@ void showUserLogoutCard({required BuildContext context}) {
   );
 }
 
+Future<bool?> showDialogBoxValidateCode(
+    {Widget? content,
+    required BuildContext context,
+    String? title,
+    String? description,
+    required String actionOneText,
+    bool firstActionPrimary = true,
+    String? image,
+    Color? actionOneBgColor,
+    Color? actionOneTextColor,
+    double? fontSize,
+    Function()? buttonOnPressed,
+    bool isOverlayTapDismiss = true,
+    bool isCloseIconShow = false,
+    RoundedBackgroundIcon? roundedBackgroundIcon}) {
+  return CustomizedAlertVerifyCode(
+    title: title,
+    content: content,
+    context: context,
+    desc: description,
+    roundedBackgroundIcon: roundedBackgroundIcon,
+    isCloseIconShow: isCloseIconShow,
+    style: AlertStyle(
+      isOverlayTapDismiss: isOverlayTapDismiss,
+      isCloseButton: false,
+    ),
+    buttons: [
+      DialogButton(
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? true : false);
+          if (buttonOnPressed != null) {
+            buttonOnPressed();
+          }
+        },
+        textColor: actionOneTextColor,
+        text: actionOneText,
+        fontSize: fontSize,
+        backgroundColor: actionOneBgColor,
+      ),
+    ],
+  ).show();
+}
+
 Future<bool> showInAppLocationAlertPopUp(
     {required BuildContext context, bool isForChat = true}) async {
-  bool? result = await showDialog<bool>(
+  final bool? result = await showDialog<bool>(
     barrierDismissible: false,
     context: context,
     builder: (context) => WillPopScope(
@@ -573,18 +823,18 @@ Future<bool> showInAppLocationAlertPopUp(
       },
       child: Dialog(
         elevation: 0,
-        insetPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        child: Container(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        child: SizedBox(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Column(
               children: [
                 Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                      icon: Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back),
                       onPressed: () {
                         Navigator.pop(context, false);
                       }),
@@ -593,33 +843,34 @@ Future<bool> showInAppLocationAlertPopUp(
                     child: Container(
                   height: 10,
                 )),
-                Icon(
+                const Icon(
                   SlydoAppIcon.location,
                   size: 35,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Text(
                   "Use your location",
                   style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                      color: blackFont),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont,
+                  ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
-                Text(
+                const Text(
                   "Slydo collects location data to enable you to share your location with your friends.",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Image.asset("assets/images/location-disclosure.png"),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Expanded(
@@ -655,7 +906,7 @@ Future<bool> showInAppLocationAlertPopUp(
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
               ],

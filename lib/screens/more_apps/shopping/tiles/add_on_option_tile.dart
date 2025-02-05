@@ -1,7 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:flutter/material.dart';
@@ -15,42 +14,38 @@ class AddOnOptionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: decorateBox(),
         child: ListTile(
-          dense: true,
+          // dense: true,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "",
+                appendStringDot(addOnOption.name ?? "", 14),
                 maxLines: 1,
                 style: TextStyle(
-                    color: darkGrey, fontWeight: FontWeight.w400, fontSize: 12),
+                  color: blackFont,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                ),
               ),
+              const SizedBox(height: 3.0),
               Text(
-                appendStringDot(addOnOption.name ?? "", 10),
+                'Created: ${getProductDateTime(addOnOption.createdAt)}',
                 maxLines: 1,
                 style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14),
-              ),
-              SizedBox(height: 5.0),
-              Text(
-                'Created: ${addOnOption.createdAt.toString()}',
-                maxLines: 1,
-                style: TextStyle(
-                    color: darkGrey, fontWeight: FontWeight.w400, fontSize: 12),
-              ),
-              Text(
-                "",
-                maxLines: 1,
-                style: TextStyle(
-                    color: darkGrey, fontWeight: FontWeight.w400, fontSize: 12),
+                  color: darkGrey,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  fontFamily: "Inter",
+                ),
               ),
             ],
           ),
@@ -60,31 +55,41 @@ class AddOnOptionTile extends StatelessWidget {
               Text(
                 worldCurrencies[addOnOption.currency ?? 'NGN'] ?? '',
                 style: TextStyle(
-                    fontFamily: "Inter",
-                    fontSize: 14.0,
-                    color: darkGrey,
-                    fontWeight: FontWeight.w700),
+                  fontFamily: "Inter",
+                  fontSize: 14.0,
+                  color: darkGrey,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               Text(
-                moneyDisplayNormalizer(
-                    int.parse(addOnOption.price.toString() ?? "")),
+                moneyDisplayNormalizer(int.parse(addOnOption.price.toString())),
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: darkGrey,
-                    fontWeight: FontWeight.w700),
+                  fontSize: 14.0,
+                  color: darkGrey,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: "Inter",
+                ),
               ),
             ],
           ),
           leading: GestureDetector(
             onTap: () {
-              String? url = addOnOption.picture;
+              final String? url = addOnOption.picture;
               Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
             },
-            child: checkProductImage(addOnOption!),
+            child: checkProductImage(addOnOption),
           ),
         ),
       ),
     );
+  }
+
+  DateTime getProductDateTime(String? date) {
+    if (date != null) {
+      final DateTime dateTime = DateTime.parse(date);
+      return dateTime;
+    }
+    return DateTime.now();
   }
 
   Widget checkProductImage(AddOnOption addOnOption) {
@@ -93,28 +98,46 @@ class AddOnOptionTile extends StatelessWidget {
 
     url = addOnOption.picture;
 
-    String imageUrl = url!.replaceAll('https//', 'https://');
+    final String? imageUrl = url?.replaceAll('https//', 'https://');
     if (url == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
         radius: 25,
         child: Text(
           getInitials(addOnOption.name!).toUpperCase(),
-          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+          style: TextStyle(
+            color: white,
+            fontWeight: FontWeight.w700,
+            fontFamily: "Inter",
+          ),
         ),
       );
     } else {
       return CustomBoxShadow(
         child: Container(
-          width: 60,
+          width: 50,
+          height: 50,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            image: DecorationImage(
-                image: NetworkImage(
-                  imageUrl,
-                ),
-                fit: BoxFit.cover),
+            color: imageUrl != null ? white : darkGrey.withOpacity(0.50),
+            // image: DecorationImage(
+            //     image: NetworkImage(
+            //       imageUrl ?? "",
+            //     ),
+            //     fit: BoxFit.cover),
           ),
+          child: imageUrl != null
+              ? Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                )
+              : Image.asset(
+                  defaultProductAndServiceImage,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                  colorBlendMode: BlendMode.darken,
+                ),
         ),
       );
     }

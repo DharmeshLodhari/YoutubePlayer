@@ -1,13 +1,14 @@
 import 'package:Slydo/screens/more_apps/animated_logo.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import '../../utils/colors.dart';
 
 class PaymentLoadingScreen extends StatelessWidget {
   final String text;
   final String imagePath;
 
-  PaymentLoadingScreen({required this.text, required this.imagePath});
+  const PaymentLoadingScreen(
+      {super.key, required this.text, required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class PaymentLoadingScreen extends StatelessWidget {
               Center(
                 child: AnimatedLogo(imagePath: imagePath),
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               Text(
                 text,
                 style: TextStyle(
@@ -36,8 +37,8 @@ class PaymentLoadingScreen extends StatelessWidget {
                     fontSize: 14,
                     decoration: TextDecoration.none),
               ),
-              SizedBox(height: 20.0),
-              SpinKitFadingCube(
+              const SizedBox(height: 20.0),
+              const SpinKitFadingCube(
                 color: Colors.white,
                 size: 50.0,
               ),

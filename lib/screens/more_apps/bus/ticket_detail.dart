@@ -1,4 +1,3 @@
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -7,11 +6,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'bus_auth.dart';
-import 'models/Ticket.dart';
+import 'models/ticket_model.dart';
 
 class TicketDetail extends StatefulWidget {
+  const TicketDetail({super.key});
+
   @override
-  _TicketDetailState createState() => _TicketDetailState();
+  State<TicketDetail> createState() => _TicketDetailState();
 }
 
 class _TicketDetailState extends State<TicketDetail> {
@@ -49,6 +50,7 @@ class _TicketDetailState extends State<TicketDetail> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -84,54 +86,52 @@ class _TicketDetailState extends State<TicketDetail> {
   }
 
   Widget ticketWithImage() {
-    return Container(
-      child: Stack(
-        children: [
-          Image.asset(
-            "assets/images/bus_ticket_background.png",
+    return Stack(
+      children: [
+        Image.asset(
+          "assets/images/bus_ticket_background.png",
+        ),
+        Container(
+          height: 470,
+          padding: const EdgeInsets.symmetric(horizontal: 36),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 40,
+              ),
+              bookingInfo(),
+              const SizedBox(
+                height: 20,
+              ),
+              MySeparator(color: dividerColor),
+              const SizedBox(
+                height: 20,
+              ),
+              boardingInfo(),
+              const SizedBox(
+                height: 24,
+              ),
+              MySeparator(color: dividerColor),
+              const SizedBox(
+                height: 40,
+              ),
+              Center(
+                child: SizedBox(
+                  height: 214,
+                  width: 214,
+                  child: CachedNetworkImage(imageUrl: tickets[0].qrCode!),
+                ),
+              )
+            ],
           ),
-          Container(
-            height: 470,
-            padding: EdgeInsets.symmetric(horizontal: 36),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 40,
-                ),
-                bookingInfo(),
-                SizedBox(
-                  height: 20,
-                ),
-                MySeparator(color: dividerColor),
-                SizedBox(
-                  height: 20,
-                ),
-                boardingInfo(),
-                SizedBox(
-                  height: 24,
-                ),
-                MySeparator(color: dividerColor),
-                SizedBox(
-                  height: 40,
-                ),
-                Center(
-                  child: Container(
-                    height: 214,
-                    width: 214,
-                    child: CachedNetworkImage(imageUrl: tickets[0].qrCode!),
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 
   Widget ticketWithOutImage() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       child: Card(
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -142,22 +142,22 @@ class _TicketDetailState extends State<TicketDetail> {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 bookingInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 MySeparator(color: dividerColor),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 boardingInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Stack(
@@ -191,7 +191,7 @@ class _TicketDetailState extends State<TicketDetail> {
                   ],
                 ),
                 Container(
-                  padding: EdgeInsets.all(40),
+                  padding: const EdgeInsets.all(40),
                   child: CachedNetworkImage(
                       imageUrl:
                           "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"),
@@ -220,7 +220,7 @@ class _TicketDetailState extends State<TicketDetail> {
                 color: blackFont,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Text(
@@ -233,10 +233,10 @@ class _TicketDetailState extends State<TicketDetail> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           width: 12,
         ),
-        Container(
+        SizedBox(
           width: 70,
           height: 40,
           child: Stack(
@@ -244,7 +244,7 @@ class _TicketDetailState extends State<TicketDetail> {
             children: [
               Positioned(
                 top: 6,
-                child: Container(
+                child: SizedBox(
                   width: 70,
                   child: Image.asset(
                     "assets/images/arrow_right.png",
@@ -268,7 +268,7 @@ class _TicketDetailState extends State<TicketDetail> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 12,
         ),
         Column(
@@ -282,7 +282,7 @@ class _TicketDetailState extends State<TicketDetail> {
                 color: blackFont,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Text(
@@ -317,7 +317,7 @@ class _TicketDetailState extends State<TicketDetail> {
                   size: 14,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Row(
@@ -330,7 +330,7 @@ class _TicketDetailState extends State<TicketDetail> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 4,
                   ),
                   Text(
@@ -360,7 +360,7 @@ class _TicketDetailState extends State<TicketDetail> {
                   size: 14,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Row(
@@ -373,7 +373,7 @@ class _TicketDetailState extends State<TicketDetail> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 4,
                   ),
                   Text(
@@ -398,17 +398,19 @@ class MySeparator extends StatelessWidget {
   final double height;
   final Color color;
 
-  const MySeparator({this.height = 1.5, this.color = Colors.black});
+  const MySeparator({super.key, this.height = 1.5, this.color = Colors.black});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final boxWidth = constraints.constrainWidth();
-        final dashWidth = 4.0;
+        const dashWidth = 4.0;
         final dashHeight = height;
         final dashCount = (boxWidth / (2 * dashWidth)).floor();
         return Flex(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          direction: Axis.horizontal,
           children: List.generate(dashCount, (_) {
             return SizedBox(
               width: dashWidth,
@@ -418,8 +420,6 @@ class MySeparator extends StatelessWidget {
               ),
             );
           }),
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          direction: Axis.horizontal,
         );
       },
     );

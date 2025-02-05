@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
+import 'package:Slydo/screens/more_apps/taxi/model/place_model.dart';
 import 'package:Slydo/screens/more_apps/taxi/taxi_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -17,8 +17,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class TaxiDashboard extends StatefulWidget {
+  const TaxiDashboard({super.key});
+
   @override
-  _TaxiDashboardState createState() => _TaxiDashboardState();
+  State<TaxiDashboard> createState() => _TaxiDashboardState();
 }
 
 class _TaxiDashboardState extends State<TaxiDashboard> {
@@ -36,7 +38,7 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
   void getNearbyRides() async {
     isLoading = true;
     if (mounted) setState(() {});
-    UserLocation? userLocation =
+    final UserLocation? userLocation =
         await LocationService().getLocation().catchError((error) {
       isLoading = false;
       if (mounted) setState(() {});
@@ -76,7 +78,7 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
           return Future.value(true);
         },
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
           body: isLoading
               ? Center(
@@ -90,6 +92,7 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -121,7 +124,7 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
 }
 
 class _ScaffoldBody extends StatefulWidget {
-  _ScaffoldBody({this.userCurrentLocation});
+  const _ScaffoldBody({this.userCurrentLocation});
   final LatLng? userCurrentLocation;
 
   @override
@@ -129,13 +132,13 @@ class _ScaffoldBody extends StatefulWidget {
 }
 
 class __ScaffoldBodyState extends State<_ScaffoldBody> {
-  double _initialSheetChildSize = 0.3;
-  double _initialSheetChildSizeAfterDestination = 0.25;
+  final double _initialSheetChildSize = 0.3;
+  final double _initialSheetChildSizeAfterDestination = 0.25;
   double _dragScrollSheetExtent = 0;
 
   double _widgetHeight = 0;
   double _fabPosition = 0;
-  double _fabPositionPadding = 10;
+  final double _fabPositionPadding = 10;
 
   late CameraPosition _initialCameraPosition;
 
@@ -157,7 +160,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
 
     super.initState();
     _initialCameraPosition =
-        CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
+        const CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
 
     if (widget.userCurrentLocation != null) {
       _initialCameraPosition = CameraPosition(
@@ -166,7 +169,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
           zoom: 14);
 
       _myLocationMarker = Circle(
-          circleId: CircleId("MyLocation"),
+          circleId: const CircleId("MyLocation"),
           center: LatLng(widget.userCurrentLocation!.latitude,
               widget.userCurrentLocation!.longitude),
           fillColor: navyBlue.withAlpha(70),
@@ -179,7 +182,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
       assignMarkers();
     }
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         // render the floating button on widget
         _fabPosition = _initialSheetChildSize * context.size!.height;
@@ -191,7 +194,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
     debugPrint(
         "${widget.userCurrentLocation!.latitude} => ${widget.userCurrentLocation!.longitude}");
     _carOneMarker = Marker(
-      markerId: MarkerId("Taxi"),
+      markerId: const MarkerId("Taxi"),
       infoWindow: const InfoWindow(title: "Taxi"),
       icon: await BitmapDescriptor.fromAssetImage(
           ImageConfiguration.empty, "assets/images/car_top.png"),
@@ -199,7 +202,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
           widget.userCurrentLocation!.longitude + 0.009100),
     );
     _bikeOneMarker = Marker(
-      markerId: MarkerId("Bike"),
+      markerId: const MarkerId("Bike"),
       infoWindow: const InfoWindow(title: "Taxi"),
       icon: await BitmapDescriptor.fromAssetImage(
           ImageConfiguration.empty, "assets/images/bike_top.png"),
@@ -207,7 +210,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
           widget.userCurrentLocation!.longitude - 0.000100),
     );
     _tricycleOneMarker = Marker(
-      markerId: MarkerId("Tricycle"),
+      markerId: const MarkerId("Tricycle"),
       infoWindow: const InfoWindow(title: "Taxi"),
       icon: await BitmapDescriptor.fromAssetImage(
           ImageConfiguration.empty, "assets/images/tricycle_top.png"),
@@ -226,7 +229,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
   }
 
   List<Widget> getStackChildren() {
-    List<Widget> items = [];
+    final List<Widget> items = [];
     items.add(GoogleMap(
       initialCameraPosition: _initialCameraPosition,
       myLocationButtonEnabled: false,
@@ -296,7 +299,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
                 ? _initialSheetChildSizeAfterDestination
                 : 0.135,
             builder: (context, scrollController) => ClipRRect(
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20)),
               child: Container(
                   color: Colors.white,
@@ -323,14 +326,14 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
           shadowColor: dividerColor,
           color: Colors.white,
           margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),
@@ -346,12 +349,12 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
                         fontWeight: FontWeight.w700,
                         color: blackFont),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
                   ListTile(
                     contentPadding:
-                        EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                        const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                     leading: RoundedBackgroundIcon(
                       backgroundColor: lightGrey,
                       height: 32,
@@ -373,7 +376,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
                     subtitle:
                         Text(taxiBloc.destinationPoint!.formattedAddress!),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
                   submitButton()
@@ -390,14 +393,10 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
       right: _fabPositionPadding, // Padding to create some space on the right
       child: FloatingActionButton(
         elevation: 2,
-        child: Icon(
-          Icons.my_location,
-          color: blackFont,
-        ),
         backgroundColor: Colors.white,
         onPressed: () async {
           final locationService = LocationService();
-          UserLocation? userLocation =
+          final UserLocation? userLocation =
               await locationService.getLocation().catchError((error) {
             debugPrint("ERROR:- $error");
           });
@@ -413,13 +412,17 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
           // if (mounted) setState(() {});
           // mapController.moveAndRotate(mapPoint, 19, 0);
         },
+        child: Icon(
+          Icons.my_location,
+          color: blackFont,
+        ),
       ),
     );
   }
 
   Widget getSearchDestination({ScrollController? scrollController}) {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 20),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
       child: ListView(
         controller: scrollController,
         children: [
@@ -428,13 +431,14 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           getSearchTextField(),
           for (int i = 0; i < places.length; i++)
             ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
               leading: RoundedBackgroundIcon(
                 backgroundColor: lightGrey,
                 height: 32,
@@ -493,7 +497,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
           }
         }
         Navigator.of(context).pushNamed("/select-ride-type",
-            arguments: {"currentChild": TaxiDashboard()});
+            arguments: {"currentChild": const TaxiDashboard()});
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,

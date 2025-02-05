@@ -1,6 +1,8 @@
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/user_product_list.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +13,9 @@ import 'package:provider/provider.dart';
 import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../widget/rounded_background_icon.dart';
-import '../../user_profile/models/user.dart';
-import '../../user_profile/screens/user_profile_module_new/user_product_list.dart';
 
 class MyProducts extends StatefulWidget {
-  const MyProducts({Key? key}) : super(key: key);
+  const MyProducts({super.key});
 
   @override
   State<MyProducts> createState() => _MyProductsState();
@@ -45,7 +45,7 @@ class _MyProductsState extends State<MyProducts> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: _buildBody(),
     );
@@ -53,6 +53,7 @@ class _MyProductsState extends State<MyProducts> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         AppLocalization.of(context)!.myProducts,
@@ -84,15 +85,6 @@ class _MyProductsState extends State<MyProducts> {
   List<Widget> _buildAppBarActions() {
     return [
       RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
-            copyProductLink();
-          },
-          icon: SvgPicture.asset(
-            "link_icon".toSVG(),
-          )),
-      SizedBox(width: 10),
-      RoundedBackgroundIcon(
         backgroundColor: Colors.transparent,
         onTap: () {
           Navigator.of(context)
@@ -110,21 +102,38 @@ class _MyProductsState extends State<MyProducts> {
           width: 12,
         ),
       ),
-      SizedBox(width: 20),
+      const SizedBox(width: 10),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
-            Navigator.pushNamed(context, Routes.ADD_PRODUCT,
-                arguments: {"channelUsername": ""});
+            copyProductLink();
           },
-          height: 15,
-          width: 15,
           icon: SvgPicture.asset(
-            "add_payment".toSVG(),
-            height: 12,
-            width: 12,
+            "link_icon".toSVG(),
           )),
-      SizedBox(width: 20),
+      const SizedBox(width: 10),
+      RoundedBackgroundIcon(
+        backgroundColor: Colors.transparent,
+        onTap: () {
+          final PermissionType? hasPermission =
+              userBloc.user.hasWritePermission(ProtectionPermission.product);
+          if (hasPermission == PermissionType.WRITE) {
+            Navigator.pushNamed(context, Routes.ADD_EDIT_PRODUCT,
+                arguments: {"channelUsername": ""});
+          } else {
+            showSnackbar(context,
+                message: AppLocalization.of(context)?.doNotPermission ?? "");
+          }
+        },
+        height: 15,
+        width: 15,
+        icon: SvgPicture.asset(
+          "add_payment".toSVG(),
+          height: 12,
+          width: 12,
+        ),
+      ),
+      const SizedBox(width: 20),
     ];
   }
 

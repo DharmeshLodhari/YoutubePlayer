@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/blog/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/moments/models/attachment_item_model.dart';
 import 'package:Slydo/screens/moments/screens/preview_moment_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,18 +7,15 @@ import 'package:provider/provider.dart';
 
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
-import '../../../utils/colors.dart';
 import '../../../utils/util.dart';
 import '../../../widget/loading_indicator.dart';
 import '../../../widget/no_item_in_list.dart';
 import '../../more_apps/shopping/models/store.dart';
 import '../../more_apps/shopping/shopping_auth.dart';
-import '../../more_apps/user_post/user_post_auth.dart';
 
 class PickAttachmentScreen extends StatefulWidget {
   final AttachmentType attachmentType;
-  const PickAttachmentScreen({Key? key, required this.attachmentType})
-      : super(key: key);
+  const PickAttachmentScreen({super.key, required this.attachmentType});
 
   @override
   State<PickAttachmentScreen> createState() => _PickAttachmentScreenState();
@@ -49,7 +47,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
     getAttachmentFromAPI();
   }
 
-  getAttachmentFunction() {
+  void getAttachmentFunction() {
     switch (widget.attachmentType) {
       case AttachmentType.Product:
         getAttachmentFromAPI();
@@ -82,20 +80,20 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
     }
   }
 
-  getAttachmentFromAPI() async {
+  Future<void> getAttachmentFromAPI() async {
     if (mounted) {
       setState(() {
         attachmentLoading = true;
       });
     }
-    Map<String, dynamic>? result = await getAttachmentAPI();
+    final Map<String, dynamic>? result = await getAttachmentAPI();
 
     if (mounted) {
       setState(() {
         attachmentLoading = false;
       });
     }
-    debugPrint('RESULT ::: $result');
+    // debugPrint('RESULT ::: $result');
     if (result != null) {
       next = result['next'];
       if (result['results'].isEmpty) {
@@ -112,37 +110,37 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
     }
   }
 
-  getDisplayCardModelList(dynamic result) {
+  void getDisplayCardModelList(Map<String, dynamic> result) {
     switch (widget.attachmentType) {
       case AttachmentType.Product:
         {
-          List<Product> resultList = result['results'];
+          final List<Product> resultList = result['results'];
           displayCardModelList = resultList
               .map((e) => DisplayCardModel(
                   id: e.id!,
-                  title: e.name!,
+                  title: e.name ?? "",
                   imageUrl: e.sellerAvatar!,
-                  description: e.description!))
+                  description: e.description ?? ""))
               .toList();
           break;
         }
       case AttachmentType.Service:
         {
-          List<Service> resultList = result['results'];
+          final List<Service> resultList = result['results'];
           displayCardModelList = resultList
               .map((e) => DisplayCardModel(
                   id: e.id!,
-                  title: e.name!,
+                  title: e.name ?? "",
                   imageUrl: e.providerAvatar!,
-                  description: e.description!))
+                  description: e.description ?? ""))
               .toList();
           break;
         }
       case AttachmentType.Blog:
         {
-          List<dynamic> resultList = result['results'];
+          final List<dynamic> resultList = result['results'];
 
-          resultList.forEach((e) {
+          for (var e in resultList) {
             displayCardModelList.add(
               DisplayCardModel(
                   id: e['id'],
@@ -150,7 +148,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
                   imageUrl: e['image'],
                   description: e['tag_line']),
             );
-          });
+          }
 
           break;
         }
@@ -159,6 +157,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -196,33 +195,25 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.emptyList,
           )
-        : ListView.builder(
-            controller: scrollController,
-            itemCount: displayCardModelList.length + 1,
-            itemBuilder: (context, index) {
-              if (index == displayCardModelList.length) {
-                return buildIndicator();
-              }
-              return displayCard(displayCardModel: displayCardModelList[index]);
-            },
-          );
-  }
-
-  Widget buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: attachmentLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
+        : attachmentLoading && displayCardModelList.isEmpty
+            ? buildLoadingIndicator(isLoading: attachmentLoading)
+            : ListView.builder(
+                controller: scrollController,
+                itemCount: displayCardModelList.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == displayCardModelList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: attachmentLoading);
+                  }
+                  return displayCard(
+                      displayCardModel: displayCardModelList[index]);
+                },
+              );
   }
 
   Widget displayCard({required DisplayCardModel displayCardModel}) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -233,7 +224,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   leading: getLeading(displayCardModel.imageUrl),

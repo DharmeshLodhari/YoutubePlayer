@@ -10,11 +10,10 @@ class GlobalListViewWidget extends StatefulWidget {
   final Widget Function(dynamic) customWidget;
   final Future<BasePaginationModel<List>> apiFunc;
   const GlobalListViewWidget(
-      {Key? key, required this.customWidget, required this.apiFunc})
-      : super(key: key);
+      {super.key, required this.customWidget, required this.apiFunc});
 
   @override
-  _GlobalListViewWidgetState createState() => _GlobalListViewWidgetState();
+  State<GlobalListViewWidget> createState() => _GlobalListViewWidgetState();
 }
 
 class _GlobalListViewWidgetState extends State<GlobalListViewWidget> {
@@ -22,8 +21,9 @@ class _GlobalListViewWidgetState extends State<GlobalListViewWidget> {
   bool _isLoading = false;
   bool noItemInList = false;
   List list = [];
-  ScrollController _scrollCtrl = ScrollController();
-  RefreshController _refreshCtrl = RefreshController(initialRefresh: false);
+  final ScrollController _scrollCtrl = ScrollController();
+  final RefreshController _refreshCtrl =
+      RefreshController(initialRefresh: false);
   BasePaginationModel<List>? basePaginationModel;
 
   @override
@@ -49,7 +49,8 @@ class _GlobalListViewWidgetState extends State<GlobalListViewWidget> {
     if (mounted) setState(() => _isLoading = true);
 
     try {
-      BasePaginationModel<List> basePaginationValue = await widget.apiFunc;
+      final BasePaginationModel<List> basePaginationValue =
+          await widget.apiFunc;
 
       if (mounted) setState(() => _isLoading = false);
 
@@ -80,26 +81,29 @@ class _GlobalListViewWidgetState extends State<GlobalListViewWidget> {
   Widget build(BuildContext context) {
     return noItemInList
         ? NoItemInList(msg: AppLocalization.of(context)!.noFollowingUsers)
-        : SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshCtrl,
-            onRefresh: _onRefresh,
-            child: ListView.builder(
-              physics: ClampingScrollPhysics(),
-              controller: _scrollCtrl,
-              itemCount: list.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == list.length) {
-                  return buildLoadingIndicator(isLoading: _isLoading);
-                } else {
-                  return widget.customWidget(list[index]);
-                }
-              },
-            ),
-          );
+        : _isLoading && list.isEmpty
+            ? buildLoadingIndicator(isLoading: _isLoading)
+            : SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshCtrl,
+                onRefresh: _onRefresh,
+                child: ListView.builder(
+                  physics: const ClampingScrollPhysics(),
+                  controller: _scrollCtrl,
+                  itemCount: list.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == list.length) {
+                      return buildJumpingLoadingIndicator(
+                          isLoading: _isLoading);
+                    } else {
+                      return widget.customWidget(list[index]);
+                    }
+                  },
+                ),
+              );
   }
 }

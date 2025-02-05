@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -10,15 +9,14 @@ class PlayerWithControls extends StatelessWidget {
   String? posterUrl;
   String? titleName;
 
-  PlayerWithControls({Key? key, this.posterUrl, this.titleName})
-      : super(key: key);
+  PlayerWithControls({super.key, this.posterUrl, this.titleName});
 
   @override
   Widget build(BuildContext context) {
     final ChewieController chewieController = ChewieController.of(context);
 
     return Center(
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: AspectRatio(
           aspectRatio:
@@ -29,23 +27,21 @@ class PlayerWithControls extends StatelessWidget {
     );
   }
 
-  Container _buildPlayerWithControls(
+  Widget _buildPlayerWithControls(
       ChewieController chewieController, BuildContext context) {
-    return Container(
-      child: Stack(
-        children: <Widget>[
-          chewieController.placeholder ?? Container(),
-          Center(
-            child: AspectRatio(
-              aspectRatio: chewieController.aspectRatio ??
-                  _calculateAspectRatio(context),
-              child: VideoPlayer(chewieController.videoPlayerController),
-            ),
+    return Stack(
+      children: <Widget>[
+        chewieController.placeholder ?? Container(),
+        Center(
+          child: AspectRatio(
+            aspectRatio:
+                chewieController.aspectRatio ?? _calculateAspectRatio(context),
+            child: VideoPlayer(chewieController.videoPlayerController),
           ),
-          chewieController.overlay ?? Container(),
-          _buildControls(context, chewieController)!,
-        ],
-      ),
+        ),
+        chewieController.overlay ?? Container(),
+        _buildControls(context, chewieController)!,
+      ],
     );
   }
 
@@ -54,12 +50,11 @@ class PlayerWithControls extends StatelessWidget {
     ChewieController chewieController,
   ) {
     return chewieController.showControls
-        ? chewieController.customControls != null
-            ? chewieController.customControls
-            : MaterialControls(
-                titleName: titleName,
-                posterUrl: posterUrl,
-              )
+        ? chewieController.customControls ??
+            MaterialControls(
+              titleName: titleName,
+              posterUrl: posterUrl,
+            )
 
         // : Theme.of(context).platform == TargetPlatform.android
         //         ? MaterialControls()

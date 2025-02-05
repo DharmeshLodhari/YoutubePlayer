@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/main.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +11,7 @@ import 'global_key.dart';
 
 String? messageDecoderWithEmoji(String? text) {
   try {
-    List<int> bytes = text!.codeUnits;
+    final List<int> bytes = text!.codeUnits;
 
     return utf8.decode(bytes);
     // return utf8.decode(base64.decode(text!));
@@ -23,12 +22,8 @@ String? messageDecoderWithEmoji(String? text) {
   }
 }
 
-String? messageDecoder(Uint8List data) {
-  return utf8.decode(data);
-}
-
 Future<bool> sendDataToSocket(Map<String, dynamic> data) async {
-  MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
+  final MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
       myGlobals.navigationKey.currentContext!,
       listen: false);
   await mainSocketProvider.add(data);
@@ -56,14 +51,14 @@ String trimString(String input) {
   List<String> words = input.split(' ');
   if (words.length > 30) {
     words = words.sublist(0, 30);
-    input = words.join(' ') + '...';
+    input = '${words.join(' ')}...';
   }
   return input;
 }
 
 String appendStringDot(String input, int maxLength) {
   // int maxLength = 20;
-  String shortText =
-      input.length > maxLength ? input.substring(0, maxLength) + "..." : input;
+  final String shortText =
+      input.length > maxLength ? "${input.substring(0, maxLength)}..." : input;
   return shortText;
 }

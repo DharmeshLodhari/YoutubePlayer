@@ -1,20 +1,18 @@
-import 'package:connectivity/connectivity.dart';
+import 'package:Slydo/screens/super_store/widget/find_business_card.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/yarn/utils/yarn_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../locale/app_localization.dart';
 import '../../utils/util.dart';
-import '../../widget/item_display_card.dart';
 import '../../widget/no_item_in_list.dart';
 import '../more_apps/shopping/shopping_auth.dart';
-import '../more_apps/user_profile/models/user.dart';
-import '../more_apps/yarn/utils/yarn_enum.dart';
-import '../more_apps/yarn/widgets/yarn_shimmer.dart';
 
 class NearByListScreen extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  NearByListScreen({this.arguments, Key? key}) : super(key: key);
+  const NearByListScreen({this.arguments, super.key});
 
   @override
   State<NearByListScreen> createState() => _NearByListScreenState();
@@ -56,7 +54,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
         isNearbyLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfMerchant(nearByNext, nearByPrevious, '', nearBy: true);
 
         if (result == null) {
@@ -72,7 +70,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
         nearByCount = result['count'];
         nearByNext = result['next'];
         nearByPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noNearByInList = false;
@@ -88,7 +86,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
           });
         }
       } else if (nearByNext == null && customerProfileList.length > 6) {
-        _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _findBusinessScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
@@ -100,7 +98,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar(),
       body: SmartRefresher(
         enablePullDown: true,
@@ -122,7 +120,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
         backgroundColor: Colors.white,
         titleSpacing: 0,
         title: Text(
-          'NearBy Business',
+          'Nearby Business',
           overflow: TextOverflow.fade,
           style: TextStyle(
             fontSize: 21,
@@ -131,6 +129,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
             color: yarnBlack,
           ),
         ),
+        centerTitle: false,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
@@ -147,100 +146,83 @@ class _NearByListScreenState extends State<NearByListScreen> {
   }
 
   Widget _buildListView() {
-    if (!isNearbyLoading) {
-      return nearByBuildView();
-    }
+    return !isNearbyLoading && customerProfileList.isEmpty
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.noResultFound,
+          )
+        : isNearbyLoading && customerProfileList.isEmpty
+            ? buildShimmerLoadingIndicator(isLoading: isNearbyLoading)
+            : ListView.builder(
+                physics: const ClampingScrollPhysics(),
+                padding: const EdgeInsets.all(16.0),
+                controller: _scrollController,
+                itemCount: customerProfileList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == customerProfileList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: isNearbyLoading);
+                  }
 
-    return NoItemInList(
-      msg: AppLocalization.of(context)!.noResultFound,
-    );
-  }
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 7.0),
+                    child: FindBusiness(
+                      customerProfile: customerProfileList[index],
+                      tileRenderPlace: TileRenderPlace.YarnTimeLine,
+                      callback: (username, value) {
+                        //create a list to edit
+                        final List<CustomerProfile> customerProfileListEdit =
+                            customerProfileList;
 
-  Widget nearByBuildView() {
-    return ListView.separated(
-      physics: const ClampingScrollPhysics(),
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-      controller: _scrollController,
-      itemCount: customerProfileList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == customerProfileList.length) {
-          return _buildLoadingIndicator();
-        }
+                        // modify customerProfileList for the username and refresh the list
+                        // set the isFollowing for that particular user
+                        for (var customer in customerProfileListEdit) {
+                          if (customer.userName == username) {
+                            customer.isFollowing =
+                                value; // Modify the isFollowing property
+                          }
+                        }
 
-        return Container(
-          margin: EdgeInsets.all(10.0),
-          child: FindBusiness(
-            customerProfile: customerProfileList[index],
-            tileRenderPlace: TileRenderPlace.YarnTimeLine,
-            callback: (username, value) {
-              //create a list to edit
-              List<CustomerProfile> customerProfileListEdit =
-                  customerProfileList;
+                        customerProfileList = [];
+                        customerProfileList = customerProfileListEdit;
 
-              // modify customerProfileList for the username and refresh the list
-              // set the isFollowing for that particular user
-              customerProfileListEdit.forEach((customer) {
-                if (customer.userName == username) {
-                  customer.isFollowing =
-                      value; // Modify the isFollowing property
+                        if (mounted) setState(() {});
+                      },
+                    ),
+                  );
                 }
-              });
-
-              customerProfileList = [];
-              customerProfileList = customerProfileListEdit;
-
-              if (mounted) setState(() {});
-            },
-          ),
-        );
-      },
-      separatorBuilder: (context, int) {
-        return Column(
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            Divider(
-              height: 0,
-              thickness: 0.5,
-              color: greySecondaryYarn,
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return Opacity(
-      opacity: isNearbyLoading ? 1.0 : 00,
-      child: isNearbyLoading ? const YarnShimmer() : Container(),
-    );
+                //   separatorBuilder: (context, int) {
+                //     return Column(
+                //       children: [
+                //         const SizedBox(
+                //           height: 20,
+                //         ),
+                //         Divider(
+                //           height: 0,
+                //           thickness: 0.5,
+                //           color: greySecondaryYarn,
+                //         ),
+                //       ],
+                //     );
+                //   },
+                );
   }
 
   void onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        nearByCount = 0;
-        nearByNext = "";
-        nearByPrevious = "";
-        customerProfileList = [];
-        if (mounted) setState(() {});
+    if (await checkConnection(context)) {
+      nearByCount = 0;
+      nearByNext = "";
+      nearByPrevious = "";
+      customerProfileList = [];
+      if (mounted) setState(() {});
 
-        getNearByBusinessList();
-        setState(() {
-          refreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        setState(() {
-          refreshController.refreshCompleted();
-        });
-      }
-    });
+      getNearByBusinessList();
+      setState(() {
+        refreshController.refreshCompleted();
+      });
+    } else {
+      setState(() {
+        refreshController.refreshCompleted();
+      });
+    }
   }
 }

@@ -1,26 +1,26 @@
 import 'dart:async';
 import 'dart:io';
+
+import 'package:Slydo/main.dart';
+import 'package:Slydo/screens/messaging/chat/utils.dart';
 import 'package:Slydo/screens/moments/screens/preview_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/image_crop.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:images_picker/images_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../main.dart';
-import '../../../widget/image_crop.dart';
-
 class CreateMediaMomentScreen extends StatefulWidget {
+  final dynamic arguments;
 
-  var arguments;
-
-  CreateMediaMomentScreen({Key? key, this.arguments}) : super(key: key);
+  const CreateMediaMomentScreen({super.key, this.arguments});
 
   @override
-  _CreateMediaMomentScreenState createState() =>
+  State<CreateMediaMomentScreen> createState() =>
       _CreateMediaMomentScreenState();
 }
 
@@ -36,7 +36,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (cameras.isNotEmpty) {
         _initCameraController(newCameraDescription: cameras[0]);
       } else {
@@ -65,10 +65,10 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
       if (e is CameraException) {
         switch (e.code) {
           case 'CameraAccessDenied':
-            print('User denied camera access.');
+            debugPrint('User denied camera access.');
             break;
           default:
-            print('Handle other errors.');
+            debugPrint('Handle other errors.');
             break;
         }
       }
@@ -79,7 +79,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   Widget build(BuildContext context) {
     if (cameraController == null ||
         !(cameraController?.value.isInitialized ?? false)) {
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: Text(
             'Camera permissions have not been granted yet',
@@ -93,21 +93,22 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
       );
     }
 
-    double wt = MediaQuery.of(context).size.width;
+    final double wt = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: <Widget>[
-          mediaCaptured()
-              ? showCapturedMedia()
-              : Center(
-                  child: AspectRatio(
-                    aspectRatio: 9 / 16,
-                    child: CameraPreview(
-                      cameraController!,
-                    ),
-                  ),
+          if (mediaCaptured())
+            showCapturedMedia()
+          else
+            Center(
+              child: AspectRatio(
+                aspectRatio: 9 / 16,
+                child: CameraPreview(
+                  cameraController!,
                 ),
+              ),
+            ),
           // Positioned(
           //   top: ht / 3,
           //   left: 4,
@@ -153,12 +154,24 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                 InkWell(
                   onTap: mediaCaptured()
                       ? null
-                      : () {
+                      : () async {
                           if (!(cameraController?.value.isTakingPicture ??
                                   false) &&
                               !(cameraController?.value.isRecordingVideo ??
                                   false)) {
-                            pickFileFromMedia();
+                            final bool isPermissionGranted =
+                                await requestGalleryPermission();
+                            if (isPermissionGranted) {
+                              await pickFileFromMedia();
+                            } else {
+                              final bool isPermissionIsDenied =
+                                  await isPermanentlyDeniedPermission();
+                              if (isPermissionIsDenied) {
+                                await openAppSettings();
+                              } else {
+                                await openAppSettings();
+                              }
+                            }
                           }
                         },
                   child: Container(
@@ -176,16 +189,17 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                 ),
                 Column(
                   children: [
-                    videoTimer != 30
-                        ? Text(
-                            videoTimer.toString(),
-                            style: TextStyle(
-                                color: navyBlue,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600),
-                          )
-                        : SizedBox.shrink(),
-                    SizedBox(height: 4),
+                    if (videoTimer != 30)
+                      Text(
+                        videoTimer.toString(),
+                        style: TextStyle(
+                            color: navyBlue,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600),
+                      )
+                    else
+                      const SizedBox.shrink(),
+                    const SizedBox(height: 4),
                     GestureDetector(
                       onLongPressStart: mediaCaptured()
                           ? null
@@ -220,7 +234,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                   ],
                 ),
                 SizedBox(
-                  width: 100,
+                  width: 110,
                   height: 35,
                   child: ElevatedButton.icon(
                     icon: Text(
@@ -236,9 +250,12 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                             NavigationUtil.push(
                               context,
                               screen: PreviewMomentScreen(
-                                filePath: getMediaPathToSendToPreviewScreen(),
-                                  arguments: {"channel": widget.arguments == null ? "" : widget.arguments['channel']}
-                              ),
+                                  filePath: getMediaPathToSendToPreviewScreen(),
+                                  arguments: {
+                                    "channel": widget.arguments == null
+                                        ? ""
+                                        : widget.arguments['channel']
+                                  }),
                             );
                             imagePath = null;
                             videoPath = null;
@@ -261,7 +278,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                               : Colors.white.withOpacity(0.5),
                         ),
                       ),
-                      primary: Colors.white,
+                      backgroundColor: Colors.white,
                       fixedSize: const Size(208, 43),
                     ),
                   ),
@@ -285,14 +302,14 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
           onTap: () {
             _toggleCameraLens();
           },
-          child: Icon(
+          child: const Icon(
             Icons.flip_camera_android_outlined,
             color: Colors.white,
           ),
         ),
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget _buildBackButton() {
@@ -303,7 +320,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
         onTap: () {
           Navigator.of(context).pop();
         },
-        child: Icon(
+        child: const Icon(
           Icons.arrow_back_ios_new_rounded,
           color: Colors.white,
         ),
@@ -312,12 +329,12 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   }
 
   void onTakePictureButtonPressed() {
-    debugPrint('onTakePictureButtonPressed');
+    // debugPrint('onTakePictureButtonPressed');
     takePictureOrVideo(mediaType: MediaType.picture).then((file) async {
       if (file != null) {
-        debugPrint('IMAGE PATH XFILE -> $file');
+        // debugPrint('IMAGE PATH XFILE -> $file');
 
-        String? croppedImagePath = await ImageCrop().cropImage(file.path);
+        final String? croppedImagePath = await ImageCrop().cropImage(file.path);
         if (croppedImagePath != null) {
           imagePath = croppedImagePath;
           if (mounted) setState(() {});
@@ -339,10 +356,10 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
 
     try {
       if (mediaType == MediaType.picture) {
-        debugPrint('Taking picture');
+        // debugPrint('Taking picture');
 
         final XFile? file = await cameraController?.takePicture();
-        debugPrint('PICTURE TAKEN :: $file');
+        // debugPrint('PICTURE TAKEN :: $file');
 
         if (file != null) {
           return file;
@@ -351,7 +368,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
         }
       } else {
         cameraController?.startVideoRecording();
-        timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        timer = Timer.periodic(const Duration(seconds: 1), (timer) {
           if (mounted) {
             setState(() {
               videoTimer--;
@@ -375,7 +392,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
     }
   }
 
-  setUpVideoPlayer() async {
+  Future<void> setUpVideoPlayer() async {
     videoPlayerController = VideoPlayerController.file(File(videoPath!),
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
       ..initialize().then((_) => videoPlayerController?.pause());
@@ -383,7 +400,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
 
   Widget showCapturedMedia() {
     if (videoPath != null) {
-      debugPrint('VIDEO SIZE -> ::: ${File(videoPath!).lengthSync()}');
+      // debugPrint('VIDEO SIZE -> ::: ${File(videoPath!).lengthSync()}');
 
       setUpVideoPlayer();
       return Stack(
@@ -403,7 +420,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                   videoPlayerController?.dispose();
                 });
               },
-              icon: Icon(Icons.close, size: 25, color: Colors.red),
+              icon: const Icon(Icons.close, size: 25, color: Colors.red),
             ),
           ),
         ],
@@ -414,7 +431,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
       // }
     }
 
-    debugPrint('IMAGE PATH -> ::: $imagePath');
+    // debugPrint('IMAGE PATH -> ::: $imagePath');
 
     if (imagePath != null) {
       return Stack(
@@ -438,7 +455,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                     imagePath = null;
                   });
                 },
-                icon: Icon(Icons.close, size: 25, color: Colors.red)),
+                icon: const Icon(Icons.close, size: 25, color: Colors.red)),
           ),
         ],
       );
@@ -447,7 +464,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
     return Container(color: greyBorderColor);
   }
 
-  pickFileFromMedia() async {
+  Future<void> pickFileFromMedia() async {
     // final file = await ImagePicker()
     //     .pickImage(source: ImageSource.gallery, imageQuality: 70);
 
@@ -456,20 +473,22 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
     //     type: FileType.custom,
     //     allowedExtensions: imageExtensions);
 
-    List<Media>? res = await ImagesPicker.pick(
-      count: 1,
-      pickType: PickType.all,
-      language: Language.System,
-      maxTime: 900,
-      cropOpt: CropOption(
-        // aspectRatio: CropAspectRatio.wh16x9,
-        cropType: CropType.rect,
-      ),
-    );
+    // List<Media>? res = await ImagesPicker.pick(
+    //   count: 1,
+    //   pickType: PickType.all,
+    //   language: Language.System,
+    //   maxTime: 900,
+    //   cropOpt: CropOption(
+    //     // aspectRatio: CropAspectRatio.wh16x9,
+    //     cropType: CropType.rect,
+    //   ),
+    // );
 
-    if (res == null || res.isEmpty) return;
-    File file = File(res.first.path);
-    String? mediaType = getFileTypeByPath(path: file.path);
+    final XFile? res = await selectSingleImageVideo();
+
+    if (res == null) return;
+    final File file = File(res.path);
+    final String? mediaType = getFileTypeByPath(path: file.path);
 
     if (mediaType == null) return;
 
@@ -483,7 +502,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
       //   if (mounted) setState(() {});
       // }
     } else if (mediaType == 'video') {
-      var videoFilePath =
+      final videoFilePath =
           await NavigationUtil.push(context, screen: TrimmerView(file: file));
       if (videoFilePath is String) {
         videoPath = videoFilePath;
@@ -519,19 +538,16 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
     // get current lens direction (front / rear)
     final lensDirection = cameraController?.description.lensDirection ??
         CameraLensDirection.front;
-    List<CameraDescription> _availableCameras = await availableCameras();
+    final List<CameraDescription> availableCamera = await availableCameras();
     CameraDescription? newDescription;
     if (lensDirection == CameraLensDirection.front) {
-      newDescription = _availableCameras.firstWhere((description) =>
+      newDescription = availableCamera.firstWhere((description) =>
           description.lensDirection == CameraLensDirection.back);
     } else {
-      newDescription = _availableCameras.firstWhere((description) =>
+      newDescription = availableCamera.firstWhere((description) =>
           description.lensDirection == CameraLensDirection.front);
     }
 
-    if (newDescription != null) {
-      debugPrint('NEW DESC :: $newDescription');
-    }
     _initCameraController(newCameraDescription: newDescription);
   }
 }

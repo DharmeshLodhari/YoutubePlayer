@@ -1,5 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/super_store/widget/find_business_card.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -9,15 +10,16 @@ import 'package:flutter/material.dart';
 import '../../../../../utils/util.dart';
 import '../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../widget/rounded_background_icon.dart';
-import '../../widget/item_display_card.dart';
 import '../more_apps/shopping/models/store.dart';
-import '../more_apps/user_profile/models/search_user_item_with_filter.dart';
-import '../more_apps/user_profile/models/user.dart';
-import '../more_apps/yarn/utils/yarn_enum.dart';
+import '../user_profile/models/search_user_item_with_filter.dart';
+import '../user_profile/models/user.dart';
+import '../yarn/utils/yarn_enum.dart';
 
 class SearchNearByBusiness extends StatefulWidget {
+  const SearchNearByBusiness({super.key});
+
   @override
-  _SearchNearByBusinessState createState() => _SearchNearByBusinessState();
+  State<SearchNearByBusiness> createState() => _SearchNearByBusinessState();
 }
 
 class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
@@ -40,7 +42,6 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
   final ScrollController _scrollController = ScrollController();
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
-  String autoCompleteSearchText = "";
   ProductCategory? pressedCategory;
   ProductCategory? selectedProductCategory;
   List<ProductCategory>? productCategories;
@@ -79,7 +80,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           _refreshList();
         });
       }
-      if (nearByBusiness.isNotEmpty || searchController.text.length != 0) {
+      if (nearByBusiness.isNotEmpty || searchController.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;
@@ -96,7 +97,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
     super.initState();
   }
 
-  _refreshList() {
+  void _refreshList() {
     count = 0;
     next = "";
     previous = "";
@@ -114,7 +115,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           setState(() {});
         }
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await ShoppingAuthService().searchMerchant(
           next,
           previous,
@@ -133,19 +134,19 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List? tempList = result['results'];
-        debugPrint('TEMP LIST --> $tempList');
+        final List? tempList = result['results'];
+        // debugPrint('TEMP LIST --> $tempList');
         if (mounted) {
           isLoading = false;
           try {
-            tempList!.forEach((result) {
+            for (var result in tempList!) {
               nearByBusiness.add(result);
-            });
+            }
           } catch (e) {
             debugPrint("error adding products $e");
           }
           setState(() {});
-          debugPrint("ALL $nearByBusiness");
+          // debugPrint("ALL $nearByBusiness");
         }
       }
       if (nearByBusiness.isEmpty) {
@@ -154,7 +155,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           setState(() {});
         }
       } else if (next == null && nearByBusiness.length > 6) {
-        _scaffoldMessengerSearchKey.currentState!.showSnackBar(
+        _scaffoldMessengerSearchKey.currentState?.showSnackBar(
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -173,9 +174,9 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
       productCategories = await ShoppingAuthService().getProductCategories();
       productCategoriesCopy = productCategories;
 
-      productCategoriesCopy!.forEach((element) {
+      for (var element in productCategoriesCopy!) {
         categoryCheckMark[element.name] = false;
-      });
+      }
     } catch (e) {
       productCategories = [];
       productCategoriesCopy = [];
@@ -193,9 +194,9 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
       stateList = getAllStates();
       stateListCopy = stateList;
 
-      stateListCopy.forEach((element) {
+      for (var element in stateListCopy) {
         stateCheckMark[element] = false;
-      });
+      }
     } catch (e) {
       stateList = [];
       stateListCopy = [];
@@ -211,7 +212,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
       key: _scaffoldMessengerSearchKey,
       child: Scaffold(
         key: _scaffoldSearchKey,
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
@@ -221,6 +222,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
   bool showSortByBox = false;
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -244,93 +246,93 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
             fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        nearByBusiness.isNotEmpty
-            ? RoundedBackgroundIcon(
-                height: 34,
-                width: 34,
-                icon: Icon(
-                  SlydoAppIcon.filter,
-                  size: 16,
-                  color: blackFont,
-                ),
-                onTap: () {
-                  setState(() {
-                    showSortByBox = !showSortByBox;
-                  });
-                },
-                backgroundColor: iconBtnGrey,
-                enableMargin: true,
-              )
-            : const SizedBox.shrink(),
+        if (nearByBusiness.isNotEmpty)
+          RoundedBackgroundIcon(
+            height: 34,
+            width: 34,
+            icon: Icon(
+              SlydoAppIcon.filter,
+              size: 16,
+              color: blackFont,
+            ),
+            onTap: () {
+              setState(() {
+                showSortByBox = !showSortByBox;
+              });
+            },
+            backgroundColor: iconBtnGrey,
+            enableMargin: true,
+          )
+        else
+          const SizedBox.shrink(),
         const SizedBox(width: 16),
       ],
     );
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          const SizedBox(height: 6),
-          searchBox(),
-          const SizedBox(height: 12),
-          isLoading
-              ? const CircularProgressIndicator()
-              : const SizedBox.shrink(),
-          isSearchIsEmpty
+    return Column(
+      children: [
+        const SizedBox(height: 6),
+        searchBox(),
+        const SizedBox(height: 12),
+        if (isLoading)
+          const CircularProgressIndicator()
+        else
+          const SizedBox.shrink(),
+        if (isSearchIsEmpty)
+          Expanded(
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+              isResult: false,
+            ),
+          )
+        else
+          noItemInList
               ? Expanded(
                   child: NoItemInList(
-                    msg: AppLocalization.of(context)!
-                        .pleaseTypeSomethingToGetResult,
-                    isResult: false,
+                    msg: AppLocalization.of(context)!.noResultFound,
                   ),
                 )
-              : noItemInList
-                  ? Expanded(
-                      child: NoItemInList(
-                        msg: AppLocalization.of(context)!.noResultFound,
-                      ),
-                    )
-                  : Expanded(
-                      child: ListView(
-                          children: nearByBusiness
-                              .map(
-                                (product) => Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 16),
-                                  child: Container(
-                                    margin: const EdgeInsets.all(8.0),
-                                    child: FindBusiness(
-                                      customerProfile: product,
-                                      tileRenderPlace:
-                                          TileRenderPlace.YarnProductService,
-                                      callback: (username, value) {
-                                        //create a list to edit
-                                        List<CustomerProfile>
-                                            customerProfileList =
-                                            nearByBusiness;
-                                        // modify customerProfileList for the username and refresh the list
-                                        // set the isFollowing for that particular user
-                                        customerProfileList.forEach((customer) {
-                                          if (customer.userName == username) {
-                                            customer.isFollowing =
-                                                value; // Modify the isFollowing property
-                                          }
-                                        });
+              : Expanded(
+                  child: ListView(
+                      children: nearByBusiness
+                          .map(
+                            (product) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 7.0),
+                                child: FindBusiness(
+                                  customerProfile: product,
+                                  tileRenderPlace:
+                                      TileRenderPlace.YarnProductService,
+                                  callback: (username, value) {
+                                    //create a list to edit
+                                    final List<CustomerProfile>
+                                        customerProfileList = nearByBusiness;
+                                    // modify customerProfileList for the username and refresh the list
+                                    // set the isFollowing for that particular user
+                                    for (var customer in customerProfileList) {
+                                      if (customer.userName == username) {
+                                        customer.isFollowing =
+                                            value; // Modify the isFollowing property
+                                      }
+                                    }
 
-                                        nearByBusiness = [];
-                                        nearByBusiness = customerProfileList;
+                                    nearByBusiness = [];
+                                    nearByBusiness = customerProfileList;
 
-                                        if (mounted) setState(() {});
-                                      },
-                                    ),
-                                  ),
+                                    if (mounted) setState(() {});
+                                  },
                                 ),
-                              )
-                              .toList()),
-                    ),
-        ],
-      ),
+                              ),
+                            ),
+                          )
+                          .toList()),
+                ),
+      ],
     );
   }
 
@@ -495,10 +497,12 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         title: Text(
           selectedProductCategory != null ? selectedProductCategory!.name : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -579,7 +583,8 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                     shrinkWrap: true,
                     itemCount: productCategories!.length,
                     itemBuilder: (context, index) {
-                      ProductCategory category = productCategories![index];
+                      final ProductCategory category =
+                          productCategories![index];
                       return CheckboxListTile(
                         value: categoryCheckMark[category.name] ?? false,
                         onChanged: (isChecked) {
@@ -629,10 +634,12 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         title: Text(
           "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -762,10 +769,12 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         title: Text(
           "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -777,9 +786,9 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           lgaList = getLga(states: pickedStateList);
           lgaListCopy = lgaList;
 
-          lgaListCopy.forEach((element) {
+          for (var element in lgaListCopy) {
             lgaCheckMark[element] = false;
-          });
+          }
           bottomSheetSetState(() {});
 
           lgaBottomSheet(bottomSheetSetState);
@@ -860,7 +869,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                 CurvedButton(
                   text: 'Pick',
                   onPressed: () {
-                    debugPrint('PICKED CAT ---> $pickedLgaList');
+                    // debugPrint('PICKED CAT ---> $pickedLgaList');
                     Navigator.pop(context);
                     bottomSheetSetState(() {});
                   },

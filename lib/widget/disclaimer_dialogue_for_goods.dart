@@ -2,20 +2,22 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
-  bool? result = await showDialog<bool>(
+  final bool? result = await showDialog<bool>(
     barrierDismissible: false,
     context: context,
     builder: (context) => StatefulBuilder(
       builder: (context, rentDurationStateSetter) {
         return AlertDialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          backgroundColor: Colors.white,
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           contentPadding: EdgeInsets.zero,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           content: Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -27,13 +29,13 @@ Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding: EdgeInsets.only(top: 16, bottom: 8),
+                      padding: const EdgeInsets.only(top: 16, bottom: 8),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 16,
                             ),
                             child: Column(
@@ -52,7 +54,7 @@ Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
                                         fontWeight: FontWeight.w700),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 12,
                                 ),
                                 Container(

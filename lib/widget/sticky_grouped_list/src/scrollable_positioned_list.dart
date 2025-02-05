@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
@@ -33,7 +32,7 @@ class ScrollablePositionedList extends StatefulWidget {
   const ScrollablePositionedList.builder({
     required this.itemCount,
     required this.itemBuilder,
-    Key? key,
+    super.key,
     this.itemScrollController,
     ItemPositionsListener? itemPositionsListener,
     this.initialScrollIndex = 0,
@@ -48,8 +47,7 @@ class ScrollablePositionedList extends StatefulWidget {
     this.addRepaintBoundaries = true,
     this.minCacheExtent,
   })  : itemPositionsNotifier = itemPositionsListener as ItemPositionsNotifier?,
-        separatorBuilder = null,
-        super(key: key);
+        separatorBuilder = null;
 
   /// Create a [ScrollablePositionedList] whose items are provided by
   /// [itemBuilder] and separators provided by [separatorBuilder].
@@ -57,7 +55,7 @@ class ScrollablePositionedList extends StatefulWidget {
     required this.itemCount,
     required this.itemBuilder,
     required this.separatorBuilder,
-    Key? key,
+    super.key,
     this.itemScrollController,
     ItemPositionsListener? itemPositionsListener,
     this.initialScrollIndex = 0,
@@ -72,8 +70,7 @@ class ScrollablePositionedList extends StatefulWidget {
     this.addRepaintBoundaries = true,
     this.minCacheExtent,
   })  : assert(separatorBuilder != null),
-        itemPositionsNotifier = itemPositionsListener as ItemPositionsNotifier?,
-        super(key: key);
+        itemPositionsNotifier = itemPositionsListener as ItemPositionsNotifier?;
 
   /// Number of items the [itemBuilder] can produce.
   final int itemCount;
@@ -259,11 +256,11 @@ class ItemScrollController {
 class _ScrollablePositionedListState extends State<ScrollablePositionedList>
     with TickerProviderStateMixin {
   /// Details for the primary (active) [ListView].
-  var primary = _ListDisplayDetails(const ValueKey('Ping'));
+  _ListDisplayDetails primary = _ListDisplayDetails(const ValueKey('Ping'));
 
   /// Details for the secondary (transitional) [ListView] that is temporarily
   /// shown when scrolling a long distance.
-  var secondary = _ListDisplayDetails(const ValueKey('Pong'));
+  _ListDisplayDetails secondary = _ListDisplayDetails(const ValueKey('Pong'));
 
   final opacity = ProxyAnimation(const AlwaysStoppedAnimation<double>(0));
 
@@ -274,7 +271,8 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
   @override
   void initState() {
     super.initState();
-    ItemPosition? initialPosition = PageStorage.of(context)!.readState(context);
+    final ItemPosition? initialPosition =
+        PageStorage.of(context).readState(context);
     primary.target = initialPosition?.index ?? widget.initialScrollIndex;
     primary.alignment =
         initialPosition?.itemLeadingEdge ?? widget.initialAlignment;
@@ -348,7 +346,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
   }
 
   List<Widget> getItems({double? cacheExtent}) {
-    List<Widget> items = [
+    final List<Widget> items = [
       PostMountCallback(
         key: primary.key,
         callback: startAnimationCallback,
@@ -378,7 +376,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
         ),
       )
     ];
-    if (_isTransitioning)
+    if (_isTransitioning) {
       items.add(PostMountCallback(
         key: secondary.key,
         callback: startAnimationCallback,
@@ -407,6 +405,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
           ),
         ),
       ));
+    }
 
     return items;
   }
@@ -440,7 +439,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
     }
     if (_isTransitioning) {
       _stopScroll(canceled: true);
-      SchedulerBinding.instance!.addPostFrameCallback((_) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
         _startScroll(
           index: index,
           alignment: alignment,
@@ -472,7 +471,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
     }
     if (_isTransitioning) {
       _stopScrollToBottom(canceled: true);
-      SchedulerBinding.instance!.addPostFrameCallback((_) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
         _startScrollToBottom(
           index: index,
           alignment: alignment,
@@ -514,7 +513,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
       final startCompleter = Completer<void>();
       final endCompleter = Completer<void>();
       startAnimationCallback = () {
-        SchedulerBinding.instance!.addPostFrameCallback((_) {
+        SchedulerBinding.instance.addPostFrameCallback((_) {
           startAnimationCallback = () {};
 
           opacity.parent = _opacityAnimation(opacityAnimationWeights).animate(
@@ -574,7 +573,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
       final startCompleter = Completer<void>();
       final endCompleter = Completer<void>();
       startAnimationCallback = () {
-        SchedulerBinding.instance!.addPostFrameCallback((_) {
+        SchedulerBinding.instance.addPostFrameCallback((_) {
           startAnimationCallback = () {};
 
           opacity.parent = _opacityAnimation(opacityAnimationWeights).animate(
@@ -623,7 +622,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
       if (opacity.value >= 0.5) {
         // Secondary [ListView] is more visible than the primary; make it the
         // new primary.
-        var temp = primary;
+        final temp = primary;
         primary = secondary;
         secondary = temp;
       }
@@ -650,7 +649,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
       if (opacity.value >= 0.5) {
         // Secondary [ListView] is more visible than the primary; make it the
         // new primary.
-        var temp = primary;
+        final temp = primary;
         primary = secondary;
         secondary = temp;
       }
@@ -660,8 +659,8 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
   }
 
   Animatable<double> _opacityAnimation(List<double> opacityAnimationWeights) {
-    final startOpacity = 0.0;
-    final endOpacity = 1.0;
+    const startOpacity = 0.0;
+    const endOpacity = 1.0;
     return TweenSequence<double>(<TweenSequenceItem<double>>[
       TweenSequenceItem<double>(
           tween: ConstantTween<double>(startOpacity),
@@ -680,7 +679,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
         .where((ItemPosition position) =>
             position.itemLeadingEdge < 1 && position.itemTrailingEdge > 0);
     if (itemPositions.isNotEmpty) {
-      PageStorage.of(context)!.writeState(
+      PageStorage.of(context).writeState(
           context,
           itemPositions.reduce((value, element) =>
               value.itemLeadingEdge < element.itemLeadingEdge

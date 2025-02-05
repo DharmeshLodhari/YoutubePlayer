@@ -1,25 +1,25 @@
-
+import 'package:Slydo/constant.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/user_service_list.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/colors.dart';
 import '../../../../widget/rounded_background_icon.dart';
-import '../../user_profile/models/user.dart';
-import '../../user_profile/screens/user_profile_module_new/user_service_list.dart';
 
 class MyServices extends StatefulWidget {
-  const MyServices({Key? key}) : super(key: key);
+  const MyServices({super.key});
 
   @override
   State<MyServices> createState() => _MyServicesState();
 }
 
 class _MyServicesState extends State<MyServices> {
-
   late UserBloc userBloc;
   late CustomerProfile customerProfile;
 
@@ -27,7 +27,6 @@ class _MyServicesState extends State<MyServices> {
   void initState() {
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -44,15 +43,15 @@ class _MyServicesState extends State<MyServices> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: _buildBody(),
     );
-
   }
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         AppLocalization.of(context)!.myServices,
@@ -84,36 +83,48 @@ class _MyServicesState extends State<MyServices> {
   List<Widget> _buildAppBarActions() {
     return [
       RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
-            Navigator.of(context).pushNamed(Routes.USER_PRODUCT_AND_SERVICE_SEARCH,
-                arguments: {"searchedUser": customerProfile, "filter": "Services", "hidePreIcon": true});
-          },
-          height: 15,
-          width: 15,
-          icon: SvgPicture.asset(
-            "yarn/search".toSVG(),
-            height: 12,
-            width: 12,
-          )),
-      SizedBox(width: 30),
+        backgroundColor: Colors.transparent,
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed(Routes.USER_PRODUCT_AND_SERVICE_SEARCH, arguments: {
+            "searchedUser": customerProfile,
+            "filter": "Services",
+            "hidePreIcon": true
+          });
+        },
+        height: 15,
+        width: 15,
+        icon: SvgPicture.asset(
+          "yarn/search".toSVG(),
+          height: 12,
+          width: 12,
+        ),
+      ),
+      const SizedBox(width: 20),
       RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
-            Navigator.pushNamed(context, Routes.ADD_SERVICE);
-          },
-          height: 15,
-          width: 15,
-          icon: SvgPicture.asset(
-            "add_payment".toSVG(),
-            height: 12,
-            width: 12,
-          )),
-      SizedBox(width: 20),
-
+        backgroundColor: Colors.transparent,
+        onTap: () {
+          final PermissionType? hasPermission =
+              userBloc.user.hasWritePermission(ProtectionPermission.services);
+          if (hasPermission == PermissionType.WRITE) {
+            Navigator.pushNamed(context, Routes.ADD_EDIT_SERVICE,
+                arguments: {'channelUsername': ''});
+          } else {
+            showSnackbar(context,
+                message: AppLocalization.of(context)?.doNotPermission ?? "");
+          }
+        },
+        height: 15,
+        width: 15,
+        icon: SvgPicture.asset(
+          "add_payment".toSVG(),
+          height: 12,
+          width: 12,
+        ),
+      ),
+      const SizedBox(width: 20),
     ];
   }
-
 
   Widget _buildBody() {
     return Column(
@@ -124,9 +135,7 @@ class _MyServicesState extends State<MyServices> {
     );
   }
 
-
   Widget _buildServicesView() {
-
     return Expanded(
       child: UserServiceList(
         user: customerProfile,
@@ -134,5 +143,4 @@ class _MyServicesState extends State<MyServices> {
       ),
     );
   }
-
 }

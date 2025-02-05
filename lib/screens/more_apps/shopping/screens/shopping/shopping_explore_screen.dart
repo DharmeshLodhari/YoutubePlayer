@@ -1,8 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
@@ -10,22 +8,23 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../models/ShoppingProduct.dart';
+import '../../models/shopping_product_model.dart';
 import 'shopping_tile.dart';
 
 class ShoppingExploreScreen extends StatefulWidget {
+  const ShoppingExploreScreen({super.key});
+
   @override
-  _ShoppingExploreScreenState createState() => _ShoppingExploreScreenState();
+  State<ShoppingExploreScreen> createState() => _ShoppingExploreScreenState();
 }
 
 class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
-  CarouselController _carouselController = CarouselController();
+  final cs.CarouselSliderController _carouselController = cs.CarouselSliderController();
 
   late ShoppingDashboardBloc shoppingDashboardBloc;
 
@@ -43,7 +42,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   List<ShoppingProduct> discountProductList = [];
   bool isDiscountProductListLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -104,19 +103,12 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -124,7 +116,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     shoppingDashboardBloc = Provider.of<ShoppingDashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
@@ -133,6 +125,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -155,7 +148,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
       ),
       actions: [
         goToCartWidget(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -169,7 +162,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
       icon: badges.Badge(
         badgeContent: getBadgeContent(),
         position: badges.BadgePosition.topEnd(end: 0, top: 0),
-        badgeAnimation: badges.BadgeAnimation.rotation(
+        badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
           loopAnimation: false,
@@ -179,9 +172,9 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
         badgeStyle: badges.BadgeStyle(
             shape: badges.BadgeShape.circle,
             badgeColor: naturalGreen,
-            padding: basketBloc.items.length == 0
-                ? EdgeInsets.all(0)
-                : EdgeInsets.all(4)),
+            padding: basketBloc.basketItems.isEmpty
+                ? const EdgeInsets.all(0)
+                : const EdgeInsets.all(4)),
         child: Icon(
           SlydoAppIcon.cart,
           size: 16,
@@ -199,22 +192,22 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.items.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
       getBadgeCount().toString(),
-      style: TextStyle(
+      style: const TextStyle(
           fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
 
-  int getBadgeCount() {
+  String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
-    });
-    return totalItem;
+    for (var element in basketBloc.basketItems) {
+      totalItem = totalItem + int.parse(element.qty.toString());
+    }
+    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
   Widget scaffoldBody() {
@@ -229,27 +222,27 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 6,
             ),
             searchBox(),
-            SizedBox(
+            const SizedBox(
               height: 32,
             ),
             productCarouselSlider(),
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             getTodayDealList(),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             trendingProductList(),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             getDiscountDealList(),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -258,7 +251,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -297,8 +290,8 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -339,117 +332,112 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
 
   Widget productCarouselSlider() {
     return isSliderLoading
-        ? Container(
+        ? SizedBox(
             height: 180,
             child: Center(
               child: CircularLoadingIndicator(),
             ),
           )
-        : Container(
-            child: CarouselSlider(
-              carouselController: _carouselController,
-              options: CarouselOptions(
-                viewportFraction: 0.9,
-                enlargeCenterPage: false,
-                autoPlay: true,
-                aspectRatio: 2,
-                initialPage: 0,
-              ),
-              items: sliderList
-                  .map(
-                    (product) => GestureDetector(
-                      onTap: () {
-                        ShoppingAuthService()
-                            .getProduct(product.id!)
-                            .then((value) {
-                          Navigator.pushNamed(context, '/product',
-                              arguments: {"product": value});
-                        });
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 5),
-                        child: Center(
-                            child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          child: CachedNetworkImage(
-                            imageUrl: product.cover!,
-                            fit: BoxFit.fill,
-                            height: double.infinity,
-                            width: double.infinity,
-                            errorWidget: productAndServiceErrorWidget,
-                            memCacheHeight:
-                                (MediaQuery.of(context).size.height * 0.6)
-                                    .toInt(),
-                          ),
-                        )),
-                      ),
-                    ),
-                  )
-                  .toList(),
+        : cs.CarouselSlider(
+            carouselController: _carouselController,
+            options: cs.CarouselOptions(
+              viewportFraction: 0.9,
+              enlargeCenterPage: false,
+              autoPlay: true,
+              aspectRatio: 2,
+              initialPage: 0,
             ),
+            items: sliderList
+                .map(
+                  (product) => GestureDetector(
+                    onTap: () {
+                      ShoppingAuthService()
+                          .getProduct(product.id!)
+                          .then((value) {
+                        Navigator.pushNamed(context, '/product',
+                            arguments: {"product": value});
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Center(
+                          child: ClipRRect(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
+                        child: CachedNetworkImage(
+                          imageUrl: product.cover!,
+                          fit: BoxFit.fill,
+                          height: double.infinity,
+                          width: double.infinity,
+                          errorWidget: productAndServiceErrorWidget,
+                          memCacheHeight:
+                              (MediaQuery.of(context).size.height * 0.6)
+                                  .toInt(),
+                        ),
+                      )),
+                    ),
+                  ),
+                )
+                .toList(),
           );
   }
 
   Widget trendingProductList() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Trending Products",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Trending Products",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/shopping-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/shopping-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            height: 210,
-            color: Colors.white,
-            child: isTrendingProductLoading
-                ? Container(
-                    child: Center(
-                      child: CircularLoadingIndicator(),
-                    ),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: trendingProduct
-                            .map(
-                              (product) => Container(
-                                margin: EdgeInsets.only(right: 12),
-                                child: productNameCard(product: product),
-                              ),
-                            )
-                            .toList(),
-                      ),
+        ),
+        Container(
+          height: 210,
+          color: Colors.white,
+          child: isTrendingProductLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: trendingProduct
+                          .map(
+                            (product) => Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: productNameCard(product: product),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 
@@ -468,13 +456,14 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  product.name!,
+                  messageDecoderWithEmoji(product.name) ?? "",
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -484,7 +473,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                   ),
                   maxLines: 1,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 ClipRRect(
@@ -508,269 +497,261 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   }
 
   Widget getTodayDealList() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Today's deal",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Today's deal",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/shopping-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/shopping-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: isTodayDealLoading
-                ? Container(
-                    height: 140,
-                    child: Center(
-                      child: CircularLoadingIndicator(),
-                    ),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: todayDeal
-                            .map((product) => Container(
-                                  margin: EdgeInsets.only(right: 12),
-                                  child: productPoster(product: product),
-                                ))
-                            .toList(),
-                      ),
-                    ),
-                  ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget getDiscountDealList() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Deal's upto 75% off",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
-                ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/shopping-category");
-                  },
-                ),
-              ],
-            ),
-          ),
-          isDiscountProductListLoading
-              ? Container(
-                  height: 200,
+        ),
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: isTodayDealLoading
+              ? SizedBox(
+                  height: 140,
                   child: Center(
                     child: CircularLoadingIndicator(),
                   ),
                 )
-              : Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16, right: 16),
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 244,
-                            child: CustomBoxShadow(
-                              child: Card(
-                                  elevation: 3,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  margin: EdgeInsets.zero,
-                                  shadowColor: boxShadowTwo,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Column(
-                                      children: <Widget>[
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: todayDeal
+                          .map((product) => Container(
+                                margin: const EdgeInsets.only(right: 12),
+                                child: productPoster(product: product),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ),
+        )
+      ],
+    );
+  }
+
+  Widget getDiscountDealList() {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Deal's upto 75% off",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
+                ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/shopping-category");
+                },
+              ),
+            ],
+          ),
+        ),
+        if (isDiscountProductListLoading)
+          SizedBox(
+            height: 200,
+            child: Center(
+              child: CircularLoadingIndicator(),
+            ),
+          )
+        else
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Container(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 244,
+                      child: CustomBoxShadow(
+                        child: Card(
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            margin: EdgeInsets.zero,
+                            shadowColor: boxShadowTwo,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Column(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: InkWell(
+                                      child: CachedNetworkImage(
+                                        width: double.infinity,
+                                        imageUrl:
+                                            discountProductList.first.cover!,
+                                        fit: BoxFit.fill,
+                                        errorWidget:
+                                            productAndServiceErrorWidget,
+                                        memCacheHeight: (MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.6)
+                                            .toInt(),
+                                      ),
+                                      onTap: () {
+                                        ShoppingAuthService()
+                                            .getProduct(
+                                                discountProductList.first.id!)
+                                            .then((value) {
+                                          Navigator.pushNamed(
+                                              context, '/product',
+                                              arguments: {"product": value});
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 0),
+                                    child: Row(
+                                      children: [
                                         Expanded(
-                                          child: InkWell(
-                                            child: CachedNetworkImage(
-                                              width: double.infinity,
-                                              imageUrl: discountProductList
-                                                  .first.cover!,
-                                              fit: BoxFit.fill,
-                                              errorWidget:
-                                                  productAndServiceErrorWidget,
-                                              memCacheHeight:
-                                                  (MediaQuery.of(context)
-                                                              .size
-                                                              .height *
-                                                          0.6)
-                                                      .toInt(),
-                                            ),
-                                            onTap: () {
-                                              ShoppingAuthService()
-                                                  .getProduct(
-                                                      discountProductList
-                                                          .first.id!)
-                                                  .then((value) {
-                                                Navigator.pushNamed(
-                                                    context, '/product',
-                                                    arguments: {
-                                                      "product": value
-                                                    });
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 0),
-                                          child: Row(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      discountProductList
-                                                          .first.name!,
-                                                      softWrap: false,
-                                                      overflow:
-                                                          TextOverflow.fade,
-                                                      maxLines: 1,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        fontSize: 14,
-                                                        color: blackFont,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      discountProductList.first
-                                                          .shortDescription!,
-                                                      // softWrap: false,
-                                                      // overflow:
-                                                      //     TextOverflow.fade,
-                                                      maxLines: 1,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: darkGrey,
-                                                      ),
-                                                    ),
-                                                  ],
+                                              Text(
+                                                messageDecoderWithEmoji(
+                                                        discountProductList
+                                                            .first.name) ??
+                                                    "",
+                                                softWrap: false,
+                                                overflow: TextOverflow.fade,
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 14,
+                                                  color: blackFont,
                                                 ),
                                               ),
-                                              Container(
-                                                height: 60,
-                                                child: Center(
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Icon(
-                                                        SlydoAppIcon.naira,
-                                                        color: navyBlue,
-                                                        size: 10,
-                                                      ),
-                                                      Text(
+                                              const SizedBox(
+                                                height: 2,
+                                              ),
+                                              Text(
+                                                messageDecoderWithEmoji(
                                                         discountProductList
-                                                            .first.price
-                                                            .toString(),
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          fontSize: 14,
-                                                          color: navyBlue,
-                                                        ),
-                                                      ),
-                                                    ],
+                                                            .first
+                                                            .shortDescription) ??
+                                                    "",
+                                                // softWrap: false,
+                                                // overflow:
+                                                //     TextOverflow.fade,
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: darkGrey,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 60,
+                                          child: Center(
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  SlydoAppIcon.naira,
+                                                  color: navyBlue,
+                                                  size: 10,
+                                                ),
+                                                Text(
+                                                  discountProductList
+                                                      .first.price
+                                                      .toString(),
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 14,
+                                                    color: navyBlue,
                                                   ),
                                                 ),
-                                              )
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         )
                                       ],
                                     ),
-                                  )),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Column(
-                            children: discountProductList
-                                .map((product) => Container(
-                                      margin: EdgeInsets.only(bottom: 12),
-                                      child: InkWell(
-                                        onTap: () {
-                                          ShoppingAuthService()
-                                              .getProduct(product.id!)
-                                              .then((value) {
-                                            Navigator.pushNamed(
-                                                context, '/product',
-                                                arguments: {"product": value});
-                                          });
-                                        },
-                                        child: ShoppingTile(
-                                          product: product,
-                                        ),
-                                      ),
-                                    ))
-                                .toList(),
-                          ),
-                        ],
+                                  )
+                                ],
+                              ),
+                            )),
                       ),
                     ),
-                  ),
-                )
-        ],
-      ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    Column(
+                      children: discountProductList
+                          .map((product) => Container(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                child: InkWell(
+                                  onTap: () {
+                                    ShoppingAuthService()
+                                        .getProduct(product.id!)
+                                        .then((value) {
+                                      Navigator.pushNamed(context, '/product',
+                                          arguments: {"product": value});
+                                    });
+                                  },
+                                  child: ShoppingTile(
+                                    product: product,
+                                  ),
+                                ),
+                              ))
+                          .toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+      ],
     );
   }
 
@@ -782,7 +763,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               arguments: {"product": value});
         });
       },
-      child: Container(
+      child: SizedBox(
         height: 132,
         width: 218,
         child: Stack(
@@ -804,9 +785,9 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
             Align(
               alignment: Alignment.center,
               child: Text(
-                product.name!,
+                messageDecoderWithEmoji(product.name) ?? "",
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Colors.white),

@@ -1,5 +1,5 @@
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
+import 'package:Slydo/screens/user_profile/forms/user_address.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
@@ -10,12 +10,11 @@ import 'package:provider/provider.dart';
 
 import '../../../../data/currency.dart';
 import '../../../../data/state_notifier.dart';
-import '../../../../utils/colors.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({Key? key}) : super(key: key);
+  const CheckoutScreen({super.key});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -38,7 +37,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
 
-    BasketBloc basketBloc = Provider.of<BasketBloc>(context, listen: false);
+    final BasketBloc basketBloc =
+        Provider.of<BasketBloc>(context, listen: false);
     basketBloc.merchantData.clear();
     basketBloc.getAllMerchant();
   }
@@ -53,7 +53,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     basketBloc.totalShippingCost = 0;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar(),
       body: _scaffoldBody(),
     );
@@ -61,6 +61,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
@@ -84,7 +85,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  _scaffoldBody() {
+  Widget _scaffoldBody() {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -99,7 +100,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 14),
+            const SizedBox(height: 14),
             dropDownPickItemWidget(
               label: 'Merchant',
               selectedItem: merchantFullName,
@@ -107,7 +108,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ? null
                   : pickMerchantNames(),
             ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
             Visibility(
               visible: merchantFullName != null,
               child: dropDownPickItemWidget(
@@ -116,24 +117,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 onTap: () => pickDeliveryOptions(),
               ),
             ),
-            SizedBox(height: 18),
-            shippingOptionsLoading
-                ? Center(child: CircularLoadingIndicator())
-                : Column(
-                    children: [
-                      Visibility(
-                        visible: shippingOptions.isNotEmpty,
-                        child: dropDownPickItemWidget(
-                          label: 'Shipping Options',
-                          onTap: () => pickShippingOptions(),
-                          selectedItem: selectedShippingOptionName,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      )
-                    ],
+            const SizedBox(height: 18),
+            if (shippingOptionsLoading)
+              Center(child: CircularLoadingIndicator())
+            else
+              Column(
+                children: [
+                  Visibility(
+                    visible: shippingOptions.isNotEmpty,
+                    child: dropDownPickItemWidget(
+                      label: 'Shipping Options',
+                      onTap: () => pickShippingOptions(),
+                      selectedItem: selectedShippingOptionName,
+                    ),
                   ),
+                  const SizedBox(
+                    height: 15,
+                  )
+                ],
+              ),
             // Divider(thickness: 0.3, color: blackFont),
             Visibility(
               visible: merchantFullName != null,
@@ -171,7 +173,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 ? '0.00'
                                 : shippingOption != null
                                     ? moneyDisplayNormalizer(
-                                        shippingOption!.price)
+                                        shippingOption?.price)
                                     : '0.00'),
                         priceRow(
                           title: 'Order total',
@@ -184,14 +186,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ? moneyDisplayNormalizer(getOrderTotalPrice())
                                   : moneyDisplayNormalizer(getSubTotalPrice()),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
             renderCurvedButton(),
           ],
         ),
@@ -205,10 +207,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ? basketBloc.merchantNameMapCopy[merchantFullName!]!
             : '',
         shippingOptionPrice:
-            shippingOption != null ? shippingOption!.price : 0);
+            shippingOption != null ? shippingOption?.price ?? 0 : 0);
   }
 
-  getSubTotalPrice() {
+  int getSubTotalPrice() {
     return basketBloc.getSubTotalPriceByMerchant(
         merchantUserName:
             basketBloc.merchantNameMapCopy[merchantFullName] ?? '');
@@ -272,7 +274,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       } else if (shippingOption != null) {
         return getCurvedButton();
       }
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     } else {
       if (merchantFullName != null &&
           deliveryOption != null &&
@@ -281,7 +283,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       }
     }
 
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget getCurvedButton() {
@@ -291,15 +293,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  onNextClicked() {
+  void onNextClicked() {
     basketBloc.orderTotal += getOrderTotalPrice();
     basketBloc.totalShippingCost +=
-        shippingOption != null ? shippingOption!.price : 0;
+        shippingOption != null ? shippingOption?.price ?? 0 : 0;
 
     if (basketBloc.merchantData.length == 1) {
       basketBloc.userSelectedShippingOption = userSelectedShippingOption;
       NavigationUtil.pushReplacement(context,
-          screen: UserAddress(fromCheckoutScreen: true));
+          screen: const UserAddress(fromCheckoutScreen: true));
     } else {
       basketBloc.removeMerchant(merchantFullName!);
       if (mounted) setState(() {});
@@ -307,7 +309,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
-  resetData() {
+  void resetData() {
     deliveryOption = null;
     merchantFullName = null;
     shippingOptions.clear();
@@ -315,16 +317,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (mounted) setState(() {});
   }
 
-  pickMerchantNames() async {
+  void pickMerchantNames() async {
     merchantFullNames.clear();
 
-    var allMerchants = basketBloc.merchantData;
+    final allMerchants = basketBloc.merchantData;
 
-    allMerchants.forEach((element) {
+    for (var element in allMerchants) {
       merchantFullNames.add(element['name']!);
-    });
+    }
 
-    String? pickedMerchantName = await showPickItemDialog<String>(
+    final String? pickedMerchantName = await showPickItemDialog<String>(
       context: context,
       items: merchantFullNames,
       selectedItem: merchantFullName,
@@ -335,16 +337,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       deliveryOption = '';
       shippingOptionsLoading = false;
 
-      debugPrint(
-          'NAME COPY::  ${basketBloc.merchantNameMapCopy[merchantFullName]}');
-      debugPrint(
-          'NAME ::: ${basketBloc.getSubTotalPriceByMerchant(merchantUserName: basketBloc.merchantNameMapCopy[merchantFullName] ?? '')}');
+      // debugPrint(
+      //     'NAME COPY::  ${basketBloc.merchantNameMapCopy[merchantFullName]}');
+      // debugPrint(
+      //     'NAME ::: ${basketBloc.getSubTotalPriceByMerchant(merchantUserName: basketBloc.merchantNameMapCopy[merchantFullName] ?? '')}');
       if (mounted) setState(() {});
     }
   }
 
-  pickDeliveryOptions() async {
-    String? pickedDeliveryOption = await showPickItemDialog<String>(
+  void pickDeliveryOptions() async {
+    final String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOptions,
       selectedItem: deliveryOption,
@@ -364,13 +366,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             shippingOptionsLoading = false;
             if (mounted) setState(() {});
 
-            debugPrint('VALUE :: $value');
-            value.forEach((element) {
+            // debugPrint('VALUE :: $value');
+            for (var element in value) {
               // String shippingOption = element.name;
               // int shippingOptionAmount = element.price;
               // String currencySymbol = worldCurrencies[element.currency] ?? '';
               shippingOptions.add(element);
-            });
+            }
           },
         ).catchError((error) {
           shippingOptionsLoading = false;
@@ -387,17 +389,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   void selectCategory() async {}
 
-  pickShippingOptions() async {
-    ShippingOptionsModel? pickedShippingOption =
+  void pickShippingOptions() async {
+    final ShippingOptionsModel? pickedShippingOption =
         await showDialog<ShippingOptionsModel>(
             context: context,
             builder: (context) => AlertDialog(
+                  backgroundColor: Colors.white,
                   insetPadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  content: Container(
+                  content: SizedBox(
                     width: MediaQuery.of(context).size.width - 40,
                     child: Card(
                       elevation: 2,
@@ -464,10 +467,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       shippingOption = pickedShippingOption;
       // userSelectedShippingOption.clear();
       selectedShippingOptionName = shippingOption?.name;
-      userSelectedShippingOption[shippingOption!.owner] = shippingOption!.id;
-      debugPrint('OWNER -> ${shippingOption!.owner}');
-      debugPrint('OWNER ID -> ${shippingOption!.id}');
-      debugPrint('USER OWNER  -> $userSelectedShippingOption');
+      userSelectedShippingOption[shippingOption?.owner ?? ""] =
+          shippingOption?.id;
+      // debugPrint('OWNER -> ${shippingOption?.owner}');
+      // debugPrint('OWNER ID -> ${shippingOption?.id}');
+      // debugPrint('USER OWNER  -> $userSelectedShippingOption');
       if (mounted) setState(() {});
     }
   }

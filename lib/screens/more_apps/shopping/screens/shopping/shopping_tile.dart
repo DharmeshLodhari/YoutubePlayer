@@ -1,7 +1,6 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/shopping_product_model.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -15,7 +14,7 @@ import '../../shopping_auth.dart';
 class ShoppingTile extends StatelessWidget {
   final ShoppingProduct? product;
 
-  const ShoppingTile({Key? key, this.product}) : super(key: key);
+  const ShoppingTile({super.key, this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -26,32 +25,32 @@ class ShoppingTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: product!.cover!,
+                    imageUrl: product?.cover ?? "",
                     fit: BoxFit.fill,
                     height: 60,
                     width: 68,
                     errorWidget: productAndServiceErrorWidget,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 16,
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 60,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         flexibleSpace(flex: 2),
                         Text(
-                          product!.name!,
+                          messageDecoderWithEmoji(product?.name) ?? "",
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -61,7 +60,8 @@ class ShoppingTile extends StatelessWidget {
                         ),
                         flexibleSpace(),
                         Text(
-                          product!.shortDescription!,
+                          messageDecoderWithEmoji(product?.shortDescription) ??
+                              "",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -74,7 +74,7 @@ class ShoppingTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   height: 60,
                   child: Center(
                     child: Row(
@@ -86,7 +86,7 @@ class ShoppingTile extends StatelessWidget {
                           size: 10,
                         ),
                         Text(
-                          product!.price.toString(),
+                          product?.price.toString() ?? "",
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -108,9 +108,9 @@ class ShoppingTile extends StatelessWidget {
 class ShoppingTileWithHeart extends StatefulWidget {
   final ShoppingProduct? product;
 
-  const ShoppingTileWithHeart({Key? key, this.product}) : super(key: key);
+  const ShoppingTileWithHeart({super.key, this.product});
   @override
-  _ShoppingTileWithHeartState createState() => _ShoppingTileWithHeartState();
+  State<ShoppingTileWithHeart> createState() => _ShoppingTileWithHeartState();
 }
 
 class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
@@ -120,7 +120,9 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        ShoppingAuthService().getProduct(widget.product!.id!).then((value) {
+        ShoppingAuthService()
+            .getProduct(widget.product?.id ?? "")
+            .then((value) {
           Navigator.pushNamed(context, '/product',
               arguments: {"product": value});
         });
@@ -132,30 +134,30 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: widget.product!.cover!,
+                    imageUrl: widget.product?.cover ?? "",
                     fit: BoxFit.fill,
                     height: 60,
                     width: 60,
                     errorWidget: productAndServiceErrorWidget,
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 60,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          widget.product!.name!,
+                          messageDecoderWithEmoji(widget.product?.name) ?? "",
                           maxLines: 1,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -163,21 +165,21 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                             color: blackFont,
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
-                          widget.product!.seller!,
+                          widget.product?.seller ?? "",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                             color: blackFont,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              worldCurrencies[widget.product!.currency!]!,
+                              worldCurrencies[widget.product?.currency!]!,
                               style: TextStyle(
                                   fontFamily: "Inter",
                                   color: navyBlue,
@@ -185,7 +187,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                                   fontSize: 14),
                             ),
                             Text(
-                              moneyDisplayNormalizer(widget.product!.price!),
+                              moneyDisplayNormalizer(widget.product?.price!),
                               style: TextStyle(
                                 color: navyBlue,
                                 fontWeight: FontWeight.bold,
@@ -198,7 +200,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                     ),
                   ),
                 ),
-                getCircularUserAvatar(widget.product!.sellerAvatar!),
+                getCircularUserAvatar(widget.product?.sellerAvatar ?? ""),
                 // Container(
                 //   height: 60,
                 //   child: Center(
@@ -229,10 +231,9 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
 class ShoppingTileWithHeartWithProduct extends StatefulWidget {
   final Product? product;
 
-  const ShoppingTileWithHeartWithProduct({Key? key, this.product})
-      : super(key: key);
+  const ShoppingTileWithHeartWithProduct({super.key, this.product});
   @override
-  _ShoppingTileWithHeartWithProductState createState() =>
+  State<ShoppingTileWithHeartWithProduct> createState() =>
       _ShoppingTileWithHeartWithProductState();
 }
 
@@ -244,7 +245,9 @@ class _ShoppingTileWithHeartWithProductState
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        ShoppingAuthService().getProduct(widget.product!.id!).then((value) {
+        ShoppingAuthService()
+            .getProduct(widget.product?.id ?? "")
+            .then((value) {
           Navigator.pushNamed(context, '/product',
               arguments: {"product": value});
         });
@@ -256,14 +259,14 @@ class _ShoppingTileWithHeartWithProductState
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: widget.product!.cover!,
+                    imageUrl: widget.product?.cover ?? "",
                     fit: BoxFit.fill,
                     height: 60,
                     width: 60,
@@ -272,38 +275,40 @@ class _ShoppingTileWithHeartWithProductState
                         (MediaQuery.of(context).size.height * 0.6).toInt(),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 15),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 60,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.product!.name!,
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: blackFont,
+                        Expanded(
+                          child: Text(
+                            messageDecoderWithEmoji(widget.product?.name) ?? "",
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              color: blackFont,
+                            ),
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
-                          widget.product!.seller!,
+                          widget.product?.seller ?? "",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                             color: blackFont,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              worldCurrencies[widget.product!.currency!]!,
+                              worldCurrencies[widget.product?.currency!]!,
                               style: TextStyle(
                                   fontFamily: "Inter",
                                   color: navyBlue,
@@ -312,7 +317,11 @@ class _ShoppingTileWithHeartWithProductState
                             ),
                             Text(
                               moneyDisplayNormalizer(
-                                  int.parse(widget.product!.price!)),
+                                  widget.product?.discountedPrice != null
+                                      ? (widget.product!.checkProductDiscount()
+                                          ? widget.product?.discountedPrice
+                                          : widget.product?.price!)
+                                      : widget.product?.price!),
                               style: TextStyle(
                                 color: navyBlue,
                                 fontWeight: FontWeight.bold,
@@ -325,7 +334,7 @@ class _ShoppingTileWithHeartWithProductState
                     ),
                   ),
                 ),
-                getCircularUserAvatar(widget.product!.sellerAvatar!),
+                getCircularUserAvatar(widget.product?.sellerAvatar ?? ""),
                 // Container(
                 //   height: 60,
                 //   child: Center(
@@ -354,8 +363,10 @@ class _ShoppingTileWithHeartWithProductState
 }
 
 class MovieTileGeneral extends StatefulWidget {
+  const MovieTileGeneral({super.key});
+
   @override
-  _MovieTileGeneralState createState() => _MovieTileGeneralState();
+  State<MovieTileGeneral> createState() => _MovieTileGeneralState();
 }
 
 class _MovieTileGeneralState extends State<MovieTileGeneral> {
@@ -372,8 +383,9 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -406,7 +418,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
                       color: starYellow,
                       size: 12,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
@@ -442,9 +454,9 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
             trailing: IconButton(
               icon: Icon(
                 isDownloaded
-                    ? SlydoAppIcon.video_play
+                    ? SlydoAppIcon.videoPlay
                     : isChange
-                        ? SlydoAppIcon.heart_empty
+                        ? SlydoAppIcon.heartEmpty
                         : SlydoAppIcon.heart_1,
                 color: isDownloaded
                     ? navyBlue
@@ -466,10 +478,9 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
 class ShoppingTileWithHeartWithService extends StatefulWidget {
   final Service? service;
 
-  const ShoppingTileWithHeartWithService({Key? key, this.service})
-      : super(key: key);
+  const ShoppingTileWithHeartWithService({super.key, this.service});
   @override
-  _ShoppingTileWithHeartWithServiceState createState() =>
+  State<ShoppingTileWithHeartWithService> createState() =>
       _ShoppingTileWithHeartWithServiceState();
 }
 
@@ -481,7 +492,9 @@ class _ShoppingTileWithHeartWithServiceState
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        ShoppingAuthService().getService(widget.service!.id!).then((value) {
+        ShoppingAuthService()
+            .getService(widget.service?.id ?? "")
+            .then((value) {
           Navigator.pushNamed(context, '/service-detail',
               arguments: {"service": value});
         });
@@ -493,14 +506,14 @@ class _ShoppingTileWithHeartWithServiceState
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: widget.service!.cover!,
+                    imageUrl: widget.service?.cover ?? "",
                     fit: BoxFit.fill,
                     height: 60,
                     width: 60,
@@ -509,16 +522,16 @@ class _ShoppingTileWithHeartWithServiceState
                         (MediaQuery.of(context).size.height * 0.6).toInt(),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 60,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          widget.service!.name!,
+                          messageDecoderWithEmoji(widget.service?.name) ?? "",
                           maxLines: 1,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -528,19 +541,19 @@ class _ShoppingTileWithHeartWithServiceState
                         ),
                         // SizedBox(height: 2),
                         // Text(
-                        //   widget.service!.seller!,
+                        //   widget.service?.seller!,
                         //   style: TextStyle(
                         //     fontSize: 12,
                         //     fontWeight: FontWeight.w400,
                         //     color: blackFont,
                         //   ),
                         // ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              worldCurrencies[widget.service!.currency!]!,
+                              worldCurrencies[widget.service?.currency!]!,
                               style: TextStyle(
                                   fontFamily: "Inter",
                                   color: navyBlue,
@@ -549,7 +562,7 @@ class _ShoppingTileWithHeartWithServiceState
                             ),
                             Text(
                               moneyDisplayNormalizer(
-                                  int.parse(widget.service!.price!)),
+                                  int.parse(widget.service?.price ?? "")),
                               style: TextStyle(
                                 color: navyBlue,
                                 fontWeight: FontWeight.bold,
@@ -562,7 +575,7 @@ class _ShoppingTileWithHeartWithServiceState
                     ),
                   ),
                 ),
-                // getCircularUserAvatar(widget.service!.sellerAvatar!),
+                // getCircularUserAvatar(widget.service?.sellerAvatar!),
                 // Container(
                 //   height: 60,
                 //   child: Center(

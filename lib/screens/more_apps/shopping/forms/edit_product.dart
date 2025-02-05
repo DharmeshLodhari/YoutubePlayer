@@ -1,12 +1,23 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/more_apps/shopping/utils.dart';
+import 'package:Slydo/screens/user_profile/forms/add_edit_shipping_address.dart';
+import 'package:Slydo/screens/user_profile/models/currency_model.dart';
+import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/currency/add_edit_currency.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/utils/cache_manager.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -15,32 +26,31 @@ import 'package:Slydo/widget/custom_textfield_tag.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/customized_textform_field_for_foreign_currency.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
-import '../../../../routes/route_constants.dart';
-import '../shopping_auth.dart';
-
 // ignore: must_be_immutable
 class EditProduct extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  EditProduct({Key? key, this.arguments}) : super(key: key);
+  const EditProduct({super.key, this.arguments});
 
   @override
-  _EditProductState createState() => _EditProductState(arguments: arguments);
+  State<EditProduct> createState() => _EditProductState();
 }
 
-class _EditProductState extends State<EditProduct> {
-  var arguments;
-
-  _EditProductState({this.arguments});
-
+class _EditProductState extends State<EditProduct> with WidgetsBindingObserver {
   final _auth = ShoppingAuthService();
   UserBloc? userBloc;
   final _formKey = GlobalKey<FormState>();
@@ -49,13 +59,13 @@ class _EditProductState extends State<EditProduct> {
   Product currentProduct = Product();
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   ScrollController scrollControllerVariant = ScrollController();
   List<PickedFile> productLocalImages = [];
   List<String?> productImagesFromServer = [];
   String? productName = "";
-  String? productDescription = "";
   String? productShortDescription = "";
+  String? searchKeyword = "";
   String? productCategory = "";
   String productSubCategory = "";
   ProductCategory? pressedCustomCategory;
@@ -66,6 +76,7 @@ class _EditProductState extends State<EditProduct> {
   String? productCondition = "";
   String? preparationCondition = "";
   String? productPrice = "";
+  String? foreignPrice = "";
   ProductCategory? selectedProductCategory;
   ProductCategory? selectedSubCategory;
   ProductCategory? selectedCustomCategory;
@@ -73,6 +84,18 @@ class _EditProductState extends State<EditProduct> {
   List<ProductCategory>? productCategoriesCopy;
   List<ProductCategory>? productCustomCategoriesCopy;
   String productCustomCategory = "";
+
+  List<CurrencyModel>? currencyList;
+  List<CurrencyModel>? currencyListCopy;
+  int? currencyItemCount = 0;
+  String? currencyNext = "";
+  String? currencyPrevious = "";
+  bool currencyView = false;
+  String? selectedCurrency;
+  String? selectedCurrencyId;
+  int? selectedCurrencyRate;
+  String? pressedCurrency;
+  ForeignPrice? foreignPriceModel;
 
   ProductCondition? selectedProductCondition;
   ProductCondition? selectedPreparationCondition;
@@ -84,30 +107,33 @@ class _EditProductState extends State<EditProduct> {
   bool isLoading = false;
   bool isAPILoading = false;
   bool productEnableInSuperStore = false;
-  TextfieldTagsController _myController = TextfieldTagsController();
+  final TextfieldTagsController _myController = TextfieldTagsController();
   List<Tags> userTags = [];
+
   // List<Tags> allTags = [];
 
   //text editing controllers for the edit fields
   TextEditingController productTitleController = TextEditingController();
-  TextEditingController productDescriptionController = TextEditingController();
+  // TextEditingController productDescriptionController = TextEditingController();
   TextEditingController productShortDescriptionController =
       TextEditingController();
   TextEditingController productManufacturerController = TextEditingController();
   TextEditingController customProductController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
+  TextEditingController foreignController = TextEditingController();
 
   TextEditingController weightController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController widthController = TextEditingController();
-  TextEditingController inventoryCountController = TextEditingController();
-  int inventoryCount = 0;
+  TextEditingController searchKeywordController = TextEditingController();
+  TextEditingController inventoryController = TextEditingController();
+  int inventoryCount = 1;
   List<Variant> productVariantList = [];
   List<AddOns> productAddOnsList = [];
   bool inventoryIsAvailable = false;
-  var weightSi = ['Grams', 'Kilograms'];
-  var widthSi = ['Centimetres', 'Metres'];
-  var heightSi = ['Centimetres', 'Metres'];
+  List<String> weightSi = ['Grams', 'Kilograms'];
+  List<String> widthSi = ['Centimetres', 'Metres'];
+  List<String> heightSi = ['Centimetres', 'Metres'];
   List<String> measurementList = ['Weight', 'Height', 'Width'];
   Map<String, bool> measurementCheckMark = {};
   List<String> pickedMeasurementList = [];
@@ -122,8 +148,11 @@ class _EditProductState extends State<EditProduct> {
   bool measurementView = false;
   bool show = false;
 
+  ShippingAddress? defaultAddress;
+  bool isEmpty = false;
+
   bool isDiscountLoading = false;
-  bool discountView = false;
+  bool isDiscountAvailable = false;
   int? discountItemCount = 0;
   String? discountNext = "";
   String? discountPrevious = "";
@@ -133,8 +162,16 @@ class _EditProductState extends State<EditProduct> {
   DiscountModel? pressedDiscount;
   DiscountModel? selectedDiscount;
   String discountName = "";
+  String? discountId;
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
+  dynamic productBodyTextJson;
+  final FocusNode _focusNodeDescription = FocusNode();
+  QuillController _quillController = QuillController.basic();
+  final ScrollController _textEditorScrollController = ScrollController();
+  bool _isKeyboardVisible = false;
+  bool _isProductDescriptionVisible = false;
+  double? bottomInset;
 
   @override
   void deactivate() {
@@ -144,14 +181,81 @@ class _EditProductState extends State<EditProduct> {
 
   @override
   void initState() {
-    productId = arguments['productId'];
+    productId = widget.arguments['productId'];
     getCategories();
-    Future.delayed(Duration(seconds: 2), () {
-      getDiscountList();
+    Future.delayed(const Duration(seconds: 2), () {
+      getCurrencyList();
       obtainCategories();
       obtainCustomCategory();
+      getAddressList();
+    });
+    _focusNodeDescription.addListener(_handleFocusChange);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateKeyboardVisibility();
     });
     super.initState();
+  }
+
+  void _handleFocusChange() {
+    setState(() {
+      _isProductDescriptionVisible = _focusNodeDescription.hasFocus;
+    });
+    _updateKeyboardVisibility();
+  }
+
+  void _updateKeyboardVisibility() {
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    setState(() {
+      _isKeyboardVisible = (bottomInset ?? 0) > 0;
+    });
+  }
+
+  Future<void> getCurrencyList() async {
+    final Map<String, dynamic> result =
+        await UserAuth().getCurrency(currencyNext, currencyPrevious);
+    if (result == null) {
+      isLoading = false;
+      noItemInList = true;
+      return;
+    }
+
+    currencyList = [];
+    currencyItemCount = result['count'];
+    currencyNext = result['next'];
+    currencyPrevious = result['previous'];
+    final tempList = result['results'];
+
+    currencyList?.addAll(tempList);
+    currencyListCopy = currencyList;
+    if ((currencyList?.isNotEmpty ?? false) &&
+        (selectedCurrency?.isEmpty ?? false)) {
+      selectedCurrency = currencyList?[0].currency;
+      selectedCurrencyId = currencyList?[0].id;
+      selectedCurrencyRate = currencyList?[0].rate;
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        noItemInList = false;
+      });
+    }
+
+    if (currencyList?.isEmpty ?? false) {
+      if (mounted) {
+        setState(() {
+          noItemInList = true;
+          currencyList = [];
+          currencyListCopy = [];
+        });
+      }
+    } else if (currencyNext == null && currencyList!.length > 6) {
+      _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+        content:
+            Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        duration: const Duration(milliseconds: 500),
+      ));
+    }
   }
 
   @override
@@ -183,28 +287,75 @@ class _EditProductState extends State<EditProduct> {
           currentProduct = value;
 
           // assigning to our edit controllers
-          productTitleController.text = currentProduct.name!;
-          productDescriptionController.text =
-              messageDecoderWithEmoji(currentProduct.description!)!;
+          productTitleController.text =
+              messageDecoderWithEmoji(currentProduct.name) ?? "";
+          // productDescriptionController.text =
+          //     messageDecoderWithEmoji(currentProduct.description) ?? "";
 
-          productPriceController.text =
-              moneyNormalizer(int.parse(currentProduct.price!)).toString();
+          try {
+            productBodyTextJson = jsonDecode(
+                messageDecoderWithEmoji(currentProduct.description) ?? "");
+
+            _quillController = QuillController(
+                document: Document.fromJson(productBodyTextJson),
+                selection: const TextSelection.collapsed(offset: 0));
+          } catch (e) {
+            e.toString();
+          }
+
+          if (productBodyTextJson != null) {
+            _quillController = QuillController(
+                document: Document.fromJson(productBodyTextJson),
+                selection: const TextSelection.collapsed(offset: 0));
+          } else {
+            final String plainTextDescription =
+                currentProduct.description ?? "";
+
+            if (plainTextDescription != null &&
+                plainTextDescription.isNotEmpty) {
+              // Convert plain text into a Quill Document
+              final doc = Document()..insert(0, plainTextDescription);
+
+              _quillController = QuillController(
+                  document: doc,
+                  selection: const TextSelection.collapsed(offset: 0));
+            } else {
+              // Handle the case where the description is empty or null
+              _quillController = QuillController.basic();
+            }
+          }
+
+          productPriceController.text = moneyNormalizer(currentProduct.price!);
 
           if (currentProduct.manufacturer != null) {
             productManufacturerController.text = currentProduct.manufacturer!;
           }
-          customProductController.text = currentProduct.customCategory!.name;
+          customProductController.text =
+              currentProduct.customCategory?.name ?? "";
 
           productShortDescriptionController.text =
-              messageDecoderWithEmoji(currentProduct.shortDescription!)!;
+              messageDecoderWithEmoji(currentProduct.shortDescription) ?? "";
 
           productImagesFromServer.addAll(currentProduct.serverImages!);
           productName = currentProduct.name;
           productCategory = currentProduct.category!.name;
           productCondition = currentProduct.condition;
-          productPrice = moneyNormalizer(int.parse(currentProduct.price!));
-          productDescription =
-              messageDecoderWithEmoji(currentProduct.description);
+          productPrice = moneyNormalizer(currentProduct.price!);
+
+          if (currentProduct.foreignPrice != null) {
+            currencyView = true;
+            foreignController.text =
+                moneyNormalizer(currentProduct.foreignPrice?.price ?? 0);
+            foreignPrice =
+                moneyNormalizer(currentProduct.foreignPrice?.price ?? 0);
+            selectedCurrencyId = currentProduct.foreignPrice?.userCurrencyRate;
+
+            if (selectedCurrencyId?.isNotEmpty ?? false) {
+              getCurrencyData();
+            }
+          }
+          // productDescription =
+          //     messageDecoderWithEmoji(currentProduct.description);
           productManufacturer = currentProduct.manufacturer;
           productShortDescription =
               messageDecoderWithEmoji(currentProduct.shortDescription);
@@ -234,7 +385,9 @@ class _EditProductState extends State<EditProduct> {
                   : 'Metres';
 
           trackInventoryView = currentProduct.trackInventory!;
-          selectedDiscount = currentProduct.discount;
+          // selectedDiscount = currentProduct.discount;
+          isDiscountAvailable = currentProduct.discountIsActive ?? false;
+          discountId = currentProduct.discountId;
 
           weightController.text = currentProduct.weight != 0.0
               ? currentProduct.weight.toString()
@@ -245,8 +398,8 @@ class _EditProductState extends State<EditProduct> {
           widthController.text = currentProduct.width != 0.0
               ? currentProduct.width.toString()
               : '';
-          inventoryCount = currentProduct.quantity! ?? 0;
-          inventoryCountController.text = inventoryCount.toString();
+          inventoryCount = currentProduct.quantity!;
+          inventoryController.text = inventoryCount.toString();
 
           //convert list to variant
           productVariantList = currentProduct.variantModels ?? [];
@@ -264,19 +417,32 @@ class _EditProductState extends State<EditProduct> {
           selectedSubCategory = currentProduct.subCategory;
           selectedCustomCategory = currentProduct.customCategory;
           userTags = currentProduct.tags!;
+          if (currentProduct.searchKeywords != null &&
+              currentProduct.searchKeywords?[0] != "null") {
+            searchKeyword = messageDecoderWithEmoji(
+                currentProduct.searchKeywords?.join(", "));
+            searchKeywordController.text = messageDecoderWithEmoji(
+                    currentProduct.searchKeywords?.join(", ")) ??
+                "";
+          }
 
-          print('CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
+          // debugPrint(
+          //     'CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
 
-          conditions.forEach((condition) {
-            if (condition.name == currentProduct.condition) {
-              selectedProductCondition = condition;
+          if (currentProduct.condition != null) {
+            for (var condition in conditions) {
+              if (condition.name == currentProduct.condition) {
+                selectedProductCondition = condition;
+              }
             }
-          });
-          deliverTimeCondition.forEach((preparation) {
+          } else {
+            selectedProductCondition = conditions[3];
+          }
+          for (var preparation in deliverTimeCondition) {
             if (preparation.name == currentProduct.preparationTime.toString()) {
               selectedPreparationCondition = preparation;
             }
-          });
+          }
 
           if (weight != 0.0) {
             pickedMeasurementList.add('Weight');
@@ -290,18 +456,27 @@ class _EditProductState extends State<EditProduct> {
             pickedMeasurementList.add('Width');
           }
           measurementView = pickedMeasurementList.isEmpty ? false : true;
+
+          getDiscountList(discountId);
         });
       }
     });
   }
 
-  void getDiscountList() async {
+  void getCurrencyData() async {
+    final CurrencyModel result =
+        await UserAuth().fetchCurrency(selectedCurrencyId ?? "");
+    selectedCurrency = result.currency;
+    selectedCurrencyRate = result.rate;
+  }
+
+  void getDiscountList(String? discountId) async {
     if (!isDiscountLoading) {
       if (discountNext != null && !isDiscountLoading) {
         isDiscountLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfDiscounts(discountNext, discountPrevious);
 
         if (result == null) {
@@ -316,7 +491,7 @@ class _EditProductState extends State<EditProduct> {
         discountItemCount = result['count'];
         discountNext = result['next'];
         discountPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noItemInList = false;
@@ -324,6 +499,14 @@ class _EditProductState extends State<EditProduct> {
             discountList.addAll(tempList);
 
             discountListCopy = discountList;
+
+            if (discountId != null) {
+              for (DiscountModel discount in discountList) {
+                if (discount.id == discountId) {
+                  selectedDiscount = discount;
+                }
+              }
+            }
           });
         }
       }
@@ -334,19 +517,43 @@ class _EditProductState extends State<EditProduct> {
           });
         }
       } else if (discountNext == null && discountList.length > 6) {
-        _messengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
+    }
+  }
+
+  void getAddressList() async {
+    if (mounted) setState(() {});
+
+    final Map<String, dynamic>? result =
+        await ShoppingAuthService().listOfDispatchAddress("", null);
+
+    if (result == null) {
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
+
+    final List<ShippingAddress> tempList = result['results'];
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        isEmpty = tempList.isEmpty;
+        defaultAddress = tempList.firstWhere((element) => element.isDefault!);
+      });
     }
   }
 
   void obtainCategories() async {
     try {
       productCategories = await ShoppingAuthService()
-          .obtainProductCategories(userBloc!.userAbout!.industry!.id!);
+          .obtainProductCategories(userBloc?.userAbout?.industry?.id ?? "");
 
       productCategoriesCopy = productCategories;
     } catch (e) {
@@ -373,7 +580,7 @@ class _EditProductState extends State<EditProduct> {
     if (mounted) setState(() {});
   }
 
-  void getSubCategories(id) async {
+  void getSubCategories(dynamic id) async {
     if (mounted) setState(() {});
 
     try {
@@ -392,38 +599,43 @@ class _EditProductState extends State<EditProduct> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    _isKeyboardVisible = (bottomInset ?? 0) > 0;
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        return await getExitDialog(context);
+        // return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
+        appBar: appBar(context) as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
     //
   }
 
-  Widget appBar() {
+  Widget appBar(BuildContext context) {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
+      centerTitle: false,
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
-          Navigator.pop(context);
+        onPressed: () async {
+          await getExitDialog(context);
         },
       ),
       title: Text(
-        "Edit product",
+        "Edit Product",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -435,182 +647,199 @@ class _EditProductState extends State<EditProduct> {
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(height: 10),
-                      checkImageLimitForServerImage()
-                          ? viewServerImages()
-                          : Container(),
-                      // checkImageLimitForServerImage()
-                      //     ? SizedBox(
-                      //         height: 8,
-                      //       )
-                      //     : Container(),
-                      checkImageLimitForLocalImage()
-                          ? addLocalImages()
-                          : Container(),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      addTitleField(),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      getManufacturerField(),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      getAmountField(),
-                      SizedBox(height: 10),
-                      getCategoryField(),
-                      SizedBox(height: 10),
-                      getSubCategoryField(),
-                      const SizedBox(height: 10),
-                      getCustomCategoryField(),
-                      const SizedBox(height: 10),
-                      getAddTagsField(),
-                      getProductConditionField(),
-                      const SizedBox(height: 10),
-                      if (userBloc!.userAbout!.industry!.name! ==
-                              "Restaurant/Cafe" ||
-                          userBloc!.userAbout!.industry!.name! ==
-                              "Pharmaceutical") ...[
-                        getProductDeliveryTimeField(),
-                        SizedBox(height: 10),
-                      ],
-                      getProductShortDescription(),
-                      SizedBox(height: 10),
-                      getProductDescription(),
-
-                      SizedBox(height: 20),
-                      getIsAvailableField(),
-                      const SizedBox(height: 16),
-                      if (productIsAvailable == true) ...[
-                        getAvailableFromField(),
-                        const SizedBox(height: 16),
-                      ],
-
-                      getMeasurementField(),
-                      const SizedBox(height: 16),
-                      if (measurementView == true) ...[
-                        getCategoryMeasurementField(),
-                        const SizedBox(height: 16),
-                      ],
-
-                      if (pickedMeasurementList.isNotEmpty &&
-                          measurementView == true) ...[
-                        if (containsWeight()) ...[
-                          //weight section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: getWeightField(),
-                              ),
-                              SizedBox(width: 5.0),
-                              Flexible(
-                                flex: 1,
-                                child: getWeightSiUnitField(),
-                              ),
+        : Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Center(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const SizedBox(height: 10),
+                            if (productImagesFromServer.isNotEmpty)
+                              if (checkImageLimitForServerImage())
+                                viewServerImages()
+                              else
+                                Container(),
+                            // checkImageLimitForServerImage()
+                            //     ? SizedBox(
+                            //         height: 8,
+                            //       )
+                            //     : Container(),
+                            if (checkImageLimitForLocalImage())
+                              addLocalImages()
+                            else
+                              Container(),
+                            const SizedBox(height: 10),
+                            addTitleField(),
+                            const SizedBox(height: 10),
+                            getManufacturerField(),
+                            const SizedBox(height: 10),
+                            getAmountField(),
+                            const SizedBox(height: 10),
+                            getForeignCurrencyFieldAndInfo(),
+                            if (currencyView) ...[
+                              const SizedBox(height: 10),
+                              getForeignCurrencyPriceField(),
+                              const SizedBox(height: 5),
+                              addNewCurrencyRate(),
                             ],
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                        if (containsHeight()) ...[
-                          //height section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: getHeightField(),
-                              ),
-                              SizedBox(width: 5.0),
-                              Flexible(
-                                flex: 1,
-                                child: getHeightSiUnitField(),
-                              ),
+                            const SizedBox(height: 10),
+                            getCategoryField(),
+                            const SizedBox(height: 10),
+                            getSubCategoryField(),
+                            const SizedBox(height: 10),
+                            getCustomCategoryField(),
+                            const SizedBox(height: 5),
+                            addCustomCategory(),
+                            const SizedBox(height: 10),
+                            getAddTagsField(),
+                            const SizedBox(height: 10),
+                            getProductConditionField(),
+                            const SizedBox(height: 10),
+                            if (userBloc!.userAbout!.industry!.name! ==
+                                    "Restaurant/Cafe" ||
+                                userBloc!.userAbout!.industry!.name! ==
+                                    "Pharmaceutical") ...[
+                              getProductDeliveryTimeField(),
+                              const SizedBox(height: 10),
                             ],
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                        if (containsWidth()) ...[
-                          //width section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: getWidthField(),
-                              ),
-                              SizedBox(width: 5.0),
-                              Flexible(
-                                flex: 1,
-                                child: getWidthSiUnitField(),
-                              ),
+                            getProductShortDescription(),
+                            const SizedBox(height: 10),
+                            getProductDescription(),
+                            const SizedBox(height: 10),
+                            getSearchEngineKeyword(),
+                            const SizedBox(height: 16),
+                            getIsAvailableField(),
+                            const SizedBox(height: 16),
+                            if (productIsAvailable == true) ...[
+                              getAvailableFromField(),
+                              const SizedBox(height: 16),
                             ],
-                          ),
-                          const SizedBox(height: 40),
-                        ]
-                      ],
-
-                      getDiscountField(),
-                      const SizedBox(height: 16),
-                      if (discountView == true) ...[
-                        getDiscountListField(),
-                        const SizedBox(height: 16),
-                      ],
-                      getTrackInventoryViewField(),
-                      if (trackInventoryView == true) ...[
-                        const SizedBox(height: 16),
-                        getInventoryFormField(),
-                        const SizedBox(height: 16),
-                        getTrackInventoryField(),
-                        const SizedBox(height: 16),
-                      ],
-                      const SizedBox(height: 16),
-
-                      getEnableInSuperStoreField(),
-                      const SizedBox(height: 16),
-
-                      if (productVariantList == null ||
-                          productVariantList.isEmpty) ...[
-                        // getAddVariationFormField(),
-                        productVariation(),
-                      ] else ...[
-                        displaySelectedVariant(),
-                      ],
-                      const SizedBox(height: 16),
-
-                      if (productAddOnsList == null ||
-                          productAddOnsList.isEmpty) ...[
-                        productAddOns(),
-                      ] else ...[
-                        displaySelectedAddOn(),
-                      ],
-                      SizedBox(height: 30),
-
-                      getSubmitButton(),
-                      SizedBox(height: 20),
-                    ],
+                            getMeasurementField(),
+                            const SizedBox(height: 16),
+                            if (measurementView == true) ...[
+                              getCategoryMeasurementField(),
+                              const SizedBox(height: 16),
+                            ],
+                            if (pickedMeasurementList.isNotEmpty &&
+                                measurementView == true) ...[
+                              if (containsWeight()) ...[
+                                //weight section
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWeightField(),
+                                    ),
+                                    const SizedBox(width: 5.0),
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWeightSiUnitField(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                              ],
+                              if (containsHeight()) ...[
+                                //height section
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
+                                      child: getHeightField(),
+                                    ),
+                                    const SizedBox(width: 5.0),
+                                    Flexible(
+                                      flex: 1,
+                                      child: getHeightSiUnitField(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                              ],
+                              if (containsWidth()) ...[
+                                //width section
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWidthField(),
+                                    ),
+                                    const SizedBox(width: 5.0),
+                                    Flexible(
+                                      flex: 1,
+                                      child: getWidthSiUnitField(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 40),
+                              ]
+                            ],
+                            getDiscountField(),
+                            const SizedBox(height: 16),
+                            if (isDiscountAvailable == true) ...[
+                              getDiscountListField(),
+                              const SizedBox(height: 16),
+                            ],
+                            getTrackInventoryViewField(),
+                            if (trackInventoryView == true) ...[
+                              const SizedBox(height: 16),
+                              getInventoryFormField(),
+                              const SizedBox(height: 16),
+                              getTrackInventoryField(),
+                              const SizedBox(height: 16),
+                            ],
+                            const SizedBox(height: 16),
+                            getEnableInSuperStoreField(),
+                            const SizedBox(height: 16),
+                            if (productVariantList.isEmpty) ...[
+                              // getAddVariationFormField(),
+                              productVariation(),
+                            ] else ...[
+                              displaySelectedVariant(),
+                            ],
+                            const SizedBox(height: 16),
+                            if (productAddOnsList.isEmpty) ...[
+                              productAddOns(),
+                            ] else ...[
+                              displaySelectedAddOn(),
+                            ],
+                            const SizedBox(height: 16),
+                            address(),
+                            const SizedBox(height: 30),
+                            getSubmitButton(),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              if (_isKeyboardVisible &&
+                  _isProductDescriptionVisible &&
+                  (_focusNodeDescription.hasFocus))
+                getEditor(_quillController)
+              else
+                const SizedBox.shrink()
+            ],
           );
   }
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -618,14 +847,14 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget addLocalImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: productLocalImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != productLocalImages.length
               ? showLocalImage(index)
               : productLocalImages.length + productImagesFromServer.length !=
@@ -638,14 +867,14 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget viewServerImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: productImagesFromServer.length,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: showServerImage(index),
         ),
       ),
@@ -655,10 +884,10 @@ class _EditProductState extends State<EditProduct> {
   Widget addImageButton() {
     return CustomBoxShadow(
       child: Card(
-        elevation: 3,
+        elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -669,10 +898,10 @@ class _EditProductState extends State<EditProduct> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -690,10 +919,80 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
+  Widget address() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ...[
+          Text(
+            !isEmpty && defaultAddress != null
+                ? 'Dispatch Address'
+                : "Add a dispatch Address",
+            maxLines: 1,
+            style: TextStyle(
+                color: darkGrey,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+                fontSize: 14),
+          ),
+          const SizedBox(height: 6),
+        ],
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            if (!isEmpty && defaultAddress != null) {
+              Navigator.of(context)
+                  .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
+                "isForSelection": true,
+                "shippingAddress": defaultAddress,
+                "onShippingAddressChange": (address) {
+                  defaultAddress = address;
+                  setState(() {});
+                }
+              });
+            } else {
+              NavigationUtil.push(
+                context,
+                screen: const AddEditShippingAddress(),
+              ).whenComplete(() => getAddressList());
+            }
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                flex: 2,
+                child: Text(
+                  !isEmpty && defaultAddress != null
+                      ? "${defaultAddress?.addressLineOne}, ${defaultAddress?.addressLineTwo}, ${defaultAddress?.city}, ${defaultAddress?.stateName}, ${defaultAddress?.country}, ${defaultAddress?.zip}"
+                      : "",
+                  maxLines: 2,
+                  style: TextStyle(
+                      color: isEmpty ? navyBlue : blackFont,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: "Inter",
+                      fontSize: 14),
+                ),
+              ),
+              const SizedBox(width: 20),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: blackFont,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   void pickImage() async {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
@@ -711,7 +1010,7 @@ class _EditProductState extends State<EditProduct> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -732,7 +1031,7 @@ class _EditProductState extends State<EditProduct> {
             borderRadius: BorderRadius.circular(10),
           ),
           shadowColor: dividerColor,
-          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
           child: Container(
             width: 100,
             decoration: BoxDecoration(
@@ -749,10 +1048,10 @@ class _EditProductState extends State<EditProduct> {
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 6),
+            padding: const EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
             icon: Container(
-              padding: EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                 color: iconBtnGrey,
                 borderRadius: BorderRadius.circular(5),
@@ -777,7 +1076,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget showServerImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -788,7 +1087,8 @@ class _EditProductState extends State<EditProduct> {
                 borderRadius: BorderRadius.circular(10),
               ),
               shadowColor: boxShadowTwo,
-              margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
               child: Container(
                 width: 100,
                 decoration: BoxDecoration(
@@ -806,10 +1106,10 @@ class _EditProductState extends State<EditProduct> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -821,9 +1121,9 @@ class _EditProductState extends State<EditProduct> {
                 ),
               ),
               onPressed: () {
-                var imageId =
+                final imageId =
                     currentProduct.getImageId(productImagesFromServer[index]);
-                debugPrint("imageId:- $imageId");
+                // debugPrint("imageId:- $imageId");
                 _auth.deleteProductOrServiceImage(imageId).then((value) {
                   if (value) {
                     if (mounted) {
@@ -833,7 +1133,7 @@ class _EditProductState extends State<EditProduct> {
                     }
                   }
                 }).catchError((error) {
-                  debugPrint("ERROR " + error.toString());
+                  debugPrint("ERROR $error");
                 });
               },
             ),
@@ -859,7 +1159,7 @@ class _EditProductState extends State<EditProduct> {
   bool checkImageLimitForServerImage() {
     if (productLocalImages.length + productImagesFromServer.length !=
             imageCount ||
-        productImagesFromServer.length != 0) {
+        productImagesFromServer.isNotEmpty) {
       return true;
     }
     return false;
@@ -869,7 +1169,7 @@ class _EditProductState extends State<EditProduct> {
   bool checkImageLimitForLocalImage() {
     if (productLocalImages.length + productImagesFromServer.length !=
             imageCount ||
-        productLocalImages.length != 0) {
+        productLocalImages.isNotEmpty) {
       return true;
     }
     return false;
@@ -883,7 +1183,12 @@ class _EditProductState extends State<EditProduct> {
         title: Text(
           selectedWeight.isNotEmpty ? selectedWeight : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -934,7 +1239,12 @@ class _EditProductState extends State<EditProduct> {
         title: Text(
           selectedHeight.isNotEmpty ? selectedHeight : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -985,7 +1295,12 @@ class _EditProductState extends State<EditProduct> {
         title: Text(
           selectedWidth.isNotEmpty ? selectedWidth : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1050,7 +1365,7 @@ class _EditProductState extends State<EditProduct> {
                     shrinkWrap: true,
                     itemCount: weightSi.length,
                     itemBuilder: (context, index) {
-                      var category = weightSi[index];
+                      final category = weightSi[index];
                       if (selectedWeight == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1128,7 +1443,7 @@ class _EditProductState extends State<EditProduct> {
                     shrinkWrap: true,
                     itemCount: heightSi.length,
                     itemBuilder: (context, index) {
-                      var height = heightSi[index];
+                      final height = heightSi[index];
                       if (selectedHeight == height) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1206,7 +1521,7 @@ class _EditProductState extends State<EditProduct> {
                     shrinkWrap: true,
                     itemCount: widthSi.length,
                     itemBuilder: (context, index) {
-                      var category = widthSi[index];
+                      final category = widthSi[index];
                       if (selectedWidth == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1262,10 +1577,15 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
+  void removeQuillFocus() {
+    _focusNodeDescription.unfocus();
+  }
+
   Widget getTrackInventoryField() {
     return CustomizedCheckBoxField(
       onTap: () {
         trackInventory = !trackInventory;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: trackInventory,
@@ -1294,14 +1614,62 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget getProductDescription() {
-    return CustomizedTextFormField(
-      controller: productDescriptionController,
-      maxLines: 5,
-      textCapitalization: TextCapitalization.sentences,
-      labelText: AppLocalization.of(context)!.description,
-      onChanged: (val) {
-        productDescription = val;
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildProductDescriptionText(),
+        const SizedBox(height: 5),
+        Container(
+          height: 120,
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: _focusNodeDescription.hasFocus
+                    ? navyBlue
+                    : greyBorderColor),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 150,
+            ),
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                textSelectionTheme: TextSelectionThemeData(
+                  cursorColor: _focusNodeDescription.hasFocus ? null : navyBlue,
+                ),
+              ),
+              child: QuillEditor(
+                focusNode: _focusNodeDescription,
+                scrollController: _textEditorScrollController,
+                configurations: QuillEditorConfigurations(
+                  autoFocus: false,
+                  controller: _quillController,
+                  scrollable: true,
+                  expands: false,
+                  padding: const EdgeInsets.only(top: 10, left: 15),
+                  placeholder: "",
+                  scrollBottomInset: 20,
+                  showCursor:
+                      _isKeyboardVisible || _isProductDescriptionVisible,
+                  embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProductDescriptionText() {
+    return Text(
+      AppLocalization.of(context)!.description,
+      style: TextStyle(
+        color: darkGrey,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        fontFamily: "Inter",
+      ),
     );
   }
 
@@ -1322,6 +1690,31 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
+  Widget getSearchEngineKeyword() {
+    return Column(
+      children: [
+        CustomizedTextFormField(
+          controller: searchKeywordController,
+          labelText: "Search Keyword - SEO (Optional)",
+          onChanged: (val) {
+            if (val != null) {
+              searchKeyword = val;
+            }
+          },
+        ),
+        Text(
+          'These words will help customer see your product online when they search it.',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        )
+      ],
+    );
+  }
+
   Widget getCategoryField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context)!.category,
@@ -1330,7 +1723,12 @@ class _EditProductState extends State<EditProduct> {
         title: Text(
           selectedProductCategory != null ? selectedProductCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1356,7 +1754,12 @@ class _EditProductState extends State<EditProduct> {
                   ? selectedPreparationCondition!.description
                   : "",
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
           ],
         ),
@@ -1371,16 +1774,302 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
+  Widget getForeignCurrencyPriceField() {
+    return CustomizedTextFormFieldForForeignCurrency(
+      labelText: AppLocalization.of(context)!.priceForeignCurrency,
+      controller: foreignController,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      selectedCurrencySymbol:
+          selectedCurrency != null ? worldCurrencies[selectedCurrency] : "-",
+      onTapCurrency: () {
+        currencyAndroidSheet();
+      },
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            foreignPrice = double.parse(val.replaceAll(',', '')).toString();
+
+            final price = getForeignPrice(double.parse(val.replaceAll(',', '')),
+                    selectedCurrencyRate) ??
+                "";
+            productPrice = price.replaceAll(',', '');
+            productPriceController.text = productPrice!;
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        } else {
+          productPriceController.clear();
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+
+  Widget addNewCurrencyRate() {
+    return GestureDetector(
+      onTap: () async {
+        final result = await NavigationUtil.push(
+          context,
+          screen: AddEditCurrency(
+            currencyList: currencyList,
+          ),
+        );
+        if (result != null && result == true) {
+          await getCurrencyList();
+        }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add New Currency Rate',
+            style: TextStyle(
+              fontSize: 12,
+              color: navyBlue,
+              fontWeight: FontWeight.w500,
+              fontFamily: "Inter",
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget addCustomCategory() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Categories your product with custom category.',
+          style: TextStyle(
+            fontSize: 12,
+            color: fontLightGrey,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        ),
+        const SizedBox(height: 5),
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.CUSTOM_CATEGORY, arguments: {
+              "isHome": true
+            }).whenComplete(() => obtainCustomCategory());
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Add New Custom Category',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: navyBlue,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: blackFont,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getForeignCurrencyFieldAndInfo() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: getForeignCurrencyField(),
+        ),
+        getCurrencyInfo(),
+      ],
+    );
+  }
+
+  Widget getCurrencyInfo() {
+    return GestureDetector(
+      onTap: () async {
+        await showInfoDialog(
+          context: context,
+          title: 'Why set currency rate ?',
+          description:
+              'Setting a currency rate allows you to offer products in different currencies while ensuring accurate and up-to-date pricing.',
+        );
+      },
+      child: Icon(
+        Icons.info_outline_rounded,
+        color: blackFont,
+        size: 20,
+      ),
+    );
+  }
+
+  void currencyAndroidSheet() {
+    currencyList = currencyListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search currency',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      currencyList = currencyListCopy!
+                          .where((element) =>
+                              element.currency?.startsWith(value.toString()) ??
+                              false)
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      currencyList = currencyListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                if (currencyList?.isNotEmpty ?? false)
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: currencyList?.length,
+                      itemBuilder: (context, index) {
+                        final String currency =
+                            currencyList?[index].currency ?? "-";
+                        if (selectedCurrency == currency) {
+                          return Container(
+                            color: selectedListItemBackgroundBlue,
+                            child: ListTile(
+                              dense: true,
+                              title: Text(
+                                currencyNameAndSymbol(currency),
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                    color: navyBlue,
+                                    fontSize: 16,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              trailing: Icon(
+                                SlydoAppIcon.checked,
+                                color: navyBlue,
+                                size: 12,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                pressedCurrency = currency;
+                                if (pressedCurrency != null) {
+                                  productPriceController.clear();
+                                  foreignController.clear();
+                                  productPrice = "";
+                                  foreignPrice = "";
+                                  selectedCurrency = pressedCurrency;
+                                  selectedCurrencyId = currencyList?[index].id;
+                                  selectedCurrencyRate =
+                                      currencyList?[index].rate;
+                                  setState(() {});
+                                }
+                              },
+                            ),
+                          );
+                        }
+                        return ListTile(
+                          title: Text(
+                            currencyNameAndSymbol(currency),
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400),
+                          ),
+                          dense: true,
+                          onTap: () {
+                            Navigator.pop(context);
+                            pressedCurrency = currency;
+                            if (pressedCurrency != null) {
+                              productPriceController.clear();
+                              foreignController.clear();
+                              productPrice = "";
+                              foreignPrice = "";
+                              selectedCurrency = pressedCurrency;
+                              selectedCurrencyId = currencyList?[index].id;
+                              selectedCurrencyRate = currencyList?[index].rate;
+                              setState(() {});
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: NoItemInList(
+                      msg: 'No Rate Found',
+                      isButtonShow: true,
+                      buttonTitle: 'Add New Currency Rate',
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        final result = await NavigationUtil.push(
+                          context,
+                          screen: AddEditCurrency(
+                            currencyList: currencyList,
+                          ),
+                        );
+                        if (result != null && result == true) {
+                          await getCurrencyList();
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   void selectDeliveryTimeCondition() async {
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1468,11 +2157,15 @@ class _EditProductState extends State<EditProduct> {
             Text(
               "Tag",
               style: TextStyle(
-                  color: darkGrey, fontSize: 16, fontWeight: FontWeight.w500),
+                color: darkGrey,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+              ),
             ),
             GestureDetector(
               onTap: () async {
-                var result = await Navigator.of(context).pushNamed(
+                final result = await Navigator.of(context).pushNamed(
                     Routes.ADD_TAGS,
                     arguments: {"tagList": userTags});
                 if (result != null && result is List<Tags>) {
@@ -1481,13 +2174,12 @@ class _EditProductState extends State<EditProduct> {
 
                   for (var tags in result) {
                     if (tags.isSelected == true) {
-                      // _myController.addTag = tags.name
-                      //         ?.replaceAll(" ", "-")
-                      //         .toLowerCase() ??
+                      _myController.addTag =
+                          tags.name?.replaceAll(" ", "-").toLowerCase() ?? "";
 
-                      _myController.addTag = tags.name ?? "";
+                      // _myController.addTag(tags.name ?? "");
 
-                      Tags tagData = Tags(id: tags.id, name: tags.name);
+                      final Tags tagData = Tags(id: tags.id, name: tags.name);
                       userTags.add(tagData);
                     }
                   }
@@ -1506,12 +2198,12 @@ class _EditProductState extends State<EditProduct> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         CustomTextFieldTag(
           initialTags: (userTags).map((e) => e.name!).toList(),
-          textfieldTagsController: _myController,
+          textFieldTagsController: _myController,
           onTap: (String tag) {
             setState(() {
               userTags.removeWhere((e) => e.name == tag);
@@ -1535,15 +2227,20 @@ class _EditProductState extends State<EditProduct> {
                   ? selectedProductCondition!.name
                   : "",
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
             Expanded(
               child: Text(
                 selectedProductCondition != null
-                    ? " (" + selectedProductCondition!.description + ")"
+                    ? " (${selectedProductCondition!.description})"
                     : "",
                 maxLines: 1,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                 ),
                 softWrap: false,
@@ -1564,7 +2261,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   String getCustomCategoryLabel() {
-    String industryName = userBloc!.userAbout!.industry!.name!;
+    final String industryName = userBloc!.userAbout!.industry!.name!;
     switch (industryName) {
       case 'Electronics Store':
         return "Aisle";
@@ -1591,9 +2288,16 @@ class _EditProductState extends State<EditProduct> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedCustomCategory != null ? selectedCustomCategory!.name : "",
+          selectedCustomCategory?.name != null
+              ? selectedCustomCategory?.name ?? ""
+              : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1615,7 +2319,12 @@ class _EditProductState extends State<EditProduct> {
         title: Text(
           selectedSubCategory != null ? selectedSubCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1657,14 +2366,14 @@ class _EditProductState extends State<EditProduct> {
                   },
                 ),
                 const SizedBox(height: 20),
-                subCategories == null
-                    ? SizedBox()
-                    : Expanded(
-                        child: ListView.builder(
+                Expanded(
+                  child: subCategories?.isNotEmpty ?? false
+                      ? ListView.builder(
                           shrinkWrap: true,
-                          itemCount: subCategories!.length,
+                          itemCount: subCategories?.length,
                           itemBuilder: (context, index) {
-                            ProductCategory category = subCategories![index];
+                            final ProductCategory category =
+                                subCategories![index];
                             if (selectedSubCategory == category) {
                               return Container(
                                 color: selectedListItemBackgroundBlue,
@@ -1719,8 +2428,13 @@ class _EditProductState extends State<EditProduct> {
                               },
                             );
                           },
+                        )
+                      : const Center(
+                          child: Text(
+                            "No Data",
+                          ),
                         ),
-                      ),
+                ),
               ],
             ),
           );
@@ -1740,7 +2454,7 @@ class _EditProductState extends State<EditProduct> {
             child: Column(
               children: [
                 CustomizedTextFormField(
-                  hintText: 'Search  custom category',
+                  hintText: 'Search custom category',
                   onChanged: (value) {
                     if (value.toString().isNotEmpty) {
                       customCategories = productCustomCategoriesCopy!
@@ -1758,67 +2472,86 @@ class _EditProductState extends State<EditProduct> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: customCategories!.length,
-                    itemBuilder: (context, index) {
-                      ProductCategory category = customCategories![index];
-                      if (selectedCustomCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category.name,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              pressedCustomCategory = category;
-                              Navigator.pop(context);
-                              if (pressedSubCategory != null) {
-                                selectedCustomCategory = pressedCustomCategory;
-                                productCustomCategory =
-                                    selectedCustomCategory!.name;
-                                setState(() {});
-                              }
+                  child: customCategories?.isNotEmpty ?? false
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: customCategories?.length,
+                          itemBuilder: (context, index) {
+                            final ProductCategory category =
+                                customCategories![index];
+                            if (selectedCustomCategory == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category.name,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedCustomCategory = category;
+                                    Navigator.pop(context);
+                                    if (pressedSubCategory != null) {
+                                      selectedCustomCategory =
+                                          pressedCustomCategory;
+                                      productCustomCategory =
+                                          selectedCustomCategory!.name;
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category.name,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedCustomCategory = category;
+                                Navigator.pop(context);
+                                if (pressedCustomCategory != null) {
+                                  selectedCustomCategory =
+                                      pressedCustomCategory;
+                                  productCustomCategory =
+                                      selectedCustomCategory!.name;
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : Expanded(
+                          child: NoItemInList(
+                            msg: 'No Custom Category Found',
+                            isButtonShow: true,
+                            buttonTitle: 'Add New Custom Category',
+                            onTap: () async {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pushNamed(
+                                  Routes.CUSTOM_CATEGORY,
+                                  arguments: {
+                                    "isHome": true
+                                  }).whenComplete(() => obtainCustomCategory());
                             },
                           ),
-                        );
-                      }
-                      return ListTile(
-                        title: Text(
-                          category.name,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
                         ),
-                        dense: true,
-                        onTap: () {
-                          pressedCustomCategory = category;
-                          Navigator.pop(context);
-                          if (pressedCustomCategory != null) {
-                            selectedCustomCategory = pressedCustomCategory;
-                            productCustomCategory =
-                                selectedCustomCategory!.name;
-                            setState(() {});
-                          }
-                        },
-                      );
-                    },
-                  ),
                 ),
               ],
             ),
@@ -1857,68 +2590,77 @@ class _EditProductState extends State<EditProduct> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: productCategories!.length,
-                    itemBuilder: (context, index) {
-                      ProductCategory category = productCategories![index];
-                      if (selectedProductCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category.name,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              pressedCategory = category;
-                              Navigator.pop(context);
-                              if (pressedCategory != null) {
-                                selectedProductCategory = pressedCategory;
-                                productCategory = selectedProductCategory!.name;
-                                setState(() {});
-                              }
-                            },
+                  child: productCategories?.isNotEmpty ?? false
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: productCategories?.length,
+                          itemBuilder: (context, index) {
+                            final ProductCategory category =
+                                productCategories![index];
+                            if (selectedProductCategory == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category.name,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedCategory = category;
+                                    Navigator.pop(context);
+                                    if (pressedCategory != null) {
+                                      selectedProductCategory = pressedCategory;
+                                      productCategory =
+                                          selectedProductCategory!.name;
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category.name,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedCategory = category;
+                                Navigator.pop(context);
+                                if (pressedCategory != null) {
+                                  getSubCategories(category.id);
+                                  selectedProductCategory = pressedCategory;
+                                  productCategory =
+                                      selectedProductCategory!.name;
+                                  productSubCategory = "";
+                                  selectedSubCategory = null;
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : const Center(
+                          child: Text(
+                            "No Data",
                           ),
-                        );
-                      }
-                      return ListTile(
-                        title: Text(
-                          category.name,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
                         ),
-                        dense: true,
-                        onTap: () {
-                          pressedCategory = category;
-                          Navigator.pop(context);
-                          if (pressedCategory != null) {
-                            getSubCategories(category.id);
-                            selectedProductCategory = pressedCategory;
-                            productCategory = selectedProductCategory!.name;
-                            productSubCategory = "";
-                            selectedSubCategory = null;
-                            setState(() {});
-                          }
-                        },
-                      );
-                    },
-                  ),
                 ),
               ],
             ),
@@ -1932,11 +2674,13 @@ class _EditProductState extends State<EditProduct> {
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1965,10 +2709,7 @@ class _EditProductState extends State<EditProduct> {
                                     Expanded(
                                       child: Text(
                                         selectedProductCondition != null
-                                            ? " (" +
-                                                selectedProductCondition!
-                                                    .description +
-                                                ")"
+                                            ? " (${selectedProductCondition!.description})"
                                             : "",
                                         maxLines: 1,
                                         style: TextStyle(
@@ -2002,7 +2743,7 @@ class _EditProductState extends State<EditProduct> {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    " (" + condition.description + ")",
+                                    " (${condition.description})",
                                     maxLines: 1,
                                     style: TextStyle(
                                         fontSize: 16, color: blackFont),
@@ -2049,12 +2790,13 @@ class _EditProductState extends State<EditProduct> {
 
   Widget getAmountField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.price,
+      labelText: AppLocalization.of(context)!.priceLocalCurrency,
       controller: productPriceController,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
+      isReadOnly: currencyView ? true : false,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -2089,10 +2831,10 @@ class _EditProductState extends State<EditProduct> {
                 text: AppLocalization.of(context)!.delete,
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
-                  deleteProduct();
+                  deleteProductDialog();
                 }),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: CurvedButton(
               textColor: Colors.white,
@@ -2118,9 +2860,32 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
+  void deleteProductDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Product',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this product?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () {
+        deleteProduct();
+      },
+    );
+  }
+
   Future<void> editProduct() async {
-    if (_formKey.currentState!.validate()) {
-      if (productLocalImages.length >= 0) {
+    if (_formKey.currentState!.validate() || validateDropdown()) {
+      if (productLocalImages.isNotEmpty || productImagesFromServer.isNotEmpty) {
         if (containsWeight() && selectedWeight.isEmpty && weight != 0.0) {
           showToast(message: AppLocalization.of(context)!.pleaseFillWeight);
           return;
@@ -2137,8 +2902,10 @@ class _EditProductState extends State<EditProduct> {
         if (validateDropdown()) {
           // setting updated value
           currentProduct.name = productName;
+          // currentProduct.description =
+          //     messageDecoderWithEmoji(productDescription);
           currentProduct.description =
-              messageDecoderWithEmoji(productDescription);
+              jsonEncode(_quillController.document.toDelta().toJson());
           currentProduct.category = selectedProductCategory;
           currentProduct.subCategory = selectedSubCategory;
           currentProduct.customCategory = selectedCustomCategory;
@@ -2148,7 +2915,14 @@ class _EditProductState extends State<EditProduct> {
                 int.parse(selectedPreparationCondition!.name);
           }
           currentProduct.condition = productCondition;
-          currentProduct.price = moneyInputNormalizer(productPrice!).toString();
+          currentProduct.price = moneyInputNormalizer(productPrice!);
+          if (currencyView) {
+            foreignPriceModel ??= ForeignPrice();
+            foreignPriceModel?.price = moneyInputNormalizer(foreignPrice!);
+            foreignPriceModel?.userCurrencyRate = selectedCurrencyId;
+
+            currentProduct.foreignPrice = foreignPriceModel;
+          }
           currentProduct.localImages =
               productLocalImages.map((file) => File(file.path)).toList();
           currentProduct.serverImages = productImagesFromServer;
@@ -2177,9 +2951,17 @@ class _EditProductState extends State<EditProduct> {
               : selectedWidth == 'Metres'
                   ? 'm'
                   : '';
-          currentProduct.discount = selectedDiscount;
-          currentProduct.trackInventory = trackInventory;
+          if (isDiscountAvailable) {
+            currentProduct.discountId = selectedDiscount?.id;
+          } else {
+            currentProduct.discountId = "";
+          }
+          currentProduct.trackInventory = trackInventoryView;
           currentProduct.quantity = inventoryCount;
+          currentProduct.addressId = defaultAddress?.id;
+          currentProduct.searchKeywords = searchKeyword?.isNotEmpty ?? false
+              ? searchKeyword?.split(", ")
+              : [];
           await _auth
               .editProduct(currentProduct, productAddOnsList)
               .then((value) {
@@ -2198,12 +2980,11 @@ class _EditProductState extends State<EditProduct> {
   }
 
   bool validateDropdown() {
-    if (selectedProductCategory != null && selectedProductCondition != null) {
+    if (selectedProductCategory != null) {
       return true;
     } else {
       showToast(
-          message: AppLocalization.of(context)!
-              .pleaseSelectProductCategoryAndCondition);
+          message: AppLocalization.of(context)!.pleaseSelectProductCategory);
       return false;
     }
   }
@@ -2212,6 +2993,7 @@ class _EditProductState extends State<EditProduct> {
     return CustomizedCheckBoxField(
       onTap: () {
         productIsAvailable = !productIsAvailable!;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: productIsAvailable,
@@ -2223,6 +3005,7 @@ class _EditProductState extends State<EditProduct> {
     return CustomizedCheckBoxField(
       onTap: () {
         productEnableInSuperStore = !productEnableInSuperStore;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: productEnableInSuperStore,
@@ -2244,30 +3027,30 @@ class _EditProductState extends State<EditProduct> {
         ).then((value) {
           if (mounted) {
             setState(() {
-              productAvailableFrom =
-                  DateTime(value!.year, value.month, value.day);
+              productAvailableFrom = DateTime(
+                  value?.year ?? 0, value?.month ?? 0, value?.day ?? 0);
             });
           }
         }).catchError((error) {});
       },
       child: CustomizedDropDownField(
         title: "Available from",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(productAvailableFrom!),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            formatDate1(productAvailableFrom),
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              fontFamily: "Inter",
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
+            maxLines: 1,
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),
@@ -2275,9 +3058,9 @@ class _EditProductState extends State<EditProduct> {
   }
 
   void deleteProduct() async {
-    bool result = await showDialog(
+    final bool result = await showDialog(
       context: context,
-      builder: (context) => ConfirmDelete(),
+      builder: (context) => const ConfirmDelete(),
     );
     if (result) {
       await _auth.deleteProduct(currentProduct.id!).then((value) {
@@ -2291,32 +3074,119 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget getInventoryFormField() {
-    return CustomizedTextFormField(
-      labelText: "Inventory (Available Quantity)",
-      keyboardType: Platform.isIOS
-          ? const TextInputType.numberWithOptions(decimal: false)
-          : TextInputType.number,
-      controller: inventoryCountController,
-      onChanged: (val) {
-        if (val.isNotEmpty) {
-          try {
-            inventoryCount = int.parse(val);
-          } catch (e) {
-            showToast(message: e.toString());
-          }
-        }
+    return CustomizedDropDownField(
+      title: "Inventory (Available Quantity)",
+      child: ListTile(
+        dense: true,
+        title: Center(
+          child: SizedBox(
+            width: 50,
+            child: TextField(
+              controller: inventoryController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: const EdgeInsets.all(5),
+                border: const OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                  ),
+                ),
+              ),
+              onChanged: (value) {
+                // if (value.isEmpty) {
+                //   inventoryController.text = '1';
+                // }
+                inventoryCount = int.parse(inventoryController.text);
+              },
+            ),
+          ),
+        ),
+        trailing: Padding(
+          padding: const EdgeInsets.only(right: 30.0),
+          child: RoundedBackgroundIcon(
+              backgroundColor: greyBorderColor,
+              icon: Icon(
+                SlydoAppIcon.plus,
+                color: blackFont,
+                size: 14,
+              ),
+              onTap: () => addInventory()),
+        ),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 30.0),
+          child: RoundedBackgroundIcon(
+              backgroundColor: greyBorderColor,
+              icon: Icon(
+                SlydoAppIcon.minus,
+                color: blackFont,
+                size: 2,
+              ),
+              onTap: () => subtractInventory()),
+        ),
+      ),
+    );
+    // return CustomizedTextFormField(
+    //   labelText: "Inventory (Available Quantity)",
+    //   keyboardType: Platform.isIOS
+    //       ? const TextInputType.numberWithOptions(decimal: false)
+    //       : TextInputType.number,
+    //   controller: inventoryCountController,
+    //   onChanged: (val) {
+    //     if (val.isNotEmpty) {
+    //       try {
+    //         inventoryCount = int.parse(val);
+    //       } catch (e) {
+    //         showToast(message: e.toString());
+    //       }
+    //     }
+    //   },
+    //   validator: (val) {
+    //     if (val.isNotEmpty) {
+    //       try {
+    //         val;
+    //         return null;
+    //       } catch (e) {
+    //         return AppLocalization.of(context)!.invalidCount;
+    //       }
+    //     }
+    //     return AppLocalization.of(context)!.pleaseEnterValidCount;
+    //   },
+    // );
+  }
+
+  void addInventory() {
+    setState(() {
+      inventoryCount++;
+      inventoryController.text = inventoryCount.toString();
+    });
+  }
+
+  void subtractInventory() {
+    if (inventoryCount > 0) {
+      setState(() {
+        inventoryCount--;
+        inventoryController.text = inventoryCount.toString();
+      });
+    }
+  }
+
+  Widget getForeignCurrencyField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        currencyView = !currencyView;
+        removeQuillFocus();
+        setState(() {});
       },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            val;
-            return null;
-          } catch (e) {
-            return AppLocalization.of(context)!.invalidCount;
-          }
-        }
-        return AppLocalization.of(context)!.pleaseEnterValidCount;
-      },
+      isChecked: currencyView,
+      title: AppLocalization.of(context)!.setPriceWithForeignCurrency,
     );
   }
 
@@ -2324,6 +3194,7 @@ class _EditProductState extends State<EditProduct> {
     return CustomizedCheckBoxField(
       onTap: () {
         measurementView = !measurementView;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: measurementView,
@@ -2334,10 +3205,11 @@ class _EditProductState extends State<EditProduct> {
   Widget getDiscountField() {
     return CustomizedCheckBoxField(
       onTap: () {
-        discountView = !discountView;
+        isDiscountAvailable = !isDiscountAvailable;
+        removeQuillFocus();
         setState(() {});
       },
-      isChecked: discountView,
+      isChecked: isDiscountAvailable,
       title: AppLocalization.of(context)!.discount,
     );
   }
@@ -2346,6 +3218,7 @@ class _EditProductState extends State<EditProduct> {
     return CustomizedCheckBoxField(
       onTap: () {
         trackInventoryView = !trackInventoryView;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: trackInventoryView,
@@ -2363,7 +3236,12 @@ class _EditProductState extends State<EditProduct> {
               ? pickedMeasurementList.join(', ')
               : '',
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -2392,12 +3270,16 @@ class _EditProductState extends State<EditProduct> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                _buildCancelIcon(),
+                const SizedBox(height: 10),
+                _buildMeasurementText(),
+                const SizedBox(height: 10),
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: measurementList.length,
                     itemBuilder: (context, index) {
-                      String measurement = measurementList[index];
+                      final String measurement = measurementList[index];
                       return CheckboxListTile(
                         value: measurementCheckMark[measurement] ?? false,
                         activeColor: navyBlue,
@@ -2426,7 +3308,7 @@ class _EditProductState extends State<EditProduct> {
                   ),
                 ),
                 CurvedButton(
-                  text: 'Pick',
+                  text: 'Save',
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -2443,6 +3325,7 @@ class _EditProductState extends State<EditProduct> {
     return CustomizedCheckBoxField(
       onTap: () {
         inventoryIsAvailable = !inventoryIsAvailable;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: inventoryIsAvailable,
@@ -2463,15 +3346,18 @@ class _EditProductState extends State<EditProduct> {
         dense: true,
         title: Text(
           selectedDiscount != null
-              ? messageDecoderWithEmoji(selectedDiscount?.name) ??
+              ? messageDecoderWithEmoji(
+                      getDiscountDisplayName(selectedDiscount)) ??
                   selectedDiscount?.merchant ??
                   ""
               : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -2482,6 +3368,17 @@ class _EditProductState extends State<EditProduct> {
         },
       ),
     );
+  }
+
+  String getDiscountDisplayName(DiscountModel? discount) {
+    String name = '';
+    if (discount?.type?.toValue() == "percentage") {
+      name = '${discount?.name} (${discount?.value}%)';
+    } else {
+      name =
+          '${discount?.name} (${worldCurrencies[userBloc?.user.currency]}${discount?.value})';
+    }
+    return name;
   }
 
   void discountAndroidSheet() {
@@ -2520,14 +3417,15 @@ class _EditProductState extends State<EditProduct> {
                     shrinkWrap: true,
                     itemCount: discountList.length,
                     itemBuilder: (context, index) {
-                      DiscountModel discount = discountList[index];
+                      final DiscountModel discount = discountList[index];
                       if (selectedDiscount == discount) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
                           child: ListTile(
                             dense: true,
                             title: Text(
-                              messageDecoderWithEmoji(discount.name) ??
+                              messageDecoderWithEmoji(
+                                      getDiscountDisplayName(discount)) ??
                                   discount.merchant ??
                                   "",
                               overflow: TextOverflow.fade,
@@ -2560,7 +3458,8 @@ class _EditProductState extends State<EditProduct> {
                       }
                       return ListTile(
                         title: Text(
-                          messageDecoderWithEmoji(discount.name) ??
+                          messageDecoderWithEmoji(
+                                  getDiscountDisplayName(discount)) ??
                               discount.merchant ??
                               "",
                           softWrap: false,
@@ -2625,7 +3524,9 @@ class _EditProductState extends State<EditProduct> {
                   color: blackFont,
                   fontWeight: FontWeight.w500,
                   fontSize: 14,
+                  fontFamily: "Inter",
                 ),
+                maxLines: 1,
               ),
             ),
           ),
@@ -2678,17 +3579,17 @@ class _EditProductState extends State<EditProduct> {
                 });
 
                 // Handle the result (map) received from PRODUCT_VARIANT_LIST
-                if (data != null && data is Variant) {
+                if (data != null && data is List<Variant>) {
                   //clear previous list, update the list
                   // debugPrint('fola data::: ${data}');
                   // debugPrint('fola data 2::: ${data.runtimeType}');
 
-                  // productVariantList = [];
+                  productVariantList = [];
                   // productVariantList = Variant.convertToVariantList(data);
-                  // productVariantList = data;
+                  productVariantList = data;
 
                   // variantData = data;
-                  productVariantList.add(data);
+                  // productVariantList.add(data);
                   if (mounted) setState(() {});
                 }
               },
@@ -2705,41 +3606,44 @@ class _EditProductState extends State<EditProduct> {
             ),
           ],
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         _buildProductVariantList(),
       ],
     );
   }
 
   Widget _buildProductVariantList() {
-    return ListView.builder(
-      padding: EdgeInsets.zero,
-      controller: scrollControllerVariant,
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: productVariantList.length,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == productVariantList.length) {
-          return buildLoadingIndicator(isLoading: isLoading);
-        } else {
-          return FormVariantsTile(
-              productVariantList: productVariantList,
-              index: index,
-              type: 'edit');
-        }
-      },
-    );
+    return isLoading && productVariantList.isEmpty
+        ? buildLoadingIndicator(isLoading: isLoading)
+        : ListView.builder(
+            padding: EdgeInsets.zero,
+            controller: scrollControllerVariant,
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount:
+                productVariantList.length >= 2 ? 2 : productVariantList.length,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == productVariantList.length) {
+                return buildJumpingLoadingIndicator(isLoading: isLoading);
+              } else {
+                return FormVariantsTile(
+                    productVariantList: productVariantList,
+                    index: index,
+                    type: 'edit');
+              }
+            },
+          );
   }
 
   Widget productVariation() {
     return GestureDetector(
       onTap: () async {
         //disable click if add-on is not empty
-        if (productAddOnsList.isNotEmpty) {
-          return;
-        }
+        // if (productAddOnsList.isNotEmpty) {
+        //   return;
+        // }
         final result = await Navigator.of(context).pushNamed(
-            Routes.PRODUCT_NEW_OPTION,
+            Routes.ADD_EDIT_VARIANT,
             arguments: {'productId': productId, 'option': 'edit'});
 
         // Handle the result (map) received from Product Add New Option
@@ -2749,26 +3653,24 @@ class _EditProductState extends State<EditProduct> {
           if (mounted) setState(() {});
         }
       },
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Add Product Variation',
-              maxLines: 1,
-              style: TextStyle(
-                  color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: blackFont,
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add Product Variation',
+            maxLines: 1,
+            style: TextStyle(
+                color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w500,
+                fontSize: 14),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
       ),
     );
   }
@@ -2776,43 +3678,43 @@ class _EditProductState extends State<EditProduct> {
   Widget productAddOns() {
     return GestureDetector(
       onTap: () async {
-        //disable click if variant is not empty
-        if (productVariantList.isNotEmpty) {
-          return;
-        }
-
-        final result = await Navigator.of(context)
-            .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
-          'productId': productId,
-        });
-
-        // Handle the result (map) received from PRODUCT_ADD_ON_LIST
-        if (result != null && result is List<AddOns>) {
-          //save the add-on details
-          productAddOnsList = result;
-          if (mounted) setState(() {});
-        }
+        // //disable click if variant is not empty
+        // // if (productVariantList.isNotEmpty) {
+        // //   return;
+        // // }
+        //
+        // final result = await Navigator.of(context)
+        //     .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
+        //   'productId': productId,
+        //   'isForCheckboxSelection': true,
+        // });
+        //
+        // // Handle the result (map) received from PRODUCT_ADD_ON_LIST
+        // if (result != null && result is List<AddOns>) {
+        //   //save the add-on details
+        //   productAddOnsList = result;
+        //   if (mounted) setState(() {});
+        // }
       },
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Add Product Add-ons',
-              maxLines: 1,
-              style: TextStyle(
-                  color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: "Inter",
-                  fontSize: 14),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: blackFont,
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add Product Add-ons',
+            maxLines: 1,
+            style: TextStyle(
+                // color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
+                color: darkGrey,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+                fontSize: 14),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
       ),
     );
   }
@@ -2834,6 +3736,7 @@ class _EditProductState extends State<EditProduct> {
                 final data = await Navigator.of(context)
                     .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
                   'productId': productId,
+                  'isForCheckboxSelection': true,
                 });
 
                 // Handle the result (map) received from PRODUCT_ADD_ON_LIST
@@ -2852,32 +3755,82 @@ class _EditProductState extends State<EditProduct> {
             ),
           ],
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         _buildAddOnList(),
       ],
     );
   }
 
   Widget _buildAddOnList() {
-    return Container(
-      // height: 200,
-      height: 80 * productAddOnsList.length.toDouble(),
-      child: ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        //+1 for progressbar
-        itemCount: productAddOnsList.length + 1,
-        controller: scrollControllerVariant,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == productAddOnsList.length) {
-            return buildLoadingIndicator(isLoading: isLoading);
-          } else {
-            return FormAddOnTile(
-              productAddOnsList: productAddOnsList,
-              index: index,
-            );
-          }
-        },
+    return isLoading && productAddOnsList.isEmpty
+        ? buildLoadingIndicator(isLoading: isLoading)
+        : SizedBox(
+            // height: 200,
+            height: 80 * productAddOnsList.length.toDouble(),
+            child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              //+1 for progressbar
+              itemCount:
+                  productAddOnsList.length >= 2 ? 2 : productAddOnsList.length,
+              controller: scrollControllerVariant,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == productAddOnsList.length) {
+                  return buildJumpingLoadingIndicator(isLoading: isLoading);
+                } else {
+                  return FormAddOnTile(
+                    productAddOnsList: productAddOnsList,
+                    index: index,
+                  );
+                }
+              },
+            ),
+          );
+  }
+
+  dynamic getExitDialog(BuildContext context) async {
+    await showExitDialogBackButton(
+      context: context,
+      leftButtonOnPressed: () {
+        Navigator.pop(context);
+      },
+      rightButtonOnPressed: () async {
+        FocusScope.of(context).unfocus();
+        await editProduct();
+      },
+    );
+  }
+
+  Widget _buildCancelIcon() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 30),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              Icons.close,
+              color: black,
+              size: 25,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMeasurementText() {
+    return Text(
+      "Measurement",
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        color: blackFont,
+        fontSize: 20,
+        fontWeight: FontWeight.w700,
       ),
     );
   }
@@ -2923,14 +3876,17 @@ class _EditProductState extends State<EditProduct> {
   @override
   void dispose() {
     productTitleController.dispose();
-    productDescriptionController.dispose();
+    // productDescriptionController.dispose();
     productShortDescriptionController.dispose();
     productManufacturerController.dispose();
     productPriceController.dispose();
     _scrollController.dispose();
     scrollControllerVariant.dispose();
+    searchKeywordController.dispose();
     _myController.dispose();
-
+    inventoryController.dispose();
+    _focusNodeDescription.dispose();
+    _quillController.dispose();
     super.dispose();
   }
 }

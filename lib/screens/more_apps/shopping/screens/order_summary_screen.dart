@@ -1,4 +1,6 @@
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +12,11 @@ import '../../../../locale/app_localization.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../../../../widget/loading_indicator.dart';
-import '../../payment_and_banking/payment_and_banking_auth.dart';
-import '../../user_profile/models/user.dart';
 import '../utils.dart';
 
 class OrderSummaryScreen extends StatefulWidget {
   final ShippingAddress address;
-  const OrderSummaryScreen({Key? key, required this.address}) : super(key: key);
+  const OrderSummaryScreen({super.key, required this.address});
 
   @override
   State<OrderSummaryScreen> createState() => _OrderSummaryScreenState();
@@ -25,7 +25,7 @@ class OrderSummaryScreen extends StatefulWidget {
 class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   List<int?> orders = [];
   late BasketBloc basketBloc;
-  PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
+  final PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
   final _orderSummaryScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
 
   @override
@@ -59,7 +59,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     amount:
                         moneyDisplayNormalizer(basketBloc.totalShippingCost)),
                 Divider(color: blackFont, thickness: 0.5),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Text(
                   'Shipping Address',
                   style: TextStyle(
@@ -67,46 +67,51 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                       fontSize: 18,
                       fontWeight: FontWeight.w600),
                 ),
-                SizedBox(height: 10),
-                widget.address.addressLineOne != null
-                    ? addressRow(
-                        title: 'Address line 1',
-                        subTitle: widget.address.addressLineOne!)
-                    : SizedBox.shrink(),
-                widget.address.addressLineTwo != null
-                    ? addressRow(
-                        title: 'Address line 2',
-                        subTitle: widget.address.addressLineTwo!)
-                    : SizedBox.shrink(),
-                widget.address.city != null
-                    ? addressRow(title: 'City', subTitle: widget.address.city!)
-                    : SizedBox.shrink(),
-                widget.address.userState != null
-                    ? addressRow(
-                        title: 'State', subTitle: widget.address.stateName!)
-                    : SizedBox.shrink(),
+                const SizedBox(height: 10),
+                if (widget.address.addressLineOne != null)
+                  addressRow(
+                      title: 'Address line 1',
+                      subTitle: widget.address.addressLineOne!)
+                else
+                  const SizedBox.shrink(),
+                if (widget.address.addressLineTwo != null)
+                  addressRow(
+                      title: 'Address line 2',
+                      subTitle: widget.address.addressLineTwo!)
+                else
+                  const SizedBox.shrink(),
+                if (widget.address.city != null)
+                  addressRow(title: 'City', subTitle: widget.address.city!)
+                else
+                  const SizedBox.shrink(),
+                if (widget.address.userState != null)
+                  addressRow(
+                      title: 'State', subTitle: widget.address.stateName!)
+                else
+                  const SizedBox.shrink(),
                 Divider(color: blackFont, thickness: 0.5),
-                SizedBox(height: 10),
-                widget.address.shippingNote != ''
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Shipping Note',
-                            style: TextStyle(
-                                color: blackFont,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            widget.address.shippingNote!,
-                            style: TextStyle(color: blackFont),
-                          ),
-                        ],
-                      )
-                    : SizedBox.shrink(),
-                SizedBox(height: 40),
+                const SizedBox(height: 10),
+                if (widget.address.shippingNote != '')
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Shipping Note',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        widget.address.shippingNote!,
+                        style: TextStyle(color: blackFont),
+                      ),
+                    ],
+                  )
+                else
+                  const SizedBox.shrink(),
+                const SizedBox(height: 40),
                 Builder(builder: (context) {
                   return CurvedButton(
                     isPaymentBtn: true,
@@ -122,7 +127,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     );
   }
 
-  onCompleteOrder() async {
+  Future<void> onCompleteOrder() async {
     BottomSheetPassCode(
         context: context,
         isValidCallback: () async {
@@ -130,15 +135,15 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               context: context,
               builder: (dialogLoadingContext) => LoadingIndicator());
 
-          Map data = {'note': widget.address.shippingNote};
+          final Map data = {'note': widget.address.shippingNote};
           data['address'] = widget.address.toJson();
           data['shipping_options'] = basketBloc.userSelectedShippingOption;
 
-          bool ableToPay = await checkAccountBalance(null, context);
+          final bool ableToPay = await checkAccountBalance(null, context);
 
           //Create the orders
           if (ableToPay) {
-            var userOrders =
+            final userOrders =
                 await ShoppingAuthService().placeOrderOfShoppingCart(data);
 
             if (userOrders != null) {
@@ -149,22 +154,22 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               for (int i = 0; i < userOrders.length; i++) {
                 orders.add(userOrders[i]["id"]);
               }
-              var response =
+              final response =
                   await _auth.makePaymentForCartOrder({"orders": orders});
 
-              debugPrint('STATUS CODE :: ${response.statusCode}');
-              if (response.statusCode == 200) {
+              // debugPrint('STATUS CODE :: ${response.statusCode}');
+              if (response.statusCode == 200 || response.statusCode == 201) {
                 Navigator.of(context)
                     .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-                Navigator.pushNamed(context, Routes.ORDERS_LIST);
+                Navigator.pushNamed(context, Routes.ORDER_LIST);
                 showToast(message: 'Order placed successfully');
               } else if (response.statusCode == 500) {
                 Navigator.pop(context);
-                showToast(message: AppLocalization.of(context)!.serverError);
+                showToast(message: AppLocalization.of(context)?.serverError);
               } else {
                 debugPrint("MakePaymentForCartOrder Unsuccessful");
                 showToast(
-                    message: AppLocalization.of(context)!.somethingWentWrong);
+                    message: AppLocalization.of(context)?.somethingWentWrong);
                 Navigator.pop(context);
               }
             } else {
@@ -172,14 +177,14 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 "Could Not Place The Order",
               );
               showToast(
-                  message: AppLocalization.of(context)!.couldNotPlaceTheOrder);
+                  message: AppLocalization.of(context)?.couldNotPlaceTheOrder);
               Navigator.pop(context);
             }
           }
         },
         cancelCallBack: () {
           Navigator.pop(context);
-          _orderSummaryScaffoldMessenger.currentState!.showSnackBar(SnackBar(
+          _orderSummaryScaffoldMessenger.currentState?.showSnackBar(SnackBar(
             content: Text(AppLocalization.of(context)!.invalidPassword),
           ));
         });
@@ -187,6 +192,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

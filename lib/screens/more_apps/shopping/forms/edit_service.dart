@@ -1,9 +1,17 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/utils.dart';
+import 'package:Slydo/screens/user_profile/models/currency_model.dart';
+import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/screens/currency/add_edit_currency.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/utils/cache_manager.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -11,10 +19,16 @@ import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/customized_textform_field_for_foreign_currency.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -22,19 +36,15 @@ import '../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class EditService extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  EditService({this.arguments});
+  const EditService({super.key, this.arguments});
 
   @override
-  _EditServiceState createState() => _EditServiceState(arguments: arguments);
+  State<EditService> createState() => _EditServiceState();
 }
 
 class _EditServiceState extends State<EditService> {
-  var arguments;
-
-  _EditServiceState({this.arguments});
-
   final _auth = ShoppingAuthService();
   UserBloc? userBloc;
   final _formKey = GlobalKey<FormState>();
@@ -43,14 +53,16 @@ class _EditServiceState extends State<EditService> {
   Service currentService = Service();
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   List<PickedFile> serviceLocalImages = [];
   List<String?> serviceImagesFromServer = [];
   String? serviceName = "";
   String? serviceDescription = "";
   String? serviceCategory = "";
   String? serviceShortDescription = "";
+  String? searchKeyword = "";
   String? servicePrice = "";
+  String foreignPrice = "";
   ServiceCategory? selectedServiceCategory;
   bool? serviceIsAvailable = false;
   DateTime? serviceAvailableFrom = DateTime.now();
@@ -61,9 +73,46 @@ class _EditServiceState extends State<EditService> {
   TextEditingController serviceShortDescriptionController =
       TextEditingController();
   TextEditingController servicePriceController = TextEditingController();
+  TextEditingController searchKeywordController = TextEditingController();
+  TextEditingController foreignController = TextEditingController();
   List<ServiceCategory>? serviceCategories;
   bool isLoading = false;
   bool isAPILoading = false;
+
+  List<CurrencyModel>? currencyList;
+  List<CurrencyModel>? currencyListCopy;
+  int? currencyItemCount = 0;
+  String? currencyNext = "";
+  String? currencyPrevious = "";
+  bool currencyView = false;
+  String? selectedCurrency;
+  String? selectedCurrencyId;
+  int? selectedCurrencyRate;
+  String? pressedCurrency;
+  ForeignPrice? foreignPriceModel;
+
+  bool isDiscountLoading = false;
+  bool isDiscountAvailable = false;
+  int? discountItemCount = 0;
+  String? discountNext = "";
+  String? discountPrevious = "";
+  List<DiscountModel> discountList = [];
+  List<DiscountModel> discountListCopy = [];
+  bool noItemInList = false;
+  DiscountModel? pressedDiscount;
+  DiscountModel? selectedDiscount;
+  String discountName = "";
+  String? discountId;
+  bool _isKeyboardVisible = false;
+  bool _isServiceDescriptionVisible = false;
+  double? bottomInset;
+  dynamic serviceBodyTextJson;
+
+  final FocusNode _focusNodeDescription = FocusNode();
+  QuillController _quillController = QuillController.basic();
+  final ScrollController _textEditorScrollController = ScrollController();
+  final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void deactivate() {
@@ -73,10 +122,132 @@ class _EditServiceState extends State<EditService> {
 
   @override
   void initState() {
-    serviceId = arguments['serviceId'];
+    serviceId = widget.arguments['serviceId'];
+    getCurrencyList();
     getCategories();
-
+    _focusNodeDescription.addListener(_handleFocusChange);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateKeyboardVisibility();
+    });
     super.initState();
+  }
+
+  void _handleFocusChange() {
+    setState(() {
+      _isServiceDescriptionVisible = _focusNodeDescription.hasFocus;
+    });
+    _updateKeyboardVisibility();
+  }
+
+  void _updateKeyboardVisibility() {
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    setState(() {
+      _isKeyboardVisible = (bottomInset ?? 0) > 0;
+    });
+  }
+
+  Future<void> getCurrencyList() async {
+    final Map<String, dynamic> result =
+        await UserAuth().getCurrency(currencyNext, currencyPrevious);
+    if (result == null) {
+      isLoading = false;
+      noItemInList = true;
+      return;
+    }
+
+    currencyList = [];
+    currencyItemCount = result['count'];
+    currencyNext = result['next'];
+    currencyPrevious = result['previous'];
+    final tempList = result['results'];
+
+    currencyList?.addAll(tempList);
+    currencyListCopy = currencyList;
+    if ((currencyList?.isNotEmpty ?? false) &&
+        (selectedCurrency?.isEmpty ?? false)) {
+      selectedCurrency = currencyList?[0].currency;
+      selectedCurrencyId = currencyList?[0].id;
+      selectedCurrencyRate = currencyList?[0].rate;
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        noItemInList = false;
+      });
+    }
+
+    if (currencyList?.isEmpty ?? false) {
+      if (mounted) {
+        setState(() {
+          noItemInList = true;
+          currencyList = [];
+          currencyListCopy = [];
+        });
+      }
+    } else if (currencyNext == null && currencyList!.length > 6) {
+      _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+        content:
+            Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        duration: const Duration(milliseconds: 500),
+      ));
+    }
+  }
+
+  void getDiscountList(String? discountId) async {
+    if (!isDiscountLoading) {
+      if (discountNext != null && !isDiscountLoading) {
+        isDiscountLoading = true;
+        if (mounted) setState(() {});
+
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfDiscounts(discountNext, discountPrevious);
+
+        if (result == null) {
+          isDiscountLoading = false;
+          noItemInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        discountItemCount = result['count'];
+        discountNext = result['next'];
+        discountPrevious = result['previous'];
+        final tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noItemInList = false;
+            isDiscountLoading = false;
+            discountList.addAll(tempList);
+
+            discountListCopy = discountList;
+
+            if (discountId != null) {
+              for (DiscountModel discount in discountList) {
+                if (discount.id == discountId) {
+                  selectedDiscount = discount;
+                }
+              }
+            }
+          });
+        }
+      }
+      if (discountList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
+      } else if (discountNext == null && discountList.length > 6) {
+        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
+    }
   }
 
   void getCategories() async {
@@ -89,13 +260,13 @@ class _EditServiceState extends State<EditService> {
       serviceCategories = [];
     }
 
-    await fetchProduct();
+    await fetchService();
 
     isLoading = false;
     if (mounted) setState(() {});
   }
 
-  Future<void> fetchProduct() async {
+  Future<void> fetchService() async {
     // assigning the dropdown
     serviceCategories?.forEach((catagory) {
       if (catagory.name == currentService.category) {
@@ -104,24 +275,80 @@ class _EditServiceState extends State<EditService> {
     });
 
     //fetchProductFrom id to edit
-    await _auth.getService(serviceId!).then((value) {
+    await _auth.getService(serviceId!).then((value) async {
       currentService = value;
       // assigning to our edit controllers
 
       serviceTitleController.text = currentService.name!;
-      serviceDescriptionController.text = currentService.description!;
+
+      try {
+        serviceBodyTextJson = jsonDecode(
+            messageDecoderWithEmoji(currentService.description) ?? "");
+
+        _quillController = QuillController(
+            document: Document.fromJson(serviceBodyTextJson),
+            selection: const TextSelection.collapsed(offset: 0));
+      } catch (e) {
+        e.toString();
+      }
+
+      if (serviceBodyTextJson != null) {
+        _quillController = QuillController(
+            document: Document.fromJson(serviceBodyTextJson),
+            selection: const TextSelection.collapsed(offset: 0));
+      } else {
+        final String plainTextDescription = currentService.description ?? "";
+
+        if (plainTextDescription != null && plainTextDescription.isNotEmpty) {
+          // Convert plain text into a Quill Document
+          final doc = Document()..insert(0, plainTextDescription);
+
+          _quillController = QuillController(
+              document: doc,
+              selection: const TextSelection.collapsed(offset: 0));
+        } else {
+          // Handle the case where the description is empty or null
+          _quillController = QuillController.basic();
+        }
+      }
+      // serviceDescriptionController.text =
+      //     messageDecoderWithEmoji(currentService.description) ?? "";
       servicePriceController.text =
           moneyNormalizer(int.parse(currentService.price!)).toString();
-      serviceShortDescriptionController.text = currentService.shortDescription!;
+      serviceShortDescriptionController.text =
+          messageDecoderWithEmoji(currentService.shortDescription) ?? "";
 
       serviceImagesFromServer.addAll(currentService.serverImages!);
       serviceName = currentService.name;
       serviceCategory = messageDecoderWithEmoji(currentService.category);
       servicePrice = moneyNormalizer(int.parse(currentService.price!));
+
+      if (currentService.foreignPrice != null) {
+        currencyView = true;
+        foreignController.text =
+            moneyNormalizer(currentService.foreignPrice?.price ?? 0);
+        selectedCurrencyId = currentService.foreignPrice?.userCurrencyRate;
+
+        final CurrencyModel result =
+            await UserAuth().fetchCurrency(selectedCurrencyId ?? "");
+        selectedCurrency = result.currency;
+        selectedCurrencyRate = result.rate;
+      }
+
       serviceDescription = currentService.description;
       serviceIsAvailable = currentService.isAvailable;
       serviceAvailableFrom = currentService.availableFrom;
+      isDiscountAvailable = currentService.discountIsActive ?? false;
+      discountId = currentService.discountId;
       serviceShortDescription = currentService.shortDescription;
+      searchKeyword = messageDecoderWithEmoji(
+              currentService.searchKeywords?.join(", ") ?? "") ??
+          "";
+      searchKeywordController.text = messageDecoderWithEmoji(
+              currentService.searchKeywords?.join(", ") ?? "") ??
+          "";
+
+      getDiscountList(discountId);
 
       // assigning the dropdown from currentProduct
       serviceCategories?.forEach((catagory) {
@@ -137,33 +364,37 @@ class _EditServiceState extends State<EditService> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    _isKeyboardVisible = (bottomInset ?? 0) > 0;
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        return await getExitDialog(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
+        appBar: appBar(context) as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
   }
 
-  Widget appBar() {
+  Widget appBar(BuildContext context) {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
+      centerTitle: false,
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
-          Navigator.pop(context);
+        onPressed: () async {
+          await getExitDialog(context);
         },
       ),
       title: Text(
@@ -182,57 +413,86 @@ class _EditServiceState extends State<EditService> {
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(height: 10),
-                      checkImageLimitForServerImage()
-                          ? viewServerImages()
-                          : Container(),
-                      checkImageLimitForServerImage()
-                          ? SizedBox(height: 8)
-                          : Container(),
-                      checkImageLimitForLocalImage()
-                          ? addLocalImages()
-                          : Container(),
-                      SizedBox(
-                        height: 10,
+        : Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Center(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const SizedBox(height: 10),
+                            if (serviceImagesFromServer.isNotEmpty)
+                              checkImageLimitForServerImage()
+                                  ? viewServerImages()
+                                  : Container(),
+                            if (checkImageLimitForServerImage())
+                              const SizedBox(height: 8)
+                            else
+                              Container(),
+                            if (checkImageLimitForLocalImage())
+                              addLocalImages()
+                            else
+                              Container(),
+                            const SizedBox(height: 10),
+                            addTitleField(),
+                            const SizedBox(height: 10),
+                            getAmountField(),
+                            const SizedBox(height: 10),
+                            getForeignCurrencyFieldAndInfo(),
+                            if (currencyView) ...[
+                              const SizedBox(height: 10),
+                              getForeignCurrencyPriceField(),
+                              const SizedBox(height: 5),
+                              addNewCurrencyRate(),
+                            ],
+                            const SizedBox(height: 10),
+                            getCategoryField(),
+                            const SizedBox(height: 16),
+                            getIsAvailableField(),
+                            const SizedBox(height: 16),
+                            if (serviceIsAvailable == true) ...[
+                              getAvailableFromField(),
+                              const SizedBox(height: 16),
+                            ],
+                            getDiscountField(),
+                            const SizedBox(height: 16),
+                            if (isDiscountAvailable == true) ...[
+                              getDiscountListField(),
+                              const SizedBox(height: 16),
+                            ],
+                            getServiceShortDescription(),
+                            const SizedBox(height: 10),
+                            getServiceDescription(),
+                            const SizedBox(height: 10),
+                            getSearchEngineKeyword(),
+                            const SizedBox(height: 40),
+                            getSubmitButton(),
+                            const SizedBox(height: 40),
+                          ],
+                        ),
                       ),
-                      addTitleField(),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      getAmountField(),
-                      SizedBox(height: 10),
-                      getCategoryField(),
-                      SizedBox(height: 16),
-                      getIsAvailableField(),
-                      SizedBox(height: 16),
-                      getAvailableFromField(),
-                      SizedBox(height: 10),
-                      getServiceShortDescription(),
-                      SizedBox(height: 10),
-                      getServiceDescription(),
-                      SizedBox(height: 40),
-                      getSubmitButton(),
-                      SizedBox(height: 40),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
+              if (_isKeyboardVisible &&
+                  _isServiceDescriptionVisible &&
+                  _focusNodeDescription.hasFocus)
+                getEditor(_quillController)
+              else
+                const SizedBox.shrink()
+            ],
           );
   }
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -240,14 +500,14 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget addLocalImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: serviceLocalImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != serviceLocalImages.length
               ? showLocalImage(index)
               : serviceLocalImages.length + serviceImagesFromServer.length !=
@@ -260,14 +520,14 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget viewServerImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: serviceImagesFromServer.length,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: showServerImage(index),
         ),
       ),
@@ -277,10 +537,10 @@ class _EditServiceState extends State<EditService> {
   Widget addImageButton() {
     return CustomBoxShadow(
       child: Card(
-        elevation: 3,
+        elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -291,10 +551,10 @@ class _EditServiceState extends State<EditService> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  SlydoAppIcon.add_image,
+                  SlydoAppIcon.addImage,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -320,6 +580,7 @@ class _EditServiceState extends State<EditService> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
@@ -337,7 +598,7 @@ class _EditServiceState extends State<EditService> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -358,7 +619,7 @@ class _EditServiceState extends State<EditService> {
             borderRadius: BorderRadius.circular(10),
           ),
           shadowColor: dividerColor,
-          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
           child: Container(
             width: 100,
             decoration: BoxDecoration(
@@ -375,10 +636,10 @@ class _EditServiceState extends State<EditService> {
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 6),
+            padding: const EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
             icon: Container(
-              padding: EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                 color: iconBtnGrey,
                 borderRadius: BorderRadius.circular(5),
@@ -412,7 +673,7 @@ class _EditServiceState extends State<EditService> {
               borderRadius: BorderRadius.circular(10),
             ),
             shadowColor: boxShadowTwo,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
               width: 100,
               decoration: BoxDecoration(
@@ -430,10 +691,10 @@ class _EditServiceState extends State<EditService> {
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 6),
+            padding: const EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
             icon: Container(
-              padding: EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                 color: iconBtnGrey,
                 borderRadius: BorderRadius.circular(5),
@@ -445,7 +706,7 @@ class _EditServiceState extends State<EditService> {
               ),
             ),
             onPressed: () {
-              var imageId =
+              final imageId =
                   currentService.getImageId(serviceImagesFromServer[index]);
               _auth.deleteProductOrServiceImage(imageId).then((value) {
                 if (value) {
@@ -456,7 +717,7 @@ class _EditServiceState extends State<EditService> {
                   }
                 }
               }).catchError((error) {
-                debugPrint("ERROR" + error.toString());
+                debugPrint("ERROR$error");
               });
             },
           ),
@@ -469,7 +730,7 @@ class _EditServiceState extends State<EditService> {
   bool checkImageLimitForServerImage() {
     if (serviceLocalImages.length + serviceImagesFromServer.length !=
             imageCount ||
-        serviceImagesFromServer.length != 0) {
+        serviceImagesFromServer.isNotEmpty) {
       return true;
     }
     return false;
@@ -479,7 +740,7 @@ class _EditServiceState extends State<EditService> {
   bool checkImageLimitForLocalImage() {
     if (serviceLocalImages.length + serviceImagesFromServer.length !=
             imageCount ||
-        serviceLocalImages.length != 0) {
+        serviceLocalImages.isNotEmpty) {
       return true;
     }
     return false;
@@ -517,15 +778,97 @@ class _EditServiceState extends State<EditService> {
     );
   }
 
+  Widget getSearchEngineKeyword() {
+    return Column(
+      children: [
+        CustomizedTextFormField(
+          controller: searchKeywordController,
+          labelText: "Search Keyword - SEO (Optional)",
+          onChanged: (val) {
+            searchKeyword = val;
+          },
+        ),
+        Text(
+          'These words will help customer see your service online when they search it.',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        )
+      ],
+    );
+  }
+
+  // Widget getServiceDescription() {
+  //   return CustomizedTextFormField(
+  //     maxLines: 5,
+  //     labelText: AppLocalization.of(context)!.description,
+  //     controller: serviceDescriptionController,
+  //     textCapitalization: TextCapitalization.sentences,
+  //     onChanged: (val) {
+  //       serviceDescription = val;
+  //     },
+  //   );
+  // }
   Widget getServiceDescription() {
-    return CustomizedTextFormField(
-      maxLines: 5,
-      labelText: AppLocalization.of(context)!.description,
-      controller: serviceDescriptionController,
-      textCapitalization: TextCapitalization.sentences,
-      onChanged: (val) {
-        serviceDescription = val;
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildProductDescriptionText(),
+        const SizedBox(height: 5),
+        Container(
+          height: 120,
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: _focusNodeDescription.hasFocus
+                    ? navyBlue
+                    : greyBorderColor),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 150,
+            ),
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                textSelectionTheme: TextSelectionThemeData(
+                  cursorColor: _focusNodeDescription.hasFocus ? null : navyBlue,
+                ),
+              ),
+              child: QuillEditor(
+                focusNode: _focusNodeDescription,
+                scrollController: _textEditorScrollController,
+                configurations: QuillEditorConfigurations(
+                  autoFocus: false,
+                  controller: _quillController,
+                  scrollable: true,
+                  expands: false,
+                  padding: const EdgeInsets.only(top: 10, left: 15),
+                  placeholder: "",
+                  scrollBottomInset: 20,
+                  showCursor:
+                      _isKeyboardVisible || _isServiceDescriptionVisible,
+                  embedBuilders: FlutterQuillEmbeds.editorBuilders(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProductDescriptionText() {
+    return Text(
+      AppLocalization.of(context)!.description,
+      style: TextStyle(
+        color: darkGrey,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        fontFamily: "Inter",
+      ),
     );
   }
 
@@ -537,10 +880,12 @@ class _EditServiceState extends State<EditService> {
         title: Text(
           selectedServiceCategory != null ? selectedServiceCategory!.name : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -557,11 +902,13 @@ class _EditServiceState extends State<EditService> {
     final pressedCategory = await showDialog<ServiceCategory>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              backgroundColor: Colors.white,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -630,14 +977,45 @@ class _EditServiceState extends State<EditService> {
     }
   }
 
+  Widget getForeignCurrencyFieldAndInfo() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: getForeignCurrencyField(),
+        ),
+        getCurrencyInfo(),
+      ],
+    );
+  }
+
+  Widget getCurrencyInfo() {
+    return GestureDetector(
+      onTap: () async {
+        await showInfoDialog(
+          context: context,
+          title: 'Why set currency rate ?',
+          description:
+              'Setting a currency rate allows you to offer products in different currencies while ensuring accurate and up-to-date pricing.',
+        );
+      },
+      child: Icon(
+        Icons.info_outline_rounded,
+        color: blackFont,
+        size: 20,
+      ),
+    );
+  }
+
   Widget getAmountField() {
     return CustomizedTextFormField(
       controller: servicePriceController,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
-      labelText: "Price of service",
+      isReadOnly: currencyView ? true : false,
+      labelText: AppLocalization.of(context)!.priceLocalCurrency,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -671,10 +1049,10 @@ class _EditServiceState extends State<EditService> {
               backgroundColor: mateRed,
               onPressed: () async {
                 FocusScope.of(context).unfocus();
-                deleteProduct();
+                deleteServiceDialog();
               }),
         ),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         Expanded(
@@ -701,9 +1079,32 @@ class _EditServiceState extends State<EditService> {
     );
   }
 
+  void deleteServiceDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Service',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this service?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () {
+        deleteService();
+      },
+    );
+  }
+
   Future<void> editService() async {
     if (_formKey.currentState!.validate()) {
-      if (serviceLocalImages.length >= 0) {
+      if (serviceLocalImages.isNotEmpty || serviceImagesFromServer.isNotEmpty) {
         if (validateDropdown()) {
           // setting updated value
           currentService.name = serviceName;
@@ -714,8 +1115,21 @@ class _EditServiceState extends State<EditService> {
           currentService.category = messageDecoderWithEmoji(serviceCategory);
           currentService.shortDescription = serviceShortDescription;
           currentService.price = moneyInputNormalizer(servicePrice!).toString();
+          if (currencyView) {
+            foreignPriceModel ??= ForeignPrice();
+            foreignPriceModel?.price = moneyInputNormalizer(foreignPrice);
+            foreignPriceModel?.userCurrencyRate = selectedCurrencyId;
+
+            currentService.foreignPrice = foreignPriceModel;
+          }
           currentService.isAvailable = serviceIsAvailable;
           currentService.availableFrom = serviceAvailableFrom;
+          if (isDiscountAvailable) {
+            currentService.discountId = selectedDiscount?.id;
+          } else {
+            currentService.discountId = "";
+          }
+          currentService.searchKeywords = searchKeyword?.split(", ");
 
           await _auth.editService(currentService).then((value) {
             showToast(
@@ -745,10 +1159,395 @@ class _EditServiceState extends State<EditService> {
     return CustomizedCheckBoxField(
       onTap: () {
         serviceIsAvailable = !serviceIsAvailable!;
+        removeQuillFocus();
         setState(() {});
       },
       isChecked: serviceIsAvailable,
       title: "Available",
+    );
+  }
+
+  Widget getForeignCurrencyField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        currencyView = !currencyView;
+        removeQuillFocus();
+        setState(() {});
+      },
+      isChecked: currencyView,
+      title: AppLocalization.of(context)!.setPriceWithForeignCurrency,
+    );
+  }
+
+  Widget getForeignCurrencyPriceField() {
+    return CustomizedTextFormFieldForForeignCurrency(
+      labelText: AppLocalization.of(context)!.priceForeignCurrency,
+      controller: foreignController,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      selectedCurrencySymbol:
+          selectedCurrency != null ? worldCurrencies[selectedCurrency] : "-",
+      onTapCurrency: () {
+        currencyAndroidSheet();
+      },
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            foreignPrice = double.parse(val.replaceAll(',', '')).toString();
+
+            final price = getForeignPrice(double.parse(val.replaceAll(',', '')),
+                    selectedCurrencyRate) ??
+                "";
+            servicePrice = price.replaceAll(',', '');
+            servicePriceController.text = servicePrice!;
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        } else {
+          servicePriceController.clear();
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+
+  void removeQuillFocus() {
+    _focusNodeDescription.unfocus();
+  }
+
+  Widget getDiscountField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        isDiscountAvailable = !isDiscountAvailable;
+        setState(() {});
+      },
+      isChecked: isDiscountAvailable,
+      title: AppLocalization.of(context)!.discount,
+    );
+  }
+
+  Widget getDiscountListField() {
+    return CustomizedDropDownField(
+      title: 'Discount',
+      fontSize: 12,
+      titleColor: blackFont,
+      fontWeight: FontWeight.w400,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedDiscount != null
+              ? messageDecoderWithEmoji(selectedDiscount?.name) ??
+                  selectedDiscount?.merchant ??
+                  ""
+              : "",
+          style: TextStyle(
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          discountAndroidSheet();
+          removeQuillFocus();
+        },
+      ),
+    );
+  }
+
+  void currencyAndroidSheet() {
+    currencyList = currencyListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search currency',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      currencyList = currencyListCopy!
+                          .where((element) =>
+                              element.currency?.startsWith(value.toString()) ??
+                              false)
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      currencyList = currencyListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                if (currencyList?.isNotEmpty ?? false)
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: currencyList?.length,
+                      itemBuilder: (context, index) {
+                        final String currency =
+                            currencyList?[index].currency ?? "-";
+                        if (selectedCurrency == currency) {
+                          return Container(
+                            color: selectedListItemBackgroundBlue,
+                            child: ListTile(
+                              dense: true,
+                              title: Text(
+                                currencyNameAndSymbol(currency),
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                    color: navyBlue,
+                                    fontSize: 16,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              trailing: Icon(
+                                SlydoAppIcon.checked,
+                                color: navyBlue,
+                                size: 12,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                pressedCurrency = currency;
+                                if (pressedCurrency != null) {
+                                  servicePriceController.clear();
+                                  foreignController.clear();
+                                  servicePrice = "";
+                                  foreignPrice = "";
+                                  selectedCurrency = pressedCurrency;
+                                  selectedCurrencyId = currencyList?[index].id;
+                                  selectedCurrencyRate =
+                                      currencyList?[index].rate;
+                                  setState(() {});
+                                }
+                              },
+                            ),
+                          );
+                        }
+                        return ListTile(
+                          title: Text(
+                            currencyNameAndSymbol(currency),
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400),
+                          ),
+                          dense: true,
+                          onTap: () {
+                            Navigator.pop(context);
+                            pressedCurrency = currency;
+                            if (pressedCurrency != null) {
+                              servicePriceController.clear();
+                              foreignController.clear();
+                              servicePrice = "";
+                              foreignPrice = "";
+                              selectedCurrency = pressedCurrency;
+                              selectedCurrencyId = currencyList?[index].id;
+                              selectedCurrencyRate = currencyList?[index].rate;
+                              setState(() {});
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: NoItemInList(
+                      msg: 'No Rate Found',
+                      isButtonShow: true,
+                      buttonTitle: 'Add New Currency Rate',
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        final result = await NavigationUtil.push(
+                          context,
+                          screen: AddEditCurrency(
+                            currencyList: currencyList,
+                          ),
+                        );
+                        if (result != null && result == true) {
+                          await getCurrencyList();
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void discountAndroidSheet() {
+    discountList = discountListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search discount',
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      discountList = discountListCopy
+                          .where((element) =>
+                              (messageDecoderWithEmoji(element.name) ??
+                                      element.merchant ??
+                                      "")
+                                  .toLowerCase()
+                                  .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      discountList = discountListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: discountList.length,
+                    itemBuilder: (context, index) {
+                      final DiscountModel discount = discountList[index];
+                      if (selectedDiscount == discount) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              messageDecoderWithEmoji(discount.name) ??
+                                  discount.merchant ??
+                                  "",
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedDiscount = discount;
+                              Navigator.pop(context);
+                              if (pressedDiscount != null) {
+                                selectedDiscount = pressedDiscount;
+                                discountName = messageDecoderWithEmoji(
+                                        selectedDiscount?.name) ??
+                                    selectedDiscount?.merchant ??
+                                    "";
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          messageDecoderWithEmoji(discount.name) ??
+                              discount.merchant ??
+                              "",
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontFamily: "Inter",
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedDiscount = discount;
+                          Navigator.pop(context);
+                          if (pressedDiscount != null) {
+                            selectedDiscount = pressedDiscount;
+                            discountName = messageDecoderWithEmoji(
+                                    selectedDiscount?.name) ??
+                                selectedDiscount?.merchant ??
+                                "";
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget addNewCurrencyRate() {
+    return GestureDetector(
+      onTap: () async {
+        final result = await NavigationUtil.push(
+          context,
+          screen: AddEditCurrency(
+            currencyList: currencyList,
+          ),
+        );
+        if (result != null && result == true) {
+          await getCurrencyList();
+        }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add New Currency Rate',
+            style: TextStyle(
+              fontSize: 12,
+              color: navyBlue,
+              fontWeight: FontWeight.w500,
+              fontFamily: "Inter",
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
+      ),
     );
   }
 
@@ -774,33 +1573,32 @@ class _EditServiceState extends State<EditService> {
       },
       child: CustomizedDropDownField(
         title: "Available from",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(serviceAvailableFrom!),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-                fontFamily: "Inter",
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            formatDate(serviceAvailableFrom!),
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              fontFamily: "Inter",
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
+            maxLines: 1,
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),
     );
   }
 
-  void deleteProduct() async {
-    bool? result = await showDialog(
+  void deleteService() async {
+    final bool? result = await showDialog(
       context: context,
-      builder: (context) => ConfirmDelete(),
+      builder: (context) => const ConfirmDelete(),
     );
 
     if (result != null && result) {
@@ -814,6 +1612,19 @@ class _EditServiceState extends State<EditService> {
     }
   }
 
+  dynamic getExitDialog(BuildContext context) async {
+    await showExitDialogBackButton(
+      context: context,
+      leftButtonOnPressed: () {
+        Navigator.pop(context);
+      },
+      rightButtonOnPressed: () async {
+        FocusScope.of(context).unfocus();
+        await editService();
+      },
+    );
+  }
+
   @override
   void dispose() {
     serviceTitleController.dispose();
@@ -821,6 +1632,9 @@ class _EditServiceState extends State<EditService> {
     serviceShortDescriptionController.dispose();
     servicePriceController.dispose();
     _scrollController.dispose();
+    searchKeywordController.dispose();
+    _quillController.dispose();
+    _focusNodeDescription.dispose();
     super.dispose();
   }
 }

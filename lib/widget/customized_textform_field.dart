@@ -38,6 +38,7 @@ class CustomizedTextFormField extends StatefulWidget {
   bool isReadOnly;
   bool? enabled;
   bool isAmountField;
+  bool isforeignCurrency;
   String labelText;
   double? fontSize;
   String? hintText;
@@ -59,6 +60,7 @@ class CustomizedTextFormField extends StatefulWidget {
   double? borderWidth;
 
   CustomizedTextFormField({
+    super.key,
     this.initialValue,
     this.autoFocus = false,
     this.helperText,
@@ -86,6 +88,7 @@ class CustomizedTextFormField extends StatefulWidget {
     this.isPassword = false,
     this.isReadOnly = false,
     this.isAmountField = false,
+    this.isforeignCurrency = false,
     this.labelText = "",
     this.hintText = "",
     this.labelColor,
@@ -97,11 +100,11 @@ class CustomizedTextFormField extends StatefulWidget {
     this.inputFormatters,
     this.contentPadding = const EdgeInsets.symmetric(vertical: 10),
     this.borderWidth,
-    this.fontSize = 16,
+    this.fontSize = 14,
   });
 
   @override
-  _CustomizedTextFormFieldState createState() =>
+  State<CustomizedTextFormField> createState() =>
       _CustomizedTextFormFieldState();
 }
 
@@ -112,51 +115,53 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
 
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        widget.showLabelOrPassword
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  widget.hasLabel
-                      ? Text(
-                          widget.labelText,
-                          style: TextStyle(
-                            color: widget.labelColor != null
-                                ? widget.labelColor
-                                : darkGrey,
-                            fontSize: widget.fontSize,
-                            fontWeight: widget.fontWeight,
-                            fontFamily: "Inter",
-                          ),
-                        )
-                      : SizedBox.shrink(),
-                  widget.hasLabel
-                      ? SizedBox(
-                          height: 6,
-                        )
-                      : SizedBox.shrink(),
-                  widget.isPassword
-                      ? Text(
-                          "${widget.controller!.text.toString().length}/6",
-                          style: TextStyle(
-                            color: widget.labelColor != null
-                                ? widget.labelColor
-                                : darkGrey,
-                            fontSize: 14,
-                          ),
-                        )
-                      : Container(),
-                ],
-              )
-            : SizedBox.shrink(),
-        widget.hasLabel
-            ? SizedBox(
-                height: 6,
-              )
-            : SizedBox.shrink(),
+        if (widget.showLabelOrPassword)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              if (widget.hasLabel)
+                Text(
+                  widget.labelText,
+                  style: TextStyle(
+                    color: widget.labelColor ?? darkGrey,
+                    fontSize: widget.fontSize,
+                    fontWeight: widget.fontWeight,
+                    fontFamily: "Inter",
+                  ),
+                )
+              else
+                const SizedBox.shrink(),
+              if (widget.hasLabel)
+                const SizedBox(
+                  height: 6,
+                )
+              else
+                const SizedBox.shrink(),
+              if (widget.isPassword)
+                Text(
+                  "${widget.controller!.text.toString().length}/6",
+                  style: TextStyle(
+                    color: widget.labelColor ?? darkGrey,
+                    fontSize: 14,
+                    fontFamily: "Inter",
+                  ),
+                )
+              else
+                Container(),
+            ],
+          )
+        else
+          const SizedBox.shrink(),
+        if (widget.hasLabel)
+          const SizedBox(
+            height: 6,
+          )
+        else
+          const SizedBox.shrink(),
         TextFormField(
           initialValue: widget.initialValue,
           autofocus: widget.autoFocus,
@@ -182,7 +187,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           cursorColor: navyBlue,
           decoration: InputDecoration(
             helperText: widget.helperText,
-            hintText: widget.hintText != null ? widget.hintText : null,
+            hintText: widget.hintText,
             hintStyle: TextStyle(
               color: darkGrey.withOpacity(0.5),
               fontSize: 14,
@@ -192,20 +197,20 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
             prefix: Padding(
               padding: EdgeInsets.only(left: widget.isAmountField ? 8 : 16),
             ),
-            prefixIcon: widget.isAmountField
+            prefixIcon: widget.isAmountField && !widget.isforeignCurrency
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 10, right: 12),
                         child: Container(
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: darkGrey.withOpacity(.12)),
                           child: Text(
                             widget.currencySymbol ??
-                                worldCurrencies[userBloc.user.currency!]!,
+                                worldCurrencies[userBloc.user.currency]!,
                             style: TextStyle(
                               color: blackFont,
                               fontWeight: FontWeight.bold,
@@ -222,7 +227,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
             contentPadding: widget.contentPadding,
             enabledBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null
@@ -233,7 +238,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                 : null,
             disabledBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null
@@ -244,7 +249,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                 : null,
             focusedBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: navyBlue,
                       width: widget.borderWidth != null
@@ -255,7 +260,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                 : null,
             errorBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null
@@ -266,7 +271,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                 : null,
             focusedErrorBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null
@@ -292,7 +297,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           obscureText: widget.obscureText,
           maxLength: widget.maxLength,
           maxLines: widget.maxLines,
-          focusNode: widget.focusNode != null ? widget.focusNode : null,
+          focusNode: widget.focusNode,
           onChanged: (val) {
             if (widget.whenToVerifyInputFromServer != null) {
               if (widget.whenToVerifyInputFromServer!(val) == true) {
@@ -324,8 +329,8 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
   }
 
   TextInputType getKeyBoardType(TextInputType textInputType) {
-    TextInputType numberInputType = Platform.isIOS
-        ? TextInputType.numberWithOptions(decimal: true)
+    final TextInputType numberInputType = Platform.isIOS
+        ? const TextInputType.numberWithOptions(decimal: true)
         : TextInputType.number;
     if (widget.isAmountField == true) {
       return numberInputType;
@@ -340,7 +345,8 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
   Future _verifyInputFromServer() async {
     setState(() => verifyingInput = true);
 
-    bool? verifyInputFromServerFunc = await widget.verifyInputFromServerFunc!();
+    final bool? verifyInputFromServerFunc =
+        await widget.verifyInputFromServerFunc!();
     if (verifyInputFromServerFunc == true) {
       setState(() {
         inputVerified = true;
@@ -373,7 +379,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
 
   Widget? _getSuffixIcon() {
     if (showSuffixIconWhenTryingToValidateInputFromServer == false) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     if (widget.suffixIcon != null) {
       return widget.suffixIcon;
@@ -400,20 +406,23 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           child: CircleAvatar(
             radius: 14,
             backgroundColor: navyBlue,
-            child: Icon(Icons.check, size: 20, color: Colors.white),
+            child: const Icon(Icons.check, size: 20, color: Colors.white),
           ),
         );
       } else {
-        return Icon(Icons.cancel, color: Colors.red);
+        return const Icon(Icons.cancel, color: Colors.red);
       }
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
   List<TextInputFormatter>? getInputFormatters() {
     if (widget.isAmountField) {
-      return [CurrencyTextInputFormatter(symbol: '')];
+      return [
+        CurrencyTextInputFormatter.currency(symbol: ''),
+        LengthLimitingTextInputFormatter(20),
+      ];
     }
     if (widget.isNumberOnlyInput) {
       return [FilteringTextInputFormatter.digitsOnly];

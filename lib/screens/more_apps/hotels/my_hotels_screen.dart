@@ -7,8 +7,10 @@ import 'my_hotel_list.dart';
 import 'my_wish_list.dart';
 
 class MyHotelsScreen extends StatefulWidget {
+  const MyHotelsScreen({super.key});
+
   @override
-  _MyHotelsScreenState createState() => _MyHotelsScreenState();
+  State<MyHotelsScreen> createState() => _MyHotelsScreenState();
 }
 
 class _MyHotelsScreenState extends State<MyHotelsScreen> {
@@ -26,7 +28,7 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),
@@ -36,6 +38,7 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -65,10 +68,10 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
 
   Widget tabBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
+      preferredSize: const Size.fromHeight(50.0),
       child: TabBar(
         labelPadding: EdgeInsets.zero,
-        indicator: BoxDecoration(),
+        indicator: const BoxDecoration(),
         onTap: (int index) {
           currentIndex = index;
           setState(() {});
@@ -76,7 +79,7 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
         tabs: [
           Tab(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -97,7 +100,7 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
           ),
           Tab(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -124,7 +127,7 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [
+      children: const [
         MyHotelList(),
         MyWishList(),
       ],

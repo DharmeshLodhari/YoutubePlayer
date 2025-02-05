@@ -5,8 +5,10 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 class PartnerDetailPage extends StatefulWidget {
+  const PartnerDetailPage({super.key});
+
   @override
-  _PartnerDetailPageState createState() => _PartnerDetailPageState();
+  State<PartnerDetailPage> createState() => _PartnerDetailPageState();
 }
 
 class _PartnerDetailPageState extends State<PartnerDetailPage> {
@@ -21,6 +23,7 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -51,7 +54,7 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
               color: starYellow,
               size: 11,
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Text(
@@ -61,7 +64,7 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -71,7 +74,7 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           children: <Widget>[
             partnerDetailTile(
@@ -80,7 +83,7 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
                 title: "Renter friendly",
                 detail:
                     "Bond street dojo is a trusted, verified Slydo partner"),
-            SizedBox(
+            const SizedBox(
               height: 12,
             ),
             partnerDetailTile(
@@ -89,7 +92,7 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
                 title: "Tech-Savvy Partner",
                 detail:
                     "Bond street dojo is a trusted, verified Slydo partner"),
-            SizedBox(
+            const SizedBox(
               height: 12,
             ),
             partnerDetailTile(
@@ -97,7 +100,7 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
                 iconColor: starYellow,
                 title: "Populer partner",
                 detail: "This partner has helped ovr 866 renters on Slydo"),
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             askQuestionBtn(),
@@ -130,14 +133,14 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              SizedBox(
+              const SizedBox(
                 height: 4,
               ),
               Text(
@@ -147,7 +150,7 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
                     fontWeight: FontWeight.w600,
                     color: blackFont),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 4,
               ),
               Text(

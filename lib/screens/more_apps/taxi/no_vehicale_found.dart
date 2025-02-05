@@ -2,19 +2,15 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 
 class NoVehicleFound extends StatefulWidget {
+  const NoVehicleFound({super.key});
+
   @override
-  _NoVehicleFoundState createState() => _NoVehicleFoundState();
+  State<NoVehicleFound> createState() => _NoVehicleFoundState();
 }
 
 class _NoVehicleFoundState extends State<NoVehicleFound> {
-  MapController? mapController;
-
-  LatLng mapPoint = LatLng(6.605874, 3.349149);
-
   @override
   void initState() {
     super.initState();
@@ -27,7 +23,7 @@ class _NoVehicleFoundState extends State<NoVehicleFound> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [
@@ -74,6 +70,7 @@ class _NoVehicleFoundState extends State<NoVehicleFound> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -106,14 +103,14 @@ class _NoVehicleFoundState extends State<NoVehicleFound> {
           shadowColor: dividerColor,
           color: Colors.white,
           margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),
@@ -122,19 +119,19 @@ class _NoVehicleFoundState extends State<NoVehicleFound> {
               ),
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   Column(
                     children: [
                       getDriverInfo(),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
                       getPayButton(),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                 ],
@@ -157,7 +154,7 @@ class _NoVehicleFoundState extends State<NoVehicleFound> {
 
   Widget getDriverInfo() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -173,14 +170,14 @@ class _NoVehicleFoundState extends State<NoVehicleFound> {
               child: Container(
                   height: 60,
                   width: 60,
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   child: Icon(
                     Icons.info,
                     color: mateRed,
                   )),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(

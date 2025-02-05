@@ -16,6 +16,7 @@ class CustomizedAlert {
   final List<DialogButton>? buttons;
   final Function? closeFunction;
   final RoundedBackgroundIcon? roundedBackgroundIcon;
+  final double? descriptionPadding;
 
   CustomizedAlert({
     required this.context,
@@ -27,6 +28,7 @@ class CustomizedAlert {
     this.content,
     this.buttons,
     this.closeFunction,
+    this.descriptionPadding,
   });
 
   /// Displays defined alert window
@@ -56,74 +58,75 @@ class CustomizedAlert {
     return Center(
       child: ConstrainedBox(
         constraints: style.constraints ??
-            BoxConstraints.expand(
+            const BoxConstraints.expand(
                 width: double.infinity, height: double.infinity),
         child: Center(
           child: SingleChildScrollView(
             child: AlertDialog(
-              insetPadding: EdgeInsets.zero,
-              backgroundColor: style.backgroundColor ??
-                  Theme.of(context).dialogBackgroundColor,
-              shape: style.alertBorder ?? _defaultShape(),
-              titlePadding: EdgeInsets.all(0.0),
-              title: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Center(
-                  child: content ??
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              SizedBox(
-                                height: 24,
-                              ),
-                              _getImage() ?? Container(),
-                              SizedBox(
-                                height: 12,
-                              ),
-                              Text(
-                                title ?? "",
-                                style: TextStyle(
+                insetPadding: EdgeInsets.zero,
+                backgroundColor: style.backgroundColor ?? white,
+                shape: style.alertBorder ?? _defaultShape(),
+                titlePadding: const EdgeInsets.all(0.0),
+                title: SizedBox(
+                  width: MediaQuery.of(context).size.width - 40,
+                  child: Center(
+                    child: content ??
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Column(
+                              children: <Widget>[
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                _getImage() ?? Container(),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Text(
+                                  title ?? "",
+                                  style: TextStyle(
                                     color: blackFont,
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w600,
                                     fontFamily: "Inter",
-                                    fontSize: 16.0),
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(
-                                height: image != null ? 8 : 20,
-                              ),
-                              desc == null
-                                  ? Container()
-                                  : Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 40),
-                                      child: Text(
-                                        desc ?? "",
-                                        style: TextStyle(
-                                            color: darkGrey,
-                                            fontSize: 14.0,
-                                            fontWeight: FontWeight.w400,
-                                            fontFamily: "Inter"),
-                                        textAlign: TextAlign.center,
+                                    fontSize: 16.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(
+                                  height: image != null ? 15 : 20,
+                                ),
+                                if (desc == null)
+                                  Container()
+                                else
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: descriptionPadding ?? 40),
+                                    child: Text(
+                                      desc ?? "",
+                                      style: TextStyle(
+                                        color: lightBlackFont,
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: "Inter",
                                       ),
+                                      textAlign: TextAlign.center,
                                     ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
+                                  ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                  ),
                 ),
-              ),
-              contentPadding: style.buttonAreaPadding,
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: _getButtons(),
-              ),
-            ),
+                contentPadding: style.buttonAreaPadding,
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: _getButtons(),
+                )),
           ),
         ),
       ),
@@ -139,19 +142,19 @@ class CustomizedAlert {
 
   // Returns defined buttons. Default: Cancel Button
   List<Widget> _getButtons() {
-    List<Widget> expandedButtons = [];
+    final List<Widget> expandedButtons = [];
     if (buttons != null) {
-      var btnOne = Expanded(
+      final btnOne = Expanded(
         child: Padding(
-          padding: EdgeInsets.only(right: 8.0),
+          padding: const EdgeInsets.only(right: 8.0),
           child: buttons?[0] ?? Container(),
         ),
       );
       expandedButtons.add(btnOne);
       if ((buttons?.length ?? 0) > 1) {
-        var btnTwo = Expanded(
+        final btnTwo = Expanded(
           child: Padding(
-            padding: EdgeInsets.only(left: 8.0),
+            padding: const EdgeInsets.only(left: 8.0),
             child: buttons?[1] ?? Container(),
           ),
         );
@@ -164,39 +167,36 @@ class CustomizedAlert {
 
 // Returns alert image for icon
   Widget? _getImage() {
-    return roundedBackgroundIcon != null
-        ? roundedBackgroundIcon
-        : image != null
-            ? Container(
-                child: ClipOval(
-                  child: Image.network(
-                    image ?? "",
-                    height: 170,
-                    width: 170,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.high,
-                    cacheHeight: 170,
-                    cacheWidth: 170,
-                    frameBuilder: imageFrameBuilder,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.network(
-                          defaultImage,
-                          colorBlendMode: BlendMode.darken,
-                          fit: BoxFit.fill,
-                          filterQuality: FilterQuality.high,
-                        ),
-                      );
-                    },
-                  ),
+    return roundedBackgroundIcon ??
+        (image != null
+            ? ClipOval(
+                child: Image.network(
+                  image ?? "",
+                  height: 170,
+                  width: 170,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  cacheHeight: 170,
+                  cacheWidth: 170,
+                  frameBuilder: imageFrameBuilder,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.network(
+                        defaultImage,
+                        colorBlendMode: BlendMode.darken,
+                        fit: BoxFit.fill,
+                        filterQuality: FilterQuality.high,
+                      ),
+                    );
+                  },
                 ),
               )
-            : Container();
+            : Container());
   }
 
 // Shows alert with selected animation
-  _showAnimation(animation, secondaryAnimation, child) {
+  AnimatedWidget _showAnimation(animation, secondaryAnimation, child) {
     if (style.animationType == AnimationType.fromRight) {
       return AnimationTransition.fromRight(
           animation, secondaryAnimation, child);

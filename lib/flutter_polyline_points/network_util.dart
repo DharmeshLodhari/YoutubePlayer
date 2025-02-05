@@ -1,0 +1,44 @@
+import 'dart:convert';
+
+import 'package:Slydo/flutter_polyline_points/utils/polyline_decoder.dart';
+import 'package:Slydo/flutter_polyline_points/utils/polyline_request.dart';
+import 'package:Slydo/flutter_polyline_points/utils/polyline_result.dart';
+import 'package:http/http.dart' as http;
+
+class NetworkUtil {
+  static const String STATUS_OK = "ok";
+
+  ///Get the encoded string from google directions api
+  ///
+  Future<List<PolylineResult>> getRouteBetweenCoordinates(
+      {required PolylineRequest request}) async {
+    final List<PolylineResult> results = [];
+
+    final response = await http.get(request.toUri());
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final parsedJson = json.decode(response.body);
+      if (parsedJson["status"]?.toLowerCase() == STATUS_OK &&
+          parsedJson["routes"] != null &&
+          parsedJson["routes"].isNotEmpty) {
+        final List<dynamic> routeList = parsedJson["routes"];
+        for (var route in routeList) {
+          results.add(PolylineResult(
+              points: PolylineDecoder.run(route["overview_polyline"]["points"]),
+              errorMessage: "",
+              status: parsedJson["status"],
+              distance: route["legs"][0]["distance"]["text"],
+              distanceValue: route["legs"][0]["distance"]["value"],
+              overviewPolyline: route["overview_polyline"]["points"],
+              durationValue: route["legs"][0]["duration"]["value"],
+              endAddress: route["legs"][0]['end_address'],
+              startAddress: route["legs"][0]['start_address'],
+              duration: route["legs"][0]["duration"]["text"]));
+        }
+      } else {
+        throw Exception(
+            "Unable to get route: Response ---> ${parsedJson["status"]} ");
+      }
+    }
+    return results;
+  }
+}

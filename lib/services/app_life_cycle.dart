@@ -9,10 +9,10 @@ import 'package:provider/provider.dart';
 class AppLifeCycle extends StatefulWidget {
   final Widget? child;
 
-  AppLifeCycle({Key? key, this.child});
+  const AppLifeCycle({super.key, this.child});
 
   @override
-  _AppLifeCycleState createState() => _AppLifeCycleState();
+  State<AppLifeCycle> createState() => _AppLifeCycleState();
 }
 
 class _AppLifeCycleState extends State<AppLifeCycle>
@@ -20,7 +20,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
   late RefreshBlocForTransaction _refreshBlocForTransaction;
   late RefreshBlocForRequestPayment _refreshBlocForRequestPayment;
   late RefreshBlocForMessages _refreshBlocForMessages;
-  DatabaseHelper _db = DatabaseHelper();
+  final DatabaseHelper _db = DatabaseHelper();
   final _auth = AuthService();
   Map<String, dynamic>? device;
 
@@ -36,7 +36,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     // fetching device info from db
     fetchDeviceInfo();
@@ -53,7 +53,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -73,6 +73,8 @@ class _AppLifeCycleState extends State<AppLifeCycle>
       case AppLifecycleState.detached:
         onDetached();
         break;
+      case AppLifecycleState.hidden:
+        break;
     }
   }
 
@@ -90,7 +92,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
     AwesomeNotificationService().awesomeNotifications.cancelAll();
 
     //this will store the device data and the app state
-    Map<String, String?> tempData = Map<String, String?>();
+    final Map<String, String?> tempData = <String, String?>{};
     tempData['token'] = device != null ? device!['firebaseToken'] : "";
     tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "active";
@@ -99,12 +101,12 @@ class _AppLifeCycleState extends State<AppLifeCycle>
       _auth.updateAppState(tempData);
     }
 
-    debugPrint("App Life Cycle state is resumed and onResume is called");
+    // debugPrint("App Life Cycle state is resumed and onResume is called");
   }
 
   void onInactive() {
     //this will store the device data and the app state
-    Map<String, String?> tempData = Map<String, String?>();
+    final Map<String, String?> tempData = <String, String?>{};
     tempData['token'] = device != null ? device!['firebaseToken'] : "";
     tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "inActive";
@@ -113,12 +115,12 @@ class _AppLifeCycleState extends State<AppLifeCycle>
       _auth.updateAppState(tempData);
     }
 
-    debugPrint("App Life Cycle state is inactive and onInactive is called");
+    // debugPrint("App Life Cycle state is inactive and onInactive is called");
   }
 
   void onPause() {
     //this will store the device data and the app state
-    Map<String, String?> tempData = Map<String, String?>();
+    final Map<String, String?> tempData = <String, String?>{};
     tempData['token'] = device != null ? device!['firebaseToken'] : "";
     tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "in-background";
@@ -127,12 +129,12 @@ class _AppLifeCycleState extends State<AppLifeCycle>
       _auth.updateAppState(tempData);
     }
 
-    debugPrint("App Life Cycle state is paused and onPause is called");
+    // debugPrint("App Life Cycle state is paused and onPause is called");
   }
 
   void onDetached() {
     //this will store the device data and the app state
-    Map<String, String?> tempData = Map<String, String?>();
+    final Map<String, String?> tempData = <String, String?>{};
     tempData['token'] = device != null ? device!['firebaseToken'] : "";
     tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "suspended";
@@ -141,7 +143,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
       _auth.updateAppState(tempData);
     }
 
-    debugPrint("App Life Cycle state is detached and onDetached is called");
+    // debugPrint("App Life Cycle state is detached and onDetached is called");
   }
 
   // it will refresh all the list of the app eg: transactions, paymentRequests, messages

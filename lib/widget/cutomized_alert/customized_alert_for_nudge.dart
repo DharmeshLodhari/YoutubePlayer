@@ -55,7 +55,7 @@ class CustomizedAlertForNudge {
     return Center(
       child: ConstrainedBox(
         constraints: style.constraints ??
-            BoxConstraints.expand(
+            const BoxConstraints.expand(
                 width: double.infinity, height: double.infinity),
         child: Center(
           child: SingleChildScrollView(
@@ -64,8 +64,8 @@ class CustomizedAlertForNudge {
               backgroundColor: style.backgroundColor ??
                   Theme.of(context!).dialogBackgroundColor,
               shape: style.alertBorder ?? _defaultShape(),
-              titlePadding: EdgeInsets.all(0.0),
-              title: Container(
+              titlePadding: const EdgeInsets.all(0.0),
+              title: SizedBox(
                 width: MediaQuery.of(context!).size.width - 40,
                 child: Center(
                   child: Column(
@@ -73,11 +73,11 @@ class CustomizedAlertForNudge {
                     children: <Widget>[
                       Column(
                         children: <Widget>[
-                          SizedBox(
+                          const SizedBox(
                             height: 24,
                           ),
                           _getImage()!,
-                          SizedBox(
+                          const SizedBox(
                             height: 12,
                           ),
                           Text(
@@ -91,22 +91,23 @@ class CustomizedAlertForNudge {
                           SizedBox(
                             height: image != null ? 8 : 20,
                           ),
-                          desc == null
-                              ? Container()
-                              : Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 40),
-                                  child: Text(
-                                    desc!,
-                                    style: TextStyle(
-                                        color: blackFont, fontSize: 16.0),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                          SizedBox(
+                          if (desc == null)
+                            Container()
+                          else
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 40),
+                              child: Text(
+                                desc!,
+                                style:
+                                    TextStyle(color: blackFont, fontSize: 16.0),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          const SizedBox(
                             height: 4,
                           ),
-                          content == null ? Container() : content!,
+                          if (content == null) Container() else content!,
                         ],
                       )
                     ],
@@ -134,7 +135,7 @@ class CustomizedAlertForNudge {
 
   // Returns defined buttons. Default: Cancel Button
   List<Widget>? _getButtons() {
-    List<Widget>? expandedButtons = buttons;
+    final List<Widget>? expandedButtons = buttons;
     // if (buttons != null) {
     //   var btnOne = Expanded(
     //     child: Padding(
@@ -158,30 +159,27 @@ class CustomizedAlertForNudge {
 
 // Returns alert image for icon
   Widget? _getImage() {
-    debugPrint('MESSAGE DATA-> ${image}');
+    debugPrint('MESSAGE DATA-> $image');
 
-    return roundedBackgroundIcon != null
-        ? roundedBackgroundIcon
-        : image != null && image!.isNotEmpty
-            ? Container(
-                child: ClipOval(
-                  child: Image.network(
-                    image!,
-                    height: 170,
-                    width: 170,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.high,
-                    cacheHeight: 170,
-                    cacheWidth: 170,
-                    frameBuilder: imageFrameBuilder,
-                  ),
+    return roundedBackgroundIcon ??
+        (image != null && image!.isNotEmpty
+            ? ClipOval(
+                child: Image.network(
+                  image!,
+                  height: 170,
+                  width: 170,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  cacheHeight: 170,
+                  cacheWidth: 170,
+                  frameBuilder: imageFrameBuilder,
                 ),
               )
-            : Container();
+            : Container());
   }
 
 // Shows alert with selected animation
-  _showAnimation(animation, secondaryAnimation, child) {
+  dynamic _showAnimation(animation, secondaryAnimation, child) {
     if (style.animationType == AnimationType.fromRight) {
       return AnimationTransition.fromRight(
           animation, secondaryAnimation, child);

@@ -4,19 +4,21 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/blog/post_detail_page.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_comment_list.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/render_moment_screen.dart';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/utils.dart';
 import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
 import 'package:Slydo/screens/moments/widgets/custom_moment_detail_button.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_report_screen.dart';
-import 'package:Slydo/screens/post_detail_page.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/yarn/yarn_report_screen.dart';
 import 'package:Slydo/utils/cached_video_player/cached_video_player.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/extensions.dart';
@@ -36,9 +38,6 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../more_apps/user_profile/models/user.dart';
-import '../../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-
 class SingleMomentDetailScreen extends StatefulWidget {
   final List<MomentsModel> momentsModelList;
   final List<CachedVideoPlayerController> videoPlayerControllers;
@@ -54,7 +53,7 @@ class SingleMomentDetailScreen extends StatefulWidget {
   final PageController pageCtrl;
 
   SingleMomentDetailScreen({
-    Key? key,
+    super.key,
     required this.index,
     required this.momentsModelList,
     required this.videoPlayerControllers,
@@ -64,7 +63,7 @@ class SingleMomentDetailScreen extends StatefulWidget {
     required this.onRightSwipe,
     required this.pageCtrl,
     required this.onMomentPop,
-  }) : super(key: key);
+  });
 
   @override
   State<SingleMomentDetailScreen> createState() =>
@@ -87,8 +86,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   }
 
   Future<bool> addLikeToMoment() async {
-    MomentsModel data =
-        await MomentsService().likeMoment(widget.currentMoment.id!);
+    final MomentsModel data =
+        await MomentsAuthService().likeMoment(widget.currentMoment.id!);
     if (data != null) {
       setState(() {
         widget.currentMoment.likes = data.likes;
@@ -100,8 +99,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   }
 
   Future<bool> addDisLikeToMoment() async {
-    MomentsModel data =
-        await MomentsService().dislikeMoment(widget.currentMoment.id!);
+    final MomentsModel data =
+        await MomentsAuthService().dislikeMoment(widget.currentMoment.id!);
 
     if (data != null) {
       setState(() {
@@ -134,27 +133,36 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         widget.videoPlayerControllers.isEmpty) {
       controller = AnimationController(
         vsync: this,
-        duration: Duration(seconds: widget.currentMoment.duration ?? 30),
+        duration:
+            Duration(milliseconds: widget.currentMoment.duration ?? 30000),
       )..addListener(() {
-          setState(() {});
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            if (mounted) setState(() {});
+          });
         });
     } else if (widget.currentMoment.mediaType == 'video' &&
         widget.videoPlayerControllers.isNotEmpty) {
       controller = AnimationController(
         vsync: this,
-        duration: Duration(seconds: widget.currentMoment.duration ?? 30),
+        duration:
+            Duration(milliseconds: widget.currentMoment.duration ?? 30000),
       )..addListener(() {
-          setState(() {});
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            if (mounted) setState(() {});
+          });
         });
     } else {
       controller = AnimationController(
         vsync: this,
         duration: const Duration(seconds: 10),
       )..addListener(() {
-          setState(() {});
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            if (mounted) setState(() {});
+          });
         });
+      controller.forward();
     }
-    controller.animateTo(5.0);
+    // controller.animateTo(5.0);
     pageController = widget.pageCtrl;
 
     super.initState();
@@ -224,309 +232,303 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
           textDirection: Directionality.of(context),
           end: 15.0,
           bottom: MediaQuery.of(context).size.height * 0.13,
-          child: Container(
-            // padding: EdgeInsets.all(4),
-            // decoration: BoxDecoration(
-            //     color: blackFont.withOpacity(
-            //       .6,
-            //     ),
-            //     borderRadius: BorderRadius.circular(10)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const SizedBox(height: 16),
-                isMyMoment()
-                    ? CustomMomentDetailButton(
-                        iconEnabled: true,
-                        iconData: Icons.more_horiz_outlined,
-                        text: '',
-                        onPressed: () {
-                          androidBottomSheet(
-                            context: context,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                momentVisibilityOption(widget.currentMoment),
-                                momentPermanentOption(widget.currentMoment),
-                                enablePayment(widget.currentMoment),
-                                momentCommentingOption(widget.currentMoment),
-                                momentLikeOption(widget.currentMoment),
-                                bottomSheetItem(
-                                    title: 'Share in chat',
-                                    iconData: Icons.send_outlined,
-                                    onTap: () async {
-                                      await sendMomentToUserInChat(
-                                          momentsModel: widget.currentMoment);
-                                    }),
-                                bottomSheetItem(
-                                  title: 'Delete',
-                                  iconData: Icons.delete,
-                                  onTap: () {
-                                    Navigator.pop(context);
-
-                                    showDialogBox(
-                                      context: context,
-                                      actionOneTextColor: white,
-                                      actionOneBgColor: mateRed,
-                                      actionTwoTextColor: blackFont,
-                                      actionTwoBgColor: greyBorderColor,
-                                      title:
-                                          AppLocalization.of(context)!.delete,
-                                      actionTwoText:
-                                          AppLocalization.of(context)!.cancel,
-                                      actionOneText:
-                                          AppLocalization.of(context)!.delete,
-                                      description:
-                                          'Are you sure you want to delete this moment?',
-                                      roundedBackgroundIcon:
-                                          RoundedBackgroundIcon(
-                                        enableMargin: false,
-                                        width: 90,
-                                        height: 90,
-                                        image: Image.asset(
-                                            'assets/images/delete_dialog_icon.png'),
-                                      ),
-                                      leftButtonOnPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (dialogLoadingContext) =>
-                                                LoadingIndicator());
-                                        MomentsService()
-                                            .deleteMoment(
-                                                widget.currentMoment.id!, "")
-                                            .then(
-                                          (value) {
-                                            Navigator.pop(
-                                                context); // Dismiss loading indicator
-                                            Navigator.pop(context);
-                                            showToast(
-                                                message: 'Moment deleted');
-                                          },
-                                        ).catchError((e) {
-                                          Navigator.pop(context);
-                                          showToast(message: e.toString());
-                                        });
-                                      },
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      )
-                    : const SizedBox.shrink(),
-                _buildShareMomentOption(),
-                // CustomMomentDetailButton(
-                //   iconEnabled: likeEnabled(),
-                //   iconData: Icons.thumb_up,
-                //   text: likeEnabled()
-                //       ? int.parse(widget.currentMoment.likes.toString()) < 1
-                //           ? ''
-                //           : getFormattedViewCount(
-                //               noOfViews: widget.currentMoment.likes!,
-                //               addViewText: false)
-                //       : '',
-                // onPressed: likeEnabled()
-                //     ? () {
-                // MomentsService()
-                //     .likeMoment(widget.currentMoment.id!)
-                //             .then((value) {
-                //           widget.currentMoment = value;
-                //           if (mounted) setState(() {});
-                //         });
-                //       }
-                //     : null,
-                // ),
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white38,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            offset: const Offset(0.0, 0),
-                            color: Colors.black.withOpacity(0.6),
-                          ),
-                        ],
-                        // borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: LikeButton(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        padding: const EdgeInsets.only(left: 5),
-                        size: 20,
-                        circleColor: CircleColor(start: white, end: white),
-                        bubblesColor: BubblesColor(
-                          dotPrimaryColor: white,
-                          dotSecondaryColor: white,
-                        ),
-                        onTap: likeEnabled()
-                            ? (isLike) {
-                                _isLiked = true;
-                                _isDisLiked = false;
-                                setState(() {});
-                                return addLikeToMoment();
-                              }
-                            : null,
-                        likeBuilder: (bool isLiked) {
-                          return SvgPicture.asset(
-                            _isLiked == true
-                                ? "yarn/likeAfter".toSVG()
-                                : "yarn/likeBefore".toSVG(),
-                            color: white,
-                            height: 25,
-                            width: 25,
-                          );
-                        },
-                        likeCount: getLikeCount(),
-                        countBuilder: (_, __, ___) {
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      likeEnabled()
-                          ? int.parse(widget.currentMoment.likes.toString()) < 1
-                              ? ''
-                              : getFormattedViewCount(
-                                  noOfViews: widget.currentMoment.likes!,
-                                  addViewText: false)
-                          : '',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10.0,
-                            offset: Offset(0.0, 0),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white38,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            offset: const Offset(0.0, 0),
-                            color: Colors.black.withOpacity(0.6),
-                          ),
-                        ],
-                        // borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: LikeButton(
-                        padding: const EdgeInsets.only(left: 5),
-                        // crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        size: 20,
-                        circleColor: CircleColor(start: white, end: white),
-                        bubblesColor: BubblesColor(
-                          dotPrimaryColor: white,
-                          dotSecondaryColor: white,
-                        ),
-                        onTap: likeEnabled()
-                            ? (likes) {
-                                // MomentsService()
-                                //     .dislikeMoment(widget.currentMoment.id!)
-                                //     .then((value) {
-                                //   widget.currentMoment = value;
-                                //   if (mounted) setState(() {});
-                                // });
-                                _isDisLiked = true;
-                                _isLiked = false;
-                                setState(() {});
-
-                                return addDisLikeToMoment();
-                              }
-                            : null,
-                        // : null,
-                        likeBuilder: (bool isLiked) {
-                          return SvgPicture.asset(
-                            _isDisLiked == false
-                                ? "yarn/unlikeBefore".toSVG()
-                                : "yarn/unlikeAfter".toSVG(),
-                            color: white,
-                            height: 20,
-                            width: 17,
-                          );
-                        },
-                        likeCount: getDislikeCount(),
-                        countBuilder: (_, __, ___) {
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      likeEnabled()
-                          ? int.parse(widget.currentMoment.dislikes
-                                      .toString()) <
-                                  1
-                              ? ''
-                              : getFormattedViewCount(
-                                  noOfViews: widget.currentMoment.dislikes!,
-                                  addViewText: false,
-                                )
-                          : '',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10.0,
-                            offset: Offset(0.0, 0),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 18,
-                ),
-                CustomMomentDetailButton(
-                  iconEnabled: commentingEnabled(),
-                  svgImage: 'yarn/yarn_comment',
-                  isSvgIcon: true,
-                  text:
-                      commentingEnabled() ? getCommentCount(widget.index) : '',
-                  onPressed: commentingEnabled()
-                      ? () {
-                          commentSheet(context, widget.currentMoment.id!,
-                              widget.currentMoment.ownerName!,
-                              index: widget.index,
-                              currentMoment: widget.currentMoment);
-                        }
-                      : null,
-                ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const SizedBox(height: 16),
+              if (isMyMoment())
                 CustomMomentDetailButton(
                   iconEnabled: true,
-                  iconData: Icons.visibility_rounded,
-                  text: getFormattedViewCount(
-                    noOfViews: widget.currentMoment.views,
-                    addViewText: false,
+                  iconData: Icons.more_horiz_outlined,
+                  text: '',
+                  onPressed: () {
+                    androidBottomSheet(
+                      context: context,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          momentVisibilityOption(widget.currentMoment),
+                          momentPermanentOption(widget.currentMoment),
+                          enablePayment(widget.currentMoment),
+                          momentCommentingOption(widget.currentMoment),
+                          momentLikeOption(widget.currentMoment),
+                          bottomSheetItem(
+                              title: 'Share in chat',
+                              iconData: Icons.send_outlined,
+                              onTap: () async {
+                                await sendMomentToUserInChat(
+                                    momentsModel: widget.currentMoment);
+                              }),
+                          bottomSheetItem(
+                            title: 'Delete',
+                            iconData: Icons.delete,
+                            onTap: () {
+                              Navigator.pop(context);
+
+                              showDialogBox(
+                                context: context,
+                                actionOneTextColor: blackFont,
+                                actionOneBgColor: greyBorderColor,
+                                actionTwoTextColor: white,
+                                actionTwoBgColor: mateRed,
+                                title: 'Delete Moment',
+                                actionOneText:
+                                    AppLocalization.of(context)!.discard,
+                                actionTwoText:
+                                    AppLocalization.of(context)!.continueMsg,
+                                description:
+                                    'Are you sure you want to delete this moment?',
+                                roundedBackgroundIcon: RoundedBackgroundIcon(
+                                  enableMargin: false,
+                                  width: 90,
+                                  height: 90,
+                                  image: Image.asset(
+                                      'assets/images/delete_dialog_icon.png'),
+                                ),
+                                rightButtonOnPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (dialogLoadingContext) =>
+                                          LoadingIndicator());
+                                  MomentsAuthService()
+                                      .deleteMoment(
+                                          widget.currentMoment.id!, "")
+                                      .then(
+                                    (value) {
+                                      Navigator.pop(
+                                          context); // Dismiss loading indicator
+                                      Navigator.pop(context);
+                                      showToast(message: 'Moment deleted');
+                                    },
+                                  ).catchError((e) {
+                                    Navigator.pop(context);
+                                    showToast(message: e.toString());
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                )
+              else
+                const SizedBox.shrink(),
+              _buildShareMomentOption(),
+              // CustomMomentDetailButton(
+              //   iconEnabled: likeEnabled(),
+              //   iconData: Icons.thumb_up,
+              //   text: likeEnabled()
+              //       ? int.parse(widget.currentMoment.likes.toString()) < 1
+              //           ? ''
+              //           : getFormattedViewCount(
+              //               noOfViews: widget.currentMoment.likes!,
+              //               addViewText: false)
+              //       : '',
+              // onPressed: likeEnabled()
+              //     ? () {
+              // MomentsService()
+              //     .likeMoment(widget.currentMoment.id!)
+              //             .then((value) {
+              //           widget.currentMoment = value;
+              //           if (mounted) setState(() {});
+              //         });
+              //       }
+              //     : null,
+              // ),
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white38,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          offset: const Offset(0.0, 0),
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      ],
+                      // borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: LikeButton(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      padding: const EdgeInsets.only(left: 5),
+                      size: 20,
+                      circleColor: CircleColor(start: white, end: white),
+                      bubblesColor: BubblesColor(
+                        dotPrimaryColor: white,
+                        dotSecondaryColor: white,
+                      ),
+                      onTap: likeEnabled()
+                          ? (isLike) {
+                              _isLiked = true;
+                              _isDisLiked = false;
+                              setState(() {});
+                              return addLikeToMoment();
+                            }
+                          : null,
+                      likeBuilder: (bool isLiked) {
+                        return SvgPicture.asset(
+                          _isLiked == true
+                              ? "yarn/likeAfter".toSVG()
+                              : "yarn/likeBefore".toSVG(),
+                          color: white,
+                          height: 25,
+                          width: 25,
+                        );
+                      },
+                      likeCount: getLikeCount(),
+                      countBuilder: (_, __, ___) {
+                        return const SizedBox.shrink();
+                      },
+                    ),
                   ),
-                  onPressed: null,
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    likeEnabled()
+                        ? int.parse(widget.currentMoment.likes.toString()) < 1
+                            ? ''
+                            : getFormattedViewCount(
+                                noOfViews: widget.currentMoment.likes!,
+                                addViewText: false)
+                        : '',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10.0,
+                          offset: Offset(0.0, 0),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white38,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          offset: const Offset(0.0, 0),
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      ],
+                      // borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: LikeButton(
+                      padding: const EdgeInsets.only(left: 5),
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      size: 20,
+                      circleColor: CircleColor(start: white, end: white),
+                      bubblesColor: BubblesColor(
+                        dotPrimaryColor: white,
+                        dotSecondaryColor: white,
+                      ),
+                      onTap: likeEnabled()
+                          ? (likes) {
+                              // MomentsService()
+                              //     .dislikeMoment(widget.currentMoment.id!)
+                              //     .then((value) {
+                              //   widget.currentMoment = value;
+                              //   if (mounted) setState(() {});
+                              // });
+                              _isDisLiked = true;
+                              _isLiked = false;
+                              setState(() {});
+
+                              return addDisLikeToMoment();
+                            }
+                          : null,
+                      // : null,
+                      likeBuilder: (bool isLiked) {
+                        return SvgPicture.asset(
+                          _isDisLiked == false
+                              ? "yarn/unlikeBefore".toSVG()
+                              : "yarn/unlikeAfter".toSVG(),
+                          color: white,
+                          height: 20,
+                          width: 17,
+                        );
+                      },
+                      likeCount: getDislikeCount(),
+                      countBuilder: (_, __, ___) {
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    likeEnabled()
+                        ? int.parse(widget.currentMoment.dislikes.toString()) <
+                                1
+                            ? ''
+                            : getFormattedViewCount(
+                                noOfViews: widget.currentMoment.dislikes!,
+                                addViewText: false,
+                              )
+                        : '',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10.0,
+                          offset: Offset(0.0, 0),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 18,
+              ),
+              CustomMomentDetailButton(
+                iconEnabled: commentingEnabled(),
+                svgImage: 'yarn/yarn_comment',
+                isSvgIcon: true,
+                text: commentingEnabled() ? getCommentCount(widget.index) : '',
+                onPressed: commentingEnabled()
+                    ? () async {
+                        await pauseVideo();
+                        if (mounted) {
+                          commentSheet(
+                            context,
+                            widget.currentMoment.id!,
+                            widget.currentMoment.ownerName!,
+                            index: widget.index,
+                            currentMoment: widget.currentMoment,
+                          );
+                        }
+                      }
+                    : null,
+              ),
+              CustomMomentDetailButton(
+                iconEnabled: true,
+                iconData: Icons.visibility_rounded,
+                text: getFormattedViewCount(
+                  noOfViews: widget.currentMoment.views,
+                  addViewText: false,
                 ),
-              ],
-            ),
+                onPressed: null,
+              ),
+            ],
           ),
         ),
         Positioned(
@@ -542,7 +544,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     InkWell(
-                      onTap: () {
+                      onTap: () async {
                         String? image = '';
                         if (widget.currentMoment.avatar == "" ||
                             widget.currentMoment.avatar ==
@@ -553,8 +555,19 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                           image = widget.currentMoment.avatar;
                         }
 
-                        Navigator.of(context)
-                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                        await pauseVideo();
+                        if (mounted) {
+                          Navigator.of(context)
+                              .pushNamed(Routes.PHOTO_VIEWER, arguments: image)
+                              .whenComplete(() async {
+                            if (widget.videoPlayerControllers.isNotEmpty) {
+                              await widget.videoPlayerControllers[widget.index]
+                                  .play();
+                            }
+                            _renderMomentStateKey.currentState?.controller
+                                ?.forward();
+                          });
+                        }
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6.0),
@@ -570,15 +583,11 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                Routes.USER_PROFILE,
-                                arguments: {
-                                  "searchedUserName":
-                                      widget.currentMoment.owner,
-                                },
-                              );
+                            onTap: () async {
+                              await pauseVideo();
+                              if (mounted) {
+                                goToProfilePage();
+                              }
                             },
                             child: Text(
                               messageDecoderWithEmoji(
@@ -709,7 +718,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                       onTap: () async {
                         toggleMediaPlayingState();
                         await NavigationUtil.push(context,
-                            screen: CreateMediaMomentScreen());
+                            screen: const CreateMediaMomentScreen());
                         toggleMediaPlayingState();
                       },
                       child: Container(
@@ -780,13 +789,13 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                   iconData: Icons.block,
                   onTap: () async {
                     toggleMediaPlayingState();
-                    var user = CustomerProfile();
+                    final user = CustomerProfile();
                     user.userName = widget.currentMoment.owner;
                     user.fullName = widget.currentMoment.ownerName;
                     user.type = "";
                     user.nickName = "";
 
-                    Future<bool?> check = blockUserAlert(context, user);
+                    final Future<bool?> check = blockUserAlert(context, user);
                     if (check == true) {
                       Navigator.pop(context);
                       Navigator.pop(context);
@@ -801,14 +810,14 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
 
   Future<void> sendMomentToUserInChat(
       {required MomentsModel momentsModel}) async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
-    debugPrint("Selected users = ${listOfRecipient.length}");
+    // debugPrint("Selected users = ${listOfRecipient.length}");
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addMomentPostToChat(
           recipientUser: recipient!, momentsModel: momentsModel);
-    });
+    }
   }
 
   Future<void> addMomentPostToChat({
@@ -816,9 +825,9 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     required MomentsModel momentsModel,
     String? url,
   }) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> metaData = {
+    final Map<String, dynamic> metaData = {
       "id": momentsModel.id,
       "title": messageDecoderWithEmoji(momentsModel.text),
       "author_avatar": momentsModel.avatar,
@@ -834,7 +843,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         break;
     }
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(metaData),
       "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
@@ -867,8 +876,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
       iconData: icon,
       onTap: () {
         Navigator.pop(context);
-        MomentsService().updateMoment(
-            momentId: momentModel.id!, data: {"is_public": isPublic}).then(
+        MomentsAuthService().updateMoment(
+            momentId: momentModel.id ?? "", data: {"is_public": isPublic}).then(
           (value) {
             momentModel = value;
             if (mounted) setState(() {});
@@ -903,7 +912,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         ),
         onTap: () {
           Navigator.pop(context);
-          MomentsService().updateMoment(
+          MomentsAuthService().updateMoment(
               momentId: momentModel.id!,
               data: {"enable_payme": isEnabledPayment}).then(
             (value) {
@@ -925,8 +934,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   Widget momentPermanentOption(MomentsModel momentModel) {
     bool isPermanent = false;
     String title;
-    debugPrint("MOMENT MODEL IS PERMANENT:- ${momentModel.isPermanent}");
-    debugPrint("MOMENT IS PERMANENT:- ${momentModel.isPermanent}");
+    // debugPrint("MOMENT MODEL IS PERMANENT:- ${momentModel.isPermanent}");
+    // debugPrint("MOMENT IS PERMANENT:- ${momentModel.isPermanent}");
     if (momentModel.isPermanent ?? false) {
       isPermanent = momentModel.isPermanent!;
     }
@@ -942,7 +951,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
       iconData: CupertinoIcons.infinite,
       onTap: () {
         Navigator.pop(context);
-        MomentsService().updateMoment(
+        MomentsAuthService().updateMoment(
             momentId: momentModel.id!,
             data: {"is_permanent": !isPermanent}).then(
           (value) {
@@ -962,8 +971,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   Widget momentCommentingOption(MomentsModel momentModel) {
     bool isCommentingEnable = false;
     String title;
-    if (momentModel.enableCommenting ?? false) {
-      isCommentingEnable = momentModel.enableCommenting!;
+    if (momentModel.enableCommenting) {
+      isCommentingEnable = momentModel.enableCommenting;
     }
 
     IconData icon;
@@ -980,7 +989,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
       iconData: icon,
       onTap: () {
         Navigator.pop(context);
-        MomentsService().updateMoment(
+        MomentsAuthService().updateMoment(
             momentId: momentModel.id!,
             data: {"enable_commenting": !isCommentingEnable}).then(
           (value) {
@@ -1019,7 +1028,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
       onTap: () {
         Navigator.pop(context);
 
-        MomentsService().updateMoment(
+        MomentsAuthService().updateMoment(
             momentId: momentModel.id!,
             data: {"enable_like": !isLikeEnabled}).then(
           (value) {
@@ -1079,14 +1088,14 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   }
 
   Widget getTags() {
-    List<String> formattedTagList = [];
+    final List<String> formattedTagList = [];
 
     if (widget.currentMoment.tags != null) {
       widget.currentMoment.tags!.join(', ');
 
-      widget.currentMoment.tags!.forEach((tag) {
+      for (var tag in widget.currentMoment.tags!) {
         formattedTagList.add('#$tag ');
-      });
+      }
 
       return ReadMoreText(
         formattedTagList.join(' '),
@@ -1124,31 +1133,88 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     }
 
     if (attachment.containsKey('product')) {
-      return attachmentWidget(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              Routes.PRODUCT,
-              // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
-              arguments: {"productId": attachment['product']},
-            );
-          },
-          iconData: Icons.shopping_cart_rounded,
-          title: 'Product');
+      return InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            Routes.PRODUCT_DETAIL_PAGE,
+            // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
+            arguments: {"productId": attachment['product']},
+          );
+        },
+        child: Row(
+          children: [
+            Icon(
+              Icons.shopping_cart_rounded,
+              color: white,
+              size: 18,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              "Product",
+              style: TextStyle(
+                color: white,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
+        ),
+      );
+
+      // return attachmentWidget(
+      //   onTap: () {
+      //     Navigator.pushNamed(
+      //       context,
+      //       Routes.PRODUCT,
+      //       // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
+      //       arguments: {"productId": attachment['product']},
+      //     );
+      //   },
+      //   iconData: Icons.shopping_cart_rounded,
+      //   title: 'Product',
+      // );
     }
 
     if (attachment.containsKey('service')) {
-      return attachmentWidget(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              Routes.SERVICE_DETAIL,
-              // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
-              arguments: {"serviceId": attachment['service']},
-            );
-          },
-          iconData: Icons.handyman_rounded,
-          title: 'Service');
+      return InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            Routes.SERVICE_DETAIL,
+            // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
+            arguments: {"serviceId": attachment['service']},
+          );
+        },
+        child: Row(
+          children: [
+            Icon(
+              Icons.handyman_rounded,
+              color: white,
+              size: 18,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              "Service",
+              style: TextStyle(
+                color: white,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
+        ),
+      );
+      // return attachmentWidget(
+      //   onTap: () {
+      //     Navigator.pushNamed(
+      //       context,
+      //       Routes.SERVICE_DETAIL,
+      //       // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
+      //       arguments: {"serviceId": attachment['service']},
+      //     );
+      //   },
+      //   iconData: Icons.handyman_rounded,
+      //   title: 'Service',
+      // );
     }
 
     if (attachment.containsKey('blog')) {
@@ -1185,8 +1251,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   }
 
   bool commentingEnabled() {
-    return widget.currentMoment.enableCommenting != null &&
-        widget.currentMoment.enableCommenting!;
+    return widget.currentMoment.enableCommenting;
   }
 
   Widget getPayMeBtn() {
@@ -1302,21 +1367,24 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
           index: index,
           username: currentMoment!.ownerName!,
           moment: widget.currentMoment,
-          callbackUpdateCommentCount: (value, num) {
+          callbackUpdateCommentCount: (value, number) {
             if (value == true) {
               momentsBloc.numberOfComments[index] =
                   momentsBloc.numberOfComments[index] + 1;
               if (mounted) setState(() {});
             } else {
-              momentsBloc.numberOfComments[index] = num == 1
+              momentsBloc.numberOfComments[index] = number == 1
                   ? momentsBloc.numberOfComments[index] - 1
-                  : momentsBloc.numberOfComments[index] - num;
+                  : momentsBloc.numberOfComments[index] - number;
               if (mounted) setState(() {});
             }
           },
         ),
       ),
-    );
+    ).then((value) async {
+      await widget.videoPlayerControllers[widget.index].play();
+      _renderMomentStateKey.currentState?.controller?.forward();
+    });
   }
 
   Color checkColor() {
@@ -1329,5 +1397,29 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     } else {
       return HexColor('#3F61DB');
     }
+  }
+
+  void goToProfilePage() {
+    Navigator.pushNamed(
+      context,
+      Routes.USER_PROFILE,
+      arguments: {
+        "searchedUserName": widget.currentMoment.owner,
+      },
+    ).whenComplete(() async {
+      if (widget.videoPlayerControllers.isNotEmpty) {
+        await widget.videoPlayerControllers[widget.index].play();
+      }
+      _renderMomentStateKey.currentState?.controller?.forward();
+    });
+  }
+
+  Future<void> pauseVideo() async {
+    if (widget.videoPlayerControllers.isNotEmpty) {
+      await widget.videoPlayerControllers[widget.index].pause();
+      setState(() {}); // Force a rebuild after pausing the video
+    }
+    _renderMomentStateKey.currentState?.controller?.stop();
+    await Future.delayed(const Duration(milliseconds: 200));
   }
 }

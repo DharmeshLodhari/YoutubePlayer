@@ -1,12 +1,13 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/user_profile/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:Slydo/widget/vertical_list_item.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -18,15 +19,16 @@ import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
 class ProductAddOnList extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  ProductAddOnList({this.arguments, Key? key}) : super(key: key);
+  const ProductAddOnList({this.arguments, super.key});
 
   @override
-  _ProductAddOnListState createState() => _ProductAddOnListState();
+  State<ProductAddOnList> createState() => _ProductAddOnListState();
 }
 
-class _ProductAddOnListState extends State<ProductAddOnList> {
+class _ProductAddOnListState extends State<ProductAddOnList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -37,6 +39,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   String? next = "";
   String? previous = "";
   String? productId = "";
+  bool? isForCheckboxSelection = false;
   List<AddOns> productAddOnList = [];
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
@@ -46,12 +49,10 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   final _auth = ShoppingAuthService();
   bool isAPILoading = false;
 
-  //slidable tile
-  SlidableController? _slideController;
-
   @override
   void initState() {
     productId = widget.arguments["productId"];
+    isForCheckboxSelection = widget.arguments["isForCheckboxSelection"];
 
     getAddOnList();
 
@@ -63,11 +64,6 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         getAddOnList();
       }
     });
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
   }
 
   void getAddOnList() async {
@@ -77,17 +73,19 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           isLoading = true;
         });
       }
-      Map<String, dynamic>? result =
+      final Map<String, dynamic> result =
           await _auth.getAddOnsList(productId!, next, previous);
       if (result == null) {
         isLoading = false;
         noItemInList = true;
         return;
       }
+
+      productAddOnList = [];
       count = result['count'];
       next = result['next'];
       previous = result['previous'];
-      var tempList = result['results'];
+      final tempList = result['results'];
 
       productAddOnList.addAll(tempList);
 
@@ -105,10 +103,10 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           });
         }
       } else if (next == null && productAddOnList.length > 6) {
-        _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -117,29 +115,22 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   // refresh the list when lifecycle called onResume method
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        productAddOnList = [];
-        if (mounted) setState(() {});
-        getAddOnList();
-        setState(() {
-          // Call the callback function with the updated list
-          //to pass the list back to edit product page
-          // widget.onListRefreshed!(productVariantList);
-          _refreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      productAddOnList = [];
+      if (mounted) setState(() {});
+      getAddOnList();
+      setState(() {
+        // Call the callback function with the updated list
+        //to pass the list back to edit product page
+        // widget.onListRefreshed!(productVariantList);
         _refreshController.refreshCompleted();
-      }
-    });
+      });
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -158,15 +149,18 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           key: _scaffoldKey,
           backgroundColor: Colors.white,
           appBar: appBar() as PreferredSizeWidget?,
-          body: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
+          body: SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: _buildBody(),
             ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildBody(),
           ),
         ),
       ),
@@ -175,23 +169,23 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
       leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          // List<AddOns> addOnList = productAddOnList
-          //     .where((addOn) => addOn.isChecked == true)
-          //     .toList();
-          // Navigator.pop(context, addOnList);
-          Navigator.pop(context);
-        },
-      ),
+          icon: Icon(
+            Icons.keyboard_arrow_left,
+            color: navyBlue,
+            size: 24,
+          ),
+          onPressed: () async {
+            // List<AddOns> addOnList = productAddOnList
+            //     .where((addOn) => addOn.isChecked == true)
+            //     .toList();
+            // Navigator.pop(context, addOnList);
+            Navigator.of(context).pop();
+          }),
       centerTitle: false,
       title: Text(
         AppLocalization.of(context)!.addOn,
@@ -200,7 +194,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       ),
       actions: <Widget>[
         addOptionBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -237,7 +231,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       ),
       onTap: () async {
         final result = await Navigator.of(context)
-            .pushNamed(Routes.NEW_ADD_ON, arguments: {
+            .pushNamed(Routes.ADD_EDIT_ADD_ON, arguments: {
           'option': 'edit',
           'productId': productId,
         });
@@ -258,34 +252,50 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   Widget _buildProductAddOnList() {
     return Stack(
       children: [
-        noItemInList
-            ? NoItemInList(
-                title: AppLocalization.of(context)!.noAddOnYet,
-                msg: AppLocalization.of(context)!.noAddOnYetSub,
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                //+1 for progressbar
-                itemCount: productAddOnList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == productAddOnList.length) {
-                    return buildLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                      context,
-                      GestureDetector(
-                        onTap: () {
-                          toggleAddOnCheckedState(index);
-                        },
-                        child: productAddOnTile(
-                            addOns: productAddOnList[index], index: index),
-                      ),
-                      productAddOnList[index],
-                    );
-                  }
-                },
-                controller: _scrollController,
-              ),
+        if (noItemInList)
+          NoItemInList(
+            title: AppLocalization.of(context)!.noAddOnYet,
+            msg: AppLocalization.of(context)!.noAddOnYetSub,
+          )
+        else
+          isLoading && productAddOnList.isEmpty
+              ? buildShimmerEffect()
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  //+1 for progressbar
+                  itemCount: productAddOnList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == productAddOnList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                        context,
+                        GestureDetector(
+                          onTap: () async {
+                            // if (isForCheckboxSelection == true)
+                            //   toggleAddOnCheckedState(index);
+                            final data = await Navigator.of(context)
+                                .pushNamed(Routes.ADD_EDIT_ADD_ON, arguments: {
+                              'addOns': productAddOnList[index],
+                              'productId': productId,
+                            }).whenComplete(() => getAddOnList());
+
+                            // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
+                            if (data != null && data is AddOns) {
+                              //save the variant details for later use
+                              _onRefresh();
+                              if (mounted) setState(() {});
+                            }
+                          },
+                          child: productAddOnTile(
+                              addOns: productAddOnList[index], index: index),
+                        ),
+                        productAddOnList[index],
+                      );
+                    }
+                  },
+                  controller: _scrollController,
+                ),
         Positioned(
           bottom: 25, // Adjust the distance from the bottom as needed
           right: 25,
@@ -307,7 +317,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
               isAPILoading = true;
               if (mounted) setState(() {});
 
-              await loadAllCheckedAddOn();
+              loadAllCheckedAddOn();
 
               isAPILoading = false;
               if (mounted) setState(() {});
@@ -320,7 +330,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   }
 
   Widget loadAllCheckedAddOn() {
-    List<AddOns> addOnList =
+    final List<AddOns> addOnList =
         productAddOnList.where((addOn) => addOn.isChecked == true).toList();
 
     Navigator.pop(context, addOnList);
@@ -330,7 +340,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   Widget productAddOnTile({required AddOns addOns, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -349,7 +359,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
                     fontSize: 14,
                     fontFamily: "Inter"),
               ),
-              SizedBox(height: 5.0),
+              const SizedBox(height: 5.0),
               Text(
                 '${addOns.options!.length} items',
                 maxLines: 1,
@@ -361,15 +371,16 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
               ),
             ],
           ),
-
-          trailing: Checkbox(
-            value: addOns.isChecked ?? false,
-            activeColor: navyBlue,
-            onChanged: (bool? value) {
-              // Handle checkbox state change here
-              toggleAddOnCheckedState(index!);
-            },
-          ),
+          trailing: isForCheckboxSelection == true
+              ? Checkbox(
+                  value: addOns.isChecked ?? false,
+                  activeColor: navyBlue,
+                  onChanged: (bool? value) {
+                    // Handle checkbox state change here
+                    toggleAddOnCheckedState(index!);
+                  },
+                )
+              : null,
         ),
       ),
     );
@@ -385,51 +396,78 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   Widget _getSlidableWithLists(
       BuildContext context, Widget bankAccountTile, AddOns addOns) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(addOns: addOns),
+      ),
       child: VerticalListItem(bankAccountTile),
-      actions: listActionSlideActions(addOns: addOns),
-      secondaryActions: listSecondaryActions(addOns: addOns),
+      // secondaryActions: listSecondaryActions(addOns: addOns),
     );
   }
 
   List<Widget> listSecondaryActions({required AddOns addOns}) {
     return [
       SlideActionButton(
-          backgroundColor: starYellow,
-          icon: Icons.edit,
-          onTap: () async {
-            final data = await Navigator.of(context)
-                .pushNamed(Routes.UPDATE_ADD_ON, arguments: {
-              'addOns': addOns,
-              'productId': productId,
-            });
+        borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
+        backgroundColor: starYellow,
+        icon: Icons.edit,
+        onPressed: (con) async {
+          final data = await Navigator.of(context)
+              .pushNamed(Routes.ADD_EDIT_ADD_ON, arguments: {
+            'addOns': addOns,
+            'productId': productId,
+          });
 
-            // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
-            if (data != null && data is AddOns) {
-              //save the variant details for later use
-              _onRefresh();
-              if (mounted) setState(() {});
-            }
-          },
-          title: AppLocalization.of(context)!.edit,
-          slideController: _slideController),
+          // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
+          if (data != null && data is AddOns) {
+            //save the variant details for later use
+            _onRefresh();
+            if (mounted) setState(() {});
+          }
+        },
+        label: AppLocalization.of(context)!.edit,
+      ),
     ];
   }
 
   List<Widget> listActionSlideActions({AddOns? addOns}) {
     return [
       SlideActionButton(
-          backgroundColor: mateRed,
-          icon: SlydoAppIcon.remove,
-          onTap: () async {
-            deleteAddOn(addOns);
-          },
-          title: AppLocalization.of(context)!.delete,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
+        backgroundColor: mateRed,
+        icon: SlydoAppIcon.remove,
+        onPressed: (con) async {
+          deleteAddOnDialog(addOns);
+        },
+        label: AppLocalization.of(context)!.delete,
+      ),
     ];
+  }
+
+  void deleteAddOnDialog(AddOns? addOns) {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Add-on',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this add-on?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        deleteAddOn(addOns);
+      },
+    );
   }
 
   void deleteAddOn(AddOns? addOns) {
@@ -448,10 +486,6 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       showToast(message: error.toString());
     });
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   @override
   void dispose() {

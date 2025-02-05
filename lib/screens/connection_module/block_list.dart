@@ -1,49 +1,45 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/tiles/user_tile.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../../../routes/route_constants.dart';
-
 class BlockedList extends StatefulWidget {
+  const BlockedList({super.key});
+
   @override
-  _BlockedListState createState() => _BlockedListState();
+  State<BlockedList> createState() => _BlockedListState();
 }
 
-class _BlockedListState extends State<BlockedList> {
+class _BlockedListState extends State<BlockedList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldBlockListKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldBlockMessengerListKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
-  SlidableController? _slideController;
   int? count = 0;
   String? next = "";
   String? previous = "";
   List blockList = [];
-  ScrollController _scrollController = new ScrollController();
-  RefreshController _refreshController =
+  final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
 
-  @protected
+  @override
   void initState() {
-    this.getList();
-    super.initState();
+    getList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -51,33 +47,22 @@ class _BlockedListState extends State<BlockedList> {
         getList();
       }
     });
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
 
     super.initState();
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        blockList = [];
-        noItemInList = false;
-        getList();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      blockList = [];
+      noItemInList = false;
+      getList();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -90,20 +75,23 @@ class _BlockedListState extends State<BlockedList> {
       child: Scaffold(
         key: _scaffoldBlockListKey,
         backgroundColor: lightGrey,
-        body: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: Column(
-              children: [
-                Expanded(child: _buildFriendsList()),
-                SizedBox(height: 80),
-              ],
-            )),
+        body: SlidableAutoCloseBehavior(
+          closeWhenOpened: true,
+          child: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: Column(
+                children: [
+                  Expanded(child: _buildFriendsList()),
+                  const SizedBox(height: 80),
+                ],
+              )),
+        ),
       ),
     );
   }
@@ -114,30 +102,22 @@ class _BlockedListState extends State<BlockedList> {
         ? NoItemInList(
             msg: noBlockedListMsg,
           )
-        : ListView.builder(
-            padding: EdgeInsets.only(bottom: 80.0),
-            //+1 for progressbar
-            itemCount: blockList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == blockList.length) {
-                return _buildIndicator();
-              } else {
-                return _getSlidableWithLists(context, blockList[index], index);
-              }
-            },
-            controller: _scrollController,
-          );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+        : isLoading && blockList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: const EdgeInsets.only(left: 4, right: 4, bottom: 80.0),
+                //+1 for progressbar
+                itemCount: blockList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == blockList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context, blockList[index], index);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {
@@ -148,7 +128,7 @@ class _BlockedListState extends State<BlockedList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await UserAuth().listBlockUsers(next, previous).catchError((error) {
           debugPrint("ERROR:- $error");
           //  return;
@@ -158,12 +138,13 @@ class _BlockedListState extends State<BlockedList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
-        List<CustomerProfile> users = [];
+        final List<CustomerProfile> users = [];
 
-        tempList
-            .forEach((element) => users.add(CustomerProfile.fromJson(element)));
+        for (var element in tempList) {
+          users.add(CustomerProfile.fromJson(element));
+        }
 
         isLoading = false;
         blockList.addAll(users);
@@ -175,34 +156,31 @@ class _BlockedListState extends State<BlockedList> {
 
         if (mounted) setState(() {});
       } else if (next == null && blockList.length > 6) {
-        _scaffoldBlockMessengerListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldBlockMessengerListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
   }
 
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
-
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldBlockMessengerListKey.currentState!
-        .showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldBlockMessengerListKey.currentState
+        ?.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: naturalGreen,
         icon: SlydoAppIcon.unblock,
-        onTap: () {
+        onPressed: (con) {
           unBlockUserAlert(user, index);
         },
-        title: AppLocalization.of(context)!.unblock,
-        slideController: _slideController,
+        label: AppLocalization.of(context)!.unblock,
       ),
     ];
   }
@@ -212,7 +190,7 @@ class _BlockedListState extends State<BlockedList> {
   }
 
   void unBlockUserAlert(CustomerProfile user, int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: naturalGreen.withOpacity(0.08),
@@ -232,8 +210,8 @@ class _BlockedListState extends State<BlockedList> {
       actionTwoTextColor: Colors.white,
       firstActionPrimary: false,
       title: AppLocalization.of(context)!.unblock,
-      description: AppLocalization.of(context)!.areYouSureWantToUnblock +
-          " ${user.displayName()}",
+      description:
+          "${AppLocalization.of(context)!.areYouSureWantToUnblock} ${user.displayName()}",
       actionOneText: AppLocalization.of(context)!.cancel,
       actionTwoText: AppLocalization.of(context)!.accept,
     );
@@ -241,18 +219,14 @@ class _BlockedListState extends State<BlockedList> {
       bool done = await UserAuth().unBlockUser(user);
       done = true;
       if (done) {
-        _showSnackBar(
-            context,
-            "${user.displayName()} " +
-                AppLocalization.of(context)!.isUnblockedSuccessfully);
+        _showSnackBar(context,
+            "${user.displayName()} ${AppLocalization.of(context)!.isUnblockedSuccessfully}");
         setState(() {
           blockList.removeAt(index);
           if (blockList.length <= 9) {
             getList();
           }
         });
-      } else {
-        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }
@@ -261,13 +235,17 @@ class _BlockedListState extends State<BlockedList> {
       BuildContext context, CustomerProfile user, int index) {
     return Slidable(
       key: Key(user.userName!),
-      controller: _slideController,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(user, index),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(user, index),
+      ),
       child: VerticalListItem(user),
-      actions: listActionSlideActions(user, index),
-      secondaryActions: listSecondaryActions(user, index),
     );
   }
 
@@ -280,7 +258,7 @@ class _BlockedListState extends State<BlockedList> {
 }
 
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.user);
+  const VerticalListItem(this.user, {super.key});
 
   final CustomerProfile user;
 
@@ -288,14 +266,22 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-            ? Slidable.of(context)?.open()
-            : Slidable.of(context)?.close();
+        final slidableController = Slidable.of(context);
+        if (slidableController != null) {
+          if (slidableController.actionPaneType == ActionPaneType.none) {
+            slidableController.openEndActionPane();
+          } else {
+            slidableController.close();
+          }
+        }
+        // Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+        //     ? Slidable.of(context)?.open()
+        //     : Slidable.of(context)?.close();
         Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: UserTile(user: user),
       ),
     );

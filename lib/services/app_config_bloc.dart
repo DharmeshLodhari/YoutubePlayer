@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:Slydo/services/auth.dart';
-import 'package:flutter/cupertino.dart';
 
 import '../data/environment.dart';
 
@@ -15,16 +14,16 @@ class AppConfigurationBloc {
 
 class AppFeaturesService extends AuthService {
   Future<AppConfigurationModel> getAppFeatures() async {
-    String url = AppConfig.baseUrl + "/api/v1/user/app-settings";
+    final String url = "${AppConfig.baseUrl}/api/v1/user/app-settings";
 
-    var headers = getNonAuthHeader();
-    var response =
+    final headers = getNonAuthHeader();
+    final response =
         await httpGet(url, headers: headers as Map<String, dynamic>?);
 
-    debugPrint('SETTINGS :: ${response.body}');
+    // debugPrint('SETTINGS :: ${response.body}');
 
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = jsonDecode(response.body);
       return AppConfigurationModel.fromJson(jsonData);
     } else {
       return AppConfigurationModel.fromJson({});
@@ -160,5 +159,4 @@ class AppConfigurationModel {
   // "enable_empty_envelope":false,
   // "enable_location_sharing":false,
   // "country_name":"Nigeria"}
-
 }

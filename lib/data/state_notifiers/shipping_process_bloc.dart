@@ -1,7 +1,7 @@
-import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/shipping_process/models/package_details_model.dart';
+import 'package:Slydo/screens/shipping_process/models/shipping_option_model.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 
 class ShippingProcessBloc extends ChangeNotifier {
@@ -29,11 +29,21 @@ class ShippingProcessBloc extends ChangeNotifier {
   }
 
   PackageDetailsModel getPackageDetailModel() {
-    if (isUseCart) {
+    if (isUseCart &&
+        _currentSelectedIndex != null &&
+        _currentSelectedIndex! >= 0 &&
+        _currentSelectedIndex! < _packagesList.length) {
       return _packagesList[_currentSelectedIndex!];
     }
     return buyNowPackageDetailsModel;
   }
+
+  // PackageDetailsModel getPackageDetailModel() {
+  //   if (isUseCart) {
+  //     return _packagesList[_currentSelectedIndex!];
+  //   }
+  //   return buyNowPackageDetailsModel;
+  // }
 
   bool? isAllShippingProcessCompleted() {
     bool result = true;
@@ -44,6 +54,14 @@ class ShippingProcessBloc extends ChangeNotifier {
       }
     }
     return result;
+  }
+
+  int? getServiceCharge() {
+    int serviceCharge = 0;
+    for (int i = 0; i < _packagesList.length; i++) {
+      serviceCharge = _packagesList[i].customerServiceFee ?? 0;
+    }
+    return serviceCharge;
   }
 
   int? getTotalItemCost() {
@@ -62,14 +80,23 @@ class ShippingProcessBloc extends ChangeNotifier {
     return total;
   }
 
-  void updateDeliveryOption(String pickedDeliveryOption) {
+  int? getTotalOrder() {
+    final int? totalItemCost = getTotalItemCost();
+    final int? totalShipping = getTotalShipping();
+    final int? serviceCharge = getServiceCharge();
+    return (totalItemCost ?? 0) + (totalShipping ?? 0) + (serviceCharge ?? 0);
+  }
+
+  void updateDeliveryOption(String pickedDeliveryOption,
+      {void Function()? pickUpSelectCallBack}) {
     if (pickedDeliveryOption == "Shipping") {
       getPackageDetailModel().deliveryOption = DeliveryOptions.shipping;
-    } else if (pickedDeliveryOption == "Eatin") {
+    } else if (pickedDeliveryOption == "In Store/Eat In") {
       getPackageDetailModel().deliveryOption = DeliveryOptions.eatIn;
       updateShippingOption(null);
       getPackageDetailModel().updateDeliveryAddress(null);
     } else if (pickedDeliveryOption == "Pickup") {
+      pickUpSelectCallBack!();
       getPackageDetailModel().deliveryOption = DeliveryOptions.pickUp;
       updateShippingOption(null);
       getPackageDetailModel().updateDeliveryAddress(null);
@@ -94,8 +121,11 @@ class ShippingProcessBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateBuyNowProduct(Product? value, ShippingAddress addressListing) {
-    getPackageDetailModel().buyNow = value;
+  void updateBuyNowProduct(Product? value, Variant? variant,
+      List<AddOns> addOns, ShippingAddress addressListing) {
+    getPackageDetailModel().buyNow = value?.copyWith(quantity: 1);
+    getPackageDetailModel().variants = variant;
+    getPackageDetailModel().addOns = addOns;
     getPackageDetailModel().merchant = value?.seller;
     getPackageDetailModel().addressId = value?.addressId;
     getPackageDetailModel().totalItems = 1;
@@ -114,15 +144,17 @@ class ShippingProcessBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Map<String, dynamic> toPlaceOrder(String? userName) {
-    Map<String, dynamic> data = {
+  Map<String, dynamic> toPlaceOrder(String? userName, {int? totalAmount}) {
+    final Map<String, dynamic> data = {
       "payment_type": "Slydo",
-      "shipping_details": packagesList.map((e) => e.toCartPlaceOrder()).toList()
+      "shipping_details":
+          packagesList.map((e) => e.toCartPlaceOrder(totalAmount)).toList()
     };
-    if (isUseCart == false)
+    if (isUseCart == false) {
       data.addAll({
         "shopped_item": [getPackageDetailModel().toBuyNowPlaceOrder(userName)]
       });
+    }
     return data;
   }
 

@@ -9,8 +9,10 @@ import 'property_dashboard_bloc.dart';
 import 'property_explore_screen.dart';
 
 class PropertyDashboard extends StatefulWidget {
+  const PropertyDashboard({super.key});
+
   @override
-  _PropertyDashboardState createState() => _PropertyDashboardState();
+  State<PropertyDashboard> createState() => _PropertyDashboardState();
 }
 
 class _PropertyDashboardState extends State<PropertyDashboard> {
@@ -22,12 +24,14 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
   Widget build(BuildContext context) {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
     _propertyFilterBloc = Provider.of<PropertyFilterBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        _propertyDashboardBloc.index = 0;
-        _propertyFilterBloc.resetFilter();
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          _propertyDashboardBloc.index = 0;
+          _propertyFilterBloc.resetFilter();
 
-        return Future.value(true);
+          return;
+        }
       },
       child: Scaffold(
         body: PageView(
@@ -35,7 +39,7 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
           onPageChanged: (index) {
             _propertyDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             PropertyExploreScreen(),
             MyPropertiesScreen(),
           ],
@@ -81,7 +85,7 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
   BottomNavigationBarItem bottomNavigationBarItem(
       {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: SizedBox(
         height: 50,
         width: 108,
         child: Icon(
@@ -106,7 +110,7 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
@@ -116,13 +120,13 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
                 size: 16,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.w700),

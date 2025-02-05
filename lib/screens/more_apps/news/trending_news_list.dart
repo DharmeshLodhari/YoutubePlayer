@@ -1,24 +1,23 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/news/news_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/NewsListItem.dart';
+import 'models/news_list_item.dart';
 import 'news_auth.dart';
 
 class TrendingNewsList extends StatefulWidget {
+  const TrendingNewsList({super.key});
+
   @override
-  _TrendingNewsListState createState() => _TrendingNewsListState();
+  State<TrendingNewsList> createState() => _TrendingNewsListState();
 }
 
 class _TrendingNewsListState extends State<TrendingNewsList> {
   List<NewsListItem> newsListItem = [];
   bool isLoading = false;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -43,25 +42,18 @@ class _TrendingNewsListState extends State<TrendingNewsList> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       body: scaffoldBody(),
     );
   }
@@ -84,11 +76,12 @@ class _TrendingNewsListState extends State<TrendingNewsList> {
                   children: newsListItem
                       .map((news) => GestureDetector(
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
                               child: Column(
                                 children: [
                                   NewsTile(newsListItem: news),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 16,
                                   )
                                 ],

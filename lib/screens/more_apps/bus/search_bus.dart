@@ -1,19 +1,19 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_auth.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_ticket_tile.dart';
-import 'package:Slydo/screens/more_apps/bus/models/Transport.dart';
+import 'package:Slydo/screens/more_apps/bus/models/transport_model.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchBus extends StatefulWidget {
+  const SearchBus({super.key});
+
   @override
-  _SearchBusState createState() => _SearchBusState();
+  State<SearchBus> createState() => _SearchBusState();
 }
 
 class _SearchBusState extends State<SearchBus> {
@@ -24,7 +24,7 @@ class _SearchBusState extends State<SearchBus> {
   List<Transport> transports = [];
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -45,20 +45,12 @@ class _SearchBusState extends State<SearchBus> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -72,6 +64,7 @@ class _SearchBusState extends State<SearchBus> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -107,7 +100,7 @@ class _SearchBusState extends State<SearchBus> {
             )
           : SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: transports
                       .map(
@@ -116,7 +109,7 @@ class _SearchBusState extends State<SearchBus> {
                             Navigator.of(context).pushNamed("/ticket-detail");
                           },
                           child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: BusTicketTile(
                                 transport: element,
                               )),
@@ -131,8 +124,8 @@ class _SearchBusState extends State<SearchBus> {
 
   Widget swapPlace() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50),
-      child: Container(
+      preferredSize: const Size.fromHeight(50),
+      child: SizedBox(
         width: double.infinity,
         child: Column(
           children: [
@@ -149,7 +142,7 @@ class _SearchBusState extends State<SearchBus> {
                         color: darkGrey,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 4,
                     ),
                     Text(
@@ -176,7 +169,7 @@ class _SearchBusState extends State<SearchBus> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -186,7 +179,7 @@ class _SearchBusState extends State<SearchBus> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -196,7 +189,7 @@ class _SearchBusState extends State<SearchBus> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           InkWell(
@@ -208,7 +201,7 @@ class _SearchBusState extends State<SearchBus> {
                             child: ClipOval(
                               child: Card(
                                 elevation: 4,
-                                margin: EdgeInsets.symmetric(
+                                margin: const EdgeInsets.symmetric(
                                     horizontal: 2, vertical: 2),
                                 shadowColor: boxShadow,
                                 color: Colors.white,
@@ -217,7 +210,7 @@ class _SearchBusState extends State<SearchBus> {
                                   borderRadius: BorderRadius.circular(25),
                                 ),
                                 child: Container(
-                                  padding: EdgeInsets.all(14),
+                                  padding: const EdgeInsets.all(14),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(25),
@@ -235,7 +228,7 @@ class _SearchBusState extends State<SearchBus> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -245,7 +238,7 @@ class _SearchBusState extends State<SearchBus> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -255,7 +248,7 @@ class _SearchBusState extends State<SearchBus> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -281,7 +274,7 @@ class _SearchBusState extends State<SearchBus> {
                         color: darkGrey,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 4,
                     ),
                     Text(
@@ -297,7 +290,7 @@ class _SearchBusState extends State<SearchBus> {
                 flexibleSpace(flex: 1),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             )
           ],

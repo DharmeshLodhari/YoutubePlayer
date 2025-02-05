@@ -1,11 +1,11 @@
-import 'package:Slydo/screens/more_apps/business/models/Item.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
-import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
-import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/business/models/item_model.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_manager.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/taxi/model/directions_modal.dart';
+import 'package:Slydo/screens/more_apps/taxi/model/place_model.dart';
+import 'package:Slydo/screens/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 
 export 'package:Slydo/data/state_notifiers/basket_bloc.dart';
@@ -178,7 +178,7 @@ class TaxiBloc extends ChangeNotifier {
 }
 
 class DashboardBloc extends ChangeNotifier {
-  PageController _pageController = PageController(initialPage: 0);
+  final PageController _pageController = PageController(initialPage: 0);
   int _index = 0;
 
   int get index => _index;
@@ -194,8 +194,8 @@ class DashboardBloc extends ChangeNotifier {
       // unsecureScreen();
     }
     _index = value;
-    _pageController.animateToPage(_index,
-        duration: Duration(milliseconds: 1), curve: Curves.linear);
+    // _pageController.animateToPage(_index,
+    //     duration: Duration(milliseconds: 1), curve: Curves.linear);
     notifyListeners();
   }
 }
@@ -245,24 +245,25 @@ class AddInvoiceBloc extends ChangeNotifier {
 
   void updateTotal() {
     int sum = 0;
-    _items.forEach((element) {
+    for (var element in _items) {
       sum += (element!.amount! * element.quantity!);
-    });
+    }
     _total = sum;
   }
 }
 
 class ShareMessageToChatBloc extends ChangeNotifier {
-  List<ChatConversation?> _recipientUsers = [];
+  final List<ChatConversation?> _recipientUsers = [];
 
   void addRecipient({ChatConversation? chatConversation}) {
     bool isAlreadyPresent = false;
 
     /// Check for user is already in the list
-    _recipientUsers.forEach((element) {
-      if (element!.userName == chatConversation!.userName)
+    for (var element in _recipientUsers) {
+      if (element!.userName == chatConversation!.userName) {
         isAlreadyPresent = true;
-    });
+      }
+    }
 
     /// if user not present in the list then we add that user in recipient list
     if (!isAlreadyPresent) {
@@ -273,12 +274,12 @@ class ShareMessageToChatBloc extends ChangeNotifier {
   }
 
   void printRecipient() {
-    debugPrint("Sharing to ${_recipientUsers.length} Users");
+    // debugPrint("Sharing to ${_recipientUsers.length} Users");
 
-    _recipientUsers.forEach((element) {
+    for (var element in _recipientUsers) {
       debugPrint(
           "==> Username ${element!.userName} ConversationId:- ${element.conversationId}");
-    });
+    }
   }
 
   void removeRecipient({ChatConversation? customerProfile, String? username}) {
@@ -337,7 +338,7 @@ class ConnectionListBloc extends ChangeNotifier {
 
     _connectionUsers.clear();
     _connectionUsers = await _getConnectionUsers();
-    debugPrint('CONNECTION USERS --> ${_connectionUsers.length}');
+    // debugPrint('CONNECTION USERS --> ${_connectionUsers.length}');
     notifyListeners();
     return Future.value();
   }

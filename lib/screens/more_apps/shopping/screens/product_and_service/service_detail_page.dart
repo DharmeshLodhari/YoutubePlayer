@@ -1,75 +1,76 @@
 import 'dart:convert';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/main.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import 'package:Slydo/screens/more_apps/review/models/review.dart';
-import 'package:Slydo/screens/more_apps/review/review_auth.dart';
-import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/utils.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/review/models/review.dart';
+import 'package:Slydo/screens/review/review_auth.dart';
+import 'package:Slydo/screens/review/tiles/review_tile.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/user_profile/user_auth.dart';
+import 'package:Slydo/screens/yarn/models/share_as_yarn_model.dart';
+import 'package:Slydo/screens/yarn/share_as_a_yarn_screen.dart';
+import 'package:Slydo/screens/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
+import 'package:Slydo/widget/cart_with_badge.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../../../routes/route_constants.dart';
-import '../../../../../utils/navigation_util.dart';
-import '../../../../../utils/slydo_app_icon_new_icons.dart';
-import '../../../user_profile/user_auth.dart';
-import '../../../yarn/models/share_as_yarn_model.dart';
-import '../../../yarn/share_as_a_yarn_screen.dart';
-import '../../../yarn/yarn_auth.dart';
-import '../../../yarn/yarn_dashboard_bloc.dart';
-import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class ServiceDetailPage extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  ServiceDetailPage({required this.arguments});
+  const ServiceDetailPage({super.key, required this.arguments});
 
   @override
-  _ServiceDetailPageState createState() =>
-      _ServiceDetailPageState(arguments: arguments);
+  State<ServiceDetailPage> createState() => _ServiceDetailPageState();
 }
 
 class _ServiceDetailPageState extends State<ServiceDetailPage>
     with TickerProviderStateMixin {
-  var arguments;
   bool canRate = false;
-  late DashboardBloc _dashboardBloc;
+  // late DashboardBloc _dashboardBloc;
   bool noReviewInList = false;
-
-  _ServiceDetailPageState({this.arguments});
 
   Service? service;
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc userBloc;
   late BasketBloc basketBloc;
-  List<String?>? imgList = [];
+  List<String?>? displayServiceImage = [];
+  int selectedIndex = 0;
+  bool isSelected = true;
 
   final _auth = ShoppingAuthService();
 
   late bool isValidCustomer;
   bool isOtherItemFetched = false;
   bool isOtherItemIsEmpty = true;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   List<dynamic> sellersOtherItems = [];
 
@@ -86,11 +87,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   @override
   void initState() {
-    service = arguments['service'];
+    service = widget.arguments['service'];
     if (service != null) {
-      serviceId = service!.id;
+      serviceId = service?.id;
     } else {
-      serviceId = arguments['serviceId'];
+      serviceId = widget.arguments['serviceId'];
     }
 
     userBloc = Provider.of<UserBloc>(context, listen: false);
@@ -109,38 +110,39 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   void fetchService(String serviceId) async {
-    debugPrint('SERVICE ID :: $serviceId');
+    // debugPrint('SERVICE ID :: $serviceId');
 
-    if (mounted)
+    if (mounted) {
       setState(() {
         serviceIsLoading = true;
       });
+    }
     _auth.getService(serviceId).then((value) {
       if (mounted) {
         service = value;
-        imgList = service!.serverImages;
+        displayServiceImage = service?.serverImages;
         serviceIsLoading = false;
         if (mounted) setState(() {});
       }
     }).catchError((e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           serviceIsLoading = false;
         });
+      }
       Navigator.pop(context);
       showToast(message: e.toString());
     });
-    ;
   }
 
   Future canReviewService() async {
-    Map<String, String> data = {};
-    data['provider'] = service!.provider!;
+    final Map<String, String> data = {};
+    data['provider'] = service?.provider ?? "";
     data['buyer'] = userBloc.user.userName!;
     data['type'] = 'services';
-    data['id'] = service!.id!;
+    data['id'] = service?.id ?? "";
 
-    debugPrint('service data :: ${data}');
+    // debugPrint('service data :: $data');
 
     ReviewAuth().checkIfCanReviewProductOrService(data).then((value) {
       canRate = value;
@@ -155,16 +157,16 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     isReviewLoading = true;
     if (mounted) setState(() {});
 
-    await ReviewAuth().fetchServiceReviews(service: service).then((value) {
-      List? tempList =
+    await ReviewAuth().fetchServiceReviews(serviceId: serviceId).then((value) {
+      final List tempList =
           value.containsKey('results') ? value['results'] as List : [];
       value.containsKey('count') ? reviewCount = value["count"] : 0;
       canRate = value['can_rate'];
 
       reviewList = [];
-      tempList.forEach((element) {
+      for (var element in tempList) {
         reviewList.add(Review.fromJson(element));
-      });
+      }
 
       isReviewLoading = false;
       if (mounted) setState(() {});
@@ -178,7 +180,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   void getOtherItems() {
     _auth
         .ownersOrderProductsAndServices(
-            type: "services", userId: service!.provider, exclude: service!.id)
+            type: "services", userId: service?.provider, exclude: service?.id)
         .then((value) {
       if (value.isNotEmpty) {
         if (mounted) {
@@ -200,18 +202,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    if (serviceIsLoading) {
-      return Scaffold(
-        body: Center(
-          child: CircularLoadingIndicator(),
-        ),
-      );
-    }
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
-    _dashboardBloc = Provider.of<DashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
-    isValidCustomer = userBloc.user.userName != service!.provider;
+    isValidCustomer = userBloc.user.userName != service?.provider;
     return WillPopScope(
       onWillPop: () async {
         customerProfileBloc.customer = null;
@@ -219,7 +213,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         floatingActionButton: isValidCustomer ? floatingActionBar() : null,
         body: _buildServiceDetailsPage(context),
@@ -230,6 +224,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -250,16 +245,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        menuBtn(),
-        isValidCustomer
-            ? SizedBox(
-                width: 8,
-              )
-            : Container(),
-        isValidCustomer ? goToCartWidget() : Container(),
-        SizedBox(
-          width: 16,
+        if (isValidCustomer) goToCartWidget() else Container(),
+        const SizedBox(
+          width: 15,
         ),
+        menuBtn(),
+        const SizedBox(width: 15),
       ],
     );
   }
@@ -270,7 +261,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -278,7 +269,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -299,8 +291,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       onTap: () {
         showUserProfileActionsSheet();
       },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
+      backgroundColor: transparent,
+      enableMargin: false,
     );
   }
 
@@ -310,7 +302,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -318,7 +310,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -328,28 +321,37 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
+
+    final PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.product);
 
     list.add(
       bottomSheetItem(
         title: "Edit",
         iconData: SlydoAppIcon.edit,
         onTap: () async {
-          Navigator.pop(context);
-          var result = await Navigator.of(context).pushNamed(
-            '/edit-service',
-            arguments: {
-              "serviceId": serviceId,
-            },
-          );
+          if (hasPermission == PermissionType.WRITE) {
+            Navigator.pop(context);
+            final result = await Navigator.pushNamed(
+              context,
+              Routes.ADD_EDIT_SERVICE,
+              arguments: {
+                "serviceId": serviceId,
+              },
+            );
 
-          if (result != null) {
-            if (result is String) {
-              if (result == "delete_item" || result == "update_item") {
-                //To refresh the service list page
-                Navigator.pop(context, 'update_item');
+            if (result != null) {
+              if (result is String) {
+                if (result == "delete_item" || result == "update_item") {
+                  //To refresh the service list page
+                  Navigator.pop(context, 'update_item');
+                }
               }
             }
+          } else {
+            showToast(
+                message: AppLocalization.of(context)?.doNotPermission ?? "");
           }
         },
       ),
@@ -361,9 +363,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       onTap: () async {
         Navigator.pop(context);
 
-        var shareBody =
-            "http://slydo.co/store/${service!.provider}/services/${service!.id}";
-        Share.share(shareBody, subject: "${service!.name}");
+        final shareBody =
+            "http://slydo.co/store/${service?.provider}/services/${service?.id}";
+        Share.share(
+          shareBody,
+          subject: messageDecoderWithEmoji(service?.name) ?? "",
+        );
       },
     ));
 
@@ -371,7 +376,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       bottomSheetItem(
         isLast: true,
         title: "Share in Chat",
-        iconData: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.textMessage,
         onTap: () async {
           Navigator.pop(context);
           sendItemToUsersInChat();
@@ -383,7 +388,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: SlydoAppIconNew.dashboard_yarn,
+        iconData: SlydoAppIconNew.dashboardYarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();
@@ -406,17 +411,17 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     } */
 
     NavigationUtil.push(context,
-        screen: ShareAsAyarnScreen(
+        screen: ShareAsYarnScreen(
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             serviceModel: service,
             callback: (params) async {
-              params
-                ..attachment = {
-                  "service": service?.toJson().cast<String, dynamic>() ?? {}
-                };
+              params.attachment = {
+                "service": service?.toJson().cast<String, dynamic>() ?? {}
+              };
               logger.d(params.toAddMap());
-              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }
@@ -424,25 +429,23 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   void sendItemToUsersInChat() async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
-    debugPrint("Selected users = ${listOfRecipient.length}");
+    // debugPrint("Selected users = ${listOfRecipient.length}");
 
-    String url = AppConfig.baseUrl +
-        "/api/v1/${service is Product ? "products" : "services"}/" +
-        service!.id! +
-        "/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/${service is Product ? "products" : "services"}/${service?.id ?? ""}/";
 
-    Map<String, dynamic>? itemData =
+    final Map<String, dynamic>? itemData =
         await ShoppingAuthService().getProductOrService(url);
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addProductOrServiceToChat(
           item: service,
           itemData: itemData,
           recipientUser: recipient!,
           url: url);
-    });
+    }
   }
 
   void addProductOrServiceToChat(
@@ -450,9 +453,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       required ChatConversation recipientUser,
       String? url,
       dynamic item}) async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": url,
@@ -464,38 +467,15 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget goToCartWidget() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: badges.Badge(
-        badgeContent: getBadgeContent(),
-        position: badges.BadgePosition.topEnd(end: 0, top: 0),
-        badgeAnimation: badges.BadgeAnimation.rotation(
-          animationDuration: Duration(seconds: 1),
-          colorChangeAnimationDuration: Duration(seconds: 1),
-          loopAnimation: false,
-          curve: Curves.fastOutSlowIn,
-          colorChangeAnimationCurve: Curves.easeInCubic,
-        ),
-        badgeStyle: badges.BadgeStyle(
-            shape: badges.BadgeShape.circle,
-            badgeColor: naturalGreen,
-            padding: basketBloc.items.length == 0
-                ? EdgeInsets.all(0)
-                : EdgeInsets.all(4)),
-        child: Center(
-          child: Icon(
-            SlydoAppIcon.cart,
-            size: 16,
-            color: blackFont,
-          ),
-        ),
-      ),
+    return CartWithBadge(
+      items: basketBloc.basketItems,
+      height: 30,
+      width: 30,
+      backgroundColor: transparent,
+      enableMargin: true,
       onTap: () {
         NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
       },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
     );
   }
 
@@ -505,7 +485,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           service!.providerAvatar!, service!.providerFullName!, 15, 35),
       onTap: () async {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
-            arguments: {"searchedUserName": service!.provider});
+            arguments: {"searchedUserName": service?.provider});
       },
     );
   }
@@ -524,8 +504,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       onTap: () {
         if (isValidCustomer) {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
-            'recipient': service!.provider,
-            'subject': service!.name,
+            'recipient': service?.provider,
+            'subject': service?.name,
           });
         } else {
           showToast(message: "You can not message yourself !!");
@@ -540,20 +520,20 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       height: 44,
       width: 44,
       icon: Icon(
-        SlydoAppIcon.add_cart,
+        SlydoAppIcon.addCart,
         color: service!.isAvailable! ? navyBlue : greyBorderColor,
         size: 22,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
         showSnackbar(context, message: "Coming soon");
-        // if (service!.isAvailable!) {
+        // if (service?.isAvailable!) {
         //   if (isValidCustomer) {
         //     String type = service is Product ? "product" : "service";
         //     basketBloc.addItemToCart(item: service, type: type);
         //     late var mapData;
         //     basketBloc.items.forEach((element) {
-        //       if (element["item"].id == service!.id) {
+        //       if (element["item"].id == service?.id) {
         //         mapData = element;
         //         return;
         //       }
@@ -577,74 +557,21 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     );
   }
 
-  Widget goToBasket() {
-    return badges.Badge(
-      badgeContent: getBadgeContent(),
-      position: badges.BadgePosition.topEnd(end: 6, top: 6),
-      badgeAnimation: badges.BadgeAnimation.rotation(
-        animationDuration: Duration(seconds: 1),
-        colorChangeAnimationDuration: Duration(seconds: 1),
-        loopAnimation: false,
-        curve: Curves.fastOutSlowIn,
-        colorChangeAnimationCurve: Curves.easeInCubic,
-      ),
-      badgeStyle: badges.BadgeStyle(
-        shape: badges.BadgeShape.circle,
-        badgeColor: naturalGreen,
-        padding: basketBloc.items.length == 0
-            ? EdgeInsets.all(0)
-            : EdgeInsets.all(4),
-      ),
-      child: IconButton(
-        icon: Icon(
-          Icons.shopping_cart,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            Routes.DASHBOARD,
-            (Route<dynamic> route) => false,
-            arguments: {"dashboardIndex": 2},
-          );
-        },
-      ),
-    );
-  }
-
-  Widget? getBadgeContent() {
-    if (basketBloc.items.length == 0) {
-      return null;
-    }
-    return Text(
-      getBadgeCount().toString(),
-      style: TextStyle(
-          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
-    );
-  }
-
-  int getBadgeCount() {
-    int totalItem = 0;
-    basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
-    });
-    return totalItem;
-  }
-
   Widget floatingActionBar() {
     return Card(
       elevation: 10,
       shadowColor: boxShadowTwo,
       margin: EdgeInsets.zero,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
         child: Row(
           children: <Widget>[
             messageSellerWidget(),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             addToCartWidget(),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             _buildPayButtonWidget(),
           ],
         ),
@@ -653,88 +580,57 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildServiceDetailsPage(BuildContext context) {
+    if (serviceIsLoading) {
+      return buildProductShimmerLoadingIndicator(isLoading: serviceIsLoading);
+    }
     return ListView(
       controller: _scrollController,
       children: <Widget>[
-        Column(
-          children: [
-            _buildServiceImagesWidgets(),
-            Container(
-              padding: EdgeInsets.only(right: 20, left: 20, top: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _buildServiceTitleAndPriceWidget(),
-                  SizedBox(
-                    height: 24,
-                  ),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  _buildShortInfoWidget(),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  _buildAvailableFromAndShareWidgets(),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  _buildDescriptionWidget(),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _buildSellerInfoWidget(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _buildReviewList(),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  _buildWriteReview(),
-                ],
-              ),
-            ),
-            Divider(
-              height: 0,
-              color: dividerColor,
-              thickness: 1,
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            isOtherItemIsEmpty ? Container() : _buildProviderOtherServices(),
-            SizedBox(height: isValidCustomer ? 60.0 : 20),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildImageAndTag(),
+              const SizedBox(height: 5),
+              if (displayServiceImage!.length > 1)
+                _buildHorizontalServiceImageList()
+              else
+                const SizedBox(),
+              const SizedBox(height: 10),
+              _buildServiceTitleAndPriceWidget(),
+              const SizedBox(height: 10),
+              _buildAvailableFromAndShareWidgets(),
+              const SizedBox(height: 12),
+              _buildShortInfoWidget(),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              _buildDescriptionWidget(),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              getProductOrServiceSocialMedia(
+                  context, "Service", service?.id ?? ""),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              _buildSellerInfoWidget(),
+              const SizedBox(height: 12),
+              getHorizontalDivider(),
+              const SizedBox(height: 10),
+              _buildReviewList(),
+              const SizedBox(height: 12),
+              _buildWriteReview(),
+              getHorizontalDivider(),
+              const SizedBox(height: 12),
+              if (isOtherItemIsEmpty)
+                Container()
+              else
+                _buildProviderOtherServices(),
+              SizedBox(height: isValidCustomer ? 60.0 : 20),
+            ],
+          ),
         ),
       ],
     );
@@ -752,55 +648,67 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildReviewList() {
-    return reviewList.length == 0
-        ? Center(
-            child: Text(
-              "No Review yet",
-              style: TextStyle(
-                color: blackFont,
-                fontSize: 14,
-                fontFamily: "Inter",
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            buildReviewTitle(),
+            if (reviewList.isNotEmpty)
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed(Routes.REVIEW_LIST_SCREEN,
+                      arguments: {"reviewedService": service});
+                },
+                child: Text(
+                  "See all",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: navyBlue,
+                  ),
+                ),
               ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (reviewList.isEmpty)
+          Center(
+            child: Column(
+              children: [
+                Image.asset(
+                  "assets/images/reviews.png",
+                  height: 100,
+                  width: 100,
+                ),
+                Text(
+                  "No review to show",
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontFamily: "Inter",
+                  ),
+                ),
+              ],
             ),
           )
-        : Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  buildReviewTitle(),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushNamed(Routes.REVIEW_LIST_SCREEN,
-                          arguments: {"reviewedService": service});
-                    },
-                    child: Text(
-                      "See all",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: navyBlue,
-                      ),
+        else
+          Column(
+            children: reviewList
+                .map(
+                  (review) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: ReviewTile(
+                      review: review,
+                      service: service,
                     ),
                   ),
-                ],
-              ),
-              SizedBox(height: 12),
-              Column(
-                children: reviewList
-                    .map(
-                      (review) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: ReviewTile(
-                          review: review,
-                          service: service,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
-          );
+                )
+                .toList(),
+          ),
+      ],
+    );
   }
 
   Widget _buildDescriptionWidget() {
@@ -808,21 +716,19 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "More Information",
+          "Description",
           style: TextStyle(
-              color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            fontFamily: "Inter",
+          ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
-        Text(
-          messageDecoderWithEmoji(service!.description)!,
-          style: TextStyle(
-            fontSize: 14,
-            color: darkGrey,
-          ),
-          textAlign: TextAlign.justify,
-        ),
+        displayQuillFormattedText(
+            context, service?.description ?? "", darkGrey, 14, FontWeight.w400),
       ],
     );
   }
@@ -840,7 +746,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       children: [
         GestureDetector(
           onTap: () async {
-            var result = await Navigator.of(context).pushNamed(
+            final result = await Navigator.of(context).pushNamed(
               Routes.ADD_REVIEW,
               arguments: {
                 "service": service,
@@ -853,47 +759,50 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               }
             }
           },
-          child: Container(
+          child: SizedBox(
             width: double.infinity,
             child: Center(
               child: Text(
                 "Write a review",
                 style: TextStyle(
-                    color: navyBlue, fontWeight: FontWeight.w700, fontSize: 16),
+                  color: navyBlue,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  fontFamily: "Inter",
+                ),
               ),
             ),
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }
 
   Widget _buildSellerInfoWidget() {
-    return service!.providerAvatar == null
+    return service?.providerAvatar == null
         ? Container()
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Provider",
+                "Merchant",
                 style: TextStyle(
-                    color: blackFont,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 8,
+                  color: blackFont,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
+                ),
               ),
               ListTile(
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
                 leading: GestureDetector(
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: service!.providerAvatar);
+                        arguments: service?.providerAvatar);
                   },
-                  child: Container(
+                  child: SizedBox(
                     height: 48,
                     width: 48,
                     child: ClipOval(
@@ -907,7 +816,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ),
                 ),
                 title: userNameWithVerifiedIcon(
-                  name: service!.providerFullName ?? '',
+                  name: service?.providerFullName ?? '',
                   isVerified: false,
                   textStyle: TextStyle(
                       fontSize: 14,
@@ -915,7 +824,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                       fontWeight: FontWeight.w600),
                 ),
                 subtitle: Text(
-                  service!.provider ?? "",
+                  service?.provider ?? "",
                   style: TextStyle(
                     fontSize: 12,
                     color: darkGrey,
@@ -924,120 +833,261 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 ),
                 onTap: () {
                   Navigator.pushNamed(context, Routes.USER_PROFILE,
-                      arguments: {"searchedUserName": service!.provider});
+                      arguments: {"searchedUserName": service?.provider});
                 },
               ),
             ],
           );
   }
 
-  Widget _buildServiceImagesWidgets() {
+  Widget _buildImageAndTag() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4.0),
-      child: imgList!.length == 0
-          ? AspectRatio(
-              aspectRatio: 1.7,
-              child: Center(
-                child: CircularLoadingIndicator(),
-              ),
-            )
-          : imgList!.length == 1
-              ? Stack(
-                  children: [
-                    AspectRatio(
-                      aspectRatio: 1.7,
-                      child: Container(
-                        child: Center(
-                            child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          child: CachedNetworkImage(
-                            placeholder: (context, url) =>
-                                Center(child: CircularLoadingIndicator()),
-                            imageUrl: imgList![0]!,
-                            fit: BoxFit.fitHeight,
-                            height: double.infinity,
-                            width: double.infinity,
-                            errorWidget: productAndServiceBigErrorWidget,
-                          ),
-                        )),
-                      ),
-                    ),
-                    getOutOfStockTag(),
-                  ],
-                )
-              : Column(
-                  children: <Widget>[
-                    Stack(
-                      children: <Widget>[
-                        CarouselSlider(
-                          options: CarouselOptions(
-                              enableInfiniteScroll: false,
-                              viewportFraction: 1.0,
-                              enlargeCenterPage: true,
-                              autoPlay: false,
-                              aspectRatio: 1.7,
-                              onPageChanged: (index, _) {
-                                if (mounted) {
-                                  setState(() {
-                                    _current = index;
-                                  });
-                                }
-                              }),
-                          items: imgList!
-                              .map((item) => Stack(
-                                    children: [
-                                      getOutOfStockTag(),
-                                      Container(
-                                        child: Center(
-                                            child: ClipRRect(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10)),
-                                          child: CachedNetworkImage(
-                                            placeholder: (context, url) => Center(
-                                                child:
-                                                    CircularLoadingIndicator()),
-                                            imageUrl: item!,
-                                            errorWidget:
-                                                productAndServiceBigErrorWidget,
-                                            fit: BoxFit.fitHeight,
-                                            height: double.infinity,
-                                            width: double.infinity,
-                                          ),
-                                        )),
-                                      ),
-                                    ],
-                                  ))
-                              .toList(),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          left: MediaQuery.of(context).size.width / 2 -
-                              (5 * imgList!.length),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: imgList!.map((url) {
-                              int index = imgList!.indexOf(url);
-                              return Container(
-                                width: 5.0,
-                                height: 5.0,
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 2.0),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: _current == index
-                                      ? navyBlue
-                                      : navyBlueLight,
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+      ),
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      child: Column(
+        children: [
+          _buildServiceImagesWidgets(),
+          serviceStockAndDetailTag(),
+        ],
+      ),
     );
+  }
+
+  Widget _buildServiceImagesWidgets() {
+    return displayServiceImage?.isEmpty ?? false
+        ? AspectRatio(
+            aspectRatio: 1.5,
+            child: Center(
+              child: CircularLoadingIndicator(),
+            ),
+          )
+        : displayServiceImage?.length == 1
+            ? CachedNetworkImage(
+                height: MediaQuery.of(context).size.width - 50,
+                width: double.infinity,
+                placeholder: (context, url) =>
+                    Center(child: CircularLoadingIndicator()),
+                imageUrl: displayServiceImage![0]!,
+                fit: BoxFit.cover,
+                errorWidget: productAndServiceBigErrorWidget,
+              )
+            : Column(
+                children: [
+                  Stack(
+                    children: [
+                      cs.CarouselSlider.builder(
+                        key: ValueKey<int>(selectedIndex),
+                        options: cs.CarouselOptions(
+                          initialPage: selectedIndex,
+                          enableInfiniteScroll: false,
+                          viewportFraction: 1.0,
+                          enlargeCenterPage: true,
+                          autoPlay: false,
+                          height: MediaQuery.of(context).size.width - 50,
+                          onPageChanged: (index, _) {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                            _current = index;
+                          },
+                        ),
+                        itemCount: displayServiceImage?.length,
+                        itemBuilder: (context, index, realIndex) {
+                          final item = displayServiceImage?[index];
+                          return Center(
+                            child: CachedNetworkImage(
+                              placeholder: (context, url) => Center(
+                                child: CircularLoadingIndicator(),
+                              ),
+                              imageUrl: item ?? "",
+                              fit: BoxFit.cover,
+                              height: MediaQuery.of(context).size.width - 50,
+                              width: double.infinity,
+                              errorWidget: productAndServiceBigErrorWidget,
+                            ),
+                          );
+                        },
+                      ),
+                      Positioned(
+                        bottom: 10,
+                        left: 0,
+                        right: 0,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: bgLightGrey,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: const EdgeInsets.all(7),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildServiceCustomTabPhotoAndVideo(
+                                  onTap: () {
+                                    _onServiceTabSelected(0);
+                                  },
+                                  text:
+                                      "Photo ${selectedIndex + 1}/${displayServiceImage?.length}",
+                                  backgroundColor: white,
+                                  // backgroundColor:
+                                  //     selectedIndex == 0 ? transparent : white,
+                                ),
+                                // video
+                                // _buildCustomTabPhotoAndVideo(
+                                //     onTap: () {
+                                //       _onTabSelected(1);
+                                //     },
+                                //     text: "Video",
+                                //     backgroundColor: selectedIndex == 1
+                                //         ? transparent
+                                //         : white),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+  }
+
+  Widget _buildServiceCustomTabPhotoAndVideo(
+      {void Function()? onTap, Color? backgroundColor, String? text}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+          child: Text(
+            text ?? "",
+            style: TextStyle(
+              fontSize: 12,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Inter',
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _onServiceTabSelected(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
+  Widget _buildHorizontalServiceImageList() {
+    return Container(
+      height: 50,
+      alignment: Alignment.center,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: displayServiceImage?.length ?? 0,
+        itemBuilder: (context, index) {
+          final String? imageUrl = displayServiceImage?[index];
+          isSelected = selectedIndex == index;
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedIndex = index;
+                _current = index;
+              });
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+              foregroundDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border:
+                    isSelected ? Border.all(color: black, width: 1.2) : null,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: CachedNetworkImage(
+                  placeholder: (context, url) =>
+                      Center(child: CircularLoadingIndicator()),
+                  imageUrl: imageUrl ?? "",
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                  errorWidget: productAndServiceBigErrorWidget,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget serviceStockAndDetailTag() {
+    if (service?.availableFrom?.isAfter(DateTime.now()) ?? false) {
+      return SizedBox(
+        width: double.infinity,
+        height: 30,
+        child: showColoredLabeledWidgetService(
+          date: formatDate1(service?.availableFrom),
+          service: service,
+          text: AppLocalization.of(context)!.comingSoon,
+          color: lightYellow,
+          fontSize: 14,
+          verticalPadding: 8,
+        ),
+      );
+    } else if (service?.isAvailable == false) {
+      return SizedBox(
+        width: double.infinity,
+        height: 30,
+        child: showColoredLabeledWidgetService(
+          service: service,
+          text: AppLocalization.of(context)!.outOfStock,
+          color: lightRed,
+          fontSize: 14,
+          verticalPadding: 8,
+        ),
+      );
+    } else if ((service?.discountedPrice != null &&
+            service?.discountedPrice != 0) ||
+        (service?.pricePercentageChange != null &&
+            service?.pricePercentageChange != 0.0)) {
+      return buildServiceDiscountPrice();
+    } else {
+      return const SizedBox();
+    }
+  }
+
+  Widget buildServiceDiscountPrice() {
+    if (service?.discountedPrice != null && service?.discountedPrice != 0) {
+      if (service?.checkServiceDiscount() ?? false) {
+        return SizedBox(
+          width: double.infinity,
+          height: 30,
+          child: showDiscountValue(
+            service?.discountType ?? "",
+            service?.discountValue ?? 0,
+            service?.currency,
+            verticalPadding: 8,
+            fontSize: 14,
+          ),
+        );
+      } else {
+        return const SizedBox();
+      }
+    } else {
+      return const SizedBox();
+    }
   }
 
   Widget getOutOfStockTag() {
@@ -1049,7 +1099,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             text: AppLocalization.of(context)!.outOfStock, color: starYellow),
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget _buildServiceTitleAndPriceWidget() {
@@ -1063,46 +1113,72 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             children: <Widget>[
               Text(
                 //name,
-                messageDecoderWithEmoji(service!.name)!,
+                messageDecoderWithEmoji(service?.name)!,
                 style: TextStyle(
-                    fontSize: 16,
-                    color: blackFont,
-                    fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      worldCurrencies[service!.currency!]!,
-                      style: TextStyle(
-                          fontFamily: "Inter",
-                          fontSize: 18.0,
-                          color: navyBlue,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      moneyDisplayNormalizer(
-                          int.parse(service!.price.toString())),
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          color: navyBlue,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                  fontSize: 18,
+                  color: blackFont,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Inter',
                 ),
               ),
-              SizedBox(height: 5),
-              getRating(
-                numberOfRating: service?.rating!.toInt(),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    worldCurrencies[service?.currency!]!,
+                    style: TextStyle(
+                      fontFamily: "Inter",
+                      fontSize: 16.0,
+                      color: navyBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    moneyDisplayNormalizer(
+                        int.parse(service?.price.toString() ?? "")),
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: navyBlue,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              Row(
+                children: [
+                  getRating(
+                    numberOfRating: service?.rating?.toInt(),
+                    starSize: 14,
+                  ),
+                  const SizedBox(width: 5),
+                  _getServiceReviews(),
+                ],
               ),
             ],
           ),
         ),
-        copyQrCode(),
+        qrCodeIcon(
+            context, service!.getNavigationData(), service!.getQRCodeInfo()),
       ],
     );
+  }
+
+  Widget _getServiceReviews() {
+    if ((service?.reviewScore ?? 0) != 0) {
+      return Text(
+        "(${service?.reviewScore} ${(service?.reviewScore ?? 0) <= 1 ? 'review' : 'reviews'})",
+        style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+          fontFamily: 'Inter',
+          color: fontLightGrey,
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
   Widget copyQrCode() {
@@ -1115,17 +1191,17 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: dividerColor)),
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: InkWell(
-          child: service!.qrCode == ""
+          child: service?.qrCode == ""
               ? Center(child: CircularLoadingIndicator())
               : GestureDetector(
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: service!.qrCode);
+                        arguments: service?.qrCode);
                   },
                   child: CachedNetworkImage(
-                    imageUrl: service!.qrCode!,
+                    imageUrl: service?.qrCode ?? "",
                     height: 40,
                     width: 40,
                     errorWidget: imageErrorWidget,
@@ -1136,7 +1212,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ),
                 ),
           onTap: () {
-            Clipboard.setData(ClipboardData(text: service!.qrCode!));
+            Clipboard.setData(ClipboardData(text: service?.qrCode ?? ""));
             showToast(message: AppLocalization.of(context)!.copied);
           },
         ),
@@ -1145,32 +1221,24 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildShortInfoWidget() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Description",
-          style: TextStyle(
-              color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(
-          height: 8,
-        ),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                messageDecoderWithEmoji(service!.shortDescription)!,
-                style: TextStyle(
-                  color: darkGrey,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-            ),
-          ],
-        ),
-      ],
+    return Text(
+      messageDecoderWithEmoji(service!.shortDescription)!,
+      style: TextStyle(
+        color: fontLightGrey,
+        fontSize: 14,
+        fontFamily: "Inter",
+        fontWeight: FontWeight.w400,
+      ),
+      softWrap: true,
+      textAlign: TextAlign.justify,
+    );
+  }
+
+  Widget getHorizontalDivider() {
+    return Divider(
+      height: 0,
+      color: dividerColor,
+      thickness: 1,
     );
   }
 
@@ -1183,26 +1251,26 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           style: TextStyle(
               color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10), color: lightGrey),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Icon(
+              const Icon(
                 SlydoAppIcon.date,
                 color: Colors.black,
                 size: 16,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8.0,
               ),
               Text(
-                "${service!.availableFrom!.day}/${service!.availableFrom!.month}/${service!.availableFrom!.year}",
+                "${service?.availableFrom!.day}/${service!.availableFrom!.month}/${service!.availableFrom!.year}",
                 style: TextStyle(
                   color: blackFont,
                   fontSize: 14,
@@ -1216,60 +1284,58 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildProviderOtherServices() {
-    return Container(
-      height: 310,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context)!.providersOtherService,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: blackFont,
-                  ),
-                ),
-                GestureDetector(
-                  child: Text(
-                    AppLocalization.of(context)!.seeAll,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue,
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.pushNamed(context, Routes.USER_PROFILE,
-                        arguments: {
-                          "searchedUserName": service!.provider,
-                          "index": 3
-                        });
-                  },
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 12),
-          Expanded(
-            child: ListView.separated(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              itemCount: sellersOtherItems.length,
-              scrollDirection: Axis.horizontal,
-              separatorBuilder: (context, index) {
-                return SizedBox(width: 15);
-              },
-              itemBuilder: (context, index) => DisplayService(
-                service: sellersOtherItems[index],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              AppLocalization.of(context)!.providersOtherService,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: blackFont,
+                fontFamily: "Inter",
               ),
             ),
+            GestureDetector(
+              child: Text(
+                AppLocalization.of(context)!.seeAll,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: navyBlue,
+                ),
+              ),
+              onTap: () {
+                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                  "searchedUserName": service!.provider,
+                  "index": 3
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: sellersOtherItems
+                .map(
+                  (element) => Padding(
+                    padding: const EdgeInsets.only(right: 7.0),
+                    child: DisplayService(
+                      service: element,
+                    ),
+                  ),
+                )
+                .toList(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -1310,18 +1376,18 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   void navigateToSendPayment() {
     basketBloc.productOrService.clear();
-    Map<dynamic, dynamic> result = {
+    final Map<dynamic, dynamic> result = {
       "type": 'service',
       "results": service!.toJson()
     };
 
     basketBloc.buyProductOrServiceNow('service', result);
-    NavigationUtil.push(context, screen: CheckoutProductService());
+    NavigationUtil.push(context, screen: const CheckoutProductService());
   }
 
   @override
   void dispose() {
-    imgList!.clear();
+    displayServiceImage!.clear();
     _scrollController.dispose();
     super.dispose();
   }

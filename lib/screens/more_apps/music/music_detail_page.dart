@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -12,14 +9,13 @@ import 'package:provider/provider.dart';
 import 'music_dashboard_bloc.dart';
 import 'music_player.dart';
 
-// ignore: must_be_immutable
 class MusicDetailPage extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  MusicDetailPage({this.arguments});
+  const MusicDetailPage({super.key, this.arguments});
 
   @override
-  _MusicDetailPageState createState() => _MusicDetailPageState();
+  State<MusicDetailPage> createState() => _MusicDetailPageState();
 }
 
 class _MusicDetailPageState extends State<MusicDetailPage> {
@@ -56,12 +52,12 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       isLoading = false;
       setState(() {});
     } catch (t) {
-      debugPrint("t" + t.toString());
+      debugPrint("t$t");
       //mp3 unreachable
     }
   }
 
-  var isWishList = false;
+  bool isWishList = false;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +68,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
@@ -81,6 +77,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -107,7 +104,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       ),
       actions: <Widget>[
         shareBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -133,14 +130,14 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: musicPoster(),
         ),
-        Flexible(
+        const Flexible(
           flex: 3,
           child: SizedBox(
             height: 40,
@@ -149,7 +146,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
             builder: (context, info) {
           return Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -162,7 +159,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
                       fontWeight: FontWeight.w700,
                       color: blackFont),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Text(
@@ -178,24 +175,24 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             ),
           );
         }),
-        Flexible(
+        const Flexible(
           flex: 1,
           child: SizedBox(
             height: 40,
           ),
         ),
         progressIndicator(),
-        Flexible(
+        const Flexible(
           flex: 2,
           child: SizedBox(
             height: 40,
           ),
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: playerController(),
         ),
-        Flexible(
+        const Flexible(
           flex: 4,
           child: SizedBox(
             height: 40,
@@ -211,7 +208,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
             builder: (context, info) {
           if (info.current == null) {
-            return SizedBox(
+            return const SizedBox(
               height: 50,
             );
           }
@@ -232,7 +229,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       children: [
         IconButton(
             icon: Icon(
-              SlydoAppIcon.music_suffle,
+              SlydoAppIcon.musicSuffle,
               size: 16,
               color: musicPlayer!.audioPlayer.shuffle ? navyBlue : blackFont,
             ),
@@ -244,7 +241,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         flexibleSpace(),
         IconButton(
             icon: Icon(
-              SlydoAppIcon.music_back,
+              SlydoAppIcon.musicBack,
               size: 16,
               color: blackFont,
             ),
@@ -269,7 +266,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
                 borderRadius: 50,
                 shadowColor: Colors.black12.withOpacity(0.08)),
             child: ClipOval(
-              child: Container(
+              child: SizedBox(
                 height: 70,
                 width: 70,
                 child: StreamBuilder<bool>(
@@ -277,9 +274,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
                     stream: musicPlayer!.audioPlayer.isPlaying,
                     builder: (context, snapshot) {
                       return Icon(
-                        snapshot.data!
-                            ? Icons.pause
-                            : SlydoAppIcon.music_play_1,
+                        snapshot.data! ? Icons.pause : SlydoAppIcon.musicPlay1,
                         size: snapshot.data! ? 28 : 20,
                         color: blackFont,
                       );
@@ -291,7 +286,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         flexibleSpace(),
         IconButton(
             icon: Icon(
-              SlydoAppIcon.music_next,
+              SlydoAppIcon.musicNext,
               size: 16,
               color: blackFont,
             ),
@@ -301,7 +296,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         flexibleSpace(),
         IconButton(
             icon: Icon(
-              SlydoAppIcon.music_repeat,
+              SlydoAppIcon.musicRepeat,
               size: 16,
               color: musicLoopMode == LoopMode.single ? navyBlue : blackFont,
             ),
@@ -323,20 +318,18 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       clipBehavior: Clip.hardEdge,
-      child: Container(
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
-              builder: (context, info) {
-            return CachedNetworkImage(
-              imageUrl: info.current == null
-                  ? "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg"
-                  : info.current!.audio.audio.metas.image!.path,
-              fit: BoxFit.fill,
-              errorWidget: imageErrorWidget,
-            );
-          }),
-        ),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
+            builder: (context, info) {
+          return CachedNetworkImage(
+            imageUrl: info.current == null
+                ? "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg"
+                : info.current!.audio.audio.metas.image!.path,
+            fit: BoxFit.fill,
+            errorWidget: imageErrorWidget,
+          );
+        }),
       ),
     );
   }
@@ -348,13 +341,14 @@ class PositionSeekWidget extends StatefulWidget {
   final Function(Duration?) seekTo;
 
   const PositionSeekWidget({
+    super.key,
     required this.currentPosition,
     required this.duration,
     required this.seekTo,
   });
 
   @override
-  _PositionSeekWidgetState createState() => _PositionSeekWidgetState();
+  State<PositionSeekWidget> createState() => _PositionSeekWidgetState();
 }
 
 class _PositionSeekWidgetState extends State<PositionSeekWidget> {
@@ -382,7 +376,7 @@ class _PositionSeekWidgetState extends State<PositionSeekWidget> {
   Widget build(BuildContext context) {
     debugPrint("Max > ${widget.duration.inMilliseconds.toDouble().floor()}");
     debugPrint("===>${percent * widget.duration.inMilliseconds.toDouble()}");
-    return Container(
+    return SizedBox(
       height: 20,
       child: Stack(
         clipBehavior: Clip.none,
@@ -392,10 +386,10 @@ class _PositionSeekWidgetState extends State<PositionSeekWidget> {
                 trackHeight: 1,
                 thumbColor: navyBlue,
                 inactiveTrackColor: dividerColor,
-                trackShape: RoundedRectSliderTrackShape(),
+                trackShape: const RoundedRectSliderTrackShape(),
                 activeTrackColor: navyBlue,
                 disabledThumbColor: Colors.white,
-                thumbShape: RoundSliderThumbShape(
+                thumbShape: const RoundSliderThumbShape(
                     disabledThumbRadius: 5,
                     enabledThumbRadius: 5,
                     elevation: 1,
@@ -430,30 +424,28 @@ class _PositionSeekWidgetState extends State<PositionSeekWidget> {
             bottom: -16,
             left: 20,
             right: 20,
-            child: Container(
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(
-                    durationToString(widget.currentPosition),
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: darkGrey),
-                  ),
-                  Expanded(
-                      child: SizedBox(
-                    width: 8,
-                  )),
-                  Text(
-                    durationToString(widget.duration),
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: darkGrey),
-                  )
-                ],
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(
+                  durationToString(widget.currentPosition),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: darkGrey),
+                ),
+                const Expanded(
+                    child: SizedBox(
+                  width: 8,
+                )),
+                Text(
+                  durationToString(widget.duration),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: darkGrey),
+                )
+              ],
             ),
           )
         ],

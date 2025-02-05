@@ -1,20 +1,19 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/PropertyItem.dart';
+import 'models/property_item.dart';
 import 'property_auth.dart';
 import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
 class SpecificCategoryPropertyList extends StatefulWidget {
+  const SpecificCategoryPropertyList({super.key});
+
   @override
-  _SpecificCategoryPropertyListState createState() =>
+  State<SpecificCategoryPropertyList> createState() =>
       _SpecificCategoryPropertyListState();
 }
 
@@ -23,7 +22,7 @@ class _SpecificCategoryPropertyListState
   late PropertyDashboardBloc _propertyDashboardBloc;
 
   List<PropertyItem> propertyItem = [];
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
 
@@ -53,7 +52,7 @@ class _SpecificCategoryPropertyListState
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: isLoading
             ? Center(
@@ -69,11 +68,11 @@ class _SpecificCategoryPropertyListState
                 onRefresh: _onRefresh,
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: propertyItem
                           .map((property) => Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: RentPropertyTile(
                                 property: property,
                               )))
@@ -87,23 +86,17 @@ class _SpecificCategoryPropertyListState
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

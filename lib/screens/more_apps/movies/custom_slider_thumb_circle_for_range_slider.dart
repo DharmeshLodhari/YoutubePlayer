@@ -11,7 +11,7 @@ class CustomRangeThumbShapeForMovie extends RangeSliderThumbShape {
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) =>
-      Size(_thumbSize, _thumbSize);
+      const Size(_thumbSize, _thumbSize);
 
   @override
   void paint(PaintingContext context, Offset center,
@@ -26,7 +26,7 @@ class CustomRangeThumbShapeForMovie extends RangeSliderThumbShape {
       bool? isPressed}) {
     final Canvas canvas = context.canvas;
 
-    Paint paint = Paint();
+    final Paint paint = Paint();
     paint.color = sliderTheme.thumbColor!;
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 2;
@@ -193,7 +193,7 @@ class CustomRangeThumbShapeForProperty extends RangeSliderThumbShape {
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) =>
-      Size(_thumbSize, _thumbSize);
+      const Size(_thumbSize, _thumbSize);
 
   @override
   void paint(PaintingContext context, Offset center,
@@ -208,7 +208,7 @@ class CustomRangeThumbShapeForProperty extends RangeSliderThumbShape {
       bool? isPressed}) {
     final Canvas canvas = context.canvas;
 
-    Paint paint = Paint();
+    final Paint paint = Paint();
     paint.color = sliderTheme.thumbColor!;
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 2;

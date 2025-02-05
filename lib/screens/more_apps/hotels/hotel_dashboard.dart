@@ -9,8 +9,10 @@ import 'hotel_explore_screen.dart';
 import 'my_hotels_screen.dart';
 
 class HotelDashboard extends StatefulWidget {
+  const HotelDashboard({super.key});
+
   @override
-  _HotelDashboardState createState() => _HotelDashboardState();
+  State<HotelDashboard> createState() => _HotelDashboardState();
 }
 
 class _HotelDashboardState extends State<HotelDashboard> {
@@ -30,7 +32,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
           onPageChanged: (index) {
             _hotelDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             HotelExploreScreen(),
             MyHotelsScreen(),
           ],
@@ -76,7 +78,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
   BottomNavigationBarItem bottomNavigationBarItem(
       {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: SizedBox(
         height: 50,
         width: 108,
         child: Icon(
@@ -101,7 +103,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
@@ -111,13 +113,13 @@ class _HotelDashboardState extends State<HotelDashboard> {
                 size: 16,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.w700),

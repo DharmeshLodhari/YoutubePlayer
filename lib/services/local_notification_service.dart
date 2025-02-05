@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -32,11 +33,11 @@ class LocalNotificationService {
   ];
 
   Future<void> init() async {
-    final AndroidInitializationSettings initializationSettingsAndroid =
+    const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('app_icon');
 
-    final IOSInitializationSettings initializationSettingsIOS =
-        IOSInitializationSettings(
+    final DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
       requestSoundPermission: false,
       requestBadgePermission: false,
       requestAlertPermission: false,
@@ -49,20 +50,20 @@ class LocalNotificationService {
             iOS: initializationSettingsIOS,
             macOS: null);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: selectNotification);
+        onDidReceiveNotificationResponse: selectNotification);
     tz.initializeTimeZones();
 
-    channelList.forEach((element) {
+    for (var element in channelList) {
       _createNotificationChannel(
           element['channel_id']!,
           element['channel_name']!,
           element['channel_description']!,
           element['sound']);
-    });
+    }
   }
 
-  Future selectNotification(String? payload) async {
-    print("Select notification $payload");
+  Future<void> selectNotification(NotificationResponse? payload) async {
+    debugPrint("Select notification $payload");
   }
 
   // void showNotification(Map<String, dynamic> message,
@@ -85,7 +86,8 @@ class LocalNotificationService {
 
   Future<void> _createNotificationChannel(
       String id, String name, String description, String? sound) async {
-    var androidNotificationChannel = AndroidNotificationChannel(
+    final AndroidNotificationChannel androidNotificationChannel =
+        AndroidNotificationChannel(
       id,
       name,
       // description,

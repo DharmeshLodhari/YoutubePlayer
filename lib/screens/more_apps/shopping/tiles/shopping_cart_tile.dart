@@ -1,7 +1,10 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -10,153 +13,138 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../utils/colors.dart';
-
 //ignore: must_be_immutable
-class ShoppingCartTileForProduct extends StatefulWidget {
-  Product? item;
-  String? type;
-  String? image;
-  int? qty;
-  int? index;
-  Function? onIncreaseQty;
-  Function? onDecreaseQty;
-  Function(int variantIndex)? onIncreaseVariantQty;
-  Function(int variantIndex)? onDecreaseVariantQty;
-  Function? onIncreaseAddOnQty;
-  Function? onDecreaseAddOnQty;
+class ShoppingCartTileForProduct extends StatelessWidget {
+  late Product product;
 
-  Variant? variant;
-  List? addOn;
-  List<Map<String, dynamic>?> variantList = [];
+  late BasketItem basketItem;
 
-  ShoppingCartTileForProduct(Map<String, dynamic> item,
-      {this.onIncreaseQty,
-      this.onDecreaseQty,
-      this.index,
-      this.onIncreaseVariantQty,
-      this.onDecreaseVariantQty,
-      this.onIncreaseAddOnQty,
-      this.onDecreaseAddOnQty}) {
-    type = item["type"];
-    this.item = item["item"];
-    qty = item["qty"];
-    variant = item["variant"];
-    addOn = item["addOn"];
-    image = item["image"];
-  }
+  final Function() onIncreaseQty;
+  final Function() onDecreaseQty;
+  final bool isSharedCart;
+  List<UserFollowers>? membersDetails;
 
-  @override
-  _ShoppingCartTileForProductState createState() =>
-      _ShoppingCartTileForProductState();
-}
-
-class _ShoppingCartTileForProductState
-    extends State<ShoppingCartTileForProduct> {
-  late BasketBloc basketBloc;
-
-  List<AddOnOption> addOnOptionList = [];
-
-  @override
-  void initState() {
-    if (widget.addOn != null) {
-      // debugPrint('add-on addOnOption:::: ${widget.addOn}');
-
-      for (var item in widget.addOn!) {
-        // debugPrint('add-on addOnOption 2:::: ${item['options']}');
-
-        for (var option in item['options']) {
-          AddOnOption addOnOption = AddOnOption(
-            id: option['id'],
-            picture: option['picture'],
-            name: option['name'],
-            description: option['description'],
-            merchant: option['merchant'],
-            currency: option['currency'],
-            price: option['price'].toString(),
-          );
-          addOnOptionList.add(addOnOption);
-        }
-      }
-
-      // debugPrint('add-on addOnOption 3:::: ${addOnOptionList}');
-
-    }
-    super.initState();
-  }
+  ShoppingCartTileForProduct({
+    super.key,
+    required this.basketItem,
+    required this.onIncreaseQty,
+    required this.onDecreaseQty,
+    required this.isSharedCart,
+  });
 
   @override
   Widget build(BuildContext context) {
-    basketBloc = Provider.of<BasketBloc>(context);
-
+    product = basketItem.item as Product;
     try {
-      if (int.parse(getTotalPrice()) == 0) {
-        return Container();
-      } else {
-        return Container(
-          color: Colors.white,
-          child: Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-            shadowColor: boxShadowTwo,
-            elevation: 0,
-            child: Container(
-              decoration: decorateBox(),
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: getLeading(),
-                      title: getTitle(),
-                      trailing: getTrailing(),
-                      subtitle: getSubtitle(context),
-                      onTap: () {
-                        Navigator.pushNamed(context, Routes.PRODUCT,
-                            arguments: {"product": widget.item});
-                      },
+      return Container(
+        color: Colors.white,
+        child: Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          shadowColor: boxShadowTwo,
+          elevation: 0,
+          child: Container(
+            decoration: decorateBox(),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Column(
+              children: [
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: getLeading(),
+                  title: getTitle(),
+                  subtitle: getSubtitle(context),
+                  trailing: getTrailing(),
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.PRODUCT_DETAIL_PAGE,
+                        arguments: {"product": product});
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(),
+                    Text(
+                      "Subtotal",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: darkGrey,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: "Inter",
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 60),
+                    getSubTotalPriceWidget(),
+                  ],
+                )
+              ],
             ),
           ),
-        );
-      }
+        ),
+      );
     } catch (e) {
       return Container();
     }
   }
 
   Widget getLeading() {
-    String image = "";
-    if (widget.addOn != null) {
-      image = widget.item!.serverImages!.first!;
-      // debugPrint('add-on image:::: ${widget.item!.serverImages}');
-    } else if (widget.variant != null) {
-      // image = widget.image!;
-      image = widget.item!.serverImages!.first!;
-    } else {
-      image = widget.item?.cover ?? "";
+    String? image;
+
+    image = product.cover;
+
+    if (basketItem.hasVariant) {
+      image = basketItem.variants?.first.getCoverImage() ?? product.cover;
     }
 
-    return ClipOval(
-      child: CachedNetworkImage(
-        height: 48,
-        width: 48,
-        // imageUrl: widget.variant != null && widget.image!.isNotEmpty ? widget.image! : widget.item?.cover ?? defaultImage,
-        imageUrl: image != "" ? image : defaultImage,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.contain,
-        errorWidget: productAndServiceErrorWidget,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => widget.item?.cover == null
-            ? Icon(Icons.widgets)
-            : CircularLoadingIndicator(),
-      ),
-    );
+    return isSharedCart == false
+        ? ClipRRect(
+            borderRadius: BorderRadius.circular(10.0),
+            child: CachedNetworkImage(
+              height: 48,
+              width: 48,
+              imageUrl: image ?? defaultImage,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.contain,
+              errorWidget: productAndServiceErrorWidget,
+              filterQuality: FilterQuality.high,
+              placeholder: (context, url) => product.cover == null
+                  ? const Icon(Icons.widgets)
+                  : CircularLoadingIndicator(),
+            ),
+          )
+        : Stack(
+            children: [
+              Container(
+                height: 100,
+                padding: const EdgeInsets.only(top: 10, right: 25),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: CachedNetworkImage(
+                    height: 50,
+                    width: 50,
+                    // imageUrl: widget.variant != null && widget.image!.isNotEmpty ? widget.image! : widget.item?.cover ?? defaultImage,
+                    imageUrl: image ?? defaultImage,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.contain,
+                    errorWidget: productAndServiceErrorWidget,
+                    filterQuality: FilterQuality.high,
+                    placeholder: (context, url) => product.cover == null
+                        ? const Icon(Icons.widgets)
+                        : CircularLoadingIndicator(),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: getMembersWidget(
+                    userImages: product.variantModels?.isNotEmpty == true
+                        ? basketItem.variants?.first
+                            .convertToUserFollowersList()
+                        : product.convertToUserFollowersList()),
+              )
+            ],
+          );
   }
 
   Widget getTitle() {
@@ -164,8 +152,184 @@ class _ShoppingCartTileForProductState
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          appendStringDot("${widget.item!.name}", 10),
+          messageDecoderWithEmoji(appendStringDot(product.name ?? "", 12)) ??
+              "",
           maxLines: 1,
+          style: TextStyle(
+            color: blackFont,
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+            fontFamily: "Inter",
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getTrailing() {
+    return Container(
+      width: 110,
+      color: Colors.transparent,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          RoundedBackgroundIcon(
+            backgroundColor: iconBtnGrey,
+            icon: Icon(
+              SlydoAppIcon.minus,
+              color: blackFont,
+              size: 2,
+            ),
+            onTap: onDecreaseQty,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Text(
+            basketItem.getQty().toString(),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: blackFont,
+              fontFamily: "Inter",
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          RoundedBackgroundIcon(
+            backgroundColor: iconBtnGrey,
+            icon: Icon(
+              SlydoAppIcon.plus,
+              color: blackFont,
+              size: 14, // Adjust the size as needed
+            ),
+            onTap: onIncreaseQty,
+          ),
+        ],
+      ),
+    );
+  }
+
+  String getTotalPrice() {
+    int totalPrice = 0;
+    int addOnTotal = 0;
+    if (product.isProduct) {
+      if (basketItem.addOns != null) {
+        for (AddOns itemAddOn in basketItem.addOns ?? []) {
+          for (var option in itemAddOn.options!) {
+            addOnTotal += int.parse(option.price.toString()) * option.quantity;
+          }
+        }
+        final int priceQuantity =
+            (basketItem.qty ?? 0) * product.getProductRealPrice();
+        totalPrice += addOnTotal + priceQuantity;
+      } else {
+        totalPrice = (basketItem.qty ?? 0) *
+            (product.getDiscountedPrice(basketItem.variants?.first) ?? 0);
+      }
+    }
+
+    return totalPrice.toString();
+  }
+
+  Widget getSubtitle(BuildContext context) {
+    String color = '';
+    String size = '';
+
+    if (basketItem.variants?.first != null) {
+      final String variantColor = basketItem.variants?.first.colour ?? '';
+      final String variantSize = basketItem.variants?.first.value ?? '';
+
+      if (variantColor.isNotEmpty) {
+        color = variantColor;
+      }
+
+      if (variantSize.isNotEmpty) {
+        size = variantSize;
+      }
+    }
+    final List<String> names = [];
+
+    if (basketItem.hasAddOns) {
+      for (AddOns addOn in basketItem.addOns ?? []) {
+        final List<String>? optionName =
+            addOn.options?.map((e) => e.name ?? "").toList();
+        names.addAll(optionName ?? []);
+      }
+    }
+
+    final concatenatedText = names.join(', ');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        getSellerName(context),
+        if (color.isNotEmpty) ...[
+          const SizedBox(
+            height: 2,
+          ),
+          getColor(color),
+        ],
+        if (size.isNotEmpty) ...[
+          const SizedBox(
+            height: 2,
+          ),
+          getSize(size)
+        ],
+        const SizedBox(
+          height: 2,
+        ),
+        if (concatenatedText != "") ...[
+          Text(
+            "Adds-ons : $concatenatedText",
+            maxLines: 3,
+            style: TextStyle(
+                fontSize: 10,
+                color: blackFont,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter"),
+          ),
+          const SizedBox(
+            height: 2,
+          ),
+        ],
+        getProductPriceWidget(),
+        const SizedBox(
+          height: 2,
+        ),
+        getProductLinePriceWidget(),
+        const SizedBox(
+          height: 2,
+        ),
+        if ((product.discountedPrice != null && product.discountedPrice != 0) ||
+            (product.pricePercentageChange != null &&
+                    product.pricePercentageChange != 0.0 ||
+                basketItem.variants != null))
+          _buildPricePercentageChanges(),
+        const SizedBox(
+          height: 2,
+        ),
+      ],
+    );
+  }
+
+  Widget getSubTotalPriceWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[product.currency]!,
+          style: TextStyle(
+              color: blackFont,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600,
+              fontSize: 14),
+        ),
+        Text(
+          moneyDisplayNormalizer(int.parse(getTotalPrice())),
           style: TextStyle(
             color: blackFont,
             fontWeight: FontWeight.w600,
@@ -177,247 +341,25 @@ class _ShoppingCartTileForProductState
     );
   }
 
-  Widget getTrailing() {
-    // Check if the item has a variant and is not empty
-
-    int variantId = 0;
-    int variantQuantity = 0;
-
-    if (widget.variant != null) {
-      String variant = widget.variant!.id.toString() ?? '';
-
-      if (variant.isNotEmpty) {
-        variantId = int.parse(widget.variant!.id.toString());
-        variantQuantity = int.parse(widget.variant!.quantity.toString());
-      }
-    }
-
-    return Container(
-      width: 100,
-      color: Colors.transparent,
-      child: Center(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            RoundedBackgroundIcon(
-              backgroundColor: iconBtnGrey,
-              icon: Icon(
-                SlydoAppIcon.minus,
-                color: blackFont,
-                size: 2,
-              ),
-              // onTap: widget.variant == null ? widget.onDecreaseQty : () => widget.onDecreaseVariantQty!(variantId),
-              onTap: widget.variant == null
-                  ? widget.onDecreaseQty
-                  : (widget.addOn != null
-                      ? widget.onDecreaseQty
-                      : () => widget.onDecreaseVariantQty!(variantId)),
-            ),
-            Expanded(
-              child: SizedBox(
-                width: 10,
-              ),
-            ),
-            Text(
-              widget.variant != null
-                  ? variantQuantity.toString()
-                  : widget.qty.toString(),
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: blackFont,
-                fontFamily: "Inter",
-              ),
-            ),
-            Expanded(
-              child: SizedBox(
-                width: 10,
-              ),
-            ),
-            RoundedBackgroundIcon(
-              backgroundColor: iconBtnGrey,
-              icon: Icon(
-                SlydoAppIcon.plus,
-                color: blackFont,
-                size: 14, // Adjust the size as needed
-              ),
-              // onTap: widget.variant == null ? widget.onIncreaseQty : () => widget.onIncreaseVariantQty!(variantId),
-              onTap: widget.variant == null
-                  ? widget.onIncreaseQty
-                  : (widget.addOn != null
-                      ? widget.onIncreaseQty
-                      : () => widget.onIncreaseVariantQty!(variantId)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String getProductPrice() {
-    var totalPrice = int.parse(widget.item!.price!);
-
-    if (widget.variant != null) {
-      totalPrice = 0;
-      totalPrice = int.parse(widget.variant!.price.toString());
-    }
-
-    return totalPrice.toString();
-  }
-
-  String getTotalPrice() {
-    var totalPrice =
-        basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
-
-    // Check if the item has a variant and is not empty
-    if (widget.variant != null) {
-      totalPrice = 0;
-      totalPrice += int.parse(widget.variant!.quantity.toString()) *
-          int.parse(widget.variant!.price.toString());
-    }
-
-    if (widget.addOn != null && widget.addOn!.isNotEmpty) {
-      totalPrice = 0;
-      totalPrice = basketBloc.items[widget.index!]["qty"] *
-          int.parse(widget.item!.price!);
-
-      var totalPrices = 0;
-
-      for (var option in addOnOptionList) {
-        totalPrices += int.parse(option.price!);
-      }
-      totalPrice = totalPrice + totalPrices;
-    }
-
-    return totalPrice.toString();
-  }
-
-  Widget getSubtitle(BuildContext context) {
-    String color = '';
-    String size = '';
-
-    if (widget.variant != null) {
-      String variantColor = widget.variant!.colour ?? '';
-      String variantSize = widget.variant!.value ?? '';
-
-      if (variantColor.isNotEmpty) {
-        color = variantColor;
-      }
-
-      if (variantSize.isNotEmpty) {
-        size = variantSize;
-      }
-    }
-    List<String> names = [];
-
-    if (widget.addOn != null) {
-      for (var option in addOnOptionList) {
-        names.add(option.name!);
-      }
-    }
-
-    final concatenatedText = names.join(', ');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(
-          height: 2,
-        ),
-        getSellerName(context),
-        if (color.isNotEmpty) ...[
-          SizedBox(
-            height: 2,
-          ),
-          getColor(color),
-        ],
-        if (size.isNotEmpty) ...[
-          SizedBox(
-            height: 2,
-          ),
-          getSize(size)
-        ],
-        SizedBox(
-          height: 2,
-        ),
-        getSubTotalPriceWidget(),
-        if (widget.addOn != null && widget.addOn!.isNotEmpty) ...[
-          Text(
-            "Add-ons: $concatenatedText",
-            maxLines: 3,
-            style: TextStyle(
-                fontSize: 12, color: darkGrey, fontWeight: FontWeight.w600),
-          ),
-        ],
-        SizedBox(
-          height: 10,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Subtotal",
-              style: TextStyle(
-                fontSize: 12,
-                color: darkGrey,
-                fontWeight: FontWeight.w500,
-                fontFamily: "Inter",
-              ),
-            ),
-            getTotalPriceWidget(),
-          ],
-        ),
-        // getTotalPriceWidget(),
-      ],
-    );
-  }
-
-  Widget getTotalPriceWidget() {
+  Widget getProductPriceWidget() {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[widget.item!.currency!]!,
+          worldCurrencies[product.currency!]!,
           style: TextStyle(
               color: blackFont,
               fontFamily: "Inter",
-              fontWeight: FontWeight.w500,
-              fontSize: 14),
+              fontWeight: FontWeight.w600,
+              fontSize: 12),
         ),
         Text(
-          moneyDisplayNormalizer(int.parse(getTotalPrice())),
+          moneyDisplayNormalizer(
+              product.getDiscountedPrice(basketItem.variants?.first) ?? 0),
           style: TextStyle(
             color: blackFont,
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-            fontFamily: "Inter",
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget getSubTotalPriceWidget() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Text(
-          worldCurrencies[widget.item!.currency!]!,
-          style: TextStyle(
-              color: black,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w500,
-              fontSize: 14),
-        ),
-        Text(
-          // moneyDisplayNormalizer(int.parse(getProductPrice())),
-          appendStringDot(
-              moneyDisplayNormalizer(int.parse(getProductPrice())), 6),
-          style: TextStyle(
-            color: black,
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
             fontFamily: "Inter",
           ),
         ),
@@ -427,11 +369,11 @@ class _ShoppingCartTileForProductState
 
   Widget getSellerName(BuildContext context) {
     return Text(
-      widget.item!.seller!,
+      product.seller!,
       style: TextStyle(
         fontSize: 12,
         color: darkGrey,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w500,
         fontFamily: "Inter",
       ),
     );
@@ -445,11 +387,11 @@ class _ShoppingCartTileForProductState
         //   style: TextStyle(fontSize: 10, color: darkGrey),
         // ),
         Text(
-          color,
+          "Color : $color",
           style: TextStyle(
-            fontSize: 12,
-            color: black,
-            fontWeight: FontWeight.w500,
+            fontSize: 10,
+            color: blackFont,
+            fontWeight: FontWeight.w400,
             fontFamily: "Inter",
           ),
         ),
@@ -465,16 +407,120 @@ class _ShoppingCartTileForProductState
         //   style: TextStyle(fontSize: 10, color: darkGrey),
         // ),
         Text(
-          size,
+          "Size : ${messageDecoderWithEmoji(size)}",
           style: TextStyle(
-            fontSize: 12,
-            color: black,
-            fontWeight: FontWeight.w500,
+            fontSize: 10,
+            color: blackFont,
+            fontWeight: FontWeight.w400,
             fontFamily: "Inter",
           ),
         ),
       ],
     );
+  }
+
+  Widget getProductLinePriceWidget() {
+    if (basketItem.variants?.isNotEmpty ?? false) {
+      if ((product.checkVariantDiscount(basketItem.variants?.first))) {
+        return Row(
+          children: [
+            Text(
+              worldCurrencies[product.currency] ?? "NGN",
+              style: TextStyle(
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: black,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
+            Text(
+              moneyDisplayNormalizer(
+                  int.parse(basketItem.variants?.first.price ?? "0")),
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: black,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
+          ],
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    } else if (product.checkProductDiscount()) {
+      return Row(
+        children: [
+          Text(
+            worldCurrencies[product.currency] ?? "NGN",
+            style: TextStyle(
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w400,
+              fontSize: 12.8,
+              color: black,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+          Text(
+            moneyDisplayNormalizer(product.price),
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              color: black,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildPricePercentageChanges() {
+    if (basketItem.variants?.isNotEmpty ?? false) {
+      if (product.checkVariantDiscount(basketItem.variants?.first)) {
+        return Text(
+          "-${basketItem.variants?.first.discountType == "percentage" ? "${basketItem.variants?.first.discountValue}% off" : worldCurrencies[basketItem.variants?.first.currency ?? ""]! + moneyDisplayNormalizer(basketItem.variants?.first.discountValue?.toInt()).toString()}",
+          style: TextStyle(
+            color: naturalGreen,
+            fontSize: 11,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+          ),
+        );
+      } else {
+        return const SizedBox();
+      }
+    } else if (product.discountedPrice != null &&
+        product.discountedPrice != 0) {
+      if (product.checkProductDiscount()) {
+        return Text(
+          "-${product.discountType == "percentage" ? "${product.discountValue}% off" : worldCurrencies[product.currency ?? ""]! + moneyDisplayNormalizer(product.discountValue?.toInt()).toString()}",
+          style: TextStyle(
+            color: naturalGreen,
+            fontSize: 11,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+          ),
+        );
+      } else {
+        return const SizedBox();
+      }
+    } else if (product.pricePercentageChange != 0.0) {
+      return Text(
+        "${product.pricePercentageChange!.toInt()}% off",
+        style: TextStyle(
+          color: naturalGreen,
+          fontSize: 11,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w600,
+        ),
+      );
+    } else {
+      return const SizedBox();
+    }
   }
 }
 
@@ -487,15 +533,15 @@ class ShoppingCartTileForService extends StatefulWidget {
   Function? onIncreaseQty;
   Function? onDecreaseQty;
 
-  ShoppingCartTileForService(Map<String, dynamic> item,
-      {this.onDecreaseQty, this.onIncreaseQty, this.index}) {
-    type = item["type"];
-    this.item = item["item"];
-    qty = item["qty"] ?? 0;
+  ShoppingCartTileForService(BasketItem item,
+      {super.key, this.onDecreaseQty, this.onIncreaseQty, this.index}) {
+    type = item.type;
+    this.item = item.item as Service;
+    qty = item.qty ?? 0;
   }
 
   @override
-  _ShoppingCartTileForServiceState createState() =>
+  State<ShoppingCartTileForService> createState() =>
       _ShoppingCartTileForServiceState();
 }
 
@@ -512,7 +558,7 @@ class _ShoppingCartTileForServiceState
         child: Card(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
           shadowColor: boxShadowTwo,
           elevation: 0,
           child: Container(
@@ -520,7 +566,7 @@ class _ShoppingCartTileForServiceState
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     leading: getLeading(),
                     title: getTitle(),
@@ -558,10 +604,10 @@ class _ShoppingCartTileForServiceState
           errorWidget: productAndServiceErrorWidget,
           filterQuality: FilterQuality.high,
           placeholder: (context, url) => widget.item?.cover == null
-              ? Icon(Icons.widgets)
+              ? const Icon(Icons.widgets)
               : CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  valueColor: const AlwaysStoppedAnimation(Colors.white),
                   backgroundColor: navyBlue,
                 ),
         ),
@@ -571,7 +617,7 @@ class _ShoppingCartTileForServiceState
 
   Widget getTitle() {
     return Text(
-      "${widget.item!.name}",
+      messageDecoderWithEmoji(widget.item?.name) ?? "",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
@@ -579,11 +625,11 @@ class _ShoppingCartTileForServiceState
   }
 
   Widget getTrailing() {
-    int? qty = basketBloc.items[widget.index!]["qty"] != 0
+    final int? qty = basketBloc.items[widget.index!]["qty"] != 0
         ? basketBloc.items[widget.index!]["qty"]
         : 0;
     return Container(
-      width: 100,
+      width: 110,
       color: Colors.transparent,
       child: Center(
         child: Row(
@@ -598,7 +644,7 @@ class _ShoppingCartTileForServiceState
                   size: 2,
                 ),
                 onTap: widget.onDecreaseQty),
-            Expanded(
+            const Expanded(
               child: SizedBox(
                 width: 10,
               ),
@@ -608,7 +654,7 @@ class _ShoppingCartTileForServiceState
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             ),
-            Expanded(
+            const Expanded(
               child: SizedBox(
                 width: 10,
               ),
@@ -630,13 +676,13 @@ class _ShoppingCartTileForServiceState
 
   String getServicePrice() {
     if (widget.item!.price.toString().length > 5) {
-      return widget.item!.price.toString().substring(0, 5) + "..";
+      return "${widget.item!.price.toString().substring(0, 5)}..";
     }
     return widget.item!.price.toString();
   }
 
   String getTotalPrice() {
-    var price =
+    final price =
         basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
     return price.toString();
   }
@@ -645,7 +691,7 @@ class _ShoppingCartTileForServiceState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         getSellerName(context),

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 class AnimatedLogo extends StatefulWidget {
   final String imagePath;
 
-  const AnimatedLogo({Key? key, required this.imagePath}) : super(key: key);
+  const AnimatedLogo({super.key, required this.imagePath});
 
   @override
-  _AnimatedLogoState createState() => _AnimatedLogoState();
+  State<AnimatedLogo> createState() => _AnimatedLogoState();
 }
 
 class _AnimatedLogoState extends State<AnimatedLogo>
@@ -35,20 +35,18 @@ class _AnimatedLogoState extends State<AnimatedLogo>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: AnimatedBuilder(
-        animation: _animation!,
-        builder: (BuildContext context, Widget? child) {
-          return Transform.scale(
-            scale: _animation!.value,
-            child: Image.asset(
-              widget.imagePath,
-              width: 100,
-              height: 100,
-            ),
-          );
-        },
-      ),
+    return AnimatedBuilder(
+      animation: _animation!,
+      builder: (BuildContext context, Widget? child) {
+        return Transform.scale(
+          scale: _animation!.value,
+          child: Image.asset(
+            widget.imagePath,
+            width: 100,
+            height: 100,
+          ),
+        );
+      },
     );
   }
 }

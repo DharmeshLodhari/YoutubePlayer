@@ -8,14 +8,14 @@ class EmptyPage extends StatelessWidget {
   String? title = "";
   bool isResult;
 
-  EmptyPage({required this.msg, this.isResult = true, this.title});
+  EmptyPage({super.key, required this.msg, this.isResult = true, this.title});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(height: 50),
+        const SizedBox(height: 50),
         SvgPicture.asset(
           'assets/images/no_item.svg',
           colorBlendMode: BlendMode.color,

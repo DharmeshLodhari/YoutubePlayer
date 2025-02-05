@@ -1,19 +1,17 @@
-import 'dart:developer';
-import 'dart:io';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/screens/messaging/chat/models/gif_model/gif_model.dart';
+import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
+import 'package:Slydo/screens/moments/tiles/moment_comment_tile.dart';
+import 'package:Slydo/screens/moments/widgets/moment_comment_textfield.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/yarn/models/Topics/comment_details.dart';
+import 'package:Slydo/screens/yarn/models/Topics/yarn_model.dart';
+import 'package:Slydo/screens/yarn/models/share_as_yarn_model.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../data/state_notifier.dart';
-import '../../../more_apps/messaging/chat/models/gif_model/GIFModel.dart';
-import '../../../more_apps/shopping/models/store.dart';
-import '../../../more_apps/yarn/models/Topics/CommentDetails.dart';
-import '../../../more_apps/yarn/models/Topics/yarn_model.dart';
-import '../../../more_apps/yarn/models/share_as_yarn_model.dart';
-import '../../../more_apps/yarn/yarn_dashboard_bloc.dart';
-import '../../models/moments_model.dart';
-import '../../tiles/moment_comment_tile.dart';
-import '../../widgets/moment_comment_textfield.dart';
 
 //comment for moment, 3/4 of the screen
 class CommentListWidget extends StatefulWidget {
@@ -25,16 +23,15 @@ class CommentListWidget extends StatefulWidget {
   final Function(bool, int)? callbackUpdateCommentCount;
 
   const CommentListWidget(
-      {Key? key,
+      {super.key,
       required this.index,
       required this.momentID,
       required this.username,
-        this.callbackUpdateCommentCount,
-      this.moment})
-      : super(key: key);
+      this.callbackUpdateCommentCount,
+      this.moment});
 
   @override
-  _CommentListWidgetState createState() => _CommentListWidgetState();
+  State<CommentListWidget> createState() => _CommentListWidgetState();
 }
 
 class _CommentListWidgetState extends State<CommentListWidget> {
@@ -61,7 +58,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
       GlobalKey<MomentCommentTextFieldState>();
   bool? enableComment = false, enablePayment = false;
   bool? enableAdult = false, viewerAdvice = false;
-  var ageRating;
+  int? ageRating;
 
   ScrollController scrollController = ScrollController();
   List<YarnMedia> selectedMedia = [];
@@ -97,8 +94,8 @@ class _CommentListWidgetState extends State<CommentListWidget> {
       });
     }
 
-    Map<String, dynamic>? result =
-        await MomentsService().getMomentComments(nextUrl, widget.momentID);
+    final Map<String, dynamic>? result =
+        await MomentsAuthService().getMomentComments(nextUrl, widget.momentID);
 
     if (result == null) {
       noList = true;
@@ -112,7 +109,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
 
     count = result['count'] ?? 0;
     nextUrl = result['next'] ?? "";
-    var tempList = result['results'];
+    final tempList = result['results'];
     yarnComments = [];
     if (mounted) {
       setState(() {
@@ -159,53 +156,56 @@ class _CommentListWidgetState extends State<CommentListWidget> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          isCommentsLoading
-              ? const SizedBox.shrink()
-              : Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      const Text(
-                        "Comments",
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        '$count',
-                        style: const TextStyle(
-                          color: Color(0xff75818F),
-                        ),
-                      ),
-                    ],
+          if (isCommentsLoading)
+            const SizedBox.shrink()
+          else
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Row(
+                children: [
+                  const Text(
+                    "Comments",
                   ),
-                ),
-          Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              controller: scrollController,
-              itemCount: yarnComments.length + 1,
-              itemBuilder: (context, index) {
-                if (index == yarnComments.length) {
-                  return buildLoadingIndicator(isLoading: isCommentsLoading);
-                } else {
-                  return singleCommentWidget(yarnComments[index], index);
-                }
-              },
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    '$count',
+                    style: const TextStyle(
+                      color: Color(0xff75818F),
+                    ),
+                  ),
+                ],
+              ),
             ),
+          Expanded(
+            child: isCommentsLoading && yarnComments.isEmpty
+                ? buildLoadingIndicator(isLoading: isCommentsLoading)
+                : ListView.builder(
+                    shrinkWrap: true,
+                    controller: scrollController,
+                    itemCount: yarnComments.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == yarnComments.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isCommentsLoading);
+                      } else {
+                        return singleCommentWidget(yarnComments[index], index);
+                      }
+                    },
+                  ),
           ),
         ],
       ),
     );
   }
 
-  Widget singleCommentWidget(YarnComment yarnComment, index) {
+  Widget singleCommentWidget(YarnComment yarnComment, int index) {
     return SingleChildScrollView(
         child: _buildCommentDescriptionMain(yarnComment));
   }
 
   Widget _buildCommentDescriptionMain(YarnComment yarnComment) {
-
     return Column(
       children: [
         Container(
@@ -246,12 +246,14 @@ class _CommentListWidgetState extends State<CommentListWidget> {
               yarnComment.replyCount != 0 ? yarnComment.replyCount! - 1 : 0;
 
               // update comment count by subtracting -1
-              widget.callbackUpdateCommentCount!(false, yarnComment.replyCount!.toInt());
+              widget.callbackUpdateCommentCount!(
+                  false, yarnComment.replyCount!.toInt());
               if (mounted) setState(() {});
             },
             onCommentUpdate: (YarnComment yarnCmt, bool val) {
               //this will update the list of comments and set the selected comment to pinned
-              final modelIndex = yarnComments.indexWhere((model) => model.id == yarnCmt.id);
+              final modelIndex =
+                  yarnComments.indexWhere((model) => model.id == yarnCmt.id);
               if (modelIndex != -1) {
                 final model = yarnComments.removeAt(modelIndex);
                 model.pinned = val;
@@ -260,17 +262,13 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                 Navigator.pop(context);
                 if (mounted) setState(() {});
               }
-
-
             },
-            callbackUpdateCommentCount: (value){
-              if(value == true){
+            callbackUpdateCommentCount: (value) {
+              if (value == true) {
                 //increase the count by for the single moment detail + 1
                 widget.callbackUpdateCommentCount!(true, 1);
               }
-
             },
-
           ),
         ),
         const SizedBox(
@@ -325,10 +323,10 @@ class _CommentListWidgetState extends State<CommentListWidget> {
       addedSelectedGif: (value) {
         //retrieve the selected gif
         selectedGif = value;
-        debugPrint('Fola gif:::: ${selectedGif!.images!.original!.url}');
+        // debugPrint('Fola gif:::: ${selectedGif!.images!.original!.url}');
 
         //mimic image selected for the gif and send as comment
-        String? mediaType = 'gif';
+        // const String? mediaType = 'gif';
 
         // selectedMedia.add(YarnMedia(mediaFile: File(selectedGif!.images!.original!.url!), mediaType: mediaType));
         // isAPILoading = true;
@@ -352,7 +350,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
   }
 
   Future addComment() async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "comment": controller.text,
       "author_username": getLoggedInUserName(context),
       "is_reply": true,
@@ -370,8 +368,8 @@ class _CommentListWidgetState extends State<CommentListWidget> {
 
     //create multipart request for POST or PATCH method
     try {
-      YarnComment? yarnComment =
-          await MomentsService().addCommentToMoment(widget.momentID, data);
+      final YarnComment? yarnComment =
+          await MomentsAuthService().addCommentToMoment(widget.momentID, data);
       if (yarnComment != null) {
         //increase count for comment
         count = count + 1;

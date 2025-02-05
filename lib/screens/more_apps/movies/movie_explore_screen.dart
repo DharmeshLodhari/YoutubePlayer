@@ -1,26 +1,23 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/movies/models/MovieItem.dart';
-import 'package:Slydo/screens/more_apps/movies/models/PartialMovieItem.dart';
+import 'package:Slydo/screens/more_apps/movies/models/movie_item.dart';
+import 'package:Slydo/screens/more_apps/movies/models/partial_movie_item.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../messaging/chat/utils.dart';
-
 class MovieExploreScreen extends StatefulWidget {
+  const MovieExploreScreen({super.key});
+
   @override
-  _MovieExploreScreenState createState() => _MovieExploreScreenState();
+  State<MovieExploreScreen> createState() => _MovieExploreScreenState();
 }
 
 class _MovieExploreScreenState extends State<MovieExploreScreen> {
-  CarouselController _carouselController = CarouselController();
+  final cs.CarouselSliderController _carouselController = cs.CarouselSliderController();
 
   List<MovieItem> mostRecentDiscoveryList = [];
   bool isMostRecentDiscoveryLoading = false;
@@ -34,7 +31,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
   List<PartialMovieItem> indiePicksList = [];
   bool isIndiePicksLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -95,26 +92,18 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
@@ -123,6 +112,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -157,24 +147,24 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
       child: SingleChildScrollView(
           child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 6,
           ),
           searchBox(),
-          SizedBox(
+          const SizedBox(
             height: 32,
           ),
           movieCarouselSlider(),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           mostRecentDiscovery(),
           indiePicks(),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           nowAvailableToRent(),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
         ],
@@ -184,7 +174,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -223,8 +213,8 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -266,15 +256,15 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
   Widget movieCarouselSlider() {
     return Container(
       child: isSliderLoading
-          ? Container(
+          ? SizedBox(
               height: 180,
               child: Center(
                 child: CircularLoadingIndicator(),
               ),
             )
-          : CarouselSlider(
+          : cs.CarouselSlider(
               carouselController: _carouselController,
-              options: CarouselOptions(
+              options: cs.CarouselOptions(
                 viewportFraction: 0.9,
                 enlargeCenterPage: false,
                 autoPlay: true,
@@ -288,10 +278,11 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                         Navigator.of(context).pushNamed("/movie-detail");
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: Center(
                             child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
                           child: CachedNetworkImage(
                             imageUrl: item.poster!,
                             fit: BoxFit.fill,
@@ -309,124 +300,120 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
   }
 
   Widget mostRecentDiscovery() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Most recent discovery",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Most recent discovery",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/movie-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/movie-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            height: 210,
-            color: Colors.white,
-            child: isMostRecentDiscoveryLoading
-                ? Center(
-                    child: CircularLoadingIndicator(),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: mostRecentDiscoveryList
-                            .map(
-                              (movie) => Container(
-                                margin: EdgeInsets.only(right: 12),
-                                child: movieItemWithDetail(movieItem: movie),
-                              ),
-                            )
-                            .toList(),
-                      ),
+        ),
+        Container(
+          height: 210,
+          color: Colors.white,
+          child: isMostRecentDiscoveryLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: mostRecentDiscoveryList
+                          .map(
+                            (movie) => Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: movieItemWithDetail(movieItem: movie),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 
   Widget nowAvailableToRent() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Now available to rent",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Now available to rent",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/movie-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/movie-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            height: 210,
-            color: Colors.white,
-            child: nowAvailableToRentLoading
-                ? Center(
-                    child: CircularLoadingIndicator(),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: nowAvailableTORent
-                            .map(
-                              (movie) => Container(
-                                margin: EdgeInsets.only(right: 12),
-                                child: movieItemWithDetail(movieItem: movie),
-                              ),
-                            )
-                            .toList(),
-                      ),
+        ),
+        Container(
+          height: 210,
+          color: Colors.white,
+          child: nowAvailableToRentLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: nowAvailableTORent
+                          .map(
+                            (movie) => Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: movieItemWithDetail(movieItem: movie),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 
@@ -442,7 +429,8 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -457,7 +445,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                     fit: BoxFit.fill,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Text(
@@ -470,7 +458,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                     color: blackFont,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 1,
                 ),
                 Row(
@@ -486,7 +474,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Row(
@@ -498,7 +486,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                           color: starYellow,
                           size: 12,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(
@@ -531,66 +519,64 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
   }
 
   Widget indiePicks() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Indie Picks",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Indie Picks",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/movie-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/movie-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: isIndiePicksLoading
-                ? Container(
-                    height: 132,
-                    child: Center(
-                      child: CircularLoadingIndicator(),
-                    ),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: indiePicksList
-                            .map(
-                              (movie) => Container(
-                                margin: EdgeInsets.only(right: 12),
-                                child: moviePoster(partialMovieItem: movie),
-                              ),
-                            )
-                            .toList(),
-                      ),
+        ),
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: isIndiePicksLoading
+              ? SizedBox(
+                  height: 132,
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: indiePicksList
+                          .map(
+                            (movie) => Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: moviePoster(partialMovieItem: movie),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 

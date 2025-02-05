@@ -1,20 +1,19 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/train/train_auth.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/train/train_ticket_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/Transport.dart';
+import 'models/transport_model.dart';
 
 class MyTrainTicketList extends StatefulWidget {
+  const MyTrainTicketList({super.key});
+
   @override
-  _MyTrainTicketListState createState() => _MyTrainTicketListState();
+  State<MyTrainTicketList> createState() => _MyTrainTicketListState();
 }
 
 class _MyTrainTicketListState extends State<MyTrainTicketList> {
@@ -22,7 +21,7 @@ class _MyTrainTicketListState extends State<MyTrainTicketList> {
   List<Transport> transports = [];
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -43,25 +42,18 @@ class _MyTrainTicketListState extends State<MyTrainTicketList> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
@@ -69,6 +61,7 @@ class _MyTrainTicketListState extends State<MyTrainTicketList> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -109,7 +102,7 @@ class _MyTrainTicketListState extends State<MyTrainTicketList> {
             )
           : SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: transports
                       .map(
@@ -118,7 +111,7 @@ class _MyTrainTicketListState extends State<MyTrainTicketList> {
                             Navigator.of(context).pushNamed("/ticket-detail");
                           },
                           child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: TrainTicketTile(
                                 transport: element,
                               )),

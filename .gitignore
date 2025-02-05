@@ -15,6 +15,7 @@
 *.iws
 .idea/
 api_docs.txt
+**/dgph
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
@@ -64,3 +65,6 @@ ios/fastlane/metadata/trade_representative_contact_information
 fvm_config.json
 launch.json
 flutter_sdk
+/.fvm/
+
+ios/build/ios/Pods.build/Release-iphonesimulator

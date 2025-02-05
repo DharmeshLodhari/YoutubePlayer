@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class PhotoViewer extends StatefulWidget {
-  String? imageUrl;
+  final String? imageUrl;
 
-  PhotoViewer({Key? key, required this.imageUrl}) : super(key: key);
+  const PhotoViewer({super.key, required this.imageUrl});
 
   @override
-  _PhotoViewerState createState() => _PhotoViewerState();
+  State<PhotoViewer> createState() => _PhotoViewerState();
 }
 
 class _PhotoViewerState extends State<PhotoViewer> {
@@ -19,7 +19,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
   @override
   void initState() {
     imageUrl = widget.imageUrl;
-    debugPrint('IMAGE URL --> $imageUrl');
+    // debugPrint('IMAGE URL --> $imageUrl');
     if (imageUrl == null || imageUrl == "") {
       imageUrl = defaultImage;
     }
@@ -34,13 +34,23 @@ class _PhotoViewerState extends State<PhotoViewer> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.black,
+        leading: IconButton(
+          icon: Icon(
+            Icons.keyboard_arrow_left,
+            color: white,
+            size: 24,
+          ),
+          onPressed: () async {
+            Navigator.pop(context, "back pressed");
+          },
+        ),
       ),
       body: checkImageLink(),
     );
   }
 
   Widget checkImageLink() {
-    bool validURL = Uri.parse(imageUrl!).isAbsolute;
+    final bool validURL = Uri.parse(imageUrl!).isAbsolute;
 
     if (!validURL) {
       return Center(
@@ -56,19 +66,17 @@ class _PhotoViewerState extends State<PhotoViewer> {
     } else {
       return PhotoView(
         imageProvider: NetworkImage(imageUrl!),
-        backgroundDecoration: BoxDecoration(color: Colors.black),
+        backgroundDecoration: const BoxDecoration(color: Colors.black),
         loadingBuilder: (context, event) {
           if (event != null) {
-            return Container(
-              child: Center(
-                child: CircularProgressIndicator(
-                  value: ((100 * event.cumulativeBytesLoaded) /
-                          event.expectedTotalBytes!) /
-                      100,
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation(navyBlue),
-                  backgroundColor: Colors.transparent,
-                ),
+            return Center(
+              child: CircularProgressIndicator(
+                value: ((100 * event.cumulativeBytesLoaded) /
+                        event.expectedTotalBytes!) /
+                    100,
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(navyBlue),
+                backgroundColor: Colors.transparent,
               ),
             );
           }

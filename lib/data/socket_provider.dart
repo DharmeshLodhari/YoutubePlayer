@@ -1,16 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/connection_list_synchronizer.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/db_socket_message_handler.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/socket_queue_chat_message.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -25,13 +24,14 @@ class MainSocketProvider extends ChangeNotifier {
 
   bool get isChatOnScreen => _isChatOnScreen;
 
-  static List<StreamSubscription?> _streamSubscriptions = [];
+  static final List<StreamSubscription?> _streamSubscriptions = [];
 
   /// Queue for the messages which users sends in to the socket
-  static List<String> _queueMessages = [];
+  static final List<String> _queueMessages = [];
 
   /// Variable for listening the internet connections
   static bool? _isNetworkConnectionIsOn;
+
   bool? get isNetworkOn => _isNetworkConnectionIsOn;
   static bool _isFirstTime = true;
   static StreamSubscription? networkConnectionSubscription;
@@ -55,16 +55,17 @@ class MainSocketProvider extends ChangeNotifier {
   static Timer? _timerForRetryConnection;
   static int _numberOfRetry = 30;
   static int _countRetry = 0;
-  static Duration _connectionRetryDuration = Duration(seconds: 3);
+  static const Duration _connectionRetryDuration = Duration(seconds: 3);
 
   User? get currentUser => _currentUser;
 
   /// ping server variables
   static Timer? _timerForPingServer;
-  static Duration _pingInterval = Duration(seconds: 2);
+  static const Duration _pingInterval = Duration(seconds: 2);
   static DateTime _lastSent = DateTime.now();
   static DateTime _lastReceive = DateTime.now();
-  static Duration _socketTimeout = Duration(seconds: Platform.isIOS ? 2 : 1);
+  static final Duration _socketTimeout =
+      Duration(seconds: Platform.isIOS ? 2 : 1);
   static int pingCount = 0;
 
   // set currentUser(User? value) {
@@ -94,7 +95,9 @@ class MainSocketProvider extends ChangeNotifier {
   void setupNetworkConnectionListener() {
     networkConnectionSubscription = Connectivity()
         .onConnectivityChanged
-        .listen((ConnectivityResult result) async {
+        .listen((List<ConnectivityResult> results) async {
+      final ConnectivityResult result =
+          results.isNotEmpty ? results[0] : ConnectivityResult.none;
       if (result == ConnectivityResult.none) {
         _isNetworkConnectionIsOn = false;
         notifyListeners();
@@ -107,29 +110,33 @@ class MainSocketProvider extends ChangeNotifier {
             await connect().then((value) async {
               if (_isConnected) {
                 try {
-                  bool result = await addDataInTheCorrectOrder();
+                  final bool result = await addDataInTheCorrectOrder();
                   if (result) {
-                    if (AppConfig.enableLogs.value)
+                    if (AppConfig.enableLogs.value) {
                       debugPrint("Clearing Pending Messages 1!!");
+                    }
                     _queueMessages.clear();
                   }
                 } catch (error) {
-                  if (AppConfig.enableLogs.value)
+                  if (AppConfig.enableLogs.value) {
                     debugPrint(
                         "Failed to Clear Pending Messages  Web Socket is Not connected1!!");
+                  }
                 }
               } else {
-                if (AppConfig.enableLogs.value)
+                if (AppConfig.enableLogs.value) {
                   debugPrint(
                       "Failed to Clear Pending Messages  Web Socket is Not connected2!!");
+                }
               }
             });
           }
         }
         notifyListeners();
       }
-      if (AppConfig.enableLogs.value)
+      if (AppConfig.enableLogs.value) {
         debugPrint("_isNetworkConnectionIsOn:- $_isNetworkConnectionIsOn");
+      }
     })
       ..onError((error) {
         debugPrint("ERROR:- while closing network status stream $error");
@@ -159,12 +166,12 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// this method will ping the server
   void ping() async {
-    var currentTime = DateTime.now();
+    final currentTime = DateTime.now();
 
     /// only ping server when there is no user activity is done with in _socketTimeout time
     if (currentTime.difference(_lastSent) > _socketTimeout &&
         currentTime.difference(_lastReceive) > _socketTimeout) {
-      var data = {
+      final data = {
         "message": "ping",
         "type": "ping",
       };
@@ -174,9 +181,10 @@ class MainSocketProvider extends ChangeNotifier {
           _channel!.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
 
-          if (AppConfig.enableLogs.value)
-            print(
+          if (AppConfig.enableLogs.value) {
+            debugPrint(
                 "ping sent ${++pingCount} Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}!!");
+          }
           _isConnected = false;
         } else {
           throw Exception(
@@ -191,9 +199,10 @@ class MainSocketProvider extends ChangeNotifier {
         await connect().then((value) async {
           _channel!.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
-          if (AppConfig.enableLogs.value)
+          if (AppConfig.enableLogs.value) {
             debugPrint(
                 "ping Done ${++pingCount} Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}!!");
+          }
           pingCount = 0;
           _isConnected = false;
           ChatMessageSynchronizer().updateFetchStream(isFetching: true);
@@ -210,16 +219,17 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// for connecting the user socket
   Future<void> connect() async {
+    // return Future.value();
     _isConnected = false;
 
     /// change socket url according to recipient user url
     // var finalUrl = "$_socketUrl";
-    var finalUrl = "${AppConfig.socketUrl}/${_currentUser!.userName}/";
+    final finalUrl = "${AppConfig.socketUrl}/${_currentUser!.userName}/";
 
     // Set auth headers or socket will be closed
     _headers = await MessageAuth().getAuthHeaders();
 
-    log("$_headers");
+    // log("$_headers");
 
     /// for connecting the socket
     try {
@@ -231,16 +241,18 @@ class MainSocketProvider extends ChangeNotifier {
       _streamController?.close();
       _streamController = StreamController.broadcast();
 
-      if (AppConfig.enableLogs.value)
+      if (AppConfig.enableLogs.value) {
         debugPrint(
             "WebSocket Connected to $finalUrl for user ${currentUser!.userName}");
+      }
       _isConnected = true;
 
       notifyListeners();
     } catch (e) {
-      if (AppConfig.enableLogs.value)
+      if (AppConfig.enableLogs.value) {
         debugPrint(
             "ERROR:- While connecting WebSocket for user ${currentUser!.userName}");
+      }
       await reconnectSocket();
     }
 
@@ -251,8 +263,9 @@ class MainSocketProvider extends ChangeNotifier {
       try {
         _streamController!.addStream(_channel!.stream);
       } catch (error) {
-        if (AppConfig.enableLogs.value)
+        if (AppConfig.enableLogs.value) {
           debugPrint("Stream is already in Adding state $error");
+        }
       }
       notifyListeners();
 
@@ -264,9 +277,10 @@ class MainSocketProvider extends ChangeNotifier {
         // if (message['type'] != "pong") {
         //
         // }
-        if (AppConfig.enableLogs.value)
+        if (AppConfig.enableLogs.value) {
           debugPrint(
               "Got Message on main socket:- $message  LastReceive = $_lastReceive");
+        }
 
         _lastReceive = DateTime.now();
       })
@@ -274,15 +288,17 @@ class MainSocketProvider extends ChangeNotifier {
           /// if there is any error while listing the socket
 
           _isConnected = false;
-          if (AppConfig.enableLogs.value)
+          if (AppConfig.enableLogs.value) {
             debugPrint(
                 "ERROR:- While listening the Socket $error Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}");
+          }
           await reconnectSocket();
         })
         ..onDone(() {
-          if (AppConfig.enableLogs.value)
+          if (AppConfig.enableLogs.value) {
             debugPrint(
                 "On Done called:-  Socket Closed !!!! Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}");
+          }
           _isConnected = false;
         });
       _streamSubscriptions.add(streamSubscription);
@@ -311,8 +327,9 @@ class MainSocketProvider extends ChangeNotifier {
       _timerForRetryConnection = Timer(_connectionRetryDuration, () async {
         if (!_isConnected) {
           _countRetry++;
-          if (AppConfig.enableLogs.value)
+          if (AppConfig.enableLogs.value) {
             debugPrint("Trying to reconnect $_countRetry!! ");
+          }
 
           await connect();
         } else {
@@ -328,7 +345,7 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// for listening the user socket
   StreamSubscription? listen(Function(dynamic event) listener) {
-    StreamSubscription? newStreamSubscription =
+    final StreamSubscription? newStreamSubscription =
         _streamController?.stream.listen(listener);
     _streamSubscriptions.add(newStreamSubscription);
     notifyListeners();
@@ -338,18 +355,18 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// from remove listening subscriptions from socket
   void removeStreamSubscription(StreamSubscription? streamSubscription) {
-    _streamSubscriptions.forEach((element) {
+    for (var element in _streamSubscriptions) {
       if (element == streamSubscription) {
         element?.cancel();
         // debugPrint("Stream Subscription removed successfully !");
       }
-    });
+    }
   }
 
   /// for adding data into user socket
   Future<bool> add(Map<String, dynamic> data) async {
     bool isDataAlreadyInQueue = false;
-    String _data = jsonEncode(data);
+    final String _data = jsonEncode(data);
 
     for (int i = 0; i < _queueMessages.length; i++) {
       if (_data == _queueMessages[i]) {
@@ -371,22 +388,25 @@ class MainSocketProvider extends ChangeNotifier {
   Future<bool> addDataInTheCorrectOrder() async {
     try {
       if (_isConnected) {
-        _queueMessages.forEach((message) {
+        for (var message in _queueMessages) {
           _channel!.sink.add(message);
-        });
+        }
 
         _lastSent = DateTime.now();
         pingCount = 0;
-        if (AppConfig.enableLogs.value)
+        if (AppConfig.enableLogs.value) {
           debugPrint("Data added in webSocket :- $_queueMessages");
+        }
 
         if (await checkConnection()) {
-          if (AppConfig.enableLogs.value)
+          if (AppConfig.enableLogs.value) {
             debugPrint("Clearing Pending Messages 2!!");
+          }
           _queueMessages.clear();
         } else {
-          if (AppConfig.enableLogs.value)
+          if (AppConfig.enableLogs.value) {
             debugPrint("Failed to clear Pending Messages 1!!");
+          }
         }
 
         return true;
@@ -395,27 +415,30 @@ class MainSocketProvider extends ChangeNotifier {
             "Not Connected Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}");
       }
     } catch (e) {
-      if (AppConfig.enableLogs.value)
+      if (AppConfig.enableLogs.value) {
         debugPrint(
             "ERROR:- While adding data in WebSocket for user ${currentUser!.userName}");
+      }
 
       _numberOfRetry = 0;
       _isConnected = false;
 
       await connect().then((value) async {
-        _queueMessages.forEach((message) {
+        for (var message in _queueMessages) {
           _channel!.sink.add(message);
-        });
+        }
 
         _lastSent = DateTime.now();
         pingCount = 0;
-        if (AppConfig.enableLogs.value)
+        if (AppConfig.enableLogs.value) {
           debugPrint("Data added in webSocket :- $_queueMessages");
+        }
         if (await checkConnection()) {
           _queueMessages.clear();
         } else {
-          if (AppConfig.enableLogs.value)
+          if (AppConfig.enableLogs.value) {
             debugPrint("Failed to clear Pending Messages 2!!");
+          }
         }
 
         return true;
@@ -426,12 +449,13 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   void removeFromTheQueue({required String message}) {
-    Map<String, dynamic> decodedMessage = jsonDecode(message);
+    final Map<String, dynamic> decodedMessage = jsonDecode(message);
     if (decodedMessage.containsKey("check_id")) {
       int? index;
 
       for (int i = 0; i < _queueMessages.length; i++) {
-        Map<String, dynamic> decodeQueueMessage = jsonDecode(_queueMessages[i]);
+        final Map<String, dynamic> decodeQueueMessage =
+            jsonDecode(_queueMessages[i]);
 
         if (decodeQueueMessage.containsKey("check_id")) {
           if (decodeQueueMessage["check_id"] == decodedMessage["check_id"]) {
@@ -452,7 +476,7 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   void sendPendingQueueMessages() async {
-    List<SocketQueueChatMessage> pendingMessages =
+    final List<SocketQueueChatMessage> pendingMessages =
         await DBSocketMessageHandler().getSocketQueueChatMessage();
 
     int count = 0;
@@ -461,14 +485,15 @@ class MainSocketProvider extends ChangeNotifier {
       await add(pendingMessages[i].toJson(isForSendingToSocket: true));
     }
 
-    if (AppConfig.enableLogs.value)
+    if (AppConfig.enableLogs.value) {
       debugPrint("Sending $count Pending Text Message !!");
+    }
   }
 
   void deleteQueueMessagesForSpecificConversation({String? conversationId}) {
-    List<int> messagesIndex = [];
+    final List<int> messagesIndex = [];
     for (int i = 0; i < _queueMessages.length; i++) {
-      Map<String, dynamic> message = jsonDecode(_queueMessages[i]);
+      final Map<String, dynamic> message = jsonDecode(_queueMessages[i]);
 
       if (message.containsKey("conversation_id")) {
         if (message['conversation_id'] == conversationId) {
@@ -478,18 +503,19 @@ class MainSocketProvider extends ChangeNotifier {
     }
 
     if (messagesIndex.isNotEmpty) {
-      if (AppConfig.enableLogs.value)
+      if (AppConfig.enableLogs.value) {
         debugPrint(
             "Messages related To Conversation id found at $messagesIndex");
-      messagesIndex.forEach((element) {
+      }
+      for (var element in messagesIndex) {
         _queueMessages.removeAt(element);
-      });
+      }
     }
   }
 
   /// checking internet connectivity
   Future<bool> checkConnection() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
+    final connectivityResult = await (Connectivity().checkConnectivity());
 
     if (connectivityResult == ConnectivityResult.none) {
       return false;
@@ -512,9 +538,10 @@ class MainSocketProvider extends ChangeNotifier {
     _streamController = null;
 
     _channel = null;
-    if (AppConfig.enableLogs.value)
+    if (AppConfig.enableLogs.value) {
       debugPrint(
           "WebSocket disconnected to ${AppConfig.socketUrl} for user ${currentUser?.userName}");
+    }
     notifyListeners();
   }
 }

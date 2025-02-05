@@ -2,22 +2,21 @@ import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class FormVariantsTile extends StatelessWidget {
-  FormVariantsTile(
+  const FormVariantsTile(
       {required this.productVariantList,
       required this.index,
       super.key,
       required this.type});
 
-  List<Variant> productVariantList;
-  int index;
-  String type;
+  final List<Variant> productVariantList;
+  final int index;
+  final String type;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +26,7 @@ class FormVariantsTile extends StatelessWidget {
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
-        padding: EdgeInsets.symmetric(vertical: 7.0),
+        padding: const EdgeInsets.symmetric(vertical: 7.0),
         child: ListTile(
           title: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -42,7 +41,7 @@ class FormVariantsTile extends StatelessWidget {
                     fontFamily: "Inter",
                     fontSize: 14),
               ),
-              SizedBox(height: 3.0),
+              const SizedBox(height: 3.0),
               Text(
                 'Available . ${productVariantList[index].quantity!}',
                 maxLines: 1,
@@ -82,7 +81,7 @@ class FormVariantsTile extends StatelessWidget {
             ),
           ),
           leading: getVariantLeading(productVariantList[index]),
-          trailing: getVariantTrailing(productVariantList[index]),
+          // trailing: getVariantTrailing(productVariantList[index]),
         ),
       ),
     );
@@ -93,13 +92,16 @@ class FormVariantsTile extends StatelessWidget {
     String? sercerUrl = "";
     String? localUrl = "";
 
-    if (type != 'add') {
-      for (var item in productVariant.serverImages!) {
+    if (productVariant.serverImages != null) {
+      for (var item in productVariant.serverImages ?? []) {
         sercerUrl = item;
       }
       sercerUrl = sercerUrl!.replaceAll('https//', 'https://');
     } else {
-      localUrl = productVariant.localImages?[0].path;
+      if (productVariant.localImages != null &&
+          (productVariant.localImages?.isNotEmpty ?? false)) {
+        localUrl = productVariant.localImages?[0].path;
+      }
     }
 
     if (sercerUrl == "" && localUrl == "") {
@@ -117,9 +119,9 @@ class FormVariantsTile extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           image: DecorationImage(
-              image: type == 'add'
+              image: localUrl != null && localUrl.isNotEmpty
                   ? FileImage(
-                      File(localUrl ?? ""),
+                      File(localUrl),
                     )
                   : NetworkImage(
                       sercerUrl,
@@ -134,12 +136,10 @@ class FormVariantsTile extends StatelessWidget {
     return IconButton(
       padding: const EdgeInsets.only(right: 5),
       alignment: Alignment.topRight,
-      icon: Container(
-        child: Icon(
-          SlydoAppIcon.remove,
-          color: blackFont,
-          size: 15,
-        ),
+      icon: Icon(
+        SlydoAppIcon.remove,
+        color: blackFont,
+        size: 15,
       ),
       onPressed: () {
         removeSelectedVariant(productVariant.title.toString());

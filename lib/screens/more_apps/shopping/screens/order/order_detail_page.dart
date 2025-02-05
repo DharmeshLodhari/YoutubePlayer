@@ -1,194 +1,169 @@
-// import 'dart:convert';
-// import 'dart:developer';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/order/tracker_stepper.dart'
-    as track;
-import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/custom_pdf_print_order.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_new.dart';
+import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.dart';
+import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
+import 'package:Slydo/screens/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/shipping_process/auth/shipping_process_auth.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/services/location_service.dart';
+import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:Slydo/widget/slide_action_button.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-// import '../../../../../utils/date_time_and_money_converter.dart';
-import '../../../../../routes/route_constants.dart';
-import '../../../../../utils/global_key.dart';
-import '../../../../../utils/navigation_util.dart';
-// import '../../../payment_and_banking/payment_and_banking_auth.dart';
-import '../../../user_profile/forms/user_address.dart';
-import '../../shopping_auth.dart';
-
-// ignore: must_be_immutable
 class OrderDetailPage extends StatefulWidget {
-  var arguments;
-
-  OrderDetailPage({required this.arguments});
+  final dynamic arguments;
+  const OrderDetailPage({super.key, required this.arguments});
 
   @override
-  _OrderDetailPageState createState() =>
-      _OrderDetailPageState(arguments: arguments);
+  State<OrderDetailPage> createState() => _OrderDetailPageState();
 }
 
 class _OrderDetailPageState extends State<OrderDetailPage> {
-  var arguments;
-
-  _OrderDetailPageState({this.arguments});
-
-  late BasketBloc basketBloc;
-  late UserBloc userBloc;
-
-  SlidableController? _slideController;
-
-  String note = "";
-
-  Order? order;
-  List items = [];
-  bool isLoading = true;
-  final _auth = ShoppingAuthService();
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  String? statusOfOrder = "";
-  String? statusOfOrderCopy =
-      ""; //This variable is used to track if the statusOfOrder has changed.
-
-  GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
+  Order? order;
+  Product? product;
+  late UserBloc userBloc;
+  late BasketBloc basketBloc;
+  TextEditingController userNoteController = TextEditingController();
+  final GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
+  late ShippingProcessBloc shippingProcessBloc;
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
-  bool onTap = false;
-  bool onTapStatus = false;
-
-  String? getCustomerOrMerchant() {
-    var customerOrMerchant = order!.customerName == userBloc.user.userName
-        ? order!.merchant
-        : order!.customerName;
-    return customerOrMerchant;
-  }
-
-  String? getAvatar() {
-    return order!.customerName == userBloc.user.userName
-        ? order!.merchantAvatar
-        : order!.customerAvatar;
-  }
-
-  String? getAvatarType() {
-    return order!.customerName == userBloc.user.userName
-        ? order!.merchantType
-        : order!.customerType;
-  }
-
-  Widget getLeading() {
-    return Container(
-      height: 48,
-      width: 48,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(
-          25,
-        ),
-        border: Border.all(color: Colors.transparent, width: 0),
-      ),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.pushNamed(
-              myGlobals.navigationKey.currentContext!, Routes.USER_PROFILE,
-              arguments: {
-                "searchedUserName":
-                    order!.customerName == userBloc.user.userName
-                        ? order!.merchant
-                        : order!.customerName
-              });
-        },
-        child: userImageUserInitialsPic(
-            getAvatar()!, getCustomerOrMerchant()!, 35, 48),
-      ),
-    );
-  }
+  String? statusOfOrder = "";
+  bool isAPILoading = false;
+  final _auth = ShoppingAuthService();
+  List<int?> orders = [];
+  bool isOrderLoading = false;
+  String noteDetails = "";
+  late http.Response response;
+  String errorMessage = "";
+  String cartId = "";
+  String? currency;
+  ShippingAddress? deliveryAddress;
+  bool isRefundAPILoading = false;
+  bool isLoading = false;
+  bool isButtonLoading = false;
+  bool isAddressLoading = false;
+  String? orderId;
 
   @override
   void initState() {
-    order = arguments['order'];
-    statusOfOrder = order!.status!.toLowerCase();
-    statusOfOrderCopy = order!.status!.toLowerCase();
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
-    fetchOrder(order!.id.toString());
+    order = widget.arguments['order'];
+
+    if (order != null) {
+      orderId = order?.id;
+    } else {
+      orderId = widget.arguments[
+          'orderId']; // We get this when we are coming from the scan order QR.
+    }
+
+    fetchOrderDetail(orderId ?? "");
+
+    statusOfOrder = order?.status?.toLowerCase();
+    getCartId();
+    getDeliveryAddress();
     super.initState();
   }
 
-  getOrderStatusTime(Order? order, String? status) {
-    var time = '';
-    var date = '';
-    order?.statusTimeStamp?.map((e) {
-      if (e[status ?? ''] != null) {
-        date =
-            DateFormat("EEEE, MM d 'h:mm a").format(DateTime.parse(e[status]));
-        time = DateFormat("hh:mm:ss").format(DateTime.parse(e[status]));
-      }
-    }).toList();
-
-    return date + time;
-  }
-
-  getActiveOrderStatus(Order? order, String? status) {
-    bool value = false;
-    order?.statusTimeStamp?.map((e) {
-      if (e[status ?? ''] != null) {
-        value = true;
-      }
-    }).toList();
-    return value;
-  }
-
-  getCanceledOrderStatus(Order? order, String? status) {
-    bool value = false;
-    for (var v in order!.statusTimeStamp!) {
-      if (v.containsKey('Canceled')) {
-        value = true;
-      }
-    }
-    return value;
-  }
-
-  getOnHoldAndPendingOrderStatus(Order? order, String? status) {
-    bool value = false;
-    for (var v in order!.statusTimeStamp!) {
-      if (v.containsKey('On Hold') || v.containsKey('Pending')) {
-        value = true;
-      }
-    }
-    return value;
-  }
-
-  void fetchOrder(String orderId) async {
+  void fetchOrderDetail(String orderId) async {
     setState(() {
       isLoading = true;
     });
-    _auth.getOrder(orderId).then((value) {
-      debugPrint('VALUE :: $value');
+    await _auth.getOrder(orderId).then((value) {
+      // debugPrint('VALUE :: $value');
       if (mounted) {
         setState(() {
-          items = value;
+          order = value;
           isLoading = false;
         });
       }
     });
   }
 
+  Future<void> getCartId() async {
+    if (mounted) setState(() {});
+
+    cartId = await ShippingProcessAuthService().getCartId();
+  }
+
+  Future<void> getDeliveryAddress() async {
+    isAddressLoading = true;
+    if (mounted) setState(() {});
+
+    deliveryAddress = await ShippingProcessAuthService()
+        .getSingleAddressDetail(order?.deliveryAddressId ?? "");
+
+    isAddressLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    currency = worldCurrencies[order?.currency] ?? "";
+    userBloc = Provider.of<UserBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
+    shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      childList: [
+        CustomizedPopUpMenuItem(title: "New Order", value: "new order"),
+        CustomizedPopUpMenuItem(title: "Processing", value: "processing"),
+        CustomizedPopUpMenuItem(
+            title: "Awaiting Payment", value: "awaiting payment"),
+        CustomizedPopUpMenuItem(title: "Shipped", value: "shipped"),
+        CustomizedPopUpMenuItem(title: "Completed", value: "completed"),
+        CustomizedPopUpMenuItem(title: "On Hold", value: "on hold"),
+        CustomizedPopUpMenuItem(title: "Canceled", value: "canceled"),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      right: 16,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
+      },
+      child: Scaffold(
+        key: scaffoldKey,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: SingleChildScrollView(
+          child: _buildBody(),
+        ),
+      ),
+    );
+  }
+
   void menuItemSelectionChange(String value, int index) {
-    if (userBloc.user.userName == order!.merchant) {
+    if (userBloc.user.userName == order?.merchant) {
       selectedMenuItemIndex = index;
-      updateStatus(value);
       statusOfOrder = value;
       setState(() {});
     }
@@ -199,44 +174,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     setState(() {});
   }
 
-  @override
-  Widget build(BuildContext context) {
-    basketBloc = Provider.of<BasketBloc>(context);
-    userBloc = Provider.of<UserBloc>(context);
-
-    menu = CustomizedPopUpMenu(
-      buttonKey: _key,
-      context: context,
-      childList: [
-        CustomizedPopUpMenuItem(title: "New order", value: "new order"),
-        CustomizedPopUpMenuItem(
-            title: "Awaiting payment", value: "awaiting payment"),
-        CustomizedPopUpMenuItem(title: "Canceled", value: "canceled"),
-        CustomizedPopUpMenuItem(title: "Completed", value: "completed"),
-        CustomizedPopUpMenuItem(title: "On hold", value: "on hold"),
-        CustomizedPopUpMenuItem(title: "Pending", value: "pending"),
-        CustomizedPopUpMenuItem(title: "Processing", value: "processing"),
-      ],
-      selectedIndex: selectedMenuItemIndex,
-      right: 16,
-    );
-    menu.onChange = menuItemSelectionChange;
-    menu.menuState = menuStateChange;
-
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
-      },
-      child: Scaffold(
-          key: scaffoldKey,
-          backgroundColor: Colors.white,
-          appBar: appBar() as PreferredSizeWidget?,
-          body: SingleChildScrollView(child: scaffoldBody())),
-    );
-  }
-
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
@@ -253,562 +193,1192 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       ),
       centerTitle: false,
       title: Text(
-        "${"Ref # :" + (order?.id ?? "")}",
+        "Ref # : ${order?.id ?? ""}",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-      actions: <Widget>[
-        locationBtn(),
-        const SizedBox(width: 10.0),
-        noteSheetBtn(),
-        const SizedBox(width: 10.0),
-        changeOrderStatusSheetBtn(),
-        const SizedBox(
-          width: 16,
+          color: blackFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          fontFamily: "Inter",
         ),
+      ),
+      actions: [
+        GestureDetector(
+          onTap: () {
+            _printAndroidSheet();
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(right: 15),
+            child: Image.asset(
+              "assets/images/appIcon/printer.png",
+              height: 22,
+              width: 22,
+            ),
+          ),
+        )
       ],
     );
   }
 
-  Widget locationBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.location,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {
-        // showNoteAndroidSheet();
-        NavigationUtil.push(
-          context,
-          screen: UserAddress(customerName: order!.customerName),
-        );
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
-    );
-  }
-
-  Widget noteSheetBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.note,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {
-        showNoteAndroidSheet();
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
-    );
-  }
-
-  Widget popUpMenuButton() {
-    return SizedBox(
-      key: _key,
-      height: 34,
-      width: 34,
-      child: Card(
-        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: Icon(
-            Icons.settings,
-            color: isPopMenuOpen ? Colors.white : Colors.black,
-            size: 20,
-          ),
-          onPressed: () {
-            if (menu.isMenuOpen) {
-              menu.closeMenu();
-            } else {
-              menu.openMenu();
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget changeOrderStatusSheetBtn() {
-    if (userBloc.user.userName == order!.merchant) {
-      return RoundedBackgroundIcon(
-        height: 34,
-        width: 34,
-        icon: Icon(
-          SlydoAppIcon.settings,
-          size: 16,
-          color: blackFont,
-        ),
-        onTap: () {
-          showChangeStatusAndroidSheet();
-        },
-        backgroundColor: iconBtnGrey,
-        enableMargin: true,
-      );
-    }
-    return const SizedBox.shrink();
-  }
-
-  Widget scaffoldBody() {
-    bool canPay = order!.status == 'Awaiting Payment' &&
-        userBloc.user.userName != order!.merchant;
-
-    return isLoading
-        ? Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: CircularLoadingIndicator(),
-            ),
-          )
-        : Container(
-            margin: EdgeInsets.symmetric(horizontal: 14, vertical: 20),
-            padding: EdgeInsets.only(top: 12, bottom: 12),
-            decoration: BoxDecoration(
-                border: Border.all(color: greyBackground),
-                borderRadius: BorderRadius.circular(10)),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 30.0, top: 20),
-                  child: GestureDetector(
-                    onTap: () => Navigator.pushNamed(
-                        myGlobals.navigationKey.currentContext!,
-                        Routes.USER_PROFILE,
-                        arguments: {
-                          "searchedUserName":
-                              order!.customerName == userBloc.user.userName
-                                  ? order!.merchant
-                                  : order!.customerName
-                        }),
-                    child: Row(
-                      children: [
-                        getLeading(),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              getCustomerOrMerchant() ?? '',
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 17.4,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: 6,
-                            ),
-                            Text(
-                              getCustomerOrMerchant() ?? '',
-                              style: TextStyle(
-                                  color: greyBorderColor,
-                                  fontSize: 13.4,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Divider(
-                  color: greyBackground,
-                  thickness: 1,
-                ),
-                !onTap
-                    ? Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border:
-                                Border.all(color: blackFont.withOpacity(.12)),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Order Summary",
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 17.4,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                IconButton(
-                                    onPressed: () => setState(() {
-                                          onTap = !onTap;
-                                        }),
-                                    icon: Icon(
-                                      Icons.keyboard_arrow_up_rounded,
-                                      color: navyBlue,
-                                    ))
-                              ]),
-                        ),
-                      )
-                    : Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: blackFont.withOpacity(.12))),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Order Summary",
-                                        style: TextStyle(
-                                            color: blackFont,
-                                            fontSize: 17.4,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      IconButton(
-                                          onPressed: () => setState(() {
-                                                onTap = !onTap;
-                                              }),
-                                          icon: Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            color: navyBlue,
-                                          ))
-                                    ]),
-                              ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                itemCount: items.length,
-                                itemBuilder:
-                                    (BuildContext context, int index) =>
-                                        getItemTile(index),
-                              ),
-                              Divider(color: blackFont.withOpacity(.12)),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              getOrderDetail(),
-                              SizedBox(
-                                height: 10,
-                              ),
-
-                              // canPay
-                              //     ? Expanded(
-                              //         child: Align(
-                              //           alignment: Alignment.bottomCenter,
-                              //           child: Padding(
-                              //             padding: const EdgeInsets.all(16.0),
-                              //             child: CurvedButton(
-                              //               onPressed: () {
-                              //                 showDialog(
-                              //                     context: context,
-                              //                     builder:
-                              //                         (dialogLoadingContext) =>
-                              //                             LoadingIndicator());
-
-                              //                 var data = {
-                              //                   "orders": [order!.id]
-                              //                 };
-                              //                 PaymentAndBankingAuth()
-                              //                     .makePaymentForCartOrder(data)
-                              //                     .then(
-                              //                   (response) {
-                              //                     Navigator.pop(context);
-                              //                     if (response.statusCode ==
-                              //                         200) {
-                              //                       Navigator.pop(context, true);
-
-                              //                       showToast(
-                              //                           message:
-                              //                               'Payment successful');
-                              //                     } else if (response
-                              //                             .statusCode ==
-                              //                         500) {
-                              //                       showToast(
-                              //                           message:
-                              //                               AppLocalization.of(
-                              //                                       context)!
-                              //                                   .serverError);
-                              //                     } else {
-                              //                       showToast(
-                              //                           message: jsonDecode(
-                              //                                   response.body)[0]
-                              //                               ['errors']);
-                              //                     }
-                              //                   },
-                              //                 );
-                              //               },
-                              //               text: 'Pay Now',
-                              //             ),
-                              //           ),
-                              //         ),
-                              //       )
-                              //     : const SizedBox.shrink(),
-                            ],
-                          ),
-                        ),
-                      ),
-                !onTapStatus
-                    ? Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border:
-                                Border.all(color: blackFont.withOpacity(.12)),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Track Status",
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 17.4,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                IconButton(
-                                    onPressed: () => setState(() {
-                                          onTapStatus = !onTapStatus;
-                                        }),
-                                    icon: Icon(
-                                      Icons.keyboard_arrow_up_rounded,
-                                      color: navyBlue,
-                                    ))
-                              ]),
-                        ),
-                      )
-                    : Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: blackFont.withOpacity(.12))),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Track Status",
-                                        style: TextStyle(
-                                            color: blackFont,
-                                            fontSize: 17.4,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      IconButton(
-                                          onPressed: () => setState(() {
-                                                onTapStatus = !onTapStatus;
-                                              }),
-                                          icon: Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            color: navyBlue,
-                                          ))
-                                    ]),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              stepperBody()
-                            ],
-                          ),
-                        ),
-                      ),
-              ],
-            ),
-          );
-  }
-
-  Widget statusIconButton() {
-    return IconButton(
-      icon: const Icon(Icons.settings),
-      onPressed: () {
-        showChangeStatusAndroidSheet();
-      },
-    );
-  }
-
-  Widget getOrderDetail() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+  void _printAndroidSheet() {
+    androidBottomSheet(
+      context: context,
       child: Column(
-        children: [
-          checkoutWidget(),
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.preview,
+            iconData: Icons.preview,
+            iconSize: 20,
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                Routes.ORDER_PREVIEW,
+                arguments: {"order": order},
+              );
+            },
+          ),
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.print,
+            iconData: Icons.print,
+            iconSize: 20,
+            isLast: true,
+            onTap: () {
+              Navigator.pop(context);
+              final CustomPdfPrintOrder pdfPrint = CustomPdfPrintOrder(
+                order: order,
+                currency: currency,
+                product: product,
+              );
+              pdfPrint.printOrderDetails();
+            },
+          ),
         ],
       ),
     );
   }
 
-  Widget noteIconButton() {
-    return IconButton(
-      icon: const Icon(Icons.event_note),
-      onPressed: () {
-        showNoteAndroidSheet();
-      },
-    );
-  }
-
-  void showNoteAndroidSheet() {
-    showModalBottomSheet<void>(
-        backgroundColor: Colors.transparent,
-        context: context,
-        isScrollControlled: true,
-        builder: (BuildContext context) {
-          return Card(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
+  // void _printOrderDetails() async {
+  //   try {
+  //     await SunmiPrinter.initPrinter();
+  //     await SunmiPrinter.bindingPrinter();
+  //     await SunmiPrinter.startTransactionPrint(true);
+  //
+  //     // Proceed with printing
+  //     _buildTitle();
+  //     _buildOrderNo();
+  //     _buildOrderPlaceTime();
+  //     _buildOrderPaymentStatus();
+  //     _buildPrintOrderStatus();
+  //     await SunmiPrinter.line();
+  //     await SunmiPrinter.bold();
+  //
+  //     // Order Product Details
+  //     await SunmiPrinter.printRow(cols: [
+  //       ColumnMaker(
+  //         text: 'Item',
+  //         width: 25,
+  //         align: SunmiPrintAlign.LEFT,
+  //       ),
+  //       ColumnMaker(
+  //         text: 'Amount',
+  //         width: 6,
+  //         align: SunmiPrintAlign.RIGHT,
+  //       ),
+  //     ]);
+  //
+  //     // Print a list of products
+  //     for (int i = 0; i < (order?.orderItems?.length ?? 0); i++) {
+  //       if (order?.orderItems?[i].item is Product) {
+  //         product = order?.orderItems?[i].item;
+  //       }
+  //       _getProductNameColorAndAmount();
+  //     }
+  //     await SunmiPrinter.line();
+  //     // Product Price and Charges
+  //     _buildProductChargeText(
+  //         title: "Subtotal",
+  //         amount:
+  //             '$currency${moneyDisplayNormalizer(order?.getSubTotalAmount())}');
+  //     _buildProductChargeText(
+  //         title: "Shipping",
+  //         amount:
+  //             '$currency${moneyDisplayNormalizer(order?.getShippingPrice())}');
+  //     _buildProductChargeText(
+  //         title: "Service Charge",
+  //         amount:
+  //             '$currency${moneyDisplayNormalizer(order?.getServiceCharge())}');
+  //     _buildProductChargeText(
+  //         title: "Tax", amount: '$currency${order?.getTaxAmount()}');
+  //
+  //     await SunmiPrinter.bold();
+  //     await SunmiPrinter.printRow(cols: [
+  //       ColumnMaker(text: "Total", width: 6, align: SunmiPrintAlign.LEFT),
+  //       ColumnMaker(
+  //           text: '$currency${moneyDisplayNormalizer(order?.getTotalAmount())}',
+  //           width: 6,
+  //           align: SunmiPrintAlign.RIGHT)
+  //     ]);
+  //     await SunmiPrinter.line();
+  //
+  //     // Delivery Details
+  //     _buildPrintDelivery();
+  //     _buildPrintDeliveryText(
+  //         title: 'Customer',
+  //         info: "${order?.normalizeName(order?.customerName)}");
+  //     _buildPrintDeliveryText(
+  //         title: 'Username', info: "@${order?.customerName}");
+  //     _buildPrintDeliveryText(
+  //         title: 'Payment Method', info: "${order?.paymentType}");
+  //     _buildPrintDeliveryText(
+  //         title: 'Delivery Option', info: "${order?.shipmentType()}");
+  //     //format date
+  //     String formattedDate;
+  //     try {
+  //       final DateTime dateTime = DateTime.parse(order?.pickupDateTime ?? "");
+  //       final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm:ss");
+  //       formattedDate = dateFormat.format(dateTime);
+  //     } catch (e) {
+  //       print("Error parsing date: $e");
+  //       formattedDate = "-";
+  //     }
+  //     _buildPrintDeliveryText(title: 'Pickup Date/Time', info: formattedDate);
+  //
+  //     // QRCode
+  //     _buildQrImage();
+  //     await SunmiPrinter.printText(
+  //       'Powered by SLYDO',
+  //       style: SunmiStyle(
+  //         fontSize: SunmiFontSize.MD,
+  //         bold: true,
+  //         align: SunmiPrintAlign.CENTER,
+  //       ),
+  //     );
+  //     await SunmiPrinter.printText(
+  //       'Download Slydo App on Google Play Store & App Store',
+  //       style: SunmiStyle(
+  //         fontSize: SunmiFontSize.MD,
+  //         bold: false,
+  //         align: SunmiPrintAlign.CENTER,
+  //       ),
+  //     );
+  //
+  //     await SunmiPrinter.lineWrap(2);
+  //     await SunmiPrinter.line();
+  //     await SunmiPrinter.cut();
+  //     await SunmiPrinter.exitTransactionPrint(true);
+  //     // await SunmiPrinter.submitTransactionPrint();
+  //   } catch (e) {
+  //     print("Error: $e");
+  //   }
+  // }
+  Widget _buildBody() {
+    return isLoading
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 30),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildOrderStatus(),
+                  _buildPaymentStatus(),
+                ],
               ),
-              color: Colors.white,
-              margin: EdgeInsets.zero,
-              child: Container(
-                height: MediaQuery.of(context).size.height / 2 +
-                    MediaQuery.of(context).viewInsets.bottom,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        AppLocalization.of(context)!.note,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: blackFont,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    getBodyOfNoteBottomSheet()
-                  ],
-                ),
-              ));
-        });
+              Divider(
+                color: lightBlue,
+                thickness: 0.5,
+              ),
+              _buildAllDetails(),
+            ],
+          );
   }
 
-  Widget getBodyOfNoteBottomSheet() {
-    bool result =
-        order!.note == "" && order!.customerName == userBloc.user.userName;
-    if (!result) {
-      return Expanded(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  child: Text(
-                    getOrderNote(),
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: blackFont,
-                        fontWeight: FontWeight.w600),
-                    textAlign: TextAlign.justify,
-                  ),
-                ),
+  Widget _buildAllDetails() {
+    String name;
+    String? image;
+    if (order?.isCustomer(userBloc.user.userName) ?? false) {
+      image = order?.merchantAvatar;
+      name = order?.normalizeName(order?.merchant) ?? "";
+    } else {
+      name = order?.normalizeName(order?.customerName) ?? "";
+      image = order?.customerAvatar;
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  _buildMerchantCustomerIcon(image),
+                  const SizedBox(width: 10),
+                  _buildCustomerName(name),
+                ],
+              ),
+              ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: order?.orderItems?.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    getItemTileUi(index),
               ),
             ],
           ),
         ),
-      );
-    }
-    return Expanded(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        const SizedBox(
-          height: 30,
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          color: lightBlue,
+          height: 5,
         ),
-        getNoteAddTextField(),
-        const SizedBox(
-          height: 20,
+        checkoutWidget(),
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          color: lightBlue,
+          height: 5,
         ),
-        addNoteBtn(),
+        _buildNoteAndOrderDetails(),
       ],
-    ));
+    );
   }
 
-  Widget getNoteAddTextField() {
-    return Container(
-      child: TextFormField(
-        maxLines: 8,
-        onFieldSubmitted: (val) {
-          addNote();
-        },
-        cursorColor: blackFont,
-        decoration: InputDecoration(
-          isDense: true,
-          labelText: AppLocalization.of(context)!.enterYourNoteHere,
-          labelStyle: TextStyle(color: darkGrey),
-          alignLabelWithHint: true,
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: greyBorderColor, width: 1),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: greyBorderColor, width: 1),
+  Widget _buildMerchantCustomerIcon(String? image) {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(80),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context)
+                    .pushNamed("/photo-viewer", arguments: image);
+              },
+              child: Container(
+                color: Colors.white,
+                child: CachedNetworkImage(
+                  height: 30,
+                  width: 30,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  imageUrl: image ?? "",
+                  errorWidget: imageErrorWidget,
+                ),
+              ),
+            ),
           ),
         ),
-        onChanged: (val) {
-          note = val;
-        },
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: CircleAvatar(
+            maxRadius: 7,
+            backgroundColor: order?.isCustomer(userBloc.user.userName) ?? false
+                ? navyBlue
+                : deepPink,
+            child: Image.asset(
+              order?.isCustomer(userBloc.user.userName) ?? false
+                  ? 'assets/images/sales.png'
+                  : 'assets/images/purchase.png',
+            ),
+          ),
+          // child: Image.asset(
+          //   order?.isCustomer(userBloc.user.userName) ?? false
+          //       ? 'assets/images/arrow_down.png'
+          //       : 'assets/images/arrow_up.png',
+          //   height: 13,
+          //   width: 13,
+          // ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCustomerName(String name) {
+    return Text(
+      order?.normalizeName(name) ?? "",
+      style: TextStyle(
+        color: lightBlackFont,
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        fontFamily: "Inter",
       ),
     );
   }
 
-  Widget addNoteBtn() {
-    return CurvedButton(
-        backgroundColor: navyBlue,
-        text: "Add note",
-        textColor: Colors.white,
-        onPressed: addNote);
+  Widget getItemTileUi(int index) {
+    if (order?.orderItems?[index].item is Product) {
+      if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+          (order?.isCompleted() ?? false)) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            OrderTileForProductNew(
+              order: order?.orderItems?[index],
+            ),
+            _buildWriteReview(index, 'isProduct'),
+          ],
+        );
+      }
+      return OrderTileForProductNew(
+        order: order?.orderItems?[index],
+      );
+    } else if (order?.orderItems?[index].item is Service) {
+      if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+          (order?.isCompleted() ?? false)) {
+        return Column(
+          children: [
+            OrderTileForService(
+              order?.orderItems?[index],
+            ),
+            _buildWriteReview(index, 'isService'),
+          ],
+        );
+      }
+      return OrderTileForService(
+        order?.orderItems?[index],
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget _buildOrderStatus() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 16.0),
+      child: Text(
+        "Status : ${appendStringDot(order?.status ?? "", 15)}",
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 16,
+          fontFamily: "Inter",
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentStatus() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 16.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: order?.checkOrderStatusBgColor(userBloc.user.userName ?? ""),
+        ),
+        child: Text(
+          order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: order?.checkStatusForColor(userBloc.user.userName ?? ""),
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget checkoutWidget() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                AppLocalization.of(context)?.subTotal ?? "",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: black,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: "Inter",
+                ),
+              ),
+              Row(
+                children: [
+                  Text(
+                    worldCurrencies[order?.currency] ?? "NGN",
+                    style: TextStyle(
+                      fontFamily: "Inter",
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: lightBlackFont,
+                    ),
+                  ),
+                  Text(
+                    moneyDisplayNormalizer(order?.getSubTotalAmount() ?? 0),
+                    // moneyDisplayNormalizer(order?.totalPrice),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: lightBlackFont,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                AppLocalization.of(context)?.shipping ?? "",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: black,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: "Inter",
+                ),
+              ),
+              Row(
+                children: [
+                  Text(
+                    worldCurrencies[order?.currency] ?? "",
+                    style: TextStyle(
+                      fontFamily: "Inter",
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: lightBlackFont,
+                    ),
+                  ),
+                  Text(
+                    moneyDisplayNormalizer(order?.getShippingPrice() ?? 0),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: lightBlackFont,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                AppLocalization.of(context)?.tax ?? "",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: black,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: "Inter",
+                ),
+              ),
+              Row(
+                children: [
+                  Text(
+                    worldCurrencies[order?.currency] ?? "",
+                    style: TextStyle(
+                      fontFamily: "Inter",
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: lightBlackFont,
+                    ),
+                  ),
+                  Text(
+                    order?.getTaxAmount() ?? '',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: lightBlackFont,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                AppLocalization.of(context)?.total ?? "",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: black,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Inter",
+                ),
+              ),
+              Row(
+                children: [
+                  Text(
+                    worldCurrencies[order?.currency] ?? "",
+                    style: TextStyle(
+                      fontFamily: "Inter",
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: blackFont,
+                    ),
+                  ),
+                  Text(
+                    moneyDisplayNormalizer(order?.getTotalAmount() ?? 0),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: blackFont,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNoteAndOrderDetails() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildNotes(),
+          const SizedBox(
+            height: 15,
+          ),
+          _buildOrderDetails(),
+          const SizedBox(
+            height: 10,
+          ),
+          _buildButtons(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotes() {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+              color: darkGrey.withOpacity(
+                .4,
+              ),
+              width: .5)),
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppLocalization.of(context)?.note ?? "",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: blackFont,
+                  fontFamily: "Inter",
+                ),
+              ),
+              if (userBloc.user.userName != order?.merchant)
+                GestureDetector(
+                  onTap: () {
+                    showEditNoteDialog();
+                  },
+                  child: SvgPicture.asset(
+                    'edit_icon'.toSVG(),
+                    width: 20,
+                    height: 20,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Text(
+            getOrderNote(),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: blackFont,
+              fontFamily: "Inter",
+            ),
+            maxLines: 5,
+          ),
+        ],
+      ),
+    );
   }
 
   void addNote() async {
-    await _auth.updateOrderNote(note, order!.id.toString()).then((value) {
+    await _auth
+        .updateOrderNote(noteDetails, order?.id.toString() ?? "")
+        .then((value) {
       if (value) {
         setState(() {
-          order!.note = note;
+          order?.note = noteDetails;
           Navigator.pop(context);
         });
       }
     });
   }
 
-  getOrderNote() {
-    if (order!.note == "") {
-      return AppLocalization.of(context)!.noSpecialNoteAttached + " !!";
+  String getOrderNote() {
+    if (order?.note == "") {
+      return "${AppLocalization.of(context)?.noSpecialNoteAttached} !!";
     }
-    return order!.note;
+    return order?.note ?? "";
+  }
+
+  Future<void> showEditNoteDialog() async {
+    final result = await showDialogBoxWithInput(
+        context: context,
+        actionOneTextColor: blackFont,
+        actionOneBgColor: greyBorderColor,
+        actionTwoTextColor: white,
+        actionTwoBgColor: navyBlue,
+        actionOneText: AppLocalization.of(context)!.cancel,
+        actionTwoText: AppLocalization.of(context)!.save,
+        firstActionPrimary: false,
+        content: Column(
+          children: [
+            Text("Edit Note",
+                style: TextStyle(
+                  color: blackFont,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                  fontFamily: "Inter",
+                ),
+                textAlign: TextAlign.center),
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 20),
+              child: CustomizedTextFormField(
+                keyboardType: TextInputType.multiline,
+                maxLines: 4,
+                labelText: 'Note',
+                onChanged: (val) {
+                  noteDetails = val;
+                },
+              ),
+            ),
+          ],
+        ),
+        leftButtonOnPressed: () async {
+          Navigator.pop(context);
+          return;
+        },
+        rightButtonOnPressed: () async {
+          addNote();
+          return;
+        });
+    if (result != null && result == true) {
+      Navigator.of(context).pop(true);
+    }
+  }
+
+  Widget _buildNoteTextField() {
+    return TextField(
+      controller: userNoteController,
+      readOnly: userBloc.user.userName == order?.merchant ? true : false,
+      maxLines: 3,
+      decoration: InputDecoration(
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide(
+            color: lightBlue, // Border color
+            width: 1.0,
+          ),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide(
+            color: lightBlue, // Border color
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide(
+            color: navyBlue, // Change the focus color here
+            width: 1.0,
+          ),
+        ),
+        filled: true,
+        fillColor: white,
+        // Background color
+      ),
+      style: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: lightBlackFont,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget getPaymentDate() {
+    String paymentDate = "Awaiting Payment";
+    if (order?.transactionId != null) {
+      for (Map<String, dynamic> statusMap in order?.statusTimeStamp ?? []) {
+        if (statusMap.keys.first == "Awaiting Payment") {
+          paymentDate = statusMap.values.first;
+          paymentDate = formatPickupDateTime(paymentDate);
+        }
+      }
+    }
+
+    return OrderDetailRow(
+      title: 'Payment Date',
+      detail: paymentDate,
+    );
+  }
+
+  Widget _buildOrderDetails() {
+    final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm a");
+
+    final DateTime? dateTime = DateTime.tryParse(order?.createdAt ?? "");
+    String date = '';
+    if (dateTime != null) {
+      date = dateFormat.format(dateTime);
+    }
+
+    final Map<String, String> formattedDateTimeForPickUp =
+        getFormattedDateTime(order?.pickupDateTime ?? "");
+    final Map<String, String> formattedDateTimeForEatIn =
+        getFormattedDateTime(order?.inStoreDateTime ?? "");
+
+    return Container(
+      padding: const EdgeInsets.all(7),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          color: lightBlue,
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppLocalization.of(context)?.orderDetail ?? "",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: blackFont,
+              fontFamily: "Inter",
+            ),
+          ),
+          const SizedBox(height: 5.0),
+          const OrderDetailRow(
+            title: 'Order No',
+            detail: '#1782903',
+          ),
+          OrderDetailRow(
+            title: 'Order Placed on',
+            detail: date,
+          ),
+          getPaymentDate(),
+          OrderDetailRow(
+            title: 'Payment Method',
+            detail: order?.paymentType ?? "",
+          ),
+          if (order?.shipmentType() == "PickUp")
+            _buildPickUpStore(formattedDateTimeForPickUp['date'] ?? "",
+                formattedDateTimeForPickUp['time'] ?? ""),
+          if (order?.shipmentType() == "In Store/Eat In")
+            _buildEatInStore(formattedDateTimeForEatIn['date'] ?? "",
+                formattedDateTimeForEatIn['time'] ?? ""),
+          if (order?.shipmentType() == "Delivery") _buildDeliveryDetails()
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButtons() {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          _buildFirstButton(),
+          const SizedBox(
+            width: 8,
+          ),
+          _buildSecondButton(),
+          _buildThirdButton(),
+          _buildRepeatOrder(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFirstButton() {
+    if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+        (order?.newOrderStatus.contains(order?.status) ?? false) &&
+        order?.shipmentType() != "Delivery") {
+      return Expanded(child: _buildChangeDateButton());
+    }
+    if ((order?.newOrderStatus.contains(order?.status) ?? false) ||
+        order?.status == "Awaiting Payment") {
+      return const SizedBox.shrink();
+    } else {
+      return Expanded(child: _buildTrackOrder());
+    }
+  }
+
+  Widget _buildSecondButton() {
+    // When user is customer
+    if (order?.isCustomer(userBloc.user.userName) ?? false) {
+      if ((order?.newOrderStatus.contains(order?.status) ?? false) ||
+          order?.status == "Processing" ||
+          order?.status == "On Hold") {
+        return const SizedBox.shrink();
+      }
+      if (order?.status == "Awaiting Payment") {
+        return Expanded(child: _buildPayNow());
+      } else if (order?.orderConfirmState.contains(order?.status) == false) {
+        return Expanded(child: _buildConfirmDelivery());
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId == null &&
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
+        return Expanded(child: _buildRequestRefund());
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null &&
+          order?.status != "Awaiting Payment") {
+        return Expanded(child: _buildViewRefund());
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
+        return Expanded(child: _buildViewRefundPaymentRequest());
+      } else {
+        if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
+          return Expanded(child: _buildUpdateStatus());
+        }
+      }
+    }
+    // When user is merchant
+    else {
+      if (order?.status == "Awaiting Payment") {
+        return const SizedBox.shrink();
+      }
+      if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
+        return Expanded(child: _buildRefundPayment());
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null &&
+          order?.status != "Awaiting Payment") {
+        return Expanded(child: _buildViewRefund());
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
+        return Expanded(child: _buildViewRefundPaymentRequest());
+      }
+      if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
+        return Expanded(child: _buildUpdateStatus());
+      }
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildThirdButton() {
+    if (order?.newOrderStatus.contains(order?.status) == true ||
+        order?.status == "Awaiting Payment") {
+      return Expanded(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: _buildCancelOrder(),
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildPayNow() {
+    return RoundedBorderButton(
+        title: AppLocalization.of(context)!.payNow,
+        onTap: () {
+          BottomSheetPassCode(
+              context: context,
+              isValidCallback: () async {
+                await checkAccountBalance();
+
+                // Create the orders
+                await placeOrder();
+              },
+              cancelCallBack: () {
+                Navigator.pop(context);
+              });
+        },
+        isLoading: isOrderLoading);
+  }
+
+  Widget _buildChangeDateButton() {
+    return OutlineBorderButton(
+      title: "Change Date/Time",
+      onTap: () async {
+        // _showDialogDateTime();
+      },
+    );
+  }
+
+  Widget _buildViewRefundPaymentRequest() {
+    return RoundedBorderButton(
+      title: 'View Refund Request',
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.PAYMENT_REQUEST_DETAIL,
+            arguments: {'paymentRequest': order?.refundPaymentRequestId});
+      },
+      isLoading: isAPILoading,
+    );
+  }
+
+  Widget _buildConfirmDelivery() {
+    return RoundedBorderButton(
+      title: AppLocalization.of(context)!.confirmDelivery,
+      onTap: () {
+        showConfirmDialogForOrder();
+      },
+    );
+  }
+
+  Widget _buildRequestRefund() {
+    return RoundedBorderButton(
+      title: AppLocalization.of(context)!.requestRefund,
+      onTap: () {
+        if ((order?.totalPrice ?? 0) > 0) {
+          showRequestRefundDialog();
+        } else {
+          showToast(message: 'You can not send request for money');
+        }
+      },
+    );
+  }
+
+  Widget _buildRefundPayment() {
+    return RoundedBorderButton(
+      title: "Refund",
+      onTap: () {
+        acceptPaymentRequestAlert();
+      },
+    );
+  }
+
+  Widget _buildViewRefund() {
+    return RoundedBorderButton(
+      title: 'View Refund',
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.TRANSACTION_DETAIL,
+            arguments: {'transaction': order?.refundPaymentId});
+      },
+      isLoading: isAPILoading,
+    );
+  }
+
+  Widget _buildEditAddress() {
+    return OutlineBorderButton(
+      title: "Edit Address",
+      onTap: () async {
+        await Navigator.pushNamed(context, Routes.DISPATCH_ADDRESS, arguments: {
+          "order": order,
+          "isForSelection": false,
+        });
+      },
+    );
+  }
+
+  Widget _buildUpdateStatus() {
+    return RoundedBorderButton(
+      title: "Update Status",
+      onTap: () {
+        showChangeStatusAndroidSheet();
+      },
+    );
+  }
+
+  Widget _buildRepeatOrder() {
+    if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+        (order?.isCompleted() ?? false)) {
+      return Expanded(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: RoundedBorderButton(
+            isLoading: isButtonLoading,
+            title: "Buy Again",
+            onTap: () async {
+              order?.recreateOrder(basketBloc, userBloc);
+              isButtonLoading = true;
+              if (mounted) setState(() {});
+              await Future.delayed(const Duration(seconds: 2));
+              isButtonLoading = false;
+              if (mounted) setState(() {});
+              NavigationUtil.pushNamed(context,
+                  routeName: Routes.SHOPPING_CART);
+            },
+          ),
+        ),
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildCancelOrder() {
+    return RoundedBorderButton(
+      title: "Cancel Order",
+      color: redBtn,
+      onTap: () {
+        showDeleteDialogForOrder();
+      },
+    );
+  }
+
+  Widget _buildWriteReview(int index, String itemType) {
+    return RoundedBorderButton(
+      title: "Write a review",
+      onTap: () async {
+        await Navigator.pushNamed(context, Routes.WRITE_REVIEW_PAGE,
+            arguments: {"order": order, "index": index, "type": itemType});
+      },
+    );
+  }
+
+  Widget _buildTrackOrder() {
+    return OutlineBorderButton(
+      title: "Track Order",
+      onTap: () async {
+        await Navigator.pushNamed(context, Routes.TRACK_ORDER,
+            arguments: {"order": order});
+      },
+    );
+  }
+
+  void showRequestRefundDialog() {
+    showDialogBox(
+        context: context,
+        roundedBackgroundIcon: RoundedBackgroundIcon(
+          backgroundColor: navyBlue.withOpacity(0.08),
+          borderRadius: 30,
+          width: 55,
+          height: 55,
+          icon: Icon(
+            SlydoAppIcon.falseIcon,
+            color: navyBlue,
+            size: 18,
+          ),
+          enableMargin: false,
+        ),
+        actionOneBgColor: greySecondaryYarn,
+        actionOneTextColor: black,
+        actionTwoBgColor: navyBlue,
+        actionTwoTextColor: Colors.white,
+        fontSize: 14,
+        firstActionPrimary: false,
+        title: AppLocalization.of(context)!.requestRefund,
+        description:
+            'Will you like to send a refund request of ${worldCurrencies[order?.currency]}${moneyDisplayNormalizer(order?.totalPrice)} to this merchant?',
+        actionOneText: 'No',
+        actionTwoText: 'Yes',
+        rightButtonOnPressed: () async {
+          await customerOrderRefundRequest();
+        });
+  }
+
+  void acceptPaymentRequestAlert() async {
+    final bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.trueIcon,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: navyBlue,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: mateRed,
+      actionTwoTextColor: Colors.white,
+      firstActionPrimary: true,
+      title: "Pay",
+      description:
+          AppLocalization.of(context)!.areYouSureWantToAcceptThisRequest,
+      actionOneText: "Pay",
+      actionTwoText: AppLocalization.of(context)!.cancel,
+    );
+    if (result != null && result) {
+      BottomSheetPassCode(
+          context: context,
+          isValidCallback: () async {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) =>
+                    Center(child: CircularLoadingIndicator()));
+
+            final bool result = await checkAccountBalance();
+            if (!result) return;
+
+            final response = await PaymentAndBankingAuth()
+                .acceptPaymentRequests(order?.refundPaymentRequestId ?? "");
+            if (response.statusCode == 200 || response.statusCode == 201) {
+              final jsonData = json.decode(response.body);
+              // debugPrint("jsonData: ====> $jsonData");
+              final String paymentId = jsonData["id"] ?? 0;
+              if (paymentId != null || paymentId != 0) {
+                sendOrderRefundPaymentId(paymentId);
+              }
+            } else if (response.statusCode == 500) {
+              showToast(message: AppLocalization.of(context)!.serverError);
+            }
+            // else if (response.statusCode == 800) {
+            //   Navigator.pushNamed(context, "/add-document");
+            // }
+            else {
+              final Map<String, dynamic> errorData = jsonDecode(response.body);
+              String? error = "Error";
+              if (errorData.containsKey("errors")) {
+                error = errorData['errors'];
+              }
+              showToast(message: error!);
+            }
+          },
+          cancelCallBack: () {
+            Navigator.pop(context);
+          });
+    }
   }
 
   void showChangeStatusAndroidSheet() {
@@ -837,25 +1407,29 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                         AppLocalization.of(context)!.status,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: blackFont,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold),
+                          fontSize: 16,
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w700,
+                          color: blackFont,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Divider(
+                        color: dividerColor,
+                        thickness: 1,
                       ),
                       Expanded(
                         child: ListView(
                           children: <Widget>[
-                            Divider(
-                              height: 0,
-                              color: dividerColor,
-                            ),
                             statusListTile(
                               title: AppLocalization.of(context)!.newOrder,
                               value: "new order",
                               setState: setState,
                             ),
-                            Divider(
-                              height: 0,
-                              color: dividerColor,
+                            statusListTile(
+                              title: AppLocalization.of(context)!.processing,
+                              value: "processing",
+                              setState: setState,
                             ),
                             statusListTile(
                               title:
@@ -863,87 +1437,33 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               value: "awaiting payment",
                               setState: setState,
                             ),
-                            Divider(
-                              height: 0,
-                              color: dividerColor,
-                            ),
                             statusListTile(
-                              title:
-                                  AppLocalization.of(context)!.paymentReceived,
-                              value: "payment received",
+                              title: AppLocalization.of(context)!.shipped,
+                              value: "shipped",
                               setState: setState,
-                            ),
-                            Divider(
-                              height: 0,
-                              color: dividerColor,
-                            ),
-                            statusListTile(
-                              title: AppLocalization.of(context)!.processing,
-                              value: "processing",
-                              setState: setState,
-                            ),
-                            Divider(
-                              height: 0,
-                              color: dividerColor,
-                            ),
-                            statusListTile(
-                              title: AppLocalization.of(context)!.orderPickedUp,
-                              value: "order picked up",
-                              setState: setState,
-                            ),
-                            Divider(
-                              height: 0,
-                              color: dividerColor,
-                            ),
-                            statusListTile(
-                              title:
-                                  AppLocalization.of(context)!.outForDelivery,
-                              value: "out for delivery",
-                              setState: setState,
-                            ),
-                            Divider(
-                              height: 0,
-                              color: dividerColor,
                             ),
                             statusListTile(
                               title: AppLocalization.of(context)!.completed,
-                              value: "complete",
+                              value: "completed",
                               setState: setState,
-                            ),
-                            Divider(
-                              height: 0,
-                              color: dividerColor,
-                            ),
-                            statusListTile(
-                              title: AppLocalization.of(context)!.canceled,
-                              value: "canceled",
-                              setState: setState,
-                            ),
-                            Divider(
-                              height: 0,
-                              color: dividerColor,
                             ),
                             statusListTile(
                               title: AppLocalization.of(context)!.onHold,
                               value: "on hold",
                               setState: setState,
                             ),
-                            Divider(
-                              height: 0,
-                              color: dividerColor,
-                            ),
                             statusListTile(
-                              title: AppLocalization.of(context)!.pending,
-                              value: "pending",
+                              title: AppLocalization.of(context)!.canceled,
+                              value: "canceled",
                               setState: setState,
-                            ),
-                            Divider(
-                              height: 0,
-                              color: dividerColor,
                             ),
                           ],
                         ),
                       ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      getSubmitButton(),
                     ],
                   ),
                 ));
@@ -951,656 +1471,598 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         });
   }
 
+  void showDeleteDialogForOrder() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Cancel Order',
+      actionOneText: 'Go Back',
+      actionTwoText: AppLocalization.of(context)!.cancel,
+      description: 'Are you sure you want to cancel this order?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        await updateStatus("Canceled", isRefresh: true);
+      },
+    );
+  }
+
   Widget statusListTile(
       {required String title, String? value, StateSetter? setState}) {
     return RadioListTile(
       activeColor: navyBlue,
-      title: Text(
-        title,
-        textAlign: TextAlign.start,
-        style: TextStyle(
-          color: blackFont,
-          fontSize: 16.0,
-        ),
-      ),
+      visualDensity: const VisualDensity(horizontal: 0, vertical: -3),
       value: value,
-      onChanged: (dynamic value) {
-        if (userBloc.user.userName == order!.merchant) {
+      groupValue: statusOfOrder,
+      onChanged: (value) {
+        if (userBloc.user.userName == order?.merchant) {
           setState!(() {
-            updateStatus(value);
             statusOfOrder = value;
-            print(value);
+            // debugPrint(value);
           });
         }
       },
-      groupValue: statusOfOrder,
-    );
-  }
-
-  Widget checkoutWidget() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      color: white,
-      elevation: 0.5,
-      // margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10), color: white),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(
-              height: 18,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context)!.subTotal + " : ",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: black,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      worldCurrencies[order!.currency!]!,
-                      style: TextStyle(
-                          fontFamily: "Inter",
-                          fontSize: 14.2,
-                          fontWeight: FontWeight.w600,
-                          color: black),
-                    ),
-                    Text(
-                      moneyDisplayNormalizer(order!.totalPrice),
-                      style: TextStyle(
-                          fontSize: 14.2,
-                          fontWeight: FontWeight.w600,
-                          color: black),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context)!.shipping + " : ",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: black,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      worldCurrencies[order!.currency!]!,
-                      style: TextStyle(
-                          fontFamily: "Inter",
-                          fontSize: 14.2,
-                          fontWeight: FontWeight.w600,
-                          color: black),
-                    ),
-                    Text(
-                      moneyDisplayNormalizer(0),
-                      style: TextStyle(
-                          fontSize: 14.2,
-                          fontWeight: FontWeight.w600,
-                          color: black),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context)!.tax + " : ",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: black,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      worldCurrencies[order!.currency!]!,
-                      style: TextStyle(
-                          fontFamily: "Inter",
-                          fontSize: 14.2,
-                          fontWeight: FontWeight.w600,
-                          color: black),
-                    ),
-                    Text(
-                      moneyDisplayNormalizer(0),
-                      style: TextStyle(
-                          fontSize: 14.2,
-                          fontWeight: FontWeight.w600,
-                          color: black),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Divider(color: blackFont.withOpacity(.12)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context)!.total + " : ",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: black,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      worldCurrencies[order!.currency!]!,
-                      style: TextStyle(
-                          fontFamily: "Inter",
-                          fontSize: 14.2,
-                          fontWeight: FontWeight.w600,
-                          color: navyBlue),
-                    ),
-                    Text(
-                      moneyDisplayNormalizer(order!.totalPrice),
-                      style: TextStyle(
-                          fontSize: 14.2,
-                          fontWeight: FontWeight.w600,
-                          color: navyBlue),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 18,
-            ),
-          ],
+      controlAffinity: ListTileControlAffinity.trailing,
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: statusOfOrder == title ? navyBlue : blackFont,
+          fontFamily: "Inter",
         ),
       ),
     );
   }
 
-  Widget getItemTile(int index) {
-    return _getSlidableWithLists(
-      context,
-      getItemTileUi(index),
-      items[index],
-      index,
+  Widget getSubmitButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
+      child: CurvedButton(
+        onPressed: isAPILoading
+            ? () {}
+            : () async {
+                await updateStatus(statusOfOrder ?? "");
+              },
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Save",
+        isLoading: isAPILoading,
+      ),
     );
   }
 
-  getItemTileUi(int index) {
-    if (items[index]["type"] == "product") {
-      return OrderTileForProduct(
-        items[index],
-      );
-    }
-    return OrderTileForService(
-      items[index],
-    );
-  }
+  // Customer will send this request to merchant to get the refund
+  Future<void> customerOrderRefundRequest() async {
+    final locationService = LocationService();
+    final UserLocation? userLocation =
+        await locationService.getLocation().catchError((error) {
+      showToast(message: "$error");
+    });
 
-  Widget _getSlidableWithLists(
-      BuildContext context, Widget itemTile, var item, int index) {
-    return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      child: VerticalListItem(itemTile, item),
-      actions: listActionSlideActions(index),
-      secondaryActions: listSecondaryActions(index),
-    );
-  }
-
-  List<Widget> listSecondaryActions(int index) {
-    var item = items[index];
-    var conditionForUser =
-        item["type"] == "product" ? item["item"].seller : item["item"].provider;
-
-    bool isValid = true;
-    if (conditionForUser == userBloc.user.userName) {
-      isValid = false;
+    if (userLocation == null) {
+      return null;
     }
 
-    return [
-      SlideActionButton(
-          backgroundColor: isValid ? naturalGreen : Colors.grey[600],
-          icon: SlydoAppIcon.text_message,
-          onTap: isValid
-              ? () {
-                  navigateToComposeMessage(conditionForUser, index);
-                }
-              : () {
-                  showToast(message: "You can not send message to yourself!!");
-                },
-          title: AppLocalization.of(context)!.message,
-          slideController: _slideController),
-    ];
-  }
-
-  void removeItem(int index) {
-    var item = items[index];
-    Map data = {
-      "type": item["type"],
-      "id": item.conversationID,
+    final data = {
+      "from_customer": userBloc.user.userName!.trim(),
+      "to_customer": order?.merchant,
+      "currency": userBloc.user.currency,
+      "amount": order?.totalPrice,
+      "category": 'Finance',
+      "notes": 'Refund Order Ref: ${order?.id}',
+      "description": 'Refund Order Ref: ${order?.id} ',
+      "latitude": Platform.isIOS ? userLocation.latitude : "",
+      "longitude": Platform.isIOS ? userLocation.longitude : "",
+      "made_from_chat": false,
+      "cart_id`": cartId,
+      "data": {
+        "order_id": order?.id,
+      },
     };
 
-    _auth.removeItemFromShoppingCart(data);
-    basketBloc.removeItemFromCart(item);
-    showToast(
-        message:
-            AppLocalization.of(context)!.itemIsRemovedSuccessfullyFromCart);
-  }
-
-  List<Widget> listActionSlideActions(int index) {
-    return [];
-  }
-
-  void navigateToComposeMessage(var conditionForUser, int index) async {
-    Navigator.of(context).pushNamed('/compose_message', arguments: {
-      'recipient': conditionForUser.toString(),
-      'subject': items[index]["item"].name.toString(),
-    });
-  }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
-
-  Product getProduct(String productId) {
-    Product product = Product();
-    product.id = productId;
-    product.name = "";
-    product.shortDescription = "";
-    product.description = "";
-    product.condition = "";
-    product.currency = userBloc.user.currency;
-    product.price = "0";
-    product.availableFrom = DateTime.now();
-    product.isAvailable = false;
-    product.qrCode = "";
-    product.seller = "";
-    product.manufacturer = "";
-    product.serverImages = [];
-    return product;
-  }
-
-  void updateStatus(value) {
-    showDialog(
-        context: context,
-        builder: (dialogLoadingContext) => LoadingIndicator());
-
-    _auth.updateOrderStatus(value, order!.id.toString()).then((updated) {
-      if (updated) {
-        Navigator.pop(context); // Dismiss the loader.
-        Navigator.pop(context); // Dismiss bottom-sheet.
-        Navigator.pop(context,
-            true); //Dismiss the order details page and reload the order list page.
-        showToast(message: 'Status updated successfully');
+    // debugPrint("data $data");
+    await PaymentAndBankingAuth().createPaymentRequests(data).then((value) {
+      response = value;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        // debugPrint("jsonData: ====> $jsonData");
+        final int paymentRequestId = jsonData["id"] ?? 0;
+        if (paymentRequestId != null || paymentRequestId != 0) {
+          sendOrderRefundPaymentRequestId(paymentRequestId);
+        }
+      } else if (response.statusCode == 500) {
+        if (mounted) {
+          setState(() {
+            errorMessage = AppLocalization.of(context)!.serverError;
+            showToast(message: errorMessage);
+          });
+        }
       } else {
-        showToast(message: 'Something went wrong while updating status.');
+        if (mounted) {
+          if (response.statusCode == 406) {
+            errorMessage = jsonDecode(value.body)[0];
+            showToast(message: errorMessage);
+            setState(() {});
+          } else {
+            debugPrint("ERROR:- ${response.body}");
+            setState(() {
+              errorMessage = AppLocalization.of(context)!.somethingWentWrong;
+              showToast(message: errorMessage);
+            });
+          }
+        }
       }
     });
   }
 
-  int _currentStep = 0;
-
-  tapped(int step) {
-    setState(() => _currentStep = step);
+  // Customer call this function to send the payment-request-id after payment request to update order
+  Future<void> sendOrderRefundPaymentRequestId(int paymentRequestId) async {
+    final Map<String, dynamic> requestData = {
+      "refund_payment_request_id": paymentRequestId,
+    };
+    // Please send request to that API
+    await updateOrderRefundStatus(requestData);
+    showToast(message: 'Payment request sent');
   }
 
-  continued() {
-    _currentStep < 5 ? setState(() => _currentStep += 1) : null;
+  // Merchants call this function to send the payment id after make in refund payment
+  Future<void> sendOrderRefundPaymentId(String paymentTransactionId) async {
+    final Map<String, dynamic> requestData = {
+      "refund_payment_id": paymentTransactionId,
+    };
+
+    await updateOrderRefundStatus(requestData);
+    showToast(message: AppLocalization.of(context)!.paymentRequestAccepted);
   }
 
-  cancel() {
-    _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
+  Future<bool> updateOrderRefundStatus(Map<String, dynamic> data) async {
+    try {
+      isRefundAPILoading = true;
+      if (mounted) setState(() {});
+      await _auth
+          .updateOrderRefundStatus(data, order?.id.toString() ?? "")
+          .then((value) {
+        if (value) {
+          Navigator.popAndPushNamed(context, Routes.ORDER_LIST);
+          return true;
+        }
+        isRefundAPILoading = false;
+        if (mounted) setState(() {});
+        return false;
+      });
+    } catch (e) {
+      Navigator.pop(context); // Dismiss bottom-sheet.
+      isRefundAPILoading = false;
+      if (mounted) setState(() {});
+    }
+    return false;
   }
 
-  Widget stepperBody() {
-    return Container(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            track.OrderTrackerStepper(
-              type: track.StepperType.vertical,
-              physics: AlwaysScrollableScrollPhysics(),
-              currentStep: _currentStep,
-              onStepTapped: (step) => tapped(step),
-              onStepContinue: continued,
-              onStepCancel: cancel,
-              controlsBuilder: (context, details) {
-                return Container(
-                  color: navyBlue,
-                  child: Container(),
-                );
-              },
-              steps: <track.Step>[
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      new Text('Order Placed',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "New Order")
-                              ? 'This order has been placed sucessfully.'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "New Order"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "New Order"),
-                  state: getActiveOrderStatus(order, "New Order")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
-                ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      new Text('Awaiting Payment',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Awaiting Payment")
-                              ? 'Your order is onhold till payment is being confirmed.'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Awaiting Payment"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Awaiting Payment"),
-                  state: getActiveOrderStatus(order, "Awaiting Payment")
-                      ? track.StepState.editing
-                      : track.StepState.disabled,
-                ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      new Text('Payment Successful',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Payment Successfully")
-                              ? 'Payment has been receive sucessfully.'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Payment Successful"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Payment Successful"),
-                  state: getActiveOrderStatus(order, "Payment Successful")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
-                ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      new Text('Processing',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Processing")
-                              ? 'Your order is being prepared for shipment'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Processing"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Processing"),
-                  state: getActiveOrderStatus(order, "Processing")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
-                ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Shipped',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Order Picked Up")
-                              ? 'Your order has been shipped and is in transit'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Order Picked Up"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Order Picked Up"),
-                  state: getActiveOrderStatus(order, "Order Picked Up")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
-                ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('On hold/Pending',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "On Hold") ||
-                                  getActiveOrderStatus(order, "Pending")
-                              ? 'Your order is onhold till the product is restocked.'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      new Text(
-                          getOrderStatusTime(order, "On Hold") ??
-                              getOrderStatusTime(order, "Pending"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "On Hold"),
-                  state: getActiveOrderStatus(order, "On Hold")
-                      ? track.StepState.editing
-                      : track.StepState.disabled,
-                ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Out for delivery',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Out For Delivery")
-                              ? 'Your order is out for delivery and  will arrive soon'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Out For Delivery"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Out For Delivery"),
-                  state: getActiveOrderStatus(order, "Out For Delivery")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
-                ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Canceled',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Canceled")
-                              ? 'This order has been cancelled'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Canceled"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Canceled"),
-                  state: getActiveOrderStatus(order, "Canceled")
-                      ? track.StepState.error
-                      : track.StepState.disabled,
-                ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Order recieved',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Complete")
-                              ? 'Your order has been delivered sucessfully, thank you for shopping from us'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Complete"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Complete"),
-                  state: getActiveOrderStatus(order, "Complete")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
-                ),
-              ],
-            ),
-          ],
+  Future<void> updateStatus(String value, {bool isRefresh = false}) async {
+    try {
+      isAPILoading = true;
+      if (mounted) setState(() {});
+      await _auth
+          .updateOrderStatus(value, order?.id.toString() ?? "")
+          .then((updated) {
+        if (updated) {
+          if (isRefresh) {
+            showToast(message: 'Confirm delivery successfully');
+            Navigator.popAndPushNamed(context, Routes.ORDER_LIST);
+          } else {
+            Navigator.pop(context); // Dismiss bottom-sheet.
+            showToast(message: 'Status updated successfully');
+            Navigator.popAndPushNamed(context, Routes.ORDER_UPDATED,
+                arguments: {"orderId": order?.id});
+          }
+        } else {
+          Navigator.pop(context); // Dismiss bottom-sheet.
+          statusOfOrder = order?.status?.toLowerCase();
+          showToast(message: 'Something went wrong while updating status.');
+        }
+        isAPILoading = false;
+        if (mounted) setState(() {});
+      });
+    } catch (e) {
+      Navigator.pop(context); // Dismiss bottom-sheet.
+      statusOfOrder = order?.status?.toLowerCase();
+      isAPILoading = false;
+      if (mounted) setState(() {});
+    }
+  }
+
+  Future<bool> checkAccountBalance() async {
+    final double accountBalance = await getAccountBalance();
+    // debugPrint("accountBalance:- $accountBalance");
+    final double spendingAmount = order!.totalPrice! / 100;
+    // debugPrint("spendingAmount:- $spendingAmount");
+    if (spendingAmount > accountBalance) {
+      showToast(message: "You don't have enough money in Slydo account!!");
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> placeOrder() async {
+    orders.add(int.parse(order?.id ?? ""));
+    isOrderLoading = true;
+    if (mounted) setState(() {});
+    final response = await PaymentAndBankingAuth()
+        .makePaymentForCartOrder({"orders": orders});
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      isOrderLoading = false;
+      if (mounted) setState(() {});
+      showToast(message: AppLocalization.of(context)!.sendPaymentSuccess);
+      Navigator.popAndPushNamed(context, Routes.ORDER_LIST);
+    } else if (response.statusCode == 500) {
+      isOrderLoading = false;
+      if (mounted) setState(() {});
+      showToast(message: AppLocalization.of(context)!.serverError);
+    } else {
+      isOrderLoading = false;
+      if (mounted) setState(() {});
+      // debugPrint(
+      //   "MakePaymentForOrder Unsuccessful",
+      // );
+    }
+  }
+
+  void showConfirmDialogForOrder() {
+    showDialogBox(
+        context: context,
+        roundedBackgroundIcon: RoundedBackgroundIcon(
+          backgroundColor: navyBlue.withOpacity(0.08),
+          borderRadius: 30,
+          width: 55,
+          height: 55,
+          icon: Icon(
+            SlydoAppIcon.trueIcon,
+            color: navyBlue,
+            size: 18,
+          ),
+          enableMargin: false,
         ),
-      ),
+        actionOneBgColor: greySecondaryYarn,
+        actionOneTextColor: black,
+        actionTwoBgColor: navyBlue,
+        actionTwoTextColor: Colors.white,
+        fontSize: 14,
+        firstActionPrimary: false,
+        title: 'Confirm Delivery',
+        description: 'Are you sure you want to Confirm this delivery?',
+        actionOneText: AppLocalization.of(context)!.cancel,
+        actionTwoText: 'Confirm Delivery',
+        rightButtonOnPressed: () {
+          isAPILoading
+              ? () {}
+              : () async {
+                  await updateStatus("Complete", isRefresh: true);
+                };
+        });
+  }
+
+  Widget _buildPickUpStore(String date, String time) {
+    return Column(
+      children: [
+        OrderDetailRow(
+          title: 'Delivery Option',
+          detail: order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
+        ),
+        OrderDetailRow(
+          title: 'Pickup Date',
+          detail: date,
+        ),
+        if ((order?.customerContactNumber?.isNotEmpty ?? false) &&
+            order?.notAllowedStatusUpdate.contains(order?.status) == false)
+          OrderDetailRow(
+            title: 'Phone Number',
+            detail: order?.customerContactNumber ?? "",
+          )
+        else
+          const SizedBox(),
+        OrderDetailRow(
+          title: 'Pickup Time',
+          detail: time,
+        ),
+        orderFulfilledDetailRow(),
+      ],
     );
+  }
+
+  Widget _buildEatInStore(String date, String time) {
+    return Column(
+      children: [
+        OrderDetailRow(
+          title: 'Delivery Option',
+          detail: order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
+        ),
+        OrderDetailRow(
+          title: 'In Store/Eat In Date',
+          detail: date,
+        ),
+        if ((order?.customerContactNumber?.isNotEmpty ?? false) &&
+            order?.notAllowedStatusUpdate.contains(order?.status) == false)
+          OrderDetailRow(
+            title: 'Phone Number',
+            detail: order?.customerContactNumber ?? "",
+          )
+        else
+          const SizedBox(),
+        OrderDetailRow(
+          title: 'In Store/Eat In Time',
+          detail: time,
+        ),
+        orderFulfilledDetailRow(),
+      ],
+    );
+  }
+
+  Widget orderFulfilledDetailRow() {
+    if (order?.notAllowedStatusUpdate.contains(order?.status) == true) {
+      String fulfilledTime = "Unknown";
+      for (Map<String, dynamic> statusMap in order?.statusTimeStamp ?? []) {
+        if (statusMap.keys.first == "Complete") {
+          fulfilledTime = statusMap.values.first;
+          fulfilledTime = formatPickupDateTime(fulfilledTime);
+        }
+      }
+      return OrderDetailRow(
+        title: 'Order Fulfilled',
+        detail: fulfilledTime,
+      );
+    }
+    return const SizedBox();
+  }
+
+  Widget _buildDeliveryDetails() {
+    return Column(
+      children: [
+        if ((order?.customerContactNumber?.isNotEmpty ?? false) &&
+            order?.notAllowedStatusUpdate.contains(order?.status) == false)
+          OrderDetailRow(
+            title: 'Phone Number',
+            detail: order?.customerContactNumber ?? "",
+          )
+        else
+          const SizedBox(),
+        OrderDetailRow(
+          title: 'Address',
+          detail:
+              '${deliveryAddress?.addressLineOne}, ${deliveryAddress?.addressLineTwo}',
+        ),
+        if (order?.notAllowedStatusUpdate.contains(order?.status) == true)
+          OrderDetailRow(
+            title: 'Order delivered on',
+            detail: formatPickupDateTime(order?.deliveryDatetime ?? ""),
+          ),
+      ],
+    );
+  }
+
+  // Future<void> _buildTitle() async {
+  //   await SunmiPrinter.printText(
+  //     '${messageDecoderWithEmoji(order?.merchant)} Emporium',
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.LG,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildOrderNo() async {
+  //   await SunmiPrinter.printText(
+  //     'Order No: #${order?.id}',
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.MD,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildOrderPlaceTime() async {
+  //   final DateFormat dateFormat = DateFormat("dd MMMM, yyyy, HH:mm:ss");
+  //   final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
+  //   final String date = dateFormat.format(dateTime);
+  //   await SunmiPrinter.printText(
+  //     date,
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.MD,
+  //       bold: false,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildOrderPaymentStatus() async {
+  //   await SunmiPrinter.printText(
+  //     'Payment Status',
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.MD,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildPrintOrderStatus() async {
+  //   await SunmiPrinter.printText(
+  //     '${order?.status}',
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.LG,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildProductChargeText({String? title, String? amount}) async {
+  //   await SunmiPrinter.printRow(cols: [
+  //     ColumnMaker(text: title ?? "", width: 6, align: SunmiPrintAlign.LEFT),
+  //     ColumnMaker(text: amount ?? '', width: 6, align: SunmiPrintAlign.RIGHT)
+  //   ]);
+  // }
+  //
+  // Future<void> _buildPrintDelivery() async {
+  //   await SunmiPrinter.printText(
+  //     'Delivery Details',
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.MD,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildPrintDeliveryText({String? title, String? info}) async {
+  //   await SunmiPrinter.printRow(cols: [
+  //     ColumnMaker(text: title ?? "", width: 6, align: SunmiPrintAlign.LEFT),
+  //     ColumnMaker(text: info ?? '', width: 6, align: SunmiPrintAlign.RIGHT)
+  //   ]);
+  // }
+  //
+  // Future<void> _buildQrImage() async {
+  //   await SunmiPrinter.printImage(
+  //     base64Decode(""),
+  //   );
+  // }
+  //
+  // Future<void> _buildQrDescriptionText(String description) async {
+  //   await SunmiPrinter.printText(
+  //     description,
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.MD,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _getProductNameColorAndAmount() async {
+  //   // Initialize the variant information strings
+  //   String variantColor = '';
+  //   String variantSize = '';
+  //
+  //   // Check if there are any variant models available
+  //   if (product?.variantModels?.isNotEmpty ?? false) {
+  //     variantColor = product?.variantModels?.first.colour ?? '';
+  //     variantSize = product?.variantModels?.first.value ?? '';
+  //   }
+  //
+  //   // Prepare the variant details string
+  //   String variantDetails = '';
+  //   if (variantColor.isNotEmpty || variantSize.isNotEmpty) {
+  //     variantDetails = "(${messageDecoderWithEmoji(variantColor)})";
+  //     if (variantColor.isNotEmpty && variantSize.isNotEmpty) {
+  //       variantDetails += "/";
+  //     }
+  //     variantDetails += "(${messageDecoderWithEmoji(variantSize)})";
+  //   }
+  //   await SunmiPrinter.printRow(cols: [
+  //     ColumnMaker(
+  //       text: "${messageDecoderWithEmoji(product?.name)} $variantDetails",
+  //       width: 25,
+  //       align: SunmiPrintAlign.LEFT,
+  //     ),
+  //     ColumnMaker(
+  //       text: _getProductAmountString('$currency'),
+  //       width: 6,
+  //       align: SunmiPrintAlign.RIGHT,
+  //     ),
+  //   ]);
+  // }
+
+  String _getProductAmountString([String? currency]) {
+    final int productActualPrice;
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      productActualPrice =
+          product?.getDiscountedPrice(product?.variantModels?.first) ?? 0;
+    } else {
+      productActualPrice = product?.getProductRealPrice() ?? 0;
+    }
+
+    // Base amount text
+    String amountText =
+        "$currency${moneyDisplayNormalizer(productActualPrice)}";
+
+    // Append discount details if available
+    final String discountText = _getPricePercentageChangesString(currency);
+
+    if (discountText.isNotEmpty) {
+      amountText += " $discountText";
+    }
+
+    return amountText;
+  }
+
+  String _getPricePercentageChangesString(String? currency) {
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      if (product?.checkVariantDiscount(product?.variantModels?.first) ??
+          false) {
+        return "(-${product?.variantModels?.first.discountType == "percentage" ? "${product?.variantModels?.first.discountValue}% off" : currency! + moneyDisplayNormalizer(product?.variantModels?.first.discountValue?.toInt()).toString()})";
+      }
+      return '';
+    } else if (product?.discountedPrice != null &&
+        product?.discountedPrice != 0) {
+      if (product?.checkProductDiscount() ?? false) {
+        return "(-${product?.discountType == "percentage" ? "${product?.discountValue}% off" : currency! + moneyDisplayNormalizer(product?.discountValue?.toInt()).toString()})";
+      }
+      return '';
+    } else if (product?.pricePercentageChange != 0.0) {
+      return "(${product?.pricePercentageChange!.toInt()}% off)";
+    }
+    return '';
   }
 }
 
-// ignore: must_be_immutable
-class VerticalListItem extends StatelessWidget {
-  Widget? child;
-  var item;
-  String? type;
+class OrderDetailRow extends StatelessWidget {
+  final String title;
+  final String detail;
 
-  VerticalListItem(Widget child, var item) {
-    this.child = child;
-    this.type = item["type"];
-    this.item = item["item"];
-  }
+  const OrderDetailRow({super.key, required this.title, required this.detail});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (type == "product") {
-          Product? product = item;
-          Navigator.pushNamed(context, "/product",
-              arguments: {"product": product});
-        }
-        if (type == "service") {
-          Service? service = item;
-          Navigator.pushNamed(context, "/service-detail",
-              arguments: {"service": service});
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: child,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: Text(
+              '$title : ',
+              style: TextStyle(
+                fontSize: 12,
+                color: blackFont,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              detail,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: lightBlackFont,
+                fontFamily: "Inter",
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

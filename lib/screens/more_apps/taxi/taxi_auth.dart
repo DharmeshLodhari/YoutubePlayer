@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
-import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
+import 'package:Slydo/screens/more_apps/taxi/model/directions_modal.dart';
+import 'package:Slydo/screens/more_apps/taxi/model/place_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -11,24 +11,24 @@ class TaxiAuth extends AuthService {
   Future<List> searchPlaces({String? place = ""}) async {
     String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
 
-    url = url + "query=$place";
-    url = url + "&key=${AppConfig.googleMapApiKey}";
+    url = "${url}query=$place";
+    url = "$url&key=${AppConfig.googleMapApiKey}";
 
     url = Uri.encodeFull(url);
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint("URL:- $url statusCode:- ${response.statusCode}");
 
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
 
-      List<PlaceModal> placesModal = [];
+      final List<PlaceModal> placesModal = [];
 
-      List places = responseBody['results'];
+      final List places = responseBody['results'];
 
-      places.forEach((element) {
+      for (var element in places) {
         placesModal.add(PlaceModal.fromJson(element));
-      });
+      }
 
       return placesModal;
     } else {
@@ -42,15 +42,16 @@ class TaxiAuth extends AuthService {
       {required LatLng origin, required LatLng destination}) async {
     String url = "https://maps.googleapis.com/maps/api/directions/json?";
 
-    url = url + "origin=${origin.latitude},${origin.longitude}";
-    url = url + "&destination=${destination.latitude},${destination.longitude}";
-    url = url + "&key=${AppConfig.googleMapApiKey}";
+    url = "${url}origin=${origin.latitude},${origin.longitude}";
+    url = "$url&destination=${destination.latitude},${destination.longitude}";
+    url = "$url&key=${AppConfig.googleMapApiKey}";
 
     url = Uri.encodeFull(url);
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
-      Directions directions = Directions.fromMap(jsonDecode(response.body));
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final Directions directions =
+          Directions.fromMap(jsonDecode(response.body));
 
       return directions;
     } else {
@@ -62,9 +63,9 @@ class TaxiAuth extends AuthService {
   }
 
   List<PlaceModal> getFakePlaces() {
-    List<PlaceModal> places = [];
+    final List<PlaceModal> places = [];
 
-    List<Map<String, dynamic>> fakeJson = [
+    final List<Map<String, dynamic>> fakeJson = [
       {
         "business_status": "OPERATIONAL",
         "formatted_address":
@@ -846,9 +847,9 @@ class TaxiAuth extends AuthService {
       }
     ];
 
-    fakeJson.forEach((element) {
+    for (var element in fakeJson) {
       places.add(PlaceModal.fromJson(element));
-    });
+    }
 
     return places;
   }

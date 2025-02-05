@@ -42,7 +42,7 @@ class CustomizedPopUpMenu {
   });
 
   void findButton() {
-    RenderBox renderBox =
+    final RenderBox renderBox =
         buttonKey.currentContext!.findRenderObject() as RenderBox;
     buttonSize = renderBox.size;
     buttonPosition = renderBox.localToGlobal(Offset.zero);
@@ -51,7 +51,7 @@ class CustomizedPopUpMenu {
   void openMenu() {
     findButton();
     _overlayEntry = _overlayEntryBuilder();
-    Overlay.of(context)?.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
     isMenuOpen = !isMenuOpen;
     menuState(isMenuOpen);
   }
@@ -60,7 +60,9 @@ class CustomizedPopUpMenu {
     if (_overlayEntry != null) {
       try {
         _overlayEntry?.remove();
-      } catch (e) {}
+      } catch (e) {
+        debugPrint("Error $e");
+      }
       isMenuOpen = !isMenuOpen;
       menuState(isMenuOpen);
     }
@@ -74,7 +76,7 @@ class CustomizedPopUpMenu {
             Positioned(
               top: 0,
               left: 0,
-              child: Container(
+              child: SizedBox(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 child: GestureDetector(
@@ -86,8 +88,8 @@ class CustomizedPopUpMenu {
             ),
             Positioned(
               top: buttonPosition.dy + buttonSize.height - top,
-              right: right != null ? right : null,
-              left: left != null ? left : null,
+              right: right,
+              left: left,
               width: 180,
               child: Material(
                 color: Colors.transparent,
@@ -113,7 +115,8 @@ class CustomizedPopUpMenu {
                             children: [
                               if (!isTitleShow)
                                 Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 6),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 6),
                                   child: ListTile(
                                     dense: true,
                                     title: Text(
@@ -142,7 +145,7 @@ class CustomizedPopUpMenu {
                             elevation: 2,
                             margin: EdgeInsets.zero,
                             child: Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.white,
                               ),
                               width: 17,
@@ -167,7 +170,7 @@ class CustomizedPopUpMenu {
       children: List.generate(
         childList.length,
         (index) {
-          bool isSelected = index == selectedIndex;
+          final bool isSelected = index == selectedIndex;
           return GestureDetector(
             onTap: () {
               selectedIndex = index;
@@ -188,12 +191,12 @@ class CustomizedPopUpMenu {
 
   Widget menuListTile({required bool isSelected, required int index}) {
     // if the menu item is lat then we add the circular shape from bottom to menuListTile
-    bool isLast = index == childList.length - 1;
+    final bool isLast = index == childList.length - 1;
     return Container(
       decoration: BoxDecoration(
         color: isSelected ? lightGrey : Colors.white,
         borderRadius: isLast
-            ? BorderRadius.only(
+            ? const BorderRadius.only(
                 bottomLeft: Radius.circular(
                   10.0,
                 ),
@@ -204,7 +207,7 @@ class CustomizedPopUpMenu {
             : null,
       ),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
         child: ListTile(
           dense: true,
           title: Text(
@@ -231,7 +234,7 @@ class CustomizedPopUpMenu {
       children: List.generate(
         childList.length,
         (index) {
-          bool isSelected = index == selectedIndex;
+          final bool isSelected = index == selectedIndex;
           return GestureDetector(
             onTap: () {
               selectedIndex = index;
@@ -251,12 +254,12 @@ class CustomizedPopUpMenu {
 
   Widget menuListTileWithIcon({required bool isSelected, required int index}) {
     // if the menu item is lat then we add the circular shape from bottom to menuListTile
-    bool isLast = index == childList.length - 1;
+    final bool isLast = index == childList.length - 1;
     return Container(
       decoration: BoxDecoration(
         color: isSelected ? lightGrey : Colors.white,
         borderRadius: isLast
-            ? BorderRadius.only(
+            ? const BorderRadius.only(
                 bottomLeft: Radius.circular(
                   10.0,
                 ),
@@ -267,7 +270,7 @@ class CustomizedPopUpMenu {
             : null,
       ),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
         child: ListTile(
           dense: true,
           title: Row(
@@ -279,7 +282,7 @@ class CustomizedPopUpMenu {
                 size: 16,
                 color: isSelected ? navyBlue : Colors.black,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Text(
@@ -289,17 +292,18 @@ class CustomizedPopUpMenu {
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     color: isSelected ? navyBlue : blackFont),
               ),
-              Expanded(
+              const Expanded(
                   child: SizedBox(
                 width: 10,
               )),
-              isSelected
-                  ? Icon(
-                      SlydoAppIcon.checked,
-                      size: 12,
-                      color: navyBlue,
-                    )
-                  : Container(),
+              if (isSelected)
+                Icon(
+                  SlydoAppIcon.checked,
+                  size: 12,
+                  color: navyBlue,
+                )
+              else
+                Container(),
             ],
           ),
         ),

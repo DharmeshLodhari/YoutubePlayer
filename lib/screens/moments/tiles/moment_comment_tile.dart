@@ -1,36 +1,37 @@
-
+import 'package:Slydo/screens/blog/user_post/models/user_post.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/utils/slydo_yarn_links.dart';
-import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
-import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
+import 'package:Slydo/screens/yarn/models/Topics/yarn_model.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_blog_post_tile.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_customer_post_tile.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_product_tile.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_service_tile.dart';
+import 'package:Slydo/screens/yarn/utils/slydo_yarn_links.dart';
+import 'package:Slydo/screens/yarn/utils/utils.dart';
+import 'package:Slydo/screens/yarn/utils/yarn_enum.dart';
+import 'package:Slydo/screens/yarn/yarn_search_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:like_button/like_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../more_apps/shopping/models/store.dart';
-import '../../more_apps/user_post/models/user_post.dart';
-import '../../more_apps/user_profile/models/user.dart';
-import '../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../../more_apps/yarn/models/Topics/CommentDetails.dart';
-import '../../more_apps/yarn/widgets/url_reader_of_yarn.dart';
-import '../../more_apps/yarn/widgets/yarn_comment_media_renderer.dart';
-import '../../more_apps/yarn/widgets/yarn_options.dart';
-import '../../more_apps/yarn/yarn_auth.dart';
+import '../../user_profile/models/user.dart';
+import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../../yarn/models/Topics/comment_details.dart';
+import '../../yarn/widgets/url_reader_of_yarn.dart';
+import '../../yarn/widgets/yarn_comment_media_renderer.dart';
+import '../../yarn/widgets/yarn_options.dart';
+import '../../yarn/yarn_auth.dart';
 import '../screens/moment_detail/moment_comment.screen.dart';
 
+// ignore: must_be_immutable
 class MomentCommentTile extends StatefulWidget {
   final YarnComment yarnComment;
   final YarnComment? yarnCommentReply;
@@ -41,15 +42,15 @@ class MomentCommentTile extends StatefulWidget {
   final Function(Yarn)? onUpdate;
   final Function(YarnComment, bool)? onCommentUpdate;
   Function(bool)? minusComment;
-  String? pinnedCommentId;
-  String? momentUsername;
-  String? momentId;
-  String? commentType;
-  MomentsModel? moment;
+  final String? pinnedCommentId;
+  final String? momentUsername;
+  final String? momentId;
+  final String? commentType;
+  final MomentsModel? moment;
   final Function(bool)? callbackUpdateCommentCount;
 
   MomentCommentTile({
-    Key? key,
+    super.key,
     required this.yarnComment,
     this.yarnCommentReply,
     this.commentDetailsList,
@@ -65,7 +66,7 @@ class MomentCommentTile extends StatefulWidget {
     this.commentType,
     this.moment,
     this.callbackUpdateCommentCount,
-  }) : super(key: key);
+  });
 
   @override
   State<MomentCommentTile> createState() => _MomentCommentTileState();
@@ -80,7 +81,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   @override
   void initState() {
     if (widget.yarnComment.comment != null) {
-      Map<String, dynamic> linkData = detectLinkInText(
+      final Map<String, dynamic> linkData = detectLinkInText(
           messageDecoderWithEmoji(widget.yarnComment.comment)!);
 
       if (linkData["hasLink"]) {
@@ -106,7 +107,6 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       padding: const EdgeInsets.only(top: 12),
       child: Column(
@@ -165,26 +165,26 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   Widget _buildAttachment() {
     Widget childWidget;
     if (widget.yarnComment.attachmentType == 'service') {
-      Service service = Service.fromJson(widget.yarnComment.attachment);
+      final Service service = Service.fromJson(widget.yarnComment.attachment);
       childWidget = YarnServiceTile(
         service: service,
         tileRenderPlace: TileRenderPlace.YarnComment,
       );
     } else if (widget.yarnComment.attachmentType == 'product') {
-      Product product = Product.fromJson(widget.yarnComment.attachment);
+      final Product product = Product.fromJson(widget.yarnComment.attachment);
       childWidget = YarnProductTile(
         product: product,
         tileRenderPlace: TileRenderPlace.YarnComment,
       );
     } else if (widget.yarnComment.attachmentType == 'blog') {
-      UserPost post = UserPost.fromJson(widget.yarnComment.attachment);
+      final UserPost post = UserPost.fromJson(widget.yarnComment.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
     } else if (widget.yarnComment.attachmentType == 'profile') {
-      CustomerProfile customerProfile =
+      final CustomerProfile customerProfile =
           CustomerProfile.fromJson(widget.yarnComment.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
@@ -470,7 +470,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   }
 
   Future<bool> addLikeToComment() async {
-    Map<String, dynamic>? data =
+    final Map<String, dynamic>? data =
         await YarnAuth().addLikeComment(widget.yarnComment.id!);
     setState(() {
       widget.yarnComment.userLike = !widget.yarnComment.userLike!;
@@ -487,7 +487,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   }
 
   Future<bool> addDisLikeToComment() async {
-    Map<String, dynamic>? data =
+    final Map<String, dynamic>? data =
         await YarnAuth().addDisLikeComment(widget.yarnComment.id!);
     setState(() {
       widget.yarnComment.userDisLike = !widget.yarnComment.userDisLike!;
@@ -534,7 +534,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
                 },
                 likeCount: widget.yarnComment.likes,
                 countBuilder: (_, __, ___) {
-                  int count = widget.yarnComment.likes!;
+                  final int count = widget.yarnComment.likes!;
                   return Text(
                     count == 0 ? '' : count.toString(),
                     style: TextStyle(
@@ -571,7 +571,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
             },
             likeCount: widget.yarnComment.dislike,
             countBuilder: (_, __, ___) {
-              int count = widget.yarnComment.dislike!;
+              final int count = widget.yarnComment.dislike!;
               return Text(
                 count == 0 ? '' : count.toString(),
                 style: TextStyle(
@@ -592,8 +592,8 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
                   yarnComment: widget.yarnComment,
                   momentId: widget.momentId,
                   minusComment: widget.minusComment,
-                  callbackUpdateCommentCount: (value){
-                    if(value == true){
+                  callbackUpdateCommentCount: (value) {
+                    if (value == true) {
                       //increase the count by for the single moment detail + 1
                       widget.callbackUpdateCommentCount!(true);
                     }
@@ -607,12 +607,13 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
                     width: 5,
                   ),
                   // ignore: unrelated_type_equality_checks
-                  widget.yarnComment.replyCount == '0' ||
-                          // ignore: unrelated_type_equality_checks
-                          widget.yarnComment.replyCount == '0'
-                      ? const SizedBox.shrink()
-                      : Text(
-                          '${widget.yarnComment.replyCount ?? widget.yarnComment.replyCount}'),
+                  if (widget.yarnComment.replyCount == '0' ||
+                      // ignore: unrelated_type_equality_checks
+                      widget.yarnComment.replyCount == '0')
+                    const SizedBox.shrink()
+                  else
+                    Text(
+                        '${widget.yarnComment.replyCount ?? widget.yarnComment.replyCount}'),
                 ],
               ),
             ),
@@ -623,10 +624,10 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   }
 
   bool isComments(BuildContext context) {
-    DateTime messageCreatedTime =
+    final DateTime messageCreatedTime =
         DateTime.parse(widget.yarnComment.createdAt!).toLocal();
 
-    DateTime currentTime = DateTime.now();
+    final DateTime currentTime = DateTime.now();
     if (getLoggedInUserName(context) == widget.yarnComment.authorUsername) {
       if (currentTime.difference(messageCreatedTime) <
           const Duration(minutes: 3)) {
@@ -640,7 +641,6 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   }
 
   Widget _buildPinned({required BuildContext context}) {
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

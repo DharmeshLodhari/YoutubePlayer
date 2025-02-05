@@ -4,29 +4,30 @@ import 'dart:typed_data';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/blog/user_post/models/user_post.dart';
+import 'package:Slydo/screens/blog/user_post/tile/user_post_tile.dart';
+import 'package:Slydo/screens/messaging/chat/models/gif_model/gif_model.dart';
+import 'package:Slydo/screens/messaging/chat/tiles/product_and_service_tile_for_search.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
-import 'package:Slydo/screens/more_apps/user_post/tile/user_post_tile.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
-import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_customer_post_tile.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_product_tile.dart';
+import 'package:Slydo/screens/yarn/tiles/yarn_service_tile.dart';
+import 'package:Slydo/screens/yarn/utils/utils.dart';
+import 'package:Slydo/screens/yarn/utils/yarn_enum.dart';
+import 'package:Slydo/screens/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:images_picker/images_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -35,12 +36,11 @@ import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/custom_box_shadow.dart';
 import '../../../../widget/customized_textform_field.dart';
-import '../../more_apps/messaging/chat/models/gif_model/GIFModel.dart';
-import '../../more_apps/messaging/chat/utils.dart';
-import '../../more_apps/yarn/models/Topics/yarn_model.dart';
-import '../../more_apps/yarn/models/share_as_yarn_model.dart';
-import '../../more_apps/yarn/widgets/ask_enable_adult_viewers_advice.dart';
-import '../../more_apps/yarn/widgets/ask_enable_comment_payment.dart';
+import '../../messaging/chat/utils.dart';
+import '../../yarn/models/Topics/yarn_model.dart';
+import '../../yarn/models/share_as_yarn_model.dart';
+import '../../yarn/widgets/ask_enable_adult_viewers_advice.dart';
+import '../../yarn/widgets/ask_enable_comment_payment.dart';
 import '../screens/trimmer_view.dart';
 
 class MomentCommentTextField extends StatefulWidget {
@@ -65,7 +65,7 @@ class MomentCommentTextField extends StatefulWidget {
   ScrollController? scrollController;
   bool? enableAdult;
   bool? viewerAdvice;
-  var ageRating;
+  String? ageRating;
   List<ShareAsYarnModel>? shareAsYarnModel;
   final Function(bool?) onTapEnableComment;
   final Function(int?) onTapAgeRestriction;
@@ -78,7 +78,7 @@ class MomentCommentTextField extends StatefulWidget {
   bool isScrolling;
 
   MomentCommentTextField({
-    Key? key,
+    super.key,
     required this.controller,
     this.hint,
     this.validator,
@@ -114,11 +114,10 @@ class MomentCommentTextField extends StatefulWidget {
     this.onChanged,
     required this.onTapAgeRestriction,
     this.resetScrollingValue,
-  }) : super(key: key);
+  });
 
   @override
-  State<MomentCommentTextField> createState() =>
-      MomentCommentTextFieldState(key: key);
+  State<MomentCommentTextField> createState() => MomentCommentTextFieldState();
 }
 
 class MomentCommentTextFieldState extends State<MomentCommentTextField> {
@@ -132,7 +131,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   List<ShareAsYarnModel>? shareAsYarnModelCopy;
   ShareAsYarnModel? _shareAsYarnModel;
 
-  var ageRating;
+  String? ageRating;
   bool isShowExtension = false;
   bool onFocus = true;
 
@@ -143,7 +142,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   bool _isMessageIsGIFOrSticker = false;
   bool _isGIFLoading = false;
   bool _isMessageIsSticker = false;
-  TextEditingController _gifController = TextEditingController();
+  final TextEditingController _gifController = TextEditingController();
 
   /// variables for product or service search
   bool isBlogSearch = true;
@@ -159,12 +158,12 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   int? productOrServiceCount = 0;
   String? productOrServiceNext = "";
   String? productOrServicePrevious = "";
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchItemTextController;
-  GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
+  final GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
   CustomizedPopUpMenu? itemSearchTypeSelectionMenu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -234,7 +233,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
         hasIcon: true,
         childList: [
           CustomizedPopUpMenuItemWithIcon(
-              title: "Blog", value: "Blog", icon: SlydoAppIcon.payout_list),
+              title: "Blog", value: "Blog", icon: SlydoAppIcon.payoutList),
           CustomizedPopUpMenuItemWithIcon(
               title: "Product", value: "Products", icon: SlydoAppIcon.product),
           CustomizedPopUpMenuItemWithIcon(
@@ -410,7 +409,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   List<Widget> getSearchBarItems() {
-    List<Widget> items = [];
+    final List<Widget> items = [];
 
     if (_isMessageIsGIFOrSticker) {
       items.add(Container(
@@ -444,7 +443,19 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                     showToast(
                         message: "You can select only 4 images or videos");
                   } else {
-                    pickFileFromMedia();
+                    final bool isPermissionGranted =
+                        await requestGalleryPermission();
+                    if (isPermissionGranted) {
+                      await pickFileFromMedia();
+                    } else {
+                      final bool isPermissionIsDenied =
+                          await isPermanentlyDeniedPermission();
+                      if (isPermissionIsDenied) {
+                        await openAppSettings();
+                      } else {
+                        await openAppSettings();
+                      }
+                    }
                   }
                 },
                 child: Padding(
@@ -481,7 +492,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   void showSearchProductAndServiceBottomSheet() async {
-    var result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -532,79 +543,77 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: const TextSelectionThemeData()
-              .copyWith(selectionHandleColor: navyBlue),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: const TextSelectionThemeData()
+            .copyWith(selectionHandleColor: navyBlue),
+      ),
+      child: TextFormField(
+        key: searchItemTextFormField,
+        controller: searchItemTextController,
+        style: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontWeight: FontWeight.w600,
         ),
-        child: TextFormField(
-          key: searchItemTextFormField,
-          controller: searchItemTextController,
-          style: TextStyle(
-            fontSize: 16,
-            color: blackFont,
-            fontWeight: FontWeight.w600,
+        cursorWidth: 1.5,
+        cursorColor: navyBlue,
+        decoration: InputDecoration(
+          hintText: checkHintText(selectedMenuItemIndex),
+          fillColor: Colors.white,
+          filled: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          prefixIcon: searchTypeSelection(),
+          prefix: const Padding(
+            padding: EdgeInsets.only(left: 12),
           ),
-          cursorWidth: 1.5,
-          cursorColor: navyBlue,
-          decoration: InputDecoration(
-            hintText: checkHintText(selectedMenuItemIndex),
-            fillColor: Colors.white,
-            filled: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10),
-            prefixIcon: searchTypeSelection(),
-            prefix: const Padding(
-              padding: EdgeInsets.only(left: 12),
-            ),
-            suffixIcon: searchIcon(),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
+          suffixIcon: searchIcon(),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
             ),
           ),
-          onFieldSubmitted: (val) {
-            if (mounted) {
-              FocusScope.of(context).unfocus();
-              _onRefresh();
-            }
-          },
-          // onChanged: (val) {
-          //   if (val.length == 3) {
-          //     if (mounted) {
-          //       searchProductOrService();
-          //     }
-          //   } else if (val.length == 6) {
-          //     if (mounted) {
-          //       searchProductOrService();
-          //     }
-          //   }
-          // },
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: navyBlue,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
         ),
+        onFieldSubmitted: (val) {
+          if (mounted) {
+            FocusScope.of(context).unfocus();
+            _onRefresh();
+          }
+        },
+        // onChanged: (val) {
+        //   if (val.length == 3) {
+        //     if (mounted) {
+        //       searchProductOrService();
+        //     }
+        //   } else if (val.length == 6) {
+        //     if (mounted) {
+        //       searchProductOrService();
+        //     }
+        //   }
+        // },
       ),
     );
   }
@@ -636,7 +645,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
 
   IconData getSearchTypeIcon() {
     if (selectedMenuItemIndex == 0) {
-      return SlydoAppIcon.payout_list;
+      return SlydoAppIcon.payoutList;
     } else if (selectedMenuItemIndex == 1) {
       return SlydoAppIcon.product;
     } else if (selectedMenuItemIndex == 2) {
@@ -644,7 +653,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     } else if (selectedMenuItemIndex == 3) {
       return SlydoAppIcon.user;
     }
-    return SlydoAppIcon.payout_list;
+    return SlydoAppIcon.payoutList;
   }
 
   Widget searchIcon() {
@@ -671,25 +680,25 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     productOrServiceCount = 0;
     productOrServiceNext = "";
     productOrServicePrevious = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+    if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
       bottomSheetStateSetterGlobal!(() {});
     }
     if (mounted) setState(() {});
   }
 
   void getProductOrServiceList() async {
-    String url = getSearchUrl();
+    final String url = getSearchUrl();
 
     if (!isItemLoading) {
       if (productOrServiceNext != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await MessageAuth()
+        final Map<String, dynamic>? result = await MessageAuth()
             .searchProductAndServiceOfUser(
                 url, productOrServiceNext, productOrServicePrevious);
         if (result == null) {
@@ -699,15 +708,15 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
         productOrServiceCount = result['count'];
         productOrServiceNext = result['next'];
         productOrServicePrevious = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
 
-        tempList.forEach((item) {
+        for (var item in tempList) {
           if (isProductSearch) {
             searchedProductAndService.add(Product.fromJson(item));
           } else if (isServiceSearch) {
@@ -717,16 +726,16 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
           } else if (isUserSearch) {
             searchedProductAndService.add(CustomerProfile.fromJson(item));
           }
-        });
+        }
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
       }
       if (searchedProductAndService.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
@@ -736,26 +745,16 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
 
   String getSearchUrl() {
     if (isProductSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/products/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/products/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     if (isServiceSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/services/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/services/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     if (isUserSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/users/?search=" +
-          searchItemTextController!.text;
+      return "${AppConfig.baseUrl}/api/v1/search/users/?search=${searchItemTextController!.text}";
     }
     if (isBlogSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/social/posts/public/?search=" +
-          searchItemTextController!.text;
+      return "${AppConfig.baseUrl}/api/v1/social/posts/public/?search=${searchItemTextController!.text}";
     }
     return "";
   }
@@ -848,25 +847,17 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        productOrServiceCount = 0;
-        productOrServiceNext = "";
-        productOrServicePrevious = "";
-        searchedProductAndService = [];
-        noSearchedItem = false;
-        getProductOrServiceList();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      productOrServiceCount = 0;
+      productOrServiceNext = "";
+      productOrServicePrevious = "";
+      searchedProductAndService = [];
+      noSearchedItem = false;
+      getProductOrServiceList();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   Widget pullToRefresh() {
@@ -907,27 +898,32 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
 
                       if (productServicePreview.runtimeType.toString() ==
                           'Product') {
-                        Product product = searchedProductAndService[index];
-                        var attachment = {'product': product.toJson()};
+                        final Product product =
+                            searchedProductAndService[index];
+                        final attachment = {'product': product.toJson()};
                         yarnDashboardBloc!.productService = attachment;
                         productMode = searchedProductAndService[index];
                       } else if (productServicePreview.runtimeType.toString() ==
                           'Service') {
-                        Service service = searchedProductAndService[index];
-                        var attachment = {'service': service.toJson()};
+                        final Service service =
+                            searchedProductAndService[index];
+                        final attachment = {'service': service.toJson()};
                         yarnDashboardBloc!.productService = attachment;
                         serviceMode = searchedProductAndService[index];
                       } else if (productServicePreview.runtimeType.toString() ==
                           'CustomerProfile') {
-                        CustomerProfile customerProfile =
+                        final CustomerProfile customerProfile =
                             searchedProductAndService[index];
-                        var attachment = {'profile': customerProfile.toJson()};
+                        final attachment = {
+                          'profile': customerProfile.toJson()
+                        };
                         yarnDashboardBloc!.productService = attachment;
                         customerProfileMode = searchedProductAndService[index];
                       } else if (productServicePreview.runtimeType.toString() ==
                           'UserPost') {
-                        UserPost userPost = searchedProductAndService[index];
-                        var attachment = {'blog': userPost.toJson()};
+                        final UserPost userPost =
+                            searchedProductAndService[index];
+                        final attachment = {'blog': userPost.toJson()};
                         yarnDashboardBloc!.productService = attachment;
                         userPostMode = searchedProductAndService[index];
                       }
@@ -958,7 +954,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   Widget _buildAddImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -1003,10 +999,22 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
               ],
             ),
             onTap: () async {
-              if (selectedImages.length == 4) {
+              if (selectedImages.length > 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
-                pickFileFromMedia();
+                final bool isPermissionGranted =
+                    await requestGalleryPermission();
+                if (isPermissionGranted) {
+                  await pickFileFromMedia();
+                } else {
+                  final bool isPermissionIsDenied =
+                      await isPermanentlyDeniedPermission();
+                  if (isPermissionIsDenied) {
+                    await openAppSettings();
+                  } else {
+                    await openAppSettings();
+                  }
+                }
               }
             },
           ),
@@ -1016,7 +1024,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -1077,22 +1085,24 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     );
   }
 
-  pickFileFromMedia() async {
-    List<Media>? res = await ImagesPicker.pick(
-      count: 4,
-      pickType: PickType.all,
-      language: Language.System,
-      maxTime: 900,
-      cropOpt: CropOption(
-        cropType: CropType.rect,
-      ),
-    );
+  Future<void> pickFileFromMedia() async {
+    // List<Media>? res = await ImagesPicker.pick(
+    //   count: 4,
+    //   pickType: PickType.all,
+    //   language: Language.System,
+    //   maxTime: 900,
+    //   cropOpt: CropOption(
+    //     cropType: CropType.rect,
+    //   ),
+    // );
+
+    final List<XFile> res = await selectMultipleImageVideo();
 
     if (res == null || res.isEmpty) return;
 
     for (var item in res) {
-      File file = File(item.path);
-      String? mediaType = getFileTypeByPath(path: file.path);
+      final File file = File(item.path);
+      final String? mediaType = getFileTypeByPath(path: file.path);
 
       if (mediaType == null) return;
 
@@ -1105,18 +1115,14 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
         selectedImages.add(PickedFile(imagePath!));
         selectedMedia
             .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
-
-        if (widget.addedSelectedMedia != null) {
-          widget.addedSelectedMedia!(selectedMedia);
-        }
-        if (mounted) setState(() {});
       } else if (mediaType == 'video') {
-        var videoFilePath =
+        final videoFilePath =
             await NavigationUtil.push(context, screen: TrimmerView(file: file));
         if (videoFilePath is String) {
           videoPath = videoFilePath;
-          Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
-          String? thumbnailImage =
+          final Uint8List? uInt8List =
+              await getVideoThumbnailFromUrl(videoPath!);
+          final String? thumbnailImage =
               await generateThumbNailFromVideo(videoPath: videoPath!);
           // setUpVideoPlayer();
           // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
@@ -1137,11 +1143,17 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
               mediaPoster: thumbnailImage));
           // ignore: unnecessary_statements
           // if (widget.addedSelectedMedia != null)
-          widget.addedSelectedMedia!(selectedMedia);
-          if (mounted) setState(() {});
+          // widget.addedSelectedMedia!(selectedMedia);
+          // if (mounted) setState(() {});
         }
       }
     }
+
+    // if (widget.addedSelectedMedia != null) {
+    widget.addedSelectedMedia?.call(selectedMedia);
+    isShowExtension = true;
+    // }
+    setState(() {});
   }
 
   void ratingCategory() {
@@ -1180,7 +1192,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                     shrinkWrap: true,
                     itemCount: widget.shareAsYarnModel!.length,
                     itemBuilder: (context, index) {
-                      ShareAsYarnModel category =
+                      final ShareAsYarnModel category =
                           widget.shareAsYarnModel![index];
 
                       return ListTile(
@@ -1198,7 +1210,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                           _shareAsYarnModel = category;
                           ageRating = _shareAsYarnModel?.name?.substring(9);
                           logger.d('message $ageRating');
-                          widget.onTapAgeRestriction(int.parse(ageRating));
+                          widget
+                              .onTapAgeRestriction(int.parse(ageRating ?? ""));
                           setState(() {});
                           Navigator.pop(context);
                         },
@@ -1297,7 +1310,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     );
   }
 
-  sendMessageBtn() {
+  Widget sendMessageBtn() {
     return widget.isLoading!
         ? Padding(
             padding: const EdgeInsets.only(right: 12.0, left: 4.0),
@@ -1322,7 +1335,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
           );
   }
 
-  textMessageField() {
+  Container textMessageField() {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -1379,38 +1392,36 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   Widget checkIfProductService() {
-    return Container(
-      child: Column(
-        children: [
-          Stack(
-            children: <Widget>[
-              getPreviewContainer(),
-              Positioned(
-                right: 20,
-                top: 10,
-                child: InkWell(
-                  onTap: () {
-                    yarnDashboardBloc!.productService = null;
-                    if (mounted) setState(() {});
-                  },
-                  child: Container(
-                    height: 25,
-                    width: 25,
-                    margin: const EdgeInsets.only(right: 6, top: 6),
-                    decoration: BoxDecoration(
-                        color: HexColor("#000000"), shape: BoxShape.circle),
-                    child: Icon(
-                      Icons.close_outlined,
-                      color: white,
-                      size: 15,
-                    ),
+    return Column(
+      children: [
+        Stack(
+          children: <Widget>[
+            getPreviewContainer(),
+            Positioned(
+              right: 20,
+              top: 10,
+              child: InkWell(
+                onTap: () {
+                  yarnDashboardBloc!.productService = null;
+                  if (mounted) setState(() {});
+                },
+                child: Container(
+                  height: 25,
+                  width: 25,
+                  margin: const EdgeInsets.only(right: 6, top: 6),
+                  decoration: BoxDecoration(
+                      color: HexColor("#000000"), shape: BoxShape.circle),
+                  child: Icon(
+                    Icons.close_outlined,
+                    color: white,
+                    size: 15,
                   ),
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -1575,7 +1586,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    Color borderColor = getUserTypeColor(user: user);
+    final Color borderColor = getUserTypeColor(user: user);
 
     return GestureDetector(
       onTap: () {
@@ -1610,7 +1621,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     );
   }
 
-  checkHintText(int selectedMenuItemIndex) {
+  String checkHintText(int selectedMenuItemIndex) {
     if (selectedMenuItemIndex == 0) {
       return 'Search blog';
     } else if (selectedMenuItemIndex == 1) {
@@ -1619,6 +1630,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
       return 'Search service';
     } else if (selectedMenuItemIndex == 3) {
       return 'Search user';
+    } else {
+      return "";
     }
   }
 
@@ -1786,7 +1799,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                       imageUrl: _gifs[index].images!.previewGif!.url!,
                       fit: BoxFit.fill,
                       errorWidget: imageErrorWidget,
-                      placeholder: (context, url) => Container(
+                      placeholder: (context, url) => SizedBox(
                           width: MediaQuery.of(context).size.width / 2,
                           child: Center(child: CircularLoadingIndicator())),
                     ),

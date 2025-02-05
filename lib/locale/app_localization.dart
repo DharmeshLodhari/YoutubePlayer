@@ -306,6 +306,20 @@ class AppLocalization {
     );
   }
 
+  String get invalidCompanyName {
+    return Intl.message(
+      "Invalid company name",
+      name: "invalidCompanyName",
+    );
+  }
+
+  String get enterCompanyName {
+    return Intl.message(
+      "Enter Company Name",
+      name: "enterCompanyName",
+    );
+  }
+
   String get enterYourOtpHere {
     return Intl.message(
       "Enter Your OTP Here",
@@ -348,6 +362,27 @@ class AppLocalization {
     );
   }
 
+  String get confirmPayment {
+    return Intl.message(
+      "Confirm Payment",
+      name: "confirmPayment",
+    );
+  }
+
+  String get newCartAlert {
+    return Intl.message(
+      "New Cart Alert",
+      name: "newCartAlert",
+    );
+  }
+
+  String get cartPaymentRequest {
+    return Intl.message(
+      "Cart Payment Request",
+      name: "cartPaymentRequest",
+    );
+  }
+
   String get upgradeHomeMsg {
     return Intl.message(
       "Are you sure you want to upgrade account to business account?",
@@ -359,6 +394,13 @@ class AppLocalization {
     return Intl.message(
       "No Address Found",
       name: "noAddressFound",
+    );
+  }
+
+  String get useCurrentLocation {
+    return Intl.message(
+      "Use Current Location",
+      name: "useCurrentLocation",
     );
   }
 
@@ -383,16 +425,9 @@ class AppLocalization {
     );
   }
 
-  String get selectAddress {
-    return Intl.message(
-      "Select Address",
-      name: "selectAddress",
-    );
-  }
-
   String get changeAddressMsg {
     return Intl.message(
-      "Kindly add a current address to your list to continue using this App. This will help us give you recommendation that are relevant & closer to you.",
+      "Want to change your location? This will help us recommend business closer to you.",
       name: "addressFoundMsg",
     );
   }
@@ -517,6 +552,41 @@ class AppLocalization {
     );
   }
 
+  String get save {
+    return Intl.message(
+      "Save",
+      name: "save",
+    );
+  }
+
+  String get saveAndLeave {
+    return Intl.message(
+      "Save & Leave",
+      name: "save",
+    );
+  }
+
+  String get discard {
+    return Intl.message(
+      "Discard",
+      name: "discard",
+    );
+  }
+
+  String get viewCart {
+    return Intl.message(
+      "View Cart",
+      name: "viewCart",
+    );
+  }
+
+  String get viewNow {
+    return Intl.message(
+      "View Now",
+      name: "viewNow",
+    );
+  }
+
   String get ignore {
     return Intl.message(
       "Ignore",
@@ -528,6 +598,13 @@ class AppLocalization {
     return Intl.message(
       "Process",
       name: "process",
+    );
+  }
+
+  String get requestRefund {
+    return Intl.message(
+      "Request Refund",
+      name: "refundRequest",
     );
   }
 
@@ -641,6 +718,13 @@ class AppLocalization {
     return Intl.message(
       "Server Error Please try again after some time !",
       name: "serverError",
+    );
+  }
+
+  String get sendPaymentSuccess {
+    return Intl.message(
+      "Send Payment Successfully !",
+      name: "sendPaymentSuccess",
     );
   }
 
@@ -1150,7 +1234,7 @@ class AppLocalization {
     );
   }
 
-  String get newOption {
+  String get newVariant {
     return Intl.message(
       "New Variant",
       name: "newOption",
@@ -1164,6 +1248,20 @@ class AppLocalization {
     );
   }
 
+  String get newOption {
+    return Intl.message(
+      "New Option",
+      name: "newOption",
+    );
+  }
+
+  String get updateOption {
+    return Intl.message(
+      "Update Option",
+      name: "updateOption",
+    );
+  }
+
   String get newAddOns {
     return Intl.message(
       "New Add-ons",
@@ -1171,10 +1269,24 @@ class AppLocalization {
     );
   }
 
+  String get updateAddOns {
+    return Intl.message(
+      "Update Add-ons",
+      name: "updateAddOns",
+    );
+  }
+
   String get updateVariant {
     return Intl.message(
       "Update Variant",
       name: "updateVariant",
+    );
+  }
+
+  String get noMembersYet {
+    return Intl.message(
+      "No Members Yet",
+      name: "noAddOnYet",
     );
   }
 
@@ -1227,6 +1339,20 @@ class AppLocalization {
     );
   }
 
+  String get dealOfTheDay {
+    return Intl.message(
+      "Deal of the day",
+      name: "DealsOfTheDay",
+    );
+  }
+
+  String get newArrivals {
+    return Intl.message(
+      "New Arrivals",
+      name: "NewArrivals",
+    );
+  }
+
   String get youCanNotDeleteOnlyBankAccount {
     return Intl.message(
       "You can not delete your only bank account",
@@ -1252,6 +1378,41 @@ class AppLocalization {
     return Intl.message(
       "Variant Deleted Successfully",
       name: "variantDeletedSuccessfully",
+    );
+  }
+
+  String get requestPaymentSuccessfully {
+    return Intl.message(
+      "Send Request Payment Successfully",
+      name: "requestPaymentSuccessfully",
+    );
+  }
+
+  String get requestFailed {
+    return Intl.message(
+      "Request Failed",
+      name: "requestFailed",
+    );
+  }
+
+  String get memberAddedSuccessfully {
+    return Intl.message(
+      "Member Added Successfully",
+      name: "memberAddedSuccessfully",
+    );
+  }
+
+  String get memberDeletedSuccessfully {
+    return Intl.message(
+      "Member Deleted Successfully",
+      name: "memberDeletedSuccessfully",
+    );
+  }
+
+  String get memberIsNotDeleted {
+    return Intl.message(
+      "Member is not deleted !!",
+      name: "memberIsNotDeleted",
     );
   }
 
@@ -1494,6 +1655,13 @@ class AppLocalization {
     );
   }
 
+  String get selectCover {
+    return Intl.message(
+      "Select Cover",
+      name: "selectCover",
+    );
+  }
+
   //detailed_message
   String get message {
     return Intl.message(
@@ -1640,6 +1808,13 @@ class AppLocalization {
     return Intl.message(
       "Send",
       name: "send",
+    );
+  }
+
+  String get resend {
+    return Intl.message(
+      "Resend",
+      name: "resend",
     );
   }
 
@@ -1847,6 +2022,13 @@ class AppLocalization {
     return Intl.message(
       "Pay Now",
       name: "payNow",
+    );
+  }
+
+  String get doNotPermission {
+    return Intl.message(
+      "You don't have permission.",
+      name: "doNotPermission",
     );
   }
 
@@ -2164,6 +2346,20 @@ class AppLocalization {
     );
   }
 
+  String get currency {
+    return Intl.message(
+      "Currency",
+      name: "currency",
+    );
+  }
+
+  String get currencyMode {
+    return Intl.message(
+      "Currency Mode",
+      name: "currencyMode",
+    );
+  }
+
   String get category {
     return Intl.message(
       "Category",
@@ -2412,6 +2608,13 @@ class AppLocalization {
     );
   }
 
+  String get pleaseEnterRecipientName {
+    return Intl.message(
+      "Please Enter Recipient Name",
+      name: "pleaseEnterRecipientName",
+    );
+  }
+
   String get pleaseEnterLabel {
     return Intl.message(
       "Please Enter Label",
@@ -2528,6 +2731,20 @@ class AppLocalization {
     return Intl.message(
       "Price",
       name: "price",
+    );
+  }
+
+  String get priceLocalCurrency {
+    return Intl.message(
+      "Price (Local Currency)",
+      name: "priceLocalCurrency",
+    );
+  }
+
+  String get priceForeignCurrency {
+    return Intl.message(
+      "Price (Foreign Currency)",
+      name: "priceLocalCurrency",
     );
   }
 
@@ -2650,6 +2867,20 @@ class AppLocalization {
     );
   }
 
+  String get responseSendSuccessfully {
+    return Intl.message(
+      "Response Send Successfully",
+      name: "responseSendSuccessfully",
+    );
+  }
+
+  String get fileUploadedSuccessfully {
+    return Intl.message(
+      "File Uploaded Successfully",
+      name: "fileUploadedSuccessfully",
+    );
+  }
+
   String get journyStartedSuccessfully {
     return Intl.message(
       "Job Started Successfully",
@@ -2664,10 +2895,10 @@ class AppLocalization {
     );
   }
 
-  String get categoryAndLocationSelection {
+  String get locationSelection {
     return Intl.message(
-      "Please select Location and Category",
-      name: "categoryAndLocationSelection",
+      "Please select Location",
+      name: "locationSelection",
     );
   }
 
@@ -2682,6 +2913,13 @@ class AppLocalization {
     return Intl.message(
       "Please Select Product Category and Condition",
       name: "pleaseSelectProductCategoryAndCondition",
+    );
+  }
+
+  String get pleaseSelectProductCategory {
+    return Intl.message(
+      "Please Select Product Category",
+      name: "pleaseSelectProductCategory",
     );
   }
 
@@ -2730,6 +2968,20 @@ class AppLocalization {
   String get pleaseSelectCategory {
     return Intl.message(
       "Please Select Category",
+      name: "pleaseSelectCategory",
+    );
+  }
+
+  String get pleaseSelectState {
+    return Intl.message(
+      "Please Select State",
+      name: "pleaseSelectCategory",
+    );
+  }
+
+  String get pleaseSelectCity {
+    return Intl.message(
+      "Please Select City",
       name: "pleaseSelectCategory",
     );
   }
@@ -2784,6 +3036,13 @@ class AppLocalization {
     );
   }
 
+  String get pleaseEnterCartName {
+    return Intl.message(
+      "Please Enter Cart Name",
+      name: "pleaseEnterCartName",
+    );
+  }
+
   String get describeYourServiceHere {
     return Intl.message(
       "Describe your service here..",
@@ -2795,6 +3054,13 @@ class AppLocalization {
     return Intl.message(
       "Description must not empty",
       name: "descriptionMustNotEmpty",
+    );
+  }
+
+  String get setPriceWithForeignCurrency {
+    return Intl.message(
+      'Set Price with foreign currency',
+      name: "'setPriceWithForeignCurrency'",
     );
   }
 
@@ -2819,11 +3085,25 @@ class AppLocalization {
     );
   }
 
+  String get serviceUpdateSuccessfully {
+    return Intl.message(
+      "Service Update Succesfully",
+      name: "serviceUpdateSuccessfully",
+    );
+  }
+
   //edit product
   String get editProduct {
     return Intl.message(
       "Edit Product",
       name: "editProduct",
+    );
+  }
+
+  String get advancedOptions {
+    return Intl.message(
+      "Advanced Options ",
+      name: "advancedOptions",
     );
   }
 
@@ -2877,6 +3157,14 @@ class AppLocalization {
     );
   }
 
+  //profile Discounted
+  String get profileDiscounted {
+    return Intl.message(
+      "Profile Discounted",
+      name: "profileDiscounted",
+    );
+  }
+
   String get details {
     return Intl.message(
       "Details",
@@ -2893,7 +3181,7 @@ class AppLocalization {
 
   String get comingSoon {
     return Intl.message(
-      "Coming Sonn!",
+      "Coming Soon",
       name: "comingSoon",
     );
   }
@@ -2918,6 +3206,13 @@ class AppLocalization {
     return Intl.message(
       "No Products",
       name: "noProducts",
+    );
+  }
+
+  String get review {
+    return Intl.message(
+      "Review",
+      name: "review",
     );
   }
 
@@ -3286,13 +3581,6 @@ class AppLocalization {
     );
   }
 
-  String get top_Up {
-    return Intl.message(
-      "Top Up",
-      name: "top_Up",
-    );
-  }
-
   String get topUp {
     return Intl.message(
       "TopUp",
@@ -3352,8 +3640,8 @@ class AppLocalization {
 
   String get shoppingCartIsEmpty {
     return Intl.message(
-      "Shopping Cart Is Empty !!",
-      name: "shoppingCartIsEmpty",
+      "This cart is empty",
+      name: "thisCartIsEmpty",
     );
   }
 
@@ -3366,7 +3654,7 @@ class AppLocalization {
 
   String get subTotal {
     return Intl.message(
-      "Subtotal",
+      "Sub Total",
       name: "subTotal",
     );
   }
@@ -3410,6 +3698,13 @@ class AppLocalization {
     return Intl.message(
       "Confirmation",
       name: "confirmation",
+    );
+  }
+
+  String get confirmDelivery {
+    return Intl.message(
+      "Confirm Delivery",
+      name: "confirmDelivery",
     );
   }
 
@@ -3463,6 +3758,13 @@ class AppLocalization {
     );
   }
 
+  String get shipped {
+    return Intl.message(
+      "Shipped",
+      name: "shipped",
+    );
+  }
+
   String get canceled {
     return Intl.message(
       "Canceled",
@@ -3474,6 +3776,13 @@ class AppLocalization {
     return Intl.message(
       "Completed",
       name: "completed",
+    );
+  }
+
+  String get orderPlaced {
+    return Intl.message(
+      "Order Placed",
+      name: "orderPlaced",
     );
   }
 
@@ -3541,11 +3850,25 @@ class AppLocalization {
     );
   }
 
+  String get noOrdersToShow {
+    return Intl.message(
+      "No orders to show",
+      name: "noOrdersToShow",
+    );
+  }
+
   //product_detail_page
   String get youCanNotPurchaseThisItem {
     return Intl.message(
       "You Can Not Purchase This Item !!",
       name: "youCanNotPurchaseThisItem",
+    );
+  }
+
+  String get selectRequiredAddons {
+    return Intl.message(
+      "Select required addons",
+      name: "selectRequiredAddons",
     );
   }
 
@@ -4160,6 +4483,13 @@ class AppLocalization {
     return Intl.message(
       "Job Description",
       name: "whatDoYouWantToGetDone",
+    );
+  }
+
+  String get preview {
+    return Intl.message(
+      "Preview",
+      name: "preview",
     );
   }
 

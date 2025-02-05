@@ -1,8 +1,6 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
-import 'package:Slydo/screens/more_apps/news/models/NewsDetailItem.dart';
+import 'package:Slydo/screens/more_apps/news/custom_chip.dart';
+import 'package:Slydo/screens/more_apps/news/models/news_detail_item.dart';
 import 'package:Slydo/screens/more_apps/news/news_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
@@ -10,7 +8,6 @@ import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart'
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -19,8 +16,10 @@ import 'package:video_player/video_player.dart';
 import 'news_auth.dart';
 
 class NewsDetailPage extends StatefulWidget {
+  const NewsDetailPage({super.key});
+
   @override
-  _NewsDetailPageState createState() => _NewsDetailPageState();
+  State<NewsDetailPage> createState() => _NewsDetailPageState();
 }
 
 class _NewsDetailPageState extends State<NewsDetailPage> {
@@ -34,7 +33,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   NewsDetailItem newsDetailItem = NewsDetailItem();
   bool isLoading = false;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -44,19 +43,12 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void getResult() async {
@@ -144,7 +136,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
@@ -153,6 +145,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -169,7 +162,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
       ),
       actions: <Widget>[
         shareBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -207,67 +200,67 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 6,
                   ),
                   videoPlayer(),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         newsTitle(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         bloggerDetail(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsShortDescription(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsSubTitle(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsFullDescription(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         subVideoPlayer(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsSubTitle(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsFullDescription(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         Divider(
                           thickness: 1,
                           color: dividerColor,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsChips(),
-                        SizedBox(
+                        const SizedBox(
                           height: 50,
                         ),
                         relatedPostTitle(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         relatedPost(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                       ],
@@ -309,7 +302,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   Widget bloggerDetail() {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Container(
+      leading: SizedBox(
         height: 32,
         width: 32,
         child: ClipOval(
@@ -409,17 +402,15 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   Widget relatedPost() {
     return Column(
         children: newsDetailItem.newsListItems!
-            .map((news) => Container(
-                  child: Column(
-                    children: [
-                      NewsTile(
-                        newsListItem: news,
-                      ),
-                      SizedBox(
-                        height: 16,
-                      )
-                    ],
-                  ),
+            .map((news) => Column(
+                  children: [
+                    NewsTile(
+                      newsListItem: news,
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    )
+                  ],
                 ))
             .toList());
   }

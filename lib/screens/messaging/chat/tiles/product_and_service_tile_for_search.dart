@@ -1,0 +1,207 @@
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+
+// ignore: must_be_immutable
+class SearchProductTile extends StatefulWidget {
+  Product product;
+
+  SearchProductTile({super.key, required this.product});
+
+  @override
+  State<SearchProductTile> createState() => _SearchProductTileState();
+}
+
+class _SearchProductTileState extends State<SearchProductTile> {
+  String itemCover = "";
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    try {
+      itemCover = widget.product.cover!;
+    } catch (e) {
+      itemCover = "";
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: CustomBoxShadow(
+        child: Card(
+            elevation: 3,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            margin: EdgeInsets.zero,
+            shadowColor: boxShadowTwo,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                height: 200,
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: CachedNetworkImage(
+                        width: double.infinity,
+                        imageUrl: itemCover,
+                        fit: BoxFit.fill,
+                        filterQuality: FilterQuality.high,
+                        errorWidget: productAndServiceErrorWidget,
+                      ),
+                    ),
+                    ListTile(
+                        dense: true,
+                        title: Text(
+                          messageDecoderWithEmoji(widget.product.name) ?? "",
+                          maxLines: 1,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: blackFont),
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                        ),
+                        subtitle: Text(
+                          messageDecoderWithEmoji(
+                                  widget.product.shortDescription) ??
+                              "",
+                          maxLines: 1,
+                          style: TextStyle(fontSize: 14, color: darkGrey),
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                        ),
+                        trailing: RichText(
+                          text: TextSpan(children: [
+                            TextSpan(
+                                text: worldCurrencies[widget.product.currency!],
+                                style: TextStyle(
+                                    fontFamily: "Inter",
+                                    color: navyBlue,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14)),
+                            TextSpan(
+                                // text: widget.product.price.toString(),
+                                text: moneyDisplayNormalizer(
+                                    widget.product.price),
+                                style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ))
+                          ]),
+                        )),
+                  ],
+                ),
+              ),
+            )),
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class SearchServiceTile extends StatefulWidget {
+  Service service;
+
+  SearchServiceTile({super.key, required this.service});
+
+  @override
+  State<SearchServiceTile> createState() => _SearchServiceTileState();
+}
+
+class _SearchServiceTileState extends State<SearchServiceTile> {
+  String itemCover = "";
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    try {
+      itemCover = widget.service.cover!;
+    } catch (e) {
+      itemCover = "";
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: CustomBoxShadow(
+        child: Card(
+            elevation: 3,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            margin: EdgeInsets.zero,
+            shadowColor: boxShadowTwo,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                height: 200,
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: CachedNetworkImage(
+                        width: double.infinity,
+                        imageUrl: itemCover,
+                        fit: BoxFit.fill,
+                        filterQuality: FilterQuality.high,
+                        errorWidget: productAndServiceBigErrorWidget,
+                      ),
+                    ),
+                    ListTile(
+                        dense: true,
+                        title: Text(
+                          messageDecoderWithEmoji(widget.service.name) ?? "",
+                          maxLines: 1,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: blackFont),
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                        ),
+                        subtitle: Text(
+                          messageDecoderWithEmoji(
+                                  widget.service.shortDescription) ??
+                              "",
+                          maxLines: 1,
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: darkGrey,
+                              fontWeight: FontWeight.w400),
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                        ),
+                        trailing: RichText(
+                          text: TextSpan(children: [
+                            TextSpan(
+                                text: worldCurrencies[widget.service.currency!],
+                                style: TextStyle(
+                                    fontFamily: "Inter",
+                                    color: navyBlue,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14)),
+                            TextSpan(
+                                text: moneyDisplayNormalizer(
+                                    int.parse(widget.service.price.toString())),
+                                style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ))
+                          ]),
+                        )),
+                  ],
+                ),
+              ),
+            )),
+      ),
+    );
+  }
+}

@@ -1,7 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -10,19 +9,15 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class BarChart extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  BarChart({this.arguments});
+  const BarChart({super.key, this.arguments});
 
   @override
-  _BarChartState createState() => _BarChartState(arguments: arguments);
+  State<BarChart> createState() => _BarChartState();
 }
 
 class _BarChartState extends State<BarChart> {
-  var arguments;
-
-  _BarChartState({this.arguments});
-
   late UserBloc userBloc;
   List<dynamic>? expenses;
   late DateTime start;
@@ -35,7 +30,7 @@ class _BarChartState extends State<BarChart> {
 
   @override
   void initState() {
-    DateTime date = DateTime.now();
+    final DateTime date = DateTime.now();
     week = weekNumber(date);
     start = getStartingOfWeek(date);
     end = getEndingOfWeek(date);
@@ -49,47 +44,45 @@ class _BarChartState extends State<BarChart> {
     });
 
     setState(() {
-      expenses = arguments["week"];
+      expenses = widget.arguments["week"];
       isLoading = false;
       mostExpensive = 0;
       barData = [0, 0, 0, 0, 0, 0, 0];
 
-      expenses!.forEach((dynamic data) {
+      for (var data in expenses!) {
         if (data["amount"] > mostExpensive) {
           mostExpensive = double.parse(data["amount"].toString());
         }
-      });
+      }
       getData(expenses!);
     });
   }
 
   void getData(List<dynamic> expenses) {
-    expenses.forEach((data) {
-      var amount = double.parse(data["amount"].toString());
+    for (var data in expenses) {
+      final amount = double.parse(data["amount"].toString());
       if (amount >= 0.01) {
         setState(() {
           isDataIsZero = true;
         });
       }
       barData[data["day"] - 1] = double.parse(data["amount"].toString());
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return isLoading
-        ? Container(
-            child: Padding(
-              padding: EdgeInsets.all(12.0),
-              child: Center(
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 125.0),
-                    CircularLoadingIndicator(),
-                    SizedBox(height: 125.0),
-                  ],
-                ),
+        ? Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Center(
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 125.0),
+                  CircularLoadingIndicator(),
+                  const SizedBox(height: 125.0),
+                ],
               ),
             ),
           )
@@ -100,7 +93,7 @@ class _BarChartState extends State<BarChart> {
 
   Widget barChart() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -125,7 +118,7 @@ class _BarChartState extends State<BarChart> {
               ),
             ],
           ),
-          SizedBox(height: 15.0),
+          const SizedBox(height: 15.0),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
@@ -179,27 +172,27 @@ class _BarChartState extends State<BarChart> {
 
   void fetchPrevious() {
     week = week - 1;
-    start = start.subtract(Duration(days: 7));
-    end = end.subtract(Duration(days: 7));
+    start = start.subtract(const Duration(days: 7));
+    end = end.subtract(const Duration(days: 7));
     fetchData(week.toString());
   }
 
   void fetchNext() {
     week = week + 1;
-    start = start.add(Duration(days: 7));
-    end = end.add(Duration(days: 7));
+    start = start.add(const Duration(days: 7));
+    end = end.add(const Duration(days: 7));
     fetchData(week.toString());
   }
 
   Widget noDataPresent() {
     return Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Container(
+        padding: const EdgeInsets.all(20.0),
+        child: SizedBox(
           height: 200,
           child: Center(
             child: Text(
               AppLocalization.of(context)!.noTransactionDoneThisWeek,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -214,10 +207,10 @@ class Bar extends StatefulWidget {
   final double? amountSpent;
   final double? mostExpensive;
 
-  Bar({this.label, this.amountSpent, this.mostExpensive});
+  const Bar({super.key, this.label, this.amountSpent, this.mostExpensive});
 
   @override
-  _BarState createState() => _BarState();
+  State<Bar> createState() => _BarState();
 }
 
 class _BarState extends State<Bar> {
@@ -238,21 +231,22 @@ class _BarState extends State<Bar> {
       },
       child: Column(
         children: <Widget>[
-          showAmount
-              ? Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8), color: blackFont),
-                  child: Text(
-                    moneyConverter(widget.amountSpent),
-                    style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                )
-              : Container(height: 20),
-          SizedBox(height: 6.0),
+          if (showAmount)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8), color: blackFont),
+              child: Text(
+                moneyConverter(widget.amountSpent.toString()),
+                style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+            )
+          else
+            Container(height: 20),
+          const SizedBox(height: 6.0),
           Container(
             height: barHeight,
             width: 22.0,
@@ -261,7 +255,7 @@ class _BarState extends State<Bar> {
               borderRadius: BorderRadius.circular(30.0),
             ),
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           Text(
             widget.label!,
             style: TextStyle(fontSize: 12.0, color: darkGrey),

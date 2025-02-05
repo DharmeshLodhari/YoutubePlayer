@@ -1,5 +1,4 @@
-import 'dart:ui';
-
+import 'package:Slydo/data/currency.dart';
 import 'package:intl/intl.dart';
 
 extension FORMAT on String {
@@ -19,8 +18,14 @@ extension FORMAT on String {
 extension FormateDate on DateTime {
   /// pass any date format you want in String result like DD/MM/YYYY
   String? toDateFormatString({required String dateFormat}) {
-    DateFormat df = DateFormat(dateFormat);
+    final DateFormat df = DateFormat(dateFormat);
 
     return df.format(this).toString();
+  }
+}
+
+extension CurrencyFormat on String {
+  String toCurrencyNameAndSymbol() {
+    return "$this (${worldCurrencies[this]})";
   }
 }

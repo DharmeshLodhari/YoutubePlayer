@@ -1,27 +1,26 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/hotels/hotel_auth.dart';
-import 'package:Slydo/screens/more_apps/hotels/models/HotelRoomItem.dart';
-import 'package:Slydo/screens/more_apps/hotels/models/PartialHotelRoomItem.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/hotel_room_item.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/partial_hotel_room_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'hotel_tile.dart';
-import 'models/CityData.dart';
+import 'models/city_data.dart';
 
 class HotelExploreScreen extends StatefulWidget {
+  const HotelExploreScreen({super.key});
+
   @override
-  _HotelExploreScreenState createState() => _HotelExploreScreenState();
+  State<HotelExploreScreen> createState() => _HotelExploreScreenState();
 }
 
 class _HotelExploreScreenState extends State<HotelExploreScreen> {
-  CarouselController _carouselController = CarouselController();
+  final cs.CarouselSliderController _carouselController = cs.CarouselSliderController();
 
   List<PartialHotelRoomItem> sliderItem = [];
   bool isSliderLoading = false;
@@ -35,7 +34,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
   List<CityData> listOfCity = [];
   bool isExploreByCityLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -96,26 +95,18 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
@@ -124,6 +115,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -145,7 +137,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
       ),
       actions: [
         locationChip(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         )
       ],
@@ -154,8 +146,8 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
 
   Widget locationChip() {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(60),
           color: navyBlue.withOpacity(0.1)),
@@ -166,7 +158,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
             color: blackFont,
             size: 14,
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Text(
@@ -191,24 +183,24 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 6,
             ),
             searchBox(),
-            SizedBox(
+            const SizedBox(
               height: 32,
             ),
             cityCarouselSlider(),
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             nearByYou(),
             mostRecentDiscoveryList(),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             exploreByCity(),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           ],
@@ -219,7 +211,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -258,8 +250,8 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -301,15 +293,15 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
   Widget cityCarouselSlider() {
     return Container(
       child: isSliderLoading
-          ? Container(
+          ? SizedBox(
               height: 180,
               child: Center(
                 child: CircularLoadingIndicator(),
               ),
             )
-          : CarouselSlider(
+          : cs.CarouselSlider(
               carouselController: _carouselController,
-              options: CarouselOptions(
+              options: cs.CarouselOptions(
                 viewportFraction: 0.9,
                 enlargeCenterPage: false,
                 autoPlay: true,
@@ -325,11 +317,11 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                       child: Stack(
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
                             child: Center(
                                 child: ClipRRect(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
+                                  const BorderRadius.all(Radius.circular(10)),
                               child: CachedNetworkImage(
                                 imageUrl: item.image!,
                                 fit: BoxFit.fill,
@@ -341,7 +333,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                               ),
                             )),
                           ),
-                          Align(
+                          const Align(
                             alignment: Alignment.center,
                             child: Text(
                               "Homestay",
@@ -361,195 +353,188 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
   }
 
   Widget mostRecentDiscoveryList() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Most recent discovery",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Most recent discovery",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/hotel-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            height: 230,
-            color: Colors.white,
-            child: isMostRecentDiscoveryLoading
-                ? Center(
-                    child: CircularLoadingIndicator(),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: mostRecentDiscovery
-                            .map(
-                              (hotelRoom) => Container(
-                                margin: EdgeInsets.only(right: 12),
-                                child: PartialHotelRoomItemTile(
-                                  hotelRoom: hotelRoom,
-                                ),
+        ),
+        Container(
+          height: 230,
+          color: Colors.white,
+          child: isMostRecentDiscoveryLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: mostRecentDiscovery
+                          .map(
+                            (hotelRoom) => Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: PartialHotelRoomItemTile(
+                                hotelRoom: hotelRoom,
                               ),
-                            )
-                            .toList(),
-                      ),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 
   Widget exploreByCity() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Explore by City",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Explore by City",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/hotel-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            height: 210,
-            color: Colors.white,
-            child: isExploreByCityLoading
-                ? Center(
-                    child: CircularLoadingIndicator(),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: listOfCity
-                            .map(
-                              (city) => Container(
-                                margin: EdgeInsets.only(right: 12),
-                                child: CityItemCard(
-                                  city: city,
-                                ),
+        ),
+        Container(
+          height: 210,
+          color: Colors.white,
+          child: isExploreByCityLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: listOfCity
+                          .map(
+                            (city) => Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: CityItemCard(
+                                city: city,
                               ),
-                            )
-                            .toList(),
-                      ),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 
   Widget nearByYou() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Nearby you",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Nearby you",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/hotel-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: isNearByItemLoading
-                ? Container(
-                    height: 220,
-                    width: double.infinity,
-                    child: Center(
-                      child: CircularLoadingIndicator(),
+        ),
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: isNearByItemLoading
+              ? SizedBox(
+                  height: 220,
+                  width: double.infinity,
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      bottom: 12,
                     ),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: EdgeInsets.only(
-                        left: 16,
-                        bottom: 12,
-                      ),
-                      child: Row(
-                        children: nearByItem
-                            .map((element) => Container(
-                                  margin: EdgeInsets.only(right: 16),
-                                  child:
-                                      HotelRoomImagesTile(hotelRoom: element),
-                                ))
-                            .toList(),
-                      ),
+                    child: Row(
+                      children: nearByItem
+                          .map((element) => Container(
+                                margin: const EdgeInsets.only(right: 16),
+                                child: HotelRoomImagesTile(hotelRoom: element),
+                              ))
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 }

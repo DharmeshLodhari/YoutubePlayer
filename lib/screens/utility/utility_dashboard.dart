@@ -1,0 +1,173 @@
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/utils/enums.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/utility_dashboard_item_tile.dart';
+import 'package:flutter/material.dart';
+
+class UtilityDashboard extends StatefulWidget {
+  const UtilityDashboard({super.key});
+
+  @override
+  State<UtilityDashboard> createState() => _UtilityDashboardState();
+}
+
+class _UtilityDashboardState extends State<UtilityDashboard> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: lightGrey,
+      appBar: appBar() as PreferredSizeWidget?,
+      body: foregroundScreen(),
+    );
+  }
+
+  Widget foregroundScreen() {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            children: [
+              const SizedBox(height: 10),
+              firstRowItems(),
+              secondRowItems(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      surfaceTintColor: Colors.transparent,
+      backgroundColor: Colors.transparent,
+      automaticallyImplyLeading: false,
+      elevation: 0,
+      titleSpacing: 0,
+      centerTitle: false,
+      title: Text(
+        "Utility",
+        style: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
+      ),
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      actions: [
+        utilityHistoryBtn(),
+        const SizedBox(
+          width: 16,
+        )
+      ],
+    );
+  }
+
+  Widget utilityHistoryBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.utilityHistory,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.UTILITY_HISTORY);
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
+  }
+
+  Widget firstRowItems() {
+    return Row(
+      children: [
+        Expanded(
+            child: UtilityDashboardItemTile(
+          icon: SlydoAppIcon.utilityAirtime,
+          title: "Airtime",
+          providersEnum: UtilitiesProvidersEnum.Airtime,
+          iconColor: HexColor("#3F61DB"),
+          height: 126,
+        )),
+        const SizedBox(width: 12),
+        Expanded(
+          child: UtilityDashboardItemTile(
+            icon: SlydoAppIcon.utilitySvg,
+            title: "Cable",
+            providersEnum: UtilitiesProvidersEnum.TV,
+            iconColor: HexColor("#F07097"),
+            height: 126,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: UtilityDashboardItemTile(
+            icon: SlydoAppIcon.utilityElectricity,
+            title: "Electricity",
+            providersEnum: UtilitiesProvidersEnum.Electricity,
+            iconColor: HexColor("#FFAB00"),
+            height: 126,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: UtilityDashboardItemTile(
+            icon: Icons.tap_and_play_outlined,
+            title: "Data",
+            providersEnum: UtilitiesProvidersEnum.Data_Subscription,
+            iconColor: navyBlue,
+            height: 126,
+            titleFontSize: 14,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget secondRowItems() {
+    return Row(
+      children: [
+        Expanded(
+            child: UtilityDashboardItemTile(
+          icon: SlydoAppIcon.utilityTax,
+          title: "Tax",
+          providersEnum: UtilitiesProvidersEnum.tax,
+          iconColor: HexColor("#46CECE"),
+          height: 126,
+        )),
+        const SizedBox(width: 12),
+        Expanded(
+          child: UtilityDashboardItemTile(
+            icon: SlydoAppIcon.utilityBetting,
+            title: "Betting",
+            providersEnum: UtilitiesProvidersEnum.betting,
+            iconColor: HexColor("#46CE7C"),
+            height: 126,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: UtilityDashboardItemTile(
+            icon: SlydoAppIcon.utilityToll,
+            title: "Toll",
+            providersEnum: UtilitiesProvidersEnum.toll,
+            iconColor: HexColor("#F35B46"),
+            height: 126,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(child: Container()),
+      ],
+    );
+  }
+}

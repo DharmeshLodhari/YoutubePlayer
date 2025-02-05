@@ -2,16 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/chat_message_handler.dart';
+import 'package:Slydo/screens/messaging/chat/helpers/db_socket_message_handler.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/chat_message.dart';
+import 'package:Slydo/screens/messaging/chat/models/models_for_db/socket_queue_chat_message.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
+import 'package:Slydo/screens/messaging/chat/utils.dart';
+import 'package:Slydo/screens/messaging/message_auth.dart';
 import 'package:Slydo/services/route_provider.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,30 +33,33 @@ class ShareManager {
   List<SharedMediaFile>? _sharedFiles;
   String? _sharedText;
   Timer? _timerForSharingDataListen;
-  Duration _refreshDurationInterval = Duration(seconds: 1);
+  final Duration _refreshDurationInterval = const Duration(seconds: 1);
 
   void initializeShareManager() {
     _initializeMediaStream();
-    _initializeTextStream();
+    // _initializeTextStream();
   }
 
   void _initializeMediaStream() {
     disposeSharedValue();
     // For sharing images coming from outside the app while the app is in the memory
-    _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
+    _intentDataStreamSubscription = ReceiveSharingIntent.instance
+        .getMediaStream()
         .listen((List<SharedMediaFile> value) {
-      print("ReceiveSharedMedia1:" + value.map((f) => f.path).join(","));
+      // debugPrint("ReceiveSharedMedia1:${value.map((f) => f.path).join(",")}");
       _sharedFiles = value;
       if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
       }
     }, onError: (err) {
-      print("getIntentDataStream error: $err");
+      debugPrint("getIntentDataStream error: $err");
     });
 
     // For sharing images coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
-      print("ReceiveSharedMedia2:" + (value.map((f) => f.path).join(",")));
+    ReceiveSharingIntent.instance
+        .getInitialMedia()
+        .then((List<SharedMediaFile> value) {
+      // debugPrint("ReceiveSharedMedia2:${value.map((f) => f.path).join(",")}");
       _sharedFiles = value;
       if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
@@ -65,29 +67,29 @@ class ShareManager {
     });
   }
 
-  void _initializeTextStream() {
-    disposeSharedValue();
-    // For sharing or opening urls/text coming from outside the app while the app is in the memory
-    _intentDataStreamSubscription =
-        ReceiveSharingIntent.getTextStream().listen((String value) {
-      print("ReceiveSharedText1: $value");
-      _sharedText = value;
-      if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
-        initializeNavigationTimer();
-      }
-    }, onError: (err) {
-      print("getLinkStream error: $err");
-    });
-
-    // For sharing or opening urls/text coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialText().then((String? value) {
-      print("ReceiveSharedText2: $value");
-      _sharedText = value;
-      if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
-        initializeNavigationTimer();
-      }
-    });
-  }
+  // void _initializeTextStream() {
+  //   disposeSharedValue();
+  //   // For sharing or opening urls/text coming from outside the app while the app is in the memory
+  //   _intentDataStreamSubscription =
+  //       ReceiveSharingIntent.instance.getTextStream().listen((String value) {
+  //     debugPrint("ReceiveSharedText1: $value");
+  //     _sharedText = value;
+  //     if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
+  //       initializeNavigationTimer();
+  //     }
+  //   }, onError: (err) {
+  //     debugPrint("getLinkStream error: $err");
+  //   });
+  //
+  //   // For sharing or opening urls/text coming from outside the app while the app is closed
+  //   ReceiveSharingIntent.getInitialText().then((String? value) {
+  //     debugPrint("ReceiveSharedText2: $value");
+  //     _sharedText = value;
+  //     if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
+  //       initializeNavigationTimer();
+  //     }
+  //   });
+  // }
 
   void disposeShareManager() {
     _intentDataStreamSubscription?.cancel();
@@ -109,8 +111,8 @@ class ShareManager {
       try {
         if (myGlobals.navigationKey.currentContext != null) {
           _timerForSharingDataListen!.cancel();
-          print("<====== Opening user list ======>");
-          RouteProvider routeProvider = Provider.of<RouteProvider>(
+          // debugPrint("<====== Opening user list ======>");
+          final RouteProvider routeProvider = Provider.of<RouteProvider>(
               myGlobals.navigationKey.currentContext!,
               listen: false);
 
@@ -120,30 +122,30 @@ class ShareManager {
           }
         }
       } catch (e) {
-        print("ShareContextException===>$e");
+        debugPrint("ShareContextException===>$e");
       }
     });
   }
 
   void openPopup() async {
     if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
-      debugPrint("ShareContext===> Text ===> $_sharedText");
-      String text = _sharedText!.trim();
+      // debugPrint("ShareContext===> Text ===> $_sharedText");
+      final String text = _sharedText!.trim();
       _timerForSharingDataListen!.cancel();
       disposeSharedValue();
-      List<ChatConversation?> selectedUser = await ShareInChat()
+      final List<ChatConversation?> selectedUser = await ShareInChat()
           .selectShareCustomer(myGlobals.navigationKey.currentContext!);
 
       for (int i = 0; i < selectedUser.length; i++) {
         await sendTextMessage(text, selectedUser[i]!);
       }
     } else if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
-      debugPrint("ShareContext===> Media ===> $_sharedFiles");
-      List<SharedMediaFile> files = [];
+      // debugPrint("ShareContext===> Media ===> $_sharedFiles");
+      final List<SharedMediaFile> files = [];
       files.addAll(_sharedFiles!);
       _timerForSharingDataListen!.cancel();
       disposeSharedValue();
-      List<ChatConversation?> selectedUser = await ShareInChat()
+      final List<ChatConversation?> selectedUser = await ShareInChat()
           .selectShareCustomer(myGlobals.navigationKey.currentContext!);
 
       for (int i = 0; i < selectedUser.length; i++) {
@@ -156,49 +158,49 @@ class ShareManager {
 
   Future<void> sendMediaMessage(ChatConversation? chatConversation,
       SharedMediaFile sharedMediaFile) async {
-    UserBloc userBloc = Provider.of<UserBloc>(
+    final UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
-    File file = File(sharedMediaFile.path);
+    final File file = File(sharedMediaFile.path);
 
-    String? mediaType = getFileKind(sharedMediaFile);
+    final String? mediaType = getFileKind(sharedMediaFile);
 
     if (mediaType == null) return;
 
-    Map<String, dynamic> _data = {};
-    _data['text'] = "";
-    _data['check_id'] = Uuid().v4();
-    _data['kind'] = mediaType;
-    _data['read_by_author'] = true;
-    _data['created_at'] = DateTime.now().toUtc().toString();
-    _data['type'] = "chatroom_message";
-    _data['conversation'] = chatConversation!.conversationId;
-    _data['author'] = userBloc.user.userName;
+    final Map<String, dynamic> data = {};
+    data['text'] = "";
+    data['check_id'] = const Uuid().v4();
+    data['kind'] = mediaType;
+    data['read_by_author'] = true;
+    data['created_at'] = DateTime.now().toUtc().toString();
+    data['type'] = "chatroom_message";
+    data['conversation'] = chatConversation!.conversationId;
+    data['author'] = userBloc.user.userName;
 
-    debugPrint("ShareContentMediaData====> $_data");
+    debugPrint("ShareContentMediaData====>/ $data");
 
     File? poster;
     if (mediaType == "video") {
-      String? posterPath = await getVideoThumbnail(file);
+      final String? posterPath = await getVideoThumbnail(file);
 
       if (posterPath == null) return;
       poster = File(posterPath);
     }
 
     await MessageAuth()
-        .sendSocketMessage(_data, file, poster: poster)
+        .sendSocketMessage(data, file, poster: poster)
         .then((value) {
-      debugPrint("ShareContext====> MessageAuth");
+      // debugPrint("ShareContext====> MessageAuth");
     }).catchError((error) {
       debugPrint("ShareContext====> ${Future.error(error)}");
     });
   }
 
   String? getFileKind(SharedMediaFile file) {
-    if (file.type == SharedMediaType.IMAGE) {
+    if (file.type == SharedMediaType.image) {
       return "image";
-    } else if (file.type == SharedMediaType.VIDEO) {
+    } else if (file.type == SharedMediaType.video) {
       return "video";
     }
     return null;
@@ -206,12 +208,12 @@ class ShareManager {
 
   Future<void> sendTextMessage(
       String message, ChatConversation chatConversation) async {
-    UserBloc userBloc = Provider.of<UserBloc>(
+    final UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
-    Map<String, dynamic> data = {
-      "check_id": Uuid().v4(),
+    final Map<String, dynamic> data = {
+      "check_id": const Uuid().v4(),
       "conversation_id": chatConversation.conversationId,
       "author": userBloc.user.userName,
       "author_full_name": userBloc.user.fullName,
@@ -225,15 +227,15 @@ class ShareManager {
       "type": "chatroom_message",
     };
 
-    debugPrint("ShareContentTextData====> $data");
+    // debugPrint("ShareContentTextData====> $data");
 
-    debugPrint(
-        "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
+    // debugPrint(
+    //     "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
           .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
-      ChatMessage chatMessage = convertToChatMessage(data);
+      final ChatMessage chatMessage = convertToChatMessage(data);
 
       await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
 
@@ -248,21 +250,22 @@ class ShareManager {
   void updateConnectionList(
       {required Map<String, dynamic> messageData, String? conversationId}) {
     if (messageData.containsKey("created_at")) {
-      DateTime dateTime = DateTime.parse(messageData["created_at"]).toLocal();
-      int time = dateTime.millisecondsSinceEpoch;
+      final DateTime dateTime =
+          DateTime.parse(messageData["created_at"]).toLocal();
+      final int time = dateTime.millisecondsSinceEpoch;
 
-      debugPrint("Last message Time => $time");
+      // debugPrint("Last message Time => $time");
 
-      ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-          myGlobals.scaffoldKey.currentContext!,
-          listen: false);
+      final ConnectionListBloc connectionListBloc =
+          Provider.of<ConnectionListBloc>(myGlobals.scaffoldKey.currentContext!,
+              listen: false);
       connectionListBloc.updateLastMessageTime(
           conversationId: conversationId, time: time);
     }
   }
 
   ChatMessage convertToChatMessage(Map<String, dynamic> data) {
-    Map<String, dynamic> newData = {};
+    final Map<String, dynamic> newData = {};
     newData["check_id"] = data["check_id"];
     newData["conversation"] = data["conversation_id"];
     newData["author"] = data["author"];

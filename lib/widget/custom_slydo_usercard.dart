@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -11,10 +11,9 @@ import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../locator.dart';
 import '../routes/route_constants.dart';
-import '../screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
-import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../screens/more_apps/user_profile/user_auth.dart';
-import '../utils/colors.dart';
+import '../screens/messaging/chat/helpers/connection_list_manager.dart';
+import '../screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../screens/user_profile/user_auth.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
 import 'dialog.dart';
@@ -22,23 +21,28 @@ import 'loading_indicator.dart';
 
 class CustomSlydoUserCard extends StatefulWidget {
   final CustomerProfile user;
-  const CustomSlydoUserCard({Key? key, required this.user}) : super(key: key);
+  const CustomSlydoUserCard({super.key, required this.user});
 
   @override
   State<CustomSlydoUserCard> createState() => _CustomSlydoUserCardState();
 }
 
-class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
+class _CustomSlydoUserCardState extends State<CustomSlydoUserCard>
+    with SingleTickerProviderStateMixin {
   late UserBloc userBloc;
   List<String> userConnectionNames = [];
   AppConfigurationModel? appConfigurationModel;
-  SlidableController slidableController = SlidableController();
+  // late final SlidableController _slideController = SlidableController(this);
 
   @override
   void initState() {
     super.initState();
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
+    // _slideController = SlidableController(
+    //   onSlideAnimationChanged: handleSlideAnimationChanged,
+    //   onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    // );
     getUserConnectionNames();
   }
 
@@ -60,7 +64,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
             arguments: {"searchedUserName": widget.user.userName});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
         child: Card(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -72,7 +76,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     dense: true,
                     title: userNameWithVerifiedIcon(
@@ -96,7 +100,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    Color borderColor = getUserTypeColor(user: user);
+    final Color borderColor = getUserTypeColor(user: user);
 
     if (user.avatar == "" ||
         user.avatar ==
@@ -140,27 +144,44 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
 
   Widget getSlidableWithCard(BuildContext context) {
     return Slidable(
-      controller: slidableController,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      // controller: _slideController,
+      //  direction: Axis.horizontal,
+      // actionPane: const SlidableBehindActionPane(),
+      // actionExtentRatio: 0.25,
+      // actions: widget.user.userName.toString().toLowerCase() == "slydo"
+      //     ? []
+      //     : listActionSlideActions(),
+      // secondaryActions: widget.user.userName.toString().toLowerCase() == "slydo"
+      //     ? []
+      //     : listSecondaryActions(),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: widget.user.userName.toString().toLowerCase() == "slydo"
+            ? 0.0001
+            : 0.25,
+        children: listActionSlideActions(),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: widget.user.userName.toString().toLowerCase() == "slydo"
+            ? 0.0001
+            : 0.25,
+        children: listSecondaryActions(),
+      ),
       child: userCard(),
-      actions: widget.user.userName.toString().toLowerCase() == "slydo"
-          ? []
-          : listActionSlideActions(),
-      secondaryActions: widget.user.userName.toString().toLowerCase() == "slydo"
-          ? []
-          : listSecondaryActions(),
     );
   }
 
   List<Widget> listActionSlideActions() {
-    bool isNotCurrentUser = widget.user.userName != userBloc.user.userName;
+    final bool isNotCurrentUser =
+        widget.user.userName != userBloc.user.userName;
     return [
       if (isNotCurrentUser)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: Icons.payments_rounded,
-          onTap: () async {
+          onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
               Navigator.of(context).pushNamed(
                 Routes.REQUEST_PAYMENT,
@@ -174,14 +195,16 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
               showToast(message: 'Payment not available at the moment');
             }
           },
-          title: AppLocalization.of(context)!.request,
+          label: AppLocalization.of(context)!.request,
           backgroundColor: navyBlue,
-          slideController: slidableController,
+          // slideController: _slideController,
         ),
       if (isNotCurrentUser)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: Icons.payments_rounded,
-          onTap: () async {
+          onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
               Navigator.of(context).pushNamed(Routes.SEND_PAYMENT, arguments: {
                 'isFromProfile': false,
@@ -191,9 +214,9 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
               showToast(message: 'Payment not available at the moment');
             }
           },
-          title: AppLocalization.of(context)!.send,
+          label: AppLocalization.of(context)!.send,
           backgroundColor: naturalGreen,
-          slideController: slidableController,
+          // slideController: slidableController,
         ),
     ];
   }
@@ -203,29 +226,33 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
       if (!userConnectionNames.contains(widget.user.userName) &&
           widget.user.userName != userBloc.user.userName)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: SlydoAppIcon.add,
-          onTap: () async {
+          onPressed: (con) async {
             connectUserAlert(widget.user);
           },
-          title: 'Connect',
+          label: 'Connect',
           backgroundColor: naturalGreen,
-          slideController: slidableController,
+          // slideController: _slideController,
         ),
       if (userBloc.user.userName != widget.user.userName)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: SlydoAppIcon.block,
-          onTap: () async {
+          onPressed: (con) async {
             blockUserAlert(widget.user);
           },
-          title: 'Block',
+          label: 'Block',
           backgroundColor: mateRed,
-          slideController: slidableController,
+          // slideController: _slideController,
         ),
     ];
   }
 
   void blockUserAlert(CustomerProfile user) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -244,19 +271,19 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.block,
-      description: AppLocalization.of(context)!.areYouSureWantToBlock +
-          " ${user.displayName()}",
+      description:
+          "${AppLocalization.of(context)!.areYouSureWantToBlock} ${user.displayName()}",
       actionOneText: AppLocalization.of(context)!.block,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await UserAuth().blockUser(user);
+      final bool done = await UserAuth().blockUser(user);
       if (done) {
         showSnackbar(context,
-            message: "${user.displayName()} " +
-                AppLocalization.of(context)!.isBlockedSuccessfully);
+            message:
+                "${user.displayName()} ${AppLocalization.of(context)!.isBlockedSuccessfully}");
 
-        ConnectionListBloc connectionListBloc =
+        final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: user.conversationId);
@@ -269,7 +296,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
   }
 
   void connectUserAlert(CustomerProfile user) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: navyBlue.withOpacity(0.08),

@@ -5,18 +5,20 @@ import 'package:textfield_tags/textfield_tags.dart';
 // ignore: must_be_immutable
 class CustomTextFieldTag extends StatefulWidget {
   final List<String>? initialTags;
-  final TextfieldTagsController? textfieldTagsController;
+  final bool readOnly;
+  final TextfieldTagsController textFieldTagsController;
   final Function(String) onTap;
 
-  CustomTextFieldTag({
-    Key? key,
+  const CustomTextFieldTag({
+    super.key,
     this.initialTags,
-    required this.textfieldTagsController,
+    this.readOnly = true,
+    required this.textFieldTagsController,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
-  _CustomTextFieldTagState createState() => _CustomTextFieldTagState();
+  State<CustomTextFieldTag> createState() => _CustomTextFieldTagState();
 }
 
 class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
@@ -28,31 +30,29 @@ class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
       },
       // initialTags: (userTags).map((e) => jsonEncode(e.toJson())).toList(),
       initialTags: widget.initialTags,
-      textfieldTagsController: widget.textfieldTagsController,
+      textfieldTagsController: widget.textFieldTagsController,
       inputfieldBuilder: (context, tec, fn, error, onChanged, onSubmitted) {
         return ((context, sc, tags, onTagDelete) {
           return TextField(
-            readOnly: true,
+            readOnly: widget.readOnly,
             controller: tec,
             focusNode: fn,
             decoration: InputDecoration(
               isDense: true,
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(5),
                 borderSide: BorderSide(
                   color: greyBorderColor,
                   width: 1.0,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(5),
                 borderSide: BorderSide(
                   color: navyBlue,
                   width: 1.0,
                 ),
               ),
-              helperText: '',
-              hintText: '',
               errorText: error,
               prefixIcon: tags.isNotEmpty
                   ? SingleChildScrollView(
@@ -63,7 +63,7 @@ class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
                         // Map<String, dynamic> tagData = jsonDecode(tag);
                         return Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(
+                            borderRadius: const BorderRadius.all(
                               Radius.circular(20.0),
                             ),
                             border: Border.all(color: darkGrey, width: 1.0),
@@ -76,12 +76,12 @@ class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
                             children: [
                               InkWell(
                                 child: Text(
-                                  '$tag',
+                                  tag,
                                   // tagData['name'],
                                   style: TextStyle(color: blackFont),
                                 ),
                                 onTap: () {
-                                  print("$tag selected");
+                                  debugPrint("$tag selected");
                                 },
                               ),
                               const SizedBox(width: 4.0),

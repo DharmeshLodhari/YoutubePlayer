@@ -5,20 +5,16 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 class ContactDriver extends StatefulWidget {
+  const ContactDriver({super.key});
+
   @override
-  _ContactDriverState createState() => _ContactDriverState();
+  State<ContactDriver> createState() => _ContactDriverState();
 }
 
 class _ContactDriverState extends State<ContactDriver> {
-  MapController? mapController;
-
-  LatLng mapPoint = LatLng(6.605874, 3.349149);
-
   @override
   void initState() {
     super.initState();
@@ -31,7 +27,7 @@ class _ContactDriverState extends State<ContactDriver> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [
@@ -42,7 +38,7 @@ class _ContactDriverState extends State<ContactDriver> {
             //   fit: BoxFit.fill,
             // ),
 
-            MapUI(),
+            const MapUI(),
 
             // FlutterMap(
             //   mapController: mapController,
@@ -80,6 +76,7 @@ class _ContactDriverState extends State<ContactDriver> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -112,14 +109,14 @@ class _ContactDriverState extends State<ContactDriver> {
           shadowColor: dividerColor,
           color: Colors.white,
           margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),
@@ -128,19 +125,19 @@ class _ContactDriverState extends State<ContactDriver> {
               ),
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   Column(
                     children: [
                       getDriverInfo(),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       getPayButton(),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                 ],
@@ -156,7 +153,7 @@ class _ContactDriverState extends State<ContactDriver> {
 
   Widget getDriverInfo() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -165,7 +162,7 @@ class _ContactDriverState extends State<ContactDriver> {
             style: TextStyle(
                 color: blackFont, fontSize: 16, fontWeight: FontWeight.w700),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Divider(
@@ -173,11 +170,11 @@ class _ContactDriverState extends State<ContactDriver> {
             height: 0,
             thickness: 1,
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           getDriverDetail(),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           getNotes(),
@@ -193,9 +190,9 @@ class _ContactDriverState extends State<ContactDriver> {
   }
 
   Widget getDriverDetail() {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -208,7 +205,7 @@ class _ContactDriverState extends State<ContactDriver> {
               fit: BoxFit.fill,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
           Expanded(
@@ -222,11 +219,12 @@ class _ContactDriverState extends State<ContactDriver> {
                       fontSize: 22,
                       fontWeight: FontWeight.w700),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
                       color: darkGrey.withOpacity(0.3)),
@@ -238,7 +236,7 @@ class _ContactDriverState extends State<ContactDriver> {
                         fontWeight: FontWeight.w700),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -266,7 +264,7 @@ class _ContactDriverState extends State<ContactDriver> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50),
         ),
-        child: Container(
+        child: SizedBox(
           height: 70,
           width: 70,
           child: Center(

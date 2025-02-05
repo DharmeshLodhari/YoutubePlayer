@@ -1,18 +1,24 @@
 import 'package:Slydo/services/auth.dart';
 
-import 'models/CityData.dart';
-import 'models/HotelRoomDetailItem.dart';
-import 'models/HotelRoomItem.dart';
-import 'models/PartialHotelRoomItem.dart';
+import 'models/city_data.dart';
+import 'models/hotel_room_detail_item.dart';
+import 'models/hotel_room_item.dart';
+import 'models/partial_hotel_room_item.dart';
 
 class HotelAuthService extends AuthService {
   Future<List<String>> getLocation() async {
-    List<String> list = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
+    final List<String> list = [
+      "Lagos",
+      "Kano",
+      "Ibadan",
+      "Benin City",
+      "Abuja"
+    ];
     return list;
   }
 
   Future<List<HotelRoomItem>> getHotelRoomList() async {
-    var hotelItem = List.generate(
+    final hotelItem = List.generate(
       10,
       (index) => HotelRoomItem.fromJson({
         "name": "House 1 for rent",
@@ -30,12 +36,12 @@ class HotelAuthService extends AuthService {
         "rating": "7.8"
       }),
     );
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return hotelItem;
   }
 
   Future<List<PartialHotelRoomItem>> getPartialHotelRoomList() async {
-    List<String> hotelImages = [
+    final List<String> hotelImages = [
       "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
       "https://www.thebalancesmb.com/thmb/R5CjZrWUBXBTVj48-MBx3PFIh5U=/3000x2000/filters:fill(auto,1)/hotel_room-627892060-5a7a30d1642dca00370179e6.jpg",
       "https://media.istockphoto.com/photos/3d-rendering-modern-luxury-bedroom-suite-and-bathroom-picture-id928431714?k=6&m=928431714&s=612x612&w=0&h=IBnf0aE9zEmsaJ3nLep6UmK4u-KYQPdEQa6LY30Ivn4=",
@@ -43,7 +49,7 @@ class HotelAuthService extends AuthService {
       "https://blisssaigon.com/wp-content/uploads/2019/10/iwood-R5v8Xtc0ecg-unsplash-1.jpg"
     ];
 
-    List<PartialHotelRoomItem> hotelRoomList = hotelImages
+    final List<PartialHotelRoomItem> hotelRoomList = hotelImages
         .map(
           (image) => PartialHotelRoomItem.fromJson({
             "name": "Lake side cottage",
@@ -54,14 +60,20 @@ class HotelAuthService extends AuthService {
           }),
         )
         .toList();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return hotelRoomList;
   }
 
   Future<List<CityData>> getCityList() async {
-    List<String> city = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
+    final List<String> city = [
+      "Lagos",
+      "Kano",
+      "Ibadan",
+      "Benin City",
+      "Abuja"
+    ];
 
-    List<CityData> cityItem = city
+    final List<CityData> cityItem = city
         .map(
           (name) => CityData.fromJson({
             "name": name,
@@ -70,12 +82,12 @@ class HotelAuthService extends AuthService {
           }),
         )
         .toList();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return cityItem;
   }
 
   Future<HotelRoomDetailItem> getHotelRoomDetail() async {
-    var dummyData = {
+    final dummyData = {
       "name": "Lake side cottage",
       "short_detail": "3 beds • 2 bath • 1 livingroom",
       "owner_name": "Bond street dojo",
@@ -176,14 +188,14 @@ class HotelAuthService extends AuthService {
       ]
     };
 
-    HotelRoomDetailItem hotelRoomDetailItem =
+    final HotelRoomDetailItem hotelRoomDetailItem =
         HotelRoomDetailItem.fromJson(dummyData);
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return hotelRoomDetailItem;
   }
 
   Future<void> addToWishList() async {
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     return;
   }
 }

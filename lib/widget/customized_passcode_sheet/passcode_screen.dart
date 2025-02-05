@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,8 +31,8 @@ class CustomizedPassCodeScreen extends StatefulWidget {
   final KeyboardUIConfig keyboardUIConfig;
   final List<String>? digits;
 
-  CustomizedPassCodeScreen({
-    Key? key,
+  const CustomizedPassCodeScreen({
+    super.key,
     required this.title,
     this.passwordDigits = 6,
     required this.passwordEnteredCallback,
@@ -47,12 +46,8 @@ class CustomizedPassCodeScreen extends StatefulWidget {
     this.backgroundColor,
     this.cancelCallback,
     this.digits,
-  })  : circleUIConfig =
-            circleUIConfig == null ? const CircleUIConfig() : circleUIConfig,
-        keyboardUIConfig = keyboardUIConfig == null
-            ? const KeyboardUIConfig()
-            : keyboardUIConfig,
-        super(key: key);
+  })  : circleUIConfig = circleUIConfig ?? const CircleUIConfig(),
+        keyboardUIConfig = keyboardUIConfig ?? const KeyboardUIConfig();
 
   @override
   State<StatefulWidget> createState() => _CustomizedPassCodeScreenState();
@@ -66,7 +61,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
   late Animation<double> animation;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     streamSubscription = widget.shouldTriggerVerification
         .listen((isValid) => _showValidation(isValid));
@@ -95,12 +90,12 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       body: _buildPortraitPasscodeScreen(),
     );
   }
 
-  _buildPortraitPasscodeScreen() => Container(
+  Widget _buildPortraitPasscodeScreen() => SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Stack(
           children: [
@@ -109,11 +104,13 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20))),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
                     height:
                         MediaQuery.of(context).size.height > 600 ? 150 : 125,
                     child: Column(
@@ -149,21 +146,19 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
         ),
       );
 
-  _buildKeyboard() => Container(
-        child: Keyboard(
-          onKeyboardTap: _onKeyboardButtonPressed,
-          keyboardUIConfig: widget.keyboardUIConfig,
-          digits: widget.digits,
-        ),
+  Widget _buildKeyboard() => Keyboard(
+        onKeyboardTap: _onKeyboardButtonPressed,
+        keyboardUIConfig: widget.keyboardUIConfig,
+        digits: widget.digits,
       );
 
   List<Widget> _buildCircles() {
-    var list = <Widget>[];
-    var extraSize = animation.value;
+    final list = <Widget>[];
+    final extraSize = animation.value;
     for (int i = 0; i < widget.passwordDigits; i++) {
       list.add(
         Container(
-          margin: EdgeInsets.all(8),
+          margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: HexColor("#BEC2F4")),
@@ -182,8 +177,8 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     return list;
   }
 
-  _onDeleteCancelButtonPressed() {
-    if (enteredPasscode.length > 0) {
+  void _onDeleteCancelButtonPressed() {
+    if (enteredPasscode.isNotEmpty) {
       setState(() {
         enteredPasscode =
             enteredPasscode.substring(0, enteredPasscode.length - 1);
@@ -196,7 +191,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     }
   }
 
-  _onKeyboardButtonPressed(String text) {
+  void _onKeyboardButtonPressed(String text) {
     setState(() {
       if (enteredPasscode.length < widget.passwordDigits) {
         enteredPasscode += text;
@@ -208,7 +203,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
   }
 
   @override
-  didUpdateWidget(CustomizedPassCodeScreen old) {
+  void didUpdateWidget(CustomizedPassCodeScreen old) {
     super.didUpdateWidget(old);
     // in case the stream instance changed, subscribe to the new one
     if (widget.shouldTriggerVerification != old.shouldTriggerVerification) {
@@ -219,13 +214,13 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
   }
 
   @override
-  dispose() {
+  void dispose() {
     controller.dispose();
     streamSubscription.cancel();
     super.dispose();
   }
 
-  _showValidation(bool isValid) {
+  void _showValidation(bool isValid) {
     if (isValid) {
       Navigator.maybePop(context).then((pop) => _validationCallback());
     } else {
@@ -233,7 +228,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     }
   }
 
-  _validationCallback() {
+  void _validationCallback() {
     if (widget.isValidCallback != null) {
       widget.isValidCallback!();
     } else {
@@ -243,14 +238,11 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
   }
 
   Widget _buildDeleteButton() {
-    return Container(
-      child: CupertinoButton(
-        onPressed: _onDeleteCancelButtonPressed,
-        child: Container(
-          child: enteredPasscode.length == 0
-              ? widget.cancelButton
-              : widget.deleteButton,
-        ),
+    return CupertinoButton(
+      onPressed: _onDeleteCancelButtonPressed,
+      child: Container(
+        child:
+            enteredPasscode.isEmpty ? widget.cancelButton : widget.deleteButton,
       ),
     );
   }

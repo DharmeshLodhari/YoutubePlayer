@@ -1,9 +1,32 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/blog/post_detail_page.dart';
+import 'package:Slydo/screens/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/messaging/chat/share_in_chat/share_in_chat.dart';
+import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/moments_auth.dart';
+import 'package:Slydo/screens/moments/moments_bloc.dart';
+import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/render_moment_screen.dart';
+import 'package:Slydo/screens/moments/utils.dart';
+import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
+import 'package:Slydo/screens/moments/widgets/custom_moment_detail_button.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/yarn/yarn_report_screen.dart';
+import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/read_more_widget.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,29 +37,6 @@ import 'package:story_view/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../data/state_notifier.dart';
-import '../../../../locale/app_localization.dart';
-import '../../../../routes/route_constants.dart';
-import '../../../../utils/enums.dart';
-import '../../../../utils/navigation_util.dart';
-import '../../../../widget/bottom_sheet_item.dart';
-import '../../../../widget/dialog.dart';
-import '../../../../widget/loading_indicator.dart';
-import '../../../../widget/read_more_widget.dart';
-import '../../../../widget/rounded_background_icon.dart';
-import '../../../more_apps/messaging/chat/models/ChatConversation.dart';
-import '../../../more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import '../../../more_apps/user_profile/models/user.dart';
-import '../../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../../../more_apps/yarn/yarn_report_screen.dart';
-import '../../../post_detail_page.dart';
-import '../../models/moments_model.dart';
-import '../../moments_bloc.dart';
-import '../../utils.dart';
-import '../../widgets/attachment_widget.dart';
-import '../../widgets/custom_moment_detail_button.dart';
-import '../create_moment_screen.dart';
-import '../moments_service.dart';
 import 'custom_story_view.dart' as custom;
 import 'custom_story_view.dart';
 import 'moment_comment_list.dart';
@@ -46,12 +46,11 @@ class StoryMomentScreen extends StatefulWidget {
   final List<custom.Shiddo>? storyItems;
   final MomentsModel? currentMoment;
 
-  StoryMomentScreen(
-      {Key? key,
+  const StoryMomentScreen(
+      {super.key,
       required this.controller,
       required this.storyItems,
-      required this.currentMoment})
-      : super(key: key);
+      required this.currentMoment});
 
   @override
   State<StoryMomentScreen> createState() => _StoryMomentScreenState();
@@ -73,7 +72,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   Future<bool> addLikeToMoment() async {
-    MomentsModel data = await MomentsService().likeMoment(currentMoment!.id!);
+    final MomentsModel data =
+        await MomentsAuthService().likeMoment(currentMoment?.id ?? "");
     if (data != null) {
       setState(() {
         currentMoment!.likes = data.likes;
@@ -85,8 +85,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   Future<bool> addDisLikeToMoment() async {
-    MomentsModel data =
-        await MomentsService().dislikeMoment(currentMoment!.id!);
+    final MomentsModel data =
+        await MomentsAuthService().dislikeMoment(currentMoment?.id ?? "");
 
     if (data != null) {
       setState(() {
@@ -150,272 +150,267 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
           textDirection: Directionality.of(context),
           end: 15.0,
           bottom: MediaQuery.of(context).size.height * 0.13,
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const SizedBox(height: 16),
-                isMyMoment()
-                    ? CustomMomentDetailButton(
-                        iconEnabled: true,
-                        iconData: Icons.more_horiz_outlined,
-                        text: '',
-                        onPressed: () {
-                          androidBottomSheet(
-                            context: context,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                momentVisibilityOption(currentMoment!),
-                                momentPermanentOption(currentMoment!),
-                                enablePayment(currentMoment!),
-                                momentCommentingOption(currentMoment!),
-                                momentLikeOption(currentMoment!),
-                                bottomSheetItem(
-                                    title: 'Share in chat',
-                                    iconData: Icons.send_outlined,
-                                    onTap: () async {
-                                      await sendMomentToUserInChat(
-                                          momentsModel: currentMoment!);
-                                    }),
-                                bottomSheetItem(
-                                  title: 'Delete',
-                                  iconData: Icons.delete,
-                                  onTap: () {
-                                    Navigator.pop(context);
-
-                                    showDialogBox(
-                                      context: context,
-                                      actionOneTextColor: white,
-                                      actionOneBgColor: mateRed,
-                                      actionTwoTextColor: blackFont,
-                                      actionTwoBgColor: greyBorderColor,
-                                      title:
-                                          AppLocalization.of(context)!.delete,
-                                      actionTwoText:
-                                          AppLocalization.of(context)!.cancel,
-                                      actionOneText:
-                                          AppLocalization.of(context)!.delete,
-                                      description:
-                                          'Are you sure you want to delete this moment?',
-                                      roundedBackgroundIcon:
-                                          RoundedBackgroundIcon(
-                                        enableMargin: false,
-                                        width: 90,
-                                        height: 90,
-                                        image: Image.asset(
-                                            'assets/images/delete_dialog_icon.png'),
-                                      ),
-                                      leftButtonOnPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (dialogLoadingContext) =>
-                                                LoadingIndicator());
-                                        MomentsService()
-                                            .deleteMoment(
-                                                currentMoment!.id!, "")
-                                            .then(
-                                          (value) {
-                                            Navigator.pop(
-                                                context); // Dismiss loading indicator
-                                            Navigator.pop(context);
-                                            showToast(
-                                                message: 'Moment deleted');
-                                          },
-                                        ).catchError((e) {
-                                          Navigator.pop(context);
-                                          showToast(message: e.toString());
-                                        });
-                                      },
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      )
-                    : const SizedBox.shrink(),
-                _buildShareMomentOption(),
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white38,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            offset: const Offset(0.0, 0),
-                            color: Colors.black.withOpacity(0.6),
-                          ),
-                        ],
-                        // borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: LikeButton(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        padding: const EdgeInsets.only(left: 5),
-                        size: 20,
-                        circleColor: CircleColor(start: white, end: white),
-                        bubblesColor: BubblesColor(
-                          dotPrimaryColor: white,
-                          dotSecondaryColor: white,
-                        ),
-                        onTap: likeEnabled()
-                            ? (isLike) {
-                                _isLiked = true;
-                                _isDisLiked = false;
-                                setState(() {});
-                                return addLikeToMoment();
-                              }
-                            : null,
-                        likeBuilder: (bool isLiked) {
-                          return SvgPicture.asset(
-                            _isLiked == true
-                                ? "yarn/likeAfter".toSVG()
-                                : "yarn/likeBefore".toSVG(),
-                            color: white,
-                            height: 25,
-                            width: 25,
-                          );
-                        },
-                        likeCount: getLikeCount(),
-                        countBuilder: (_, __, ___) {
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      likeEnabled()
-                          ? int.parse(currentMoment!.likes.toString()) < 1
-                              ? ''
-                              : getFormattedViewCount(
-                                  noOfViews: currentMoment!.likes!,
-                                  addViewText: false)
-                          : '',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10.0,
-                            offset: Offset(0.0, 0),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white38,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            offset: const Offset(0.0, 0),
-                            color: Colors.black.withOpacity(0.6),
-                          ),
-                        ],
-                        // borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: LikeButton(
-                        padding: const EdgeInsets.only(left: 5),
-                        // crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        size: 20,
-                        circleColor: CircleColor(start: white, end: white),
-                        bubblesColor: BubblesColor(
-                          dotPrimaryColor: white,
-                          dotSecondaryColor: white,
-                        ),
-                        onTap: likeEnabled()
-                            ? (likes) {
-                                _isDisLiked = true;
-                                _isLiked = false;
-                                setState(() {});
-
-                                return addDisLikeToMoment();
-                              }
-                            : null,
-                        // : null,
-                        likeBuilder: (bool isLiked) {
-                          return SvgPicture.asset(
-                            _isDisLiked == false
-                                ? "yarn/unlikeBefore".toSVG()
-                                : "yarn/unlikeAfter".toSVG(),
-                            color: white,
-                            height: 20,
-                            width: 17,
-                          );
-                        },
-                        likeCount: getDislikeCount(),
-                        countBuilder: (_, __, ___) {
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      likeEnabled()
-                          ? int.parse(currentMoment!.dislikes.toString()) < 1
-                              ? ''
-                              : getFormattedViewCount(
-                                  noOfViews: currentMoment!.dislikes!,
-                                  addViewText: false,
-                                )
-                          : '',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10.0,
-                            offset: Offset(0.0, 0),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 18,
-                ),
-                CustomMomentDetailButton(
-                  iconEnabled: commentingEnabled(),
-                  svgImage: 'yarn/yarn_comment',
-                  isSvgIcon: true,
-                  text: currentMoment?.displayComment ?? '',
-                  onPressed: commentingEnabled()
-                      ? () {
-                          widget.controller!.pause();
-                          commentSheet(context, currentMoment!.id!,
-                              currentMoment!.ownerName!,
-                              index: index - 1, currentMoment: currentMoment);
-                        }
-                      : null,
-                ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const SizedBox(height: 16),
+              if (isMyMoment())
                 CustomMomentDetailButton(
                   iconEnabled: true,
-                  iconData: Icons.visibility_rounded,
-                  text: getFormattedViewCount(
-                    noOfViews: currentMoment!.views,
-                    addViewText: false,
+                  iconData: Icons.more_horiz_outlined,
+                  text: '',
+                  onPressed: () {
+                    androidBottomSheet(
+                      context: context,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          momentVisibilityOption(currentMoment!),
+                          momentPermanentOption(currentMoment!),
+                          enablePayment(currentMoment!),
+                          momentCommentingOption(currentMoment!),
+                          momentLikeOption(currentMoment!),
+                          bottomSheetItem(
+                              title: 'Share in chat',
+                              iconData: Icons.send_outlined,
+                              onTap: () async {
+                                await sendMomentToUserInChat(
+                                    momentsModel: currentMoment!);
+                              }),
+                          bottomSheetItem(
+                            title: 'Delete',
+                            iconData: Icons.delete,
+                            onTap: () {
+                              Navigator.pop(context);
+
+                              showDialogBox(
+                                context: context,
+                                actionOneTextColor: blackFont,
+                                actionOneBgColor: greyBorderColor,
+                                actionTwoTextColor: white,
+                                actionTwoBgColor: mateRed,
+                                title: 'Delete Moment',
+                                actionOneText:
+                                    AppLocalization.of(context)!.discard,
+                                actionTwoText:
+                                    AppLocalization.of(context)!.continueMsg,
+                                description:
+                                    'Are you sure you want to delete this moment?',
+                                roundedBackgroundIcon: RoundedBackgroundIcon(
+                                  enableMargin: false,
+                                  width: 90,
+                                  height: 90,
+                                  image: Image.asset(
+                                      'assets/images/delete_dialog_icon.png'),
+                                ),
+                                rightButtonOnPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (dialogLoadingContext) =>
+                                          LoadingIndicator());
+                                  MomentsAuthService()
+                                      .deleteMoment(currentMoment!.id!, "")
+                                      .then(
+                                    (value) {
+                                      Navigator.pop(
+                                          context); // Dismiss loading indicator
+                                      Navigator.pop(context);
+                                      showToast(message: 'Moment deleted');
+                                    },
+                                  ).catchError((e) {
+                                    Navigator.pop(context);
+                                    showToast(message: e.toString());
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                )
+              else
+                const SizedBox.shrink(),
+              _buildShareMomentOption(),
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white38,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          offset: const Offset(0.0, 0),
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      ],
+                      // borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: LikeButton(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      padding: const EdgeInsets.only(left: 5),
+                      size: 20,
+                      circleColor: CircleColor(start: white, end: white),
+                      bubblesColor: BubblesColor(
+                        dotPrimaryColor: white,
+                        dotSecondaryColor: white,
+                      ),
+                      onTap: likeEnabled()
+                          ? (isLike) {
+                              _isLiked = true;
+                              _isDisLiked = false;
+                              setState(() {});
+                              return addLikeToMoment();
+                            }
+                          : null,
+                      likeBuilder: (bool isLiked) {
+                        return SvgPicture.asset(
+                          _isLiked == true
+                              ? "yarn/likeAfter".toSVG()
+                              : "yarn/likeBefore".toSVG(),
+                          color: white,
+                          height: 25,
+                          width: 25,
+                        );
+                      },
+                      likeCount: getLikeCount(),
+                      countBuilder: (_, __, ___) {
+                        return const SizedBox.shrink();
+                      },
+                    ),
                   ),
-                  onPressed: null,
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    likeEnabled()
+                        ? int.parse(currentMoment!.likes.toString()) < 1
+                            ? ''
+                            : getFormattedViewCount(
+                                noOfViews: currentMoment!.likes!,
+                                addViewText: false)
+                        : '',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10.0,
+                          offset: Offset(0.0, 0),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white38,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          offset: const Offset(0.0, 0),
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      ],
+                      // borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: LikeButton(
+                      padding: const EdgeInsets.only(left: 5),
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      size: 20,
+                      circleColor: CircleColor(start: white, end: white),
+                      bubblesColor: BubblesColor(
+                        dotPrimaryColor: white,
+                        dotSecondaryColor: white,
+                      ),
+                      onTap: likeEnabled()
+                          ? (likes) {
+                              _isDisLiked = true;
+                              _isLiked = false;
+                              setState(() {});
+
+                              return addDisLikeToMoment();
+                            }
+                          : null,
+                      // : null,
+                      likeBuilder: (bool isLiked) {
+                        return SvgPicture.asset(
+                          _isDisLiked == false
+                              ? "yarn/unlikeBefore".toSVG()
+                              : "yarn/unlikeAfter".toSVG(),
+                          color: white,
+                          height: 20,
+                          width: 17,
+                        );
+                      },
+                      likeCount: getDislikeCount(),
+                      countBuilder: (_, __, ___) {
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    likeEnabled()
+                        ? int.parse(currentMoment!.dislikes.toString()) < 1
+                            ? ''
+                            : getFormattedViewCount(
+                                noOfViews: currentMoment!.dislikes!,
+                                addViewText: false,
+                              )
+                        : '',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10.0,
+                          offset: Offset(0.0, 0),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 18,
+              ),
+              CustomMomentDetailButton(
+                iconEnabled: commentingEnabled(),
+                svgImage: 'yarn/yarn_comment',
+                isSvgIcon: true,
+                text: currentMoment?.displayComment ?? '',
+                onPressed: commentingEnabled()
+                    ? () {
+                        widget.controller!.pause();
+                        commentSheet(context, currentMoment!.id!,
+                            currentMoment!.ownerName!,
+                            index: index - 1, currentMoment: currentMoment);
+                      }
+                    : null,
+              ),
+              CustomMomentDetailButton(
+                iconEnabled: true,
+                iconData: Icons.visibility_rounded,
+                text: getFormattedViewCount(
+                  noOfViews: currentMoment!.views,
+                  addViewText: false,
                 ),
-              ],
-            ),
+                onPressed: null,
+              ),
+            ],
           ),
         ),
         Positioned(
@@ -442,8 +437,15 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                           image = currentMoment!.avatar;
                         }
 
+                        widget.controller!.pause();
+                        _renderMomentStateKey.currentState?.controller?.stop();
                         Navigator.of(context)
-                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image)
+                            .whenComplete(() {
+                          widget.controller!.play();
+                          _renderMomentStateKey.currentState?.controller
+                              ?.forward();
+                        });
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6.0),
@@ -459,13 +461,20 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                         children: [
                           InkWell(
                             onTap: () {
+                              widget.controller!.pause();
+                              _renderMomentStateKey.currentState?.controller
+                                  ?.stop();
                               Navigator.pushNamed(
                                 context,
                                 Routes.USER_PROFILE,
                                 arguments: {
                                   "searchedUserName": currentMoment!.owner,
                                 },
-                              );
+                              ).whenComplete(() {
+                                widget.controller!.play();
+                                _renderMomentStateKey.currentState?.controller
+                                    ?.forward();
+                              });
                             },
                             child: Text(
                               messageDecoderWithEmoji(
@@ -595,7 +604,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                       onTap: () async {
                         toggleMediaPlayingState();
                         await NavigationUtil.push(context,
-                            screen: CreateMediaMomentScreen());
+                            screen: const CreateMediaMomentScreen());
                         toggleMediaPlayingState();
                       },
                       child: Container(
@@ -653,7 +662,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
 
                     await NavigationUtil.push(context,
                         screen: AddReportScreen(
-                          object: currentMoment!.toJson(),
+                          object: currentMoment?.toJson(),
                           type: "moment",
                           isCommentMoment: true,
                         ));
@@ -666,13 +675,13 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                   iconData: Icons.block,
                   onTap: () async {
                     toggleMediaPlayingState();
-                    var user = CustomerProfile();
-                    user.userName = currentMoment!.owner;
-                    user.fullName = currentMoment!.ownerName;
+                    final user = CustomerProfile();
+                    user.userName = currentMoment?.owner;
+                    user.fullName = currentMoment?.ownerName;
                     user.type = "";
                     user.nickName = "";
 
-                    Future<bool?> check = blockUserAlert(context, user);
+                    final Future<bool?> check = blockUserAlert(context, user);
                     if (check == true) {
                       Navigator.pop(context);
                       Navigator.pop(context);
@@ -687,14 +696,14 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
 
   Future<void> sendMomentToUserInChat(
       {required MomentsModel momentsModel}) async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
-    debugPrint("Selected users = ${listOfRecipient.length}");
+    // debugPrint("Selected users = ${listOfRecipient.length}");
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addMomentPostToChat(
           recipientUser: recipient!, momentsModel: momentsModel);
-    });
+    }
   }
 
   Future<void> addMomentPostToChat({
@@ -702,9 +711,9 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
     required MomentsModel momentsModel,
     String? url,
   }) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> metaData = {
+    final Map<String, dynamic> metaData = {
       "id": momentsModel.id,
       "title": messageDecoderWithEmoji(momentsModel.text),
       "author_avatar": momentsModel.avatar,
@@ -720,7 +729,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
         break;
     }
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(metaData),
       "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
@@ -753,7 +762,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
       iconData: icon,
       onTap: () {
         Navigator.pop(context);
-        MomentsService().updateMoment(
+        MomentsAuthService().updateMoment(
             momentId: momentModel.id!, data: {"is_public": isPublic}).then(
           (value) {
             momentModel = value;
@@ -789,7 +798,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
         ),
         onTap: () {
           Navigator.pop(context);
-          MomentsService().updateMoment(
+          MomentsAuthService().updateMoment(
               momentId: momentModel.id!,
               data: {"enable_payme": isEnabledPayment}).then(
             (value) {
@@ -811,8 +820,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   Widget momentPermanentOption(MomentsModel momentModel) {
     bool isPermanent = false;
     String title;
-    debugPrint("MOMENT MODEL IS PERMANENT:- ${momentModel.isPermanent}");
-    debugPrint("MOMENT IS PERMANENT:- ${momentModel.isPermanent}");
+    // debugPrint("MOMENT MODEL IS PERMANENT:- ${momentModel.isPermanent}");
+    // debugPrint("MOMENT IS PERMANENT:- ${momentModel.isPermanent}");
     if (momentModel.isPermanent ?? false) {
       isPermanent = momentModel.isPermanent!;
     }
@@ -828,7 +837,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
       iconData: CupertinoIcons.infinite,
       onTap: () {
         Navigator.pop(context);
-        MomentsService().updateMoment(
+        MomentsAuthService().updateMoment(
             momentId: momentModel.id!,
             data: {"is_permanent": !isPermanent}).then(
           (value) {
@@ -848,8 +857,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   Widget momentCommentingOption(MomentsModel momentModel) {
     bool isCommentingEnable = false;
     String title;
-    if (momentModel.enableCommenting ?? false) {
-      isCommentingEnable = momentModel.enableCommenting!;
+    if (momentModel.enableCommenting) {
+      isCommentingEnable = momentModel.enableCommenting;
     }
 
     IconData icon;
@@ -866,7 +875,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
       iconData: icon,
       onTap: () {
         Navigator.pop(context);
-        MomentsService().updateMoment(
+        MomentsAuthService().updateMoment(
             momentId: momentModel.id!,
             data: {"enable_commenting": !isCommentingEnable}).then(
           (value) {
@@ -905,7 +914,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
       onTap: () {
         Navigator.pop(context);
 
-        MomentsService().updateMoment(
+        MomentsAuthService().updateMoment(
             momentId: momentModel.id!,
             data: {"enable_like": !isLikeEnabled}).then(
           (value) {
@@ -957,14 +966,14 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   Widget getTags() {
-    List<String> formattedTagList = [];
+    final List<String> formattedTagList = [];
 
     if (currentMoment!.tags != null) {
       currentMoment!.tags!.join(', ');
 
-      currentMoment!.tags!.forEach((tag) {
+      for (var tag in currentMoment!.tags!) {
         formattedTagList.add('#$tag ');
-      });
+      }
 
       return ReadMoreText(
         formattedTagList.join(' '),
@@ -1002,31 +1011,85 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
     }
 
     if (attachment.containsKey('product')) {
-      return attachmentWidget(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              Routes.PRODUCT,
-              // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
-              arguments: {"productId": attachment['product']},
-            );
-          },
-          iconData: Icons.shopping_cart_rounded,
-          title: 'Product');
+      return InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            Routes.PRODUCT_DETAIL_PAGE,
+            // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
+            arguments: {"productId": attachment['product']},
+          );
+        },
+        child: Row(
+          children: [
+            Icon(
+              Icons.shopping_cart_rounded,
+              color: white,
+              size: 18,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              "Product",
+              style: TextStyle(
+                color: white,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
+        ),
+      );
+      // return attachmentWidget(
+      //     onTap: () {
+      //       Navigator.pushNamed(
+      //         context,
+      //         Routes.PRODUCT,
+      //         // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
+      //         arguments: {"productId": attachment['product']},
+      //       );
+      //     },
+      //     iconData: Icons.shopping_cart_rounded,
+      //     title: 'Product');
     }
 
     if (attachment.containsKey('service')) {
-      return attachmentWidget(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              Routes.SERVICE_DETAIL,
-              // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
-              arguments: {"serviceId": attachment['service']},
-            );
-          },
-          iconData: Icons.handyman_rounded,
-          title: 'Service');
+      return InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            Routes.SERVICE_DETAIL,
+            // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
+            arguments: {"serviceId": attachment['service']},
+          );
+        },
+        child: Row(
+          children: [
+            Icon(
+              Icons.handyman_rounded,
+              color: white,
+              size: 18,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              "Service",
+              style: TextStyle(
+                color: white,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
+        ),
+      );
+      // return attachmentWidget(
+      //     onTap: () {
+      //       Navigator.pushNamed(
+      //         context,
+      //         Routes.SERVICE_DETAIL,
+      //         // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
+      //         arguments: {"serviceId": attachment['service']},
+      //       );
+      //     },
+      //     iconData: Icons.handyman_rounded,
+      //     title: 'Service');
     }
 
     if (attachment.containsKey('blog')) {
@@ -1062,8 +1125,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   bool commentingEnabled() {
-    return currentMoment!.enableCommenting != null &&
-        currentMoment!.enableCommenting!;
+    return currentMoment!.enableCommenting;
   }
 
   Widget getPayMeBtn() {
@@ -1192,6 +1254,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
           },
         ),
       ),
-    );
+    ).then((value) {
+      widget.controller!.play();
+    });
   }
 }

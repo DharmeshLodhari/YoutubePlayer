@@ -1,26 +1,25 @@
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
+import 'package:Slydo/screens/super_store/widget/find_business_card.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
+import 'package:Slydo/screens/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/user_profile/models/user.dart';
+import 'package:Slydo/screens/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
+import 'package:Slydo/screens/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/utils/navigation_util.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../data/currency.dart';
 import '../../data/state_notifier.dart';
 import '../../utils/util.dart';
 import '../../widget/item_display_card.dart';
-import '../more_apps/shopping/models/ShoppingProduct.dart';
+import '../more_apps/shopping/models/shopping_product_model.dart';
 import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 
@@ -28,8 +27,7 @@ class ShopListScreenWithTags extends StatefulWidget {
   Function(bool)? onPageRefresh;
   String? category;
 
-  ShopListScreenWithTags({Key? key, this.onPageRefresh, this.category})
-      : super(key: key);
+  ShopListScreenWithTags({super.key, this.onPageRefresh, this.category});
 
   @override
   State<ShopListScreenWithTags> createState() => ShopListScreenState();
@@ -51,6 +49,8 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   late BasketBloc basketBloc;
   List rowHeaders = [];
   List<Product> storeProducts = [];
+  List<Product> superStoreDealOftheDay = [];
+  int productHorizontalLength = 10;
   bool noItemInList = false;
   String? next = "1";
   String? previous = "";
@@ -60,9 +60,10 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   List<CustomerProfile> customerProfileListNearBy = [];
   int? nearByCount = 0;
   String? nearByNext = "";
+  String? url = "";
   String? nearByPrevious = "";
   bool isNearbyLoading = false;
-  // bool noNearByInList = false;
+  bool dealsOfDayEmpty = false;
 
   final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -70,17 +71,18 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  final ScrollController _todayDealScrollController = ScrollController();
+  // final ScrollController _todayDealScrollController = ScrollController();
   final ScrollController _productScrollController = ScrollController();
   // final CarouselController _controller = CarouselController();
   String _currentCategory = '';
   late DashboardBloc _dashboardBloc;
 
-  CarouselController _controller = CarouselController();
+  final cs.CarouselSliderController _controller = cs.CarouselSliderController();
   int currentIndex = 0;
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
@@ -94,7 +96,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
           fontWeight: FontWeight.w700,
         ),
       ),
-      actions: [
+      actions: const [
         // _cartBtn(),
         // SizedBox(width: 12),
       ],
@@ -123,7 +125,10 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   }
 
   Future<void> getAllData() async {
+    getNearByBusinessList();
     await fetchParallelData();
+    getSuperStoreDealOfTheDay();
+
     // await Future.wait([
     //   listOfSuperStores(withSetState: false),
     //   getList(withSetState: false),
@@ -138,7 +143,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     if (mounted && withSetState) {
       setState(() {});
     }
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await ShoppingAuthService().listOfSuperStores();
     isProductLoading = false;
     if (mounted && withSetState) {
@@ -153,7 +158,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     super.didUpdateWidget(oldWidget);
     if (widget.category != _currentCategory) {
       _currentCategory = widget.category!;
-      debugPrint('CALLING OTHER ::: $_currentCategory');
+      // debugPrint('CALLING OTHER ::: $_currentCategory');
       // _refreshPage(); // Reload shop list when category changes
     }
   }
@@ -167,23 +172,23 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         }
 
         // Make parallel API calls using Future.wait
-        List<Future<Map<String, dynamic>?>> apiCalls = [
+        final List<Future<Map<String, dynamic>?>> apiCalls = [
           ShoppingAuthService().listOfSuperStores(),
           ShoppingAuthService()
               .listOfDiscounts(next, previous, activeDiscount: true),
-          ShoppingAuthService().listOfMerchant(
-              nearByNext, nearByPrevious, _currentCategory,
-              nearBy: true),
-          ShoppingAuthService().getProductListForSuperStore(
-              todayDealNext, todayDealPrevious,
-              todaysDeal: true),
-        ];
 
-        List<Map<String, dynamic>?> results = await Future.wait(apiCalls);
+          // ShoppingAuthService().getProductListForSuperStore(
+          //     todayDealNext, todayDealPrevious,
+          //     todaysDeal: true),
+          // ShoppingAuthService().listOfMerchant(
+          //     nearByNext, nearByPrevious, _currentCategory,
+          //     nearBy: true),
+        ];
+        final List<Map<String, dynamic>?> results = await Future.wait(apiCalls);
 
         // Handle each API call result
         for (int i = 0; i < results.length; i++) {
-          var result = results[i];
+          final result = results[i];
           if (result == null) {
             isLoading = false;
             noItemInList = true;
@@ -199,27 +204,28 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
             itemCount = result['count'];
             next = result['next'];
             previous = result['previous'];
-            var tempList = result['results'];
+            final tempList = result['results'];
             itemList.addAll(tempList);
           } else if (i == 2) {
-            nearByCount = result['count'];
-            nearByNext = result['next'];
-            nearByPrevious = result['previous'];
-            var tempList1 = result['results'];
-            customerProfileListNearBy.addAll(tempList1);
-          } else if (i == 3) {
             todayDealNext = result['next'];
             todayDealPrevious = result['previous'];
-            var tempList2 = result['results'];
+            final tempList2 = result['results'];
             todaysDealList.addAll(tempList2);
           }
+          // else if (i == 3) {
+          //   nearByCount = result['count'];
+          //   nearByNext = result['next'];
+          //   nearByPrevious = result['previous'];
+          //   var tempList1 = result['results'];
+          //   customerProfileListNearBy.addAll(tempList1);
+          // }
+        }
 
-          noItemInList = false;
-          isLoading = false;
+        noItemInList = false;
+        isLoading = false;
 
-          if (mounted) {
-            setState(() {});
-          }
+        if (mounted) {
+          setState(() {});
         }
 
         // if (itemList.isEmpty) {
@@ -228,163 +234,199 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         //     setState(() {});
         //   }
         // } else if (next == null && itemList.length > 6) {
-        //   _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        //   _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
         //     content: Text(
         //         AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         //     duration: Duration(milliseconds: 500),
         //   ));
         // }
       } catch (error) {
-        print('Error in getData: $error');
+        debugPrint('Error in getData: $error');
         // Handle errors as needed
       }
     }
   }
 
-  // Future<void> getList({bool withSetState = true}) async {
-  //   if (!isLoading) {
-  //     if (next != null && !isLoading) {
-  //       isLoading = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //       Map<String, dynamic>? result = await ShoppingAuthService()
-  //           .listOfDiscounts(next, previous, activeDiscount: true);
-  //
-  //       if (result == null) {
-  //         isLoading = false;
-  //         noItemInList = true;
-  //         if (mounted && withSetState) {
-  //           setState(() {});
-  //         }
-  //         return;
-  //       }
-  //
-  //       itemCount = result['count'];
-  //       next = result['next'];
-  //       previous = result['previous'];
-  //       var tempList = result['results'];
-  //
-  //       noItemInList = false;
-  //       isLoading = false;
-  //       itemList.addAll(tempList);
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //     }
-  //     if (itemList.isEmpty) {
-  //       noItemInList = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //     } else if (next == null && itemList.length > 6) {
-  //       _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-  //         content:
-  //             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-  //         duration: Duration(milliseconds: 500),
-  //       ));
-  //     }
-  //   }
-  // }
-  //
-  // Future<void> getTodaysDealProducts({bool withSetState = true}) async {
-  //   if (!isTodayDealLoading) {
-  //     if (todayDealNext != null && !isTodayDealLoading) {
-  //       isTodayDealLoading = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //
-  //       Map<String, dynamic>? result = await ShoppingAuthService()
-  //           .getProductListForSuperStore(todayDealNext, todayDealPrevious,
-  //               todaysDeal: true);
-  //
-  //       if (result == null) {
-  //         todaysDealsEmpty = true;
-  //         todaysDealsSizeBox = 22;
-  //         isTodayDealLoading = false;
-  //         if (mounted && withSetState) {
-  //           setState(() {});
-  //         }
-  //         return;
-  //       }
-  //
-  //       todayDealNext = result['next'];
-  //       todayDealPrevious = result['previous'];
-  //       var tempList = result['results'];
-  //
-  //       todaysDealsEmpty = false;
-  //       isTodayDealLoading = false;
-  //       todaysDealList.addAll(tempList);
-  //
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //     }
-  //     if (todaysDealList.isEmpty) {
-  //       todaysDealsEmpty = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //     }
-  //   }
-  // }
-  //
-  // Future<void> getNearByBusinessList({bool withSetState = true}) async {
-  //   if (!isNearbyLoading) {
-  //     if (nearByNext != null && !isNearbyLoading) {
-  //       isNearbyLoading = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //
-  //       Map<String, dynamic>? result = await ShoppingAuthService()
-  //           .listOfMerchant(nearByNext, nearByPrevious, _currentCategory,
-  //               nearBy: true);
-  //
-  //       if (result == null) {
-  //         noNearByInList = true;
-  //
-  //         isNearbyLoading = false;
-  //         if (mounted && withSetState) {
-  //           setState(() {});
-  //         }
-  //         return;
-  //       }
-  //
-  //       nearByCount = result['count'];
-  //       nearByNext = result['next'];
-  //       nearByPrevious = result['previous'];
-  //       var tempList = result['results'];
-  //
-  //       noNearByInList = false;
-  //       isNearbyLoading = false;
-  //       customerProfileListNearBy.addAll(tempList);
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //
-  //       // for(var item in customerProfileListNearBy){
-  //       //   debugPrint('Fola near by:::: ${item.toJson()}');
-  //       // }
-  //
-  //     }
-  //     if (customerProfileListNearBy.isEmpty) {
-  //       noNearByInList = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //     } else if (nearByNext == null && customerProfileListNearBy.length > 6) {
-  //       // _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-  //       //   content:
-  //       //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-  //       //   duration: const Duration(milliseconds: 500),
-  //       // ));
-  //     }
-  //   }
-  // }
+  Future<void> getList({bool withSetState = true}) async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        isLoading = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfDiscounts(next, previous, activeDiscount: true);
 
-  _refreshPage() {
+        if (result == null) {
+          isLoading = false;
+          noItemInList = true;
+          if (mounted && withSetState) {
+            setState(() {});
+          }
+          return;
+        }
+
+        itemCount = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        final tempList = result['results'];
+
+        noItemInList = false;
+        isLoading = false;
+        itemList.addAll(tempList);
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+      }
+      if (itemList.isEmpty) {
+        noItemInList = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+      } else if (next == null && itemList.length > 6) {
+        _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  void getSuperStoreDealOfTheDay() async {
+    if (!isLoading) {
+      if (todayDealNext != null && !isLoading) {
+        isLoading = true;
+        if (mounted) setState(() {});
+        url = "${AppConfig.baseUrl}/api/v1/products/?today_deals=true";
+        final Map<String, dynamic>? response = await ShoppingAuthService()
+            .getProductsStoreDeal(todayDealNext, todayDealPrevious, url ?? "");
+        if (response == null) {
+          todaysDealsEmpty = true;
+          todaysDealsSizeBox = 22;
+          isLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        todayDealNext = response['next'];
+        todayDealPrevious = response['previous'];
+        final tempList = response['results'];
+
+        todaysDealsEmpty = false;
+        isLoading = false;
+        superStoreDealOftheDay.addAll(tempList);
+        if (mounted) setState(() {});
+      }
+      if (superStoreDealOftheDay.isEmpty) {
+        if (mounted) {
+          setState(() {
+            todaysDealsEmpty = true;
+          });
+        }
+      }
+    }
+  }
+
+  Future<void> getTodaysDealProducts({bool withSetState = true}) async {
+    if (!isTodayDealLoading) {
+      if (todayDealNext != null && !isTodayDealLoading) {
+        isTodayDealLoading = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .getProductListForSuperStore(todayDealNext, todayDealPrevious,
+                todaysDeal: true);
+
+        if (result == null) {
+          todaysDealsEmpty = true;
+          todaysDealsSizeBox = 22;
+          isTodayDealLoading = false;
+          if (mounted && withSetState) {
+            setState(() {});
+          }
+          return;
+        }
+
+        todayDealNext = result['next'];
+        todayDealPrevious = result['previous'];
+        final tempList = result['results'];
+
+        todaysDealsEmpty = false;
+        isTodayDealLoading = false;
+        todaysDealList.addAll(tempList);
+
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+      }
+      if (todaysDealList.isEmpty) {
+        todaysDealsEmpty = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+      }
+    }
+  }
+
+  Future<void> getNearByBusinessList({bool withSetState = true}) async {
+    if (!isNearbyLoading) {
+      if (nearByNext != null && !isNearbyLoading) {
+        isNearbyLoading = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfMerchant(nearByNext, nearByPrevious, _currentCategory,
+                nearBy: true);
+
+        if (result == null) {
+          // noNearByInList = true;
+
+          isNearbyLoading = false;
+          if (mounted && withSetState) {
+            setState(() {});
+          }
+          return;
+        }
+
+        nearByCount = result['count'];
+        nearByNext = result['next'];
+        nearByPrevious = result['previous'];
+        final tempList = result['results'];
+
+        // noNearByInList = false;
+        isNearbyLoading = false;
+        customerProfileListNearBy.addAll(tempList);
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+
+        // for(var item in customerProfileListNearBy){
+        //   debugPrint('Fola near by:::: ${item.toJson()}');
+        // }
+      }
+      if (customerProfileListNearBy.isEmpty) {
+        // noNearByInList = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+      } else if (nearByNext == null && customerProfileListNearBy.length > 6) {
+        // _findBusinessScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
+        //   content:
+        //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        //   duration: const Duration(milliseconds: 500),
+        // ));
+      }
+    }
+  }
+
+  void _refreshPage() {
     productNext = "";
     productCount = 0;
     productPrevious = "";
@@ -401,19 +443,12 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refreshPage();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      _refreshPage();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -429,7 +464,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         final position = _productScrollController.position.minScrollExtent;
         _productScrollController.animateTo(
           position,
-          duration: Duration(milliseconds: 1),
+          duration: const Duration(milliseconds: 1),
           curve: Curves.easeOut,
         );
       }
@@ -446,54 +481,53 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     return ScaffoldMessenger(
       key: _productScaffoldMessengerKey,
       child: Scaffold(
-        // appBar: appBar(),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 0.0),
-            child: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: ListView(
-                controller: _productScrollController,
-                children: [
-                  if (itemList.isNotEmpty) specialDeals(),
-                  SizedBox(height: todaysDealsSizeBox),
-                  if (customerProfileListNearBy.isNotEmpty) nearByBuildView(),
-                  sessionProducts(),
-                  const SizedBox(height: 16),
-                  isLoading
-                      ? Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                              mainAxisSpacing: 14,
-                              mainAxisExtent: 180,
-                              crossAxisSpacing: 15,
-                              maxCrossAxisExtent: 200,
-                            ),
-                            itemCount: 2,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                color: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              );
-                            },
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              controller: _productScrollController,
+              children: [
+                if (itemList.isNotEmpty) specialDeals(),
+                if (superStoreDealOftheDay.isNotEmpty) _buildDealOfTheDay(),
+                SizedBox(height: todaysDealsSizeBox),
+                if (customerProfileListNearBy.isNotEmpty) nearByBuildView(),
+                sessionProducts(),
+                const SizedBox(height: 16),
+                if (isLoading)
+                  Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: greyBorderColor,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        mainAxisSpacing: 14,
+                        mainAxisExtent: 180,
+                        crossAxisSpacing: 15,
+                        maxCrossAxisExtent: 200,
+                      ),
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        )
-                      : const SizedBox.shrink(),
-                ],
-              ),
+                        );
+                      },
+                    ),
+                  )
+                else
+                  const SizedBox.shrink(),
+              ],
             ),
           ),
         ),
@@ -502,100 +536,83 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   }
 
   Widget specialDeals() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    return SizedBox(
+      height: 151,
       child: Column(
         children: [
-          Container(
-            margin: EdgeInsets.only(top: 15, bottom: 8),
-            alignment: Alignment.bottomLeft,
-            child: Text(
-              "Special Deal",
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: "Inter",
-                  color: black),
-              textAlign: TextAlign.left,
-            ),
-          ),
-          SizedBox(
-            height: 151,
-            child: Column(
-              children: [
-                Expanded(
-                  child: CarouselSlider(
-                    carouselController: _controller,
-                    options: CarouselOptions(
-                        height: 150,
-                        autoPlay: true,
-                        enlargeCenterPage: true,
-                        viewportFraction: 1,
-                        aspectRatio: 16 / 9,
-                        // onPageChanged: (index, reason) {
-                        //   setState(() {
-                        //     _current = index;
-                        //   });
-                        // }),
-                        // enableInfiniteScroll: false,
-                        // viewportFraction: 1.0,
-                        // enlargeCenterPage: true,
-                        // autoPlay: true,
-                        // aspectRatio: 1.7,
-                        onPageChanged: onPageFunction),
-                    items: itemList
-                        .map(
-                          (e) => InkWell(
-                            onTap: () {
-                              String url = AppConfig.baseUrl +
-                                  "/api/v1/products/products-by-discount/${e.id}";
-                              NavigationUtil.push(context,
-                                  screen: SuperStoreIndustry(
-                                      next: url,
-                                      appTitle: e.name!,
-                                      searchQuery: {"discount": e.id!}));
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(right: 8),
-                              width: MediaQuery.of(context).size.width,
-                              height: 150,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10.0),
-                                child: getImage(e),
-                              ),
-                              // decoration: BoxDecoration(
-                              //   borderRadius: BorderRadius.circular(10),
-                              //   image: DecorationImage(
-                              //     fit: BoxFit.fill,
-                              //     image: getImage(e),
-                              //   ),
-                              // ),
-                            ),
+          Expanded(
+            child: cs.CarouselSlider(
+              carouselController: _controller,
+              options: cs.CarouselOptions(
+                  height: 150,
+                  autoPlay: true,
+                  enlargeCenterPage: true,
+                  viewportFraction: 1,
+                  aspectRatio: 16 / 9,
+                  // onPageChanged: (index, reason) {
+                  //   setState(() {
+                  //     _current = index;
+                  //   });
+                  // }),
+                  // enableInfiniteScroll: false,
+                  // viewportFraction: 1.0,
+                  // enlargeCenterPage: true,
+                  // autoPlay: true,
+                  // aspectRatio: 1.7,
+                  onPageChanged: onPageFunction),
+              items: itemList
+                  .map(
+                    (e) => InkWell(
+                      onTap: () {
+                        final String url =
+                            "${AppConfig.baseUrl}/api/v1/products/products-by-discount/${e.id}";
+                        NavigationUtil.push(
+                          context,
+                          screen: SuperStoreIndustry(
+                            next: url,
+                            appTitle: e.name!,
+                            searchQuery: {"discount": e.id!},
+                            isShowDiscountPage: true,
                           ),
-                        )
-                        .toList(),
-                  ),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: itemList.map((url) {
-                    int index = itemList.indexOf(url);
-                    return Container(
-                      width: 5.0,
-                      height: 5.0,
-                      margin:
-                          EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: currentIndex == index ? navyBlue : navyBlueLight,
+                        );
+                      },
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 150,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: getImage(e),
+                        ),
+                        // decoration: BoxDecoration(
+                        //   borderRadius: BorderRadius.circular(10),
+                        //   image: DecorationImage(
+                        //     fit: BoxFit.fill,
+                        //     image: getImage(e),
+                        //   ),
+                        // ),
                       ),
-                    );
-                  }).toList(),
-                )
-              ],
+                    ),
+                  )
+                  .toList(),
             ),
           ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: itemList.map((url) {
+              final int index = itemList.indexOf(url);
+              return Container(
+                width: 5.0,
+                height: 5.0,
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: currentIndex == index ? navyBlue : navyBlueLight,
+                ),
+              );
+            }).toList(),
+          )
         ],
       ),
     );
@@ -609,7 +626,10 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         fit: BoxFit.fill,
       );
     } else {
-      return Image.asset(defaultProductAndServiceImage);
+      return Image.asset(
+        "assets/images/default_image/discount_defualt_image.jpeg",
+        fit: BoxFit.fill,
+      );
     }
   }
 
@@ -617,7 +637,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 8),
+        const SizedBox(height: 15),
         // if (rowHeaders.isNotEmpty)
         //   ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
 
@@ -630,399 +650,192 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                   rowTitle(headers, isLast: i == rowHeaders.length - 1),
                 ),
               )
-              .values
-              .toList(),
+              .values,
       ],
     );
   }
 
-  getRowTitle(headers) async {
-    List<Product> result = [];
+  Future<List<Product>> getRowTitle(Map<String, dynamic> headers) async {
+    final List<Product> result = [];
     for (var item in headers['results']) {
-      Product product = await ShoppingAuthService().createProduct(item);
+      final Product product = ShoppingAuthService().createProduct(item);
       result.add(product);
     }
     return result;
   }
 
-  Widget nearByBuildView() {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-      margin: EdgeInsets.only(top: 24),
-      child: Column(
-        children: [
+  Widget _buildDealOfTheDay() {
+    final bool showViewMoreButton =
+        superStoreDealOftheDay.length > productHorizontalLength;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (dealsOfDayEmpty)
+          const SizedBox.shrink()
+        else
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                "Nearby Businesses",
+                AppLocalization.of(context)?.newArrivals ?? "",
                 style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
                   fontFamily: "Inter",
-                  color: black,
+                  color: blackFont,
                 ),
               ),
-              GestureDetector(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "View more",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                          fontFamily: "Inter",
-                          color: navyBlue),
-                    ),
-                    SizedBox(width: 8),
-                    Icon(Icons.arrow_forward_ios_sharp,
-                        size: 12, color: navyBlue),
-                  ],
-                ),
-                onTap: () {
-                  Navigator.of(context)
-                      .pushNamed(Routes.NEAR_BY_LIST_SCREEN, arguments: {
-                    "customerProfile": customerProfileListNearBy,
-                    "count": nearByCount,
-                    "next": nearByNext
-                  });
-                },
-              ),
+              _buildViewMoreStore(context),
             ],
           ),
-          const SizedBox(
-            height: 11.0,
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                for (var item in customerProfileListNearBy)
-                  Container(
-                    width: 200,
-                    // height: 200,
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, Routes.USER_PROFILE,
-                            arguments: {"searchedUserName": item.userName});
-                      },
-                      child: FindBusiness(
-                        customerProfile: item,
-                        tileRenderPlace: TileRenderPlace.Thiny,
-                        callback: (username, value) {
-                          //create a list to edit
-                          List<CustomerProfile> customerProfileListEdit =
-                              customerProfileListNearBy;
-
-                          // modify customerProfileList for the username and refresh the list
-                          // set the isFollowing for that particular user
-                          for (var customer in customerProfileListEdit) {
-                            if (customer.userName == username) {
-                              customer.isFollowing =
-                                  value; // Modify the isFollowing property
-                            }
-                          }
-
-                          customerProfileListNearBy = [];
-                          customerProfileListNearBy = customerProfileListEdit;
-
-                          if (mounted) setState(() {});
-                        },
-                      ),
+        const SizedBox(
+          height: 15,
+        ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: superStoreDealOftheDay
+                .take(showViewMoreButton
+                    ? productHorizontalLength
+                    : todaysDealList.length)
+                .map(
+                  (element) => Padding(
+                    padding: const EdgeInsets.only(right: 7.0),
+                    child: SuperStoreSingleCard(
+                      product: element,
+                      // next: headers['next_url']
                     ),
-                  )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget rowTitle(headers, {bool isLast = false}) {
-    return SectionProducts(headers: headers, isLast: isLast);
-  }
-
-  Widget getTodaysDealList() {
-    return Column(
-      children: [
-        noItemInList
-            ? const SizedBox.shrink()
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  // Row(
-                  //   children: [
-                  //     Text(
-                  //       "Today's deal",
-                  //       style: TextStyle(
-                  //         fontWeight: FontWeight.w700,
-                  //         fontSize: 18,
-                  //         color: blackFont,
-                  //       ),
-                  //     ),
-                  //     Icon(
-                  //       Icons.bolt_rounded,
-                  //       color: mateRed,
-                  //     ),
-                  //   ],
-                  // ),
-                  // GestureDetector(
-                  //   child: Row(
-                  //     children: [
-                  //       Text(
-                  //         "See all",
-                  //         style: TextStyle(
-                  //             fontWeight: FontWeight.w600,
-                  //             fontSize: 14,
-                  //             color: navyBlue),
-                  //       ),
-                  //       SizedBox(width: 8),
-                  //       Icon(Icons.arrow_forward_ios_sharp,
-                  //           size: 14, color: navyBlue),
-                  //     ],
-                  //   ),
-                  //   onTap: () {
-                  //     Navigator.of(context).pushNamed("/shopping-category");
-                  //   },
-                  // ),
-                ],
-              ),
-        Container(
-          height: 280,
-          child: ListView.builder(
-            padding: const EdgeInsets.only(bottom: 6),
-            scrollDirection: Axis.horizontal,
-            controller: _todayDealScrollController,
-            itemCount: todaysDealList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == todaysDealList.length) {
-                return isLoading
-                    ? Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: SizedBox(
-                          height: 100,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: 3,
-                            itemBuilder: (context, index) {
-                              return SizedBox(
-                                width: 160,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink();
-              } else {
-                ShoppingProduct shoppingProduct = todaysDealList[index];
-                return DisplayProduct(
-                  giveRightPadding: true,
-                  product: Product(
-                    id: shoppingProduct.id,
-                    name: shoppingProduct.name,
-                    price: shoppingProduct.price.toString(),
-                    currency: shoppingProduct.currency,
-                    cover: shoppingProduct.cover,
-                    isAvailable: shoppingProduct.isAvailable,
-                    seller: shoppingProduct.seller,
-                    sellerFullName: shoppingProduct.sellerFullname,
-                    shortDescription: shoppingProduct.shortDescription,
-                    discountValue: shoppingProduct.discountValue,
-                    discountIsActive: shoppingProduct.discountIsActive,
-                    discountType: shoppingProduct.discountType,
-                    discountedPrice: shoppingProduct.discountedPrice,
                   ),
-                );
-              }
-            },
+                )
+                .toList(),
           ),
         ),
       ],
     );
   }
 
-  Widget todaysDealWidget({required ShoppingProduct product}) {
-    return GestureDetector(
+  Widget _buildViewMoreStore(BuildContext context) {
+    return InkWell(
       onTap: () {
-        ShoppingAuthService().getProduct(product.id!).then((value) {
-          Navigator.pushNamed(context, '/product',
-              arguments: {"product": value});
-        });
+        // for (final product in superStoreDealOftheDay) {
+        NavigationUtil.push(
+          context,
+          screen: const ProductViewMoreDetails(
+              // appTitle: product.name,
+              ),
+        );
+        // }
       },
-      child: SizedBox(
-        width: 160,
-        child: Card(
-          elevation: 12,
-          color: Colors.white,
-          shadowColor: lightGrey.withOpacity(0.4),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(width: 10),
+          Icon(
+            Icons.chevron_right_outlined,
+            color: navyBlue,
           ),
-          margin: const EdgeInsets.only(top: 20, right: 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          const SizedBox(width: 5),
+        ],
+      ),
+    );
+  }
+
+  Widget nearByBuildView() {
+    return Column(
+      children: [
+        const SizedBox(height: 15.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              "Nearby Businesses",
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                fontFamily: "Inter",
+                color: black,
+              ),
+            ),
+            GestureDetector(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 10),
+                  Icon(
+                    Icons.chevron_right_outlined,
+                    color: navyBlue,
+                  ),
+                  const SizedBox(width: 5),
+                ],
+              ),
+              onTap: () {
+                Navigator.of(context)
+                    .pushNamed(Routes.NEAR_BY_LIST_SCREEN, arguments: {
+                  "customerProfile": customerProfileListNearBy,
+                  "count": nearByCount,
+                  "next": nearByNext
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 10.0),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                    child: CachedNetworkImage(
-                      imageUrl: product.cover!,
-                      errorWidget: productAndServiceErrorWidget,
-                      memCacheHeight:
-                          (MediaQuery.of(context).size.height * 0.6).toInt(),
+              for (var item in customerProfileListNearBy)
+                Container(
+                  width: 260,
+                  // height: 200,
+                  margin: const EdgeInsets.only(right: 16),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, Routes.USER_PROFILE,
+                          arguments: {"searchedUserName": item.userName});
+                    },
+                    child: FindBusiness(
+                      customerProfile: item,
+                      tileRenderPlace: TileRenderPlace.Thiny,
+                      callback: (username, value) {
+                        //create a list to edit
+                        final List<CustomerProfile> customerProfileListEdit =
+                            customerProfileListNearBy;
+
+                        // modify customerProfileList for the username and refresh the list
+                        // set the isFollowing for that particular user
+                        for (var customer in customerProfileListEdit) {
+                          if (customer.userName == username) {
+                            customer.isFollowing =
+                                value; // Modify the isFollowing property
+                          }
+                        }
+
+                        customerProfileListNearBy = [];
+                        customerProfileListNearBy = customerProfileListEdit;
+
+                        if (mounted) setState(() {});
+                      },
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, bottom: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      product.name!,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        fontFamily: "Inter",
-                        color: blackFont,
-                      ),
-                      maxLines: 2,
-                    ),
-                    const SizedBox(height: 5),
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        text: worldCurrencies[product.currency!]!,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontFamily: "Inter",
-                          color: blackFont,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: truncateString(
-                              str: moneyDisplayNormalizer(
-                                  int.parse(product.price.toString())),
-                              lengthToTruncateAt: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                )
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 
-  Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: TextSelectionThemeData(
-            selectionHandleColor: navyBlue,
-          ),
-        ),
-        child: InkWell(
-          onTap: () {
-            Navigator.of(context).pushNamed("/search-product");
-          },
-          child: IgnorePointer(
-            ignoring: true,
-            child: TextFormField(
-              readOnly: true,
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: "Inter",
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-              ),
-              cursorWidth: 1.5,
-              cursorColor: navyBlue,
-              decoration: InputDecoration(
-                hintStyle: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: darkGrey,
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    SlydoAppIcon.search,
-                    color: darkGrey,
-                    size: 14,
-                  ),
-                  onPressed: () {},
-                ),
-                hintText: "Search",
-                fillColor: Colors.white,
-                filled: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                prefix: const Padding(
-                  padding: EdgeInsets.only(left: 16),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: navyBlue,
-                    width: 1.0,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  Widget rowTitle(Map<String, dynamic> headers, {bool isLast = false}) {
+    return SectionProducts(headers: headers, isLast: isLast);
   }
 
-  onPageFunction(int index, CarouselPageChangedReason reason) {
+  void onPageFunction(int index, cs.CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }
@@ -1030,13 +843,18 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
 
 class SuperStoreSingleCard extends StatelessWidget {
   final Product product;
+  final bool isProductShowIcon;
 
   // final String? next;
-  const SuperStoreSingleCard({Key? key, required this.product})
-      : super(key: key);
+  const SuperStoreSingleCard(
+      {super.key, required this.product, this.isProductShowIcon = false});
 
   @override
   Widget build(BuildContext context) {
-    return DisplayProduct(product: product, giveRightPadding: false);
+    return DisplayProduct(
+      product: product,
+      giveRightPadding: false,
+      isProductShowIcon: isProductShowIcon,
+    );
   }
 }

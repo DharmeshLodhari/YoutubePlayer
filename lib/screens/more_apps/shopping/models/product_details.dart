@@ -4,6 +4,7 @@
 /// merchant : "blackstriker"
 /// meta_data : {"uuid":"b9f89ac0-4166-46c3-80ce-a5667485fef2","avatar":"http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/310d1a87-48e9-4fee-b876-36cae907dcf7.jpg","qr_code":"http://cdn.slydo.co.global.prod.fastly.net/media/customer/qr-code/bd0f11db-1214-45f1-9a2c-ee482200ddd0.png","nickname":"Black Striker Enterprise","username":"blackstriker","full_name":"Black Striker Enterprise","account_type":"Developer","phone_number":"+919998333150","default_currency":"NGN"}
 /// created_at : "2024-01-17T14:38:12.016863+01:00"
+library;
 
 class ProductDetails {
   ProductDetails({

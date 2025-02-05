@@ -1,18 +1,15 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/movies/models/MovieItem.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/more_apps/movies/models/movie_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../messaging/chat/utils.dart';
-
 class MovieTile extends StatelessWidget {
   final MovieItem? movieItem;
 
-  const MovieTile({Key? key, this.movieItem}) : super(key: key);
+  const MovieTile({super.key, this.movieItem});
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +20,9 @@ class MovieTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -56,7 +54,7 @@ class MovieTile extends StatelessWidget {
                       color: starYellow,
                       size: 12,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
@@ -97,10 +95,10 @@ class MovieTile extends StatelessWidget {
 class MovieTileWithHeart extends StatefulWidget {
   final MovieItem? movieItem;
 
-  const MovieTileWithHeart({Key? key, this.movieItem}) : super(key: key);
+  const MovieTileWithHeart({super.key, this.movieItem});
 
   @override
-  _MovieTileWithHeartState createState() => _MovieTileWithHeartState();
+  State<MovieTileWithHeart> createState() => _MovieTileWithHeartState();
 }
 
 class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
@@ -115,8 +113,9 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -148,7 +147,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
                       color: starYellow,
                       size: 12,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
@@ -179,7 +178,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
             ),
             trailing: IconButton(
               icon: Icon(
-                isChange ? SlydoAppIcon.heart_empty : SlydoAppIcon.heart_1,
+                isChange ? SlydoAppIcon.heartEmpty : SlydoAppIcon.heart_1,
                 color: isChange ? blackFont : navyBlue,
                 size: 20,
               ),
@@ -196,9 +195,9 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
 class MovieTileGeneral extends StatefulWidget {
   final MovieItem? movieItem;
 
-  const MovieTileGeneral({Key? key, this.movieItem}) : super(key: key);
+  const MovieTileGeneral({super.key, this.movieItem});
   @override
-  _MovieTileGeneralState createState() => _MovieTileGeneralState();
+  State<MovieTileGeneral> createState() => _MovieTileGeneralState();
 }
 
 class _MovieTileGeneralState extends State<MovieTileGeneral> {
@@ -215,8 +214,9 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -248,7 +248,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
                       color: starYellow,
                       size: 12,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
@@ -280,9 +280,9 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
             trailing: IconButton(
               icon: Icon(
                 isDownloaded
-                    ? SlydoAppIcon.video_play
+                    ? SlydoAppIcon.videoPlay
                     : isChange
-                        ? SlydoAppIcon.heart_empty
+                        ? SlydoAppIcon.heartEmpty
                         : SlydoAppIcon.heart_1,
                 color: isDownloaded
                     ? navyBlue

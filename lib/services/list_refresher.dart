@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ListRefresher {
-  Duration _refreshDurationInterval = Duration(minutes: 3);
+  final Duration _refreshDurationInterval = const Duration(minutes: 3);
   static Timer? _timerForListRefresher;
 
   void initialize() {
-    debugPrint("Refresher initializing");
+    // debugPrint("Refresher initializing");
 
     if (_timerForListRefresher?.isActive ?? false) {
       _timerForListRefresher!.cancel();
@@ -20,15 +20,16 @@ class ListRefresher {
 
     _timerForListRefresher = Timer.periodic(_refreshDurationInterval, (time) {
       if (myGlobals.scaffoldKey.currentContext != null) {
-        if (AppConfig.enableLogs.value)
+        if (AppConfig.enableLogs.value) {
           debugPrint("<====== Refreshing list ======>");
-        RouteProvider routeProvider = Provider.of<RouteProvider>(
+        }
+        final RouteProvider routeProvider = Provider.of<RouteProvider>(
           myGlobals.scaffoldKey.currentContext!,
           listen: false,
         );
 
         if (routeProvider.routes.contains("/dashboard")) {
-          RefreshBlocForRequestPayment refreshBlocForRequestPayment =
+          final RefreshBlocForRequestPayment refreshBlocForRequestPayment =
               Provider.of<RefreshBlocForRequestPayment>(
                   myGlobals.scaffoldKey.currentContext!,
                   listen: false);
@@ -36,7 +37,7 @@ class ListRefresher {
         }
 
         if (routeProvider.routes.contains("/transactions")) {
-          RefreshBlocForTransaction refreshBlocForTransaction =
+          final RefreshBlocForTransaction refreshBlocForTransaction =
               Provider.of<RefreshBlocForTransaction>(
                   myGlobals.scaffoldKey.currentContext!,
                   listen: false);
