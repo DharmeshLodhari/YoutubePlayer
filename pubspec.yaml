@@ -40,7 +40,7 @@ dependencies:
   fast_gbk: ^1.0.0
   file_picker: ^8.0.3
   firebase_crashlytics: ^4.0.0
-  firebase_messaging: ^15.0.0
+  firebase_messaging: ^15.1.0
  # flare_flutter:
   #  git:
    #   url: https://github.com/mbfakourii/Flare-Flutter.git
